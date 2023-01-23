@@ -8,10 +8,10 @@ const user = {
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Records', href: '#', current: false },
-  { name: 'Sales', href: '#', current: false },
-  { name: 'Documentation', href: '#', current: false },
+  { name: 'Dashboard', href: '/dashboard', current: false },
+  { name: 'Records', href: '/records', current: false },
+  { name: 'Sales', href: '#', current: true },
+  { name: 'Documentation', href: '/documentation', current: false },
 ]
 const userNavigation = [
   { name: 'Settings', href: '#' },
@@ -69,14 +69,6 @@ export default function Example() {
                       </div>
                       <div className="hidden md:block">
                         <div className="ml-4 flex items-center md:ml-6">
-                          <button
-                              type="button"
-                              className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                          >
-                            <span className="sr-only">View notifications</span>
-                            <BellIcon className="h-6 w-6" aria-hidden="true" />
-                          </button>
-
                           {/* Profile dropdown */}
                           <Menu as="div" className="relative ml-3">
                             <div>
@@ -183,7 +175,7 @@ export default function Example() {
 
           <header className="bg-white shadow">
             <div className="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900">Sales</h1>
             </div>
           </header>
           <main>

@@ -20,6 +20,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [

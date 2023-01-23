@@ -16,9 +16,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("here2")
   const URL = `https://www.googleapis.com/books/v1/volumes?q=isbn:0393356256&key=${process.env.SECRET_KEY_GOOGLE_API}`;
   const response = await axios.get(URL);
   res.status(200).json(response.data)
-  console.log(response)
 }

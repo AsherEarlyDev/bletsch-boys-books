@@ -1,5 +1,5 @@
-import {Disclosure, Menu, Transition} from "@headlessui/react";
-import {Fragment, ReactPropTypes} from "react";
+import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
+import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 
 const user = {
@@ -8,19 +8,21 @@ const user = {
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard'},
-  { name: 'Records', href: '/records'},
-  { name: 'Sales', href: '/sales'},
-  { name: 'Documentation', href: '/documentation'},
+  {name: 'Dashboard', href: '/dashboard'},
+  {name: 'Records', href: '/records'},
+  {name: 'Sales', href: '/sales'},
+  {name: 'Documentation', href: '/documentation'},
 ]
 const userNavigation = [
-  { name: 'Reset Password', href: '#' },
-  { name: 'Sign out', href: '/' },
+  {name: 'Change Password', href: '/reset-password'},
+  {name: 'Sign out', href: '/'},
 ]
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
+
+
 
 export default function AppShell(props) {
   return (
@@ -35,7 +37,7 @@ export default function AppShell(props) {
       */}
         <div className="min-h-full">
           <Disclosure as="nav" className="bg-gray-800">
-            {({ open }) => (
+            {({open}) => (
                 <>
                   <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
@@ -72,9 +74,10 @@ export default function AppShell(props) {
                           {/* Profile dropdown */}
                           <Menu as="div" className="relative ml-3">
                             <div>
-                              <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                              <Menu.Button
+                                  className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                 <span className="sr-only">Open user menu</span>
-                                <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                                <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt=""/>
                               </Menu.Button>
                             </div>
                             <Transition
@@ -86,16 +89,17 @@ export default function AppShell(props) {
                                 leaveFrom="transform opacity-100 scale-100"
                                 leaveTo="transform opacity-0 scale-95"
                             >
-                              <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <Menu.Items
+                                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 {userNavigation.map((item) => (
                                     <Menu.Item key={item.name}>
-                                      {({ active }) => (
+                                      {({active}) => (
                                           <a
-                                              href={item.href}
                                               className={classNames(
                                                   active ? 'bg-gray-100' : '',
                                                   'block px-4 py-2 text-sm text-gray-700'
                                               )}
+                                              href={item.href}
                                           >
                                             {item.name}
                                           </a>
@@ -109,12 +113,13 @@ export default function AppShell(props) {
                       </div>
                       <div className="-mr-2 flex md:hidden">
                         {/* Mobile menu button */}
-                        <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <Disclosure.Button
+                            className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="sr-only">Open main menu</span>
                           {open ? (
-                              <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                              <XMarkIcon className="block h-6 w-6" aria-hidden="true"/>
                           ) : (
-                              <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                              <Bars3Icon className="block h-6 w-6" aria-hidden="true"/>
                           )}
                         </Disclosure.Button>
                       </div>
@@ -141,17 +146,18 @@ export default function AppShell(props) {
                     <div className="border-t border-gray-700 pt-4 pb-3">
                       <div className="flex items-center px-5">
                         <div className="flex-shrink-0">
-                          <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                          <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt=""/>
                         </div>
                         <div className="ml-3">
-                          <div className="text-base font-medium leading-none text-white">{user.name}</div>
+                          <div
+                              className="text-base font-medium leading-none text-white">{user.name}</div>
                         </div>
                         <button
                             type="button"
                             className="ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                         >
                           <span className="sr-only">View notifications</span>
-                          <BellIcon className="h-6 w-6" aria-hidden="true" />
+                          <BellIcon className="h-6 w-6" aria-hidden="true"/>
                         </button>
                       </div>
                       <div className="mt-3 space-y-1 px-2">
@@ -180,9 +186,6 @@ export default function AppShell(props) {
           <main>
             <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
               {/* Replace with your content */}
-              <div className="px-4 py-6 sm:px-0">
-                <div className="h-96 rounded-lg border-4 border-dashed border-gray-200" />
-              </div>
               {/* /End replace */}
             </div>
           </main>

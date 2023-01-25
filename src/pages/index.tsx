@@ -8,6 +8,7 @@ import { api } from "../utils/api";
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
   
+  
 
   return (
     <>
@@ -55,11 +56,14 @@ const CreateAdmin: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const adminPass = api.admin.createAdminPassword.useMutation();
+
+
+
   function handlePasswordSubmit(pass: string, confirmPass: string, event: any){
       console.log(pass)
       if (pass === confirmPass){
         adminPass.mutate({
-          id: '',
+          id: '1',
           password: pass
         });
       }

@@ -20,6 +20,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
         // Add logic here to look up the user from the credentials supplied
         const user = await prisma.admin.findFirst({
-          where: { password: credentials?.password },
+          where: { id: '1'},
         });
 
         if (credentials?.password === user?.password) {

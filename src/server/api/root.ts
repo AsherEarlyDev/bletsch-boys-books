@@ -1,6 +1,8 @@
 import { createTRPCRouter } from "./trpc";
-import { exampleRouter } from "./routers/example";
+
 import { googleBooksRouter } from "./routers/googleBooks";
+import { adminRouter } from "./routers/admin";
+
 
 /**
  * This is the primary router for your server.
@@ -8,9 +10,8 @@ import { googleBooksRouter } from "./routers/googleBooks";
  * All routers added in /api/routers should be manually added here
  */
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
-  googleBooks: googleBooksRouter
-
+  googleBooks: googleBooksRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API

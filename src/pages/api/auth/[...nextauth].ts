@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
         // Add logic here to look up the user from the credentials supplied
         const user = await prisma.admin.findFirst({
-          where: { id: '1'},
+          where: { id: 1},
         });
 
         if (credentials?.password === user?.password) {

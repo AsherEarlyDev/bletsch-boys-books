@@ -23,9 +23,8 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {passwordData ? <AuthShowcase /> : <CreateAdmin />}
+              {<AuthShowcase />}
           </div>
-          
         </div>
       </main>
     </>

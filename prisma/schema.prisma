@@ -120,6 +120,6 @@ model VerificationToken {
 }
 
 model Admin {
-  id       String @id @default(cuid())
+  id       Int @id @default(autoincrement())
   password String
 }

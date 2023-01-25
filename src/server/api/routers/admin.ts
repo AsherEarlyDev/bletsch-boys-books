@@ -5,7 +5,6 @@ export const adminRouter = createTRPCRouter({
   createAdminPassword: publicProcedure
     .input(
       z.object({
-        id: z.string(),
         password: z.string(),
       })
     )
@@ -13,7 +12,6 @@ export const adminRouter = createTRPCRouter({
       try {
         await ctx.prisma.admin.create({
           data: {
-            id: input.id,
             password: input.password,
           },
         });
@@ -25,25 +23,33 @@ export const adminRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       try {
         return await ctx.prisma.admin.findFirst({
-          select: {
-            id: true,
-            password: true,
+          where: {
+            id: 1,
           },
         });
       } catch (error) {
         console.log("error", error);
       }
     }),
-    // changePassword: protectedProcedure
-    // .query(async ({ ctx }) => {
-    //   try {
-    //     return await ctx.prisma.admin.update({
-    //       select: {
-
-    //       }
-    //     });
-    //   } catch (error) {
-    //     console.log("error", error);
-    //   }
-    // }),
+    changePassword: protectedProcedure
+    .input(
+      z.object({
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.admin.update({
+          where:
+          {
+            id: 1
+        },
+          data: {
+            password: input.password,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }),
 });

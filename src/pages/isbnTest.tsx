@@ -7,8 +7,6 @@ const Isbn = () => {
     return(
         <main>
             <h1>ISBN</h1>
-            <button
-                >Get The Odessey</button>
         </main>
     )
 }

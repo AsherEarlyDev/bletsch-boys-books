@@ -25,9 +25,8 @@ export const adminRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       try {
         return await ctx.prisma.admin.findFirst({
-          select: {
-            id: true,
-            password: true,
+          where: {
+            id: '1',
           },
         });
       } catch (error) {

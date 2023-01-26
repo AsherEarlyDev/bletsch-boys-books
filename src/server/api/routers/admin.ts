@@ -31,7 +31,7 @@ export const adminRouter = createTRPCRouter({
         console.log("error", error);
       }
     }),
-    changePassword: protectedProcedure
+    changePassword: publicProcedure
     .input(
       z.object({
         password: z.string(),

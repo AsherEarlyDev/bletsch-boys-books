@@ -58,11 +58,10 @@ const CreateAdmin: React.FC = () => {
 
 
 
-  function handlePasswordSubmit(pass: string, confirmPass: string, event: any){
+  function handlePasswordSubmit(pass: string, confirmPass: string){
       console.log(pass)
       if (pass === confirmPass){
         adminPass.mutate({
-          id: '1',
           password: pass
         });
       }
@@ -74,7 +73,7 @@ const CreateAdmin: React.FC = () => {
       <input type="text" id="first" name="first" onChange={e => {setNewPassword(e.currentTarget.value)}}/>
       <label id="confirm" className="text-white">Re-Type Password:</label>
       <input type="text" id="confirm" name="confirm" onChange={e => {setConfirmPassword(e.currentTarget.value)}}/>
-      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword, e)}>Submit</button>
+      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}>Submit</button>
     </div>
   );
 };

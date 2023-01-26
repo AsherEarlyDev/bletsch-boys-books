@@ -1,6 +1,19 @@
-
+import { useState } from "react";
+import { api } from "../utils/api";
 
 export default function PasswordChange() {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const adminPass = api.admin.changePassword.useMutation();
+    function handlePasswordSubmit(pass: string, confirmPass: string){
+      console.log(pass)
+      if (pass === confirmPass){
+        adminPass.mutate({
+          password: pass
+        });
+      }
+    }
+
   return (
       <>
         {/*
@@ -29,6 +42,7 @@ export default function PasswordChange() {
                         name="new password"
                         type="password"
                         className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        onChange={e => {setNewPassword(e.currentTarget.value)}}
                     />
                   </div>
                 </div>
@@ -42,6 +56,7 @@ export default function PasswordChange() {
                         name="confirm new password"
                         type="password"
                         className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        onChange={e => {setConfirmPassword(e.currentTarget.value)}}
                     />
                   </div>
                 </div>
@@ -50,6 +65,7 @@ export default function PasswordChange() {
                   <button
                       type="submit"
                       className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}
                   >
                     Set New Password
                   </button>

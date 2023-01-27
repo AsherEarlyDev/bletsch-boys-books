@@ -11,13 +11,20 @@ import { ClassRegistry } from "superjson/dist/class-registry.js";
 
 
 export const authOptions: NextAuthOptions = {
+  session:{
+    strategy: 'jwt'
+  },
   // Include user.id on session
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async jwt({user, token}){
+      if(user){
+        token.user = user;
       }
-      return session;
+      return Promise.resolve(token);
+    },
+    session: async ({ session, token, user }) => {
+      session.user = user
+      return Promise.resolve(session);
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
@@ -37,14 +44,17 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
 
         // Add logic here to look up the user from the credentials supplied
-        const user = await prisma.admin.findFirst({
+        const db_user = await prisma.admin.findUnique({
           where: { id: 1},
         });
 
-        if (credentials?.password === user?.password) {
+        
+
+        if (credentials?.password === db_user?.password) {
           console.log("Success")
+          console.log(db_user)
           // Any object returned will be saved in `user` property of the JWT
-          return user
+          return {id: '1'}
         } else {
           console.log("Unsuccessful Login")
           // If you return null then an error will be displayed advising the user to check their details.

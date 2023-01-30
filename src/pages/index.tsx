@@ -4,6 +4,7 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "../utils/api";
+import bcrypt from 'bcryptjs'
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
@@ -52,6 +53,7 @@ const AuthShowcase: React.FC = () => {
 };
 
 const CreateAdmin: React.FC = () => {
+  const SALT_ROUNDS = 10;
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const adminPass = api.admin.createAdminPassword.useMutation();
@@ -60,10 +62,12 @@ const CreateAdmin: React.FC = () => {
 
   function handlePasswordSubmit(pass: string, confirmPass: string, event: any){
       console.log(pass)
+      const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+      const hash = bcrypt.hashSync(pass, salt);
       if (pass === confirmPass){
         adminPass.mutate({
-          id: '1',
-          password: pass
+          id: 1,
+          password: hash
         });
       }
   }

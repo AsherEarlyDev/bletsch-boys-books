@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs'
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
   
+  
 
   return (
     <>
@@ -23,9 +24,8 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {passwordData ? <AuthShowcase /> : <CreateAdmin />}
+              {<AuthShowcase />}
           </div>
-          
         </div>
       </main>
     </>
@@ -44,7 +44,7 @@ const AuthShowcase: React.FC = () => {
       </p>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
+        onClick={sessionData ? () => void signOut() : () => void signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard' })}
       >
         {sessionData ? "Sign out" : "Sign in"}
       </button>
@@ -57,13 +57,16 @@ const CreateAdmin: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const adminPass = api.admin.createAdminPassword.useMutation();
+
+
+
   function handlePasswordSubmit(pass: string, confirmPass: string, event: any){
       console.log(pass)
       const salt = bcrypt.genSaltSync(SALT_ROUNDS);
       const hash = bcrypt.hashSync(pass, salt);
       if (pass === confirmPass){
         adminPass.mutate({
-          id: '1',
+          id: 1,
           password: hash
         });
       }

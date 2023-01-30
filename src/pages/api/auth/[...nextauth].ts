@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
         return user;
       }
     })
-  ],
+  ]
 };
 
 export default NextAuth(authOptions);

@@ -7,6 +7,7 @@ import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db";
 import Trpc from "../trpc/[trpc].js";
 import { ClassRegistry } from "superjson/dist/class-registry.js";
+import bcrypt from 'bcryptjs'
 
 
 
@@ -44,24 +45,28 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
 
         // Add logic here to look up the user from the credentials supplied
-        const db_user = await prisma.admin.findUnique({
-          where: { id: 1},
+        const user = await prisma.admin.findFirst({
+          where: { id: 1 },
         });
+
+        if (!user){
+          return null
+        }
+
+        const pass = credentials ? credentials.password : ""
+
+        const isValidPassword = bcrypt.compareSync(
+          pass,
+          user.password
+        );
 
         
 
-        if (credentials?.password === db_user?.password) {
-          console.log("Success")
-          console.log(db_user)
-          // Any object returned will be saved in `user` property of the JWT
-          return {id: '1'}
-        } else {
-          console.log("Unsuccessful Login")
-          // If you return null then an error will be displayed advising the user to check their details.
+        if (!isValidPassword) {
+          console.log("Wrong Password")
           return null
-  
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-        }
+        } 
+        return user;
       }
     })
   ]

@@ -12,13 +12,20 @@ import bcrypt from 'bcryptjs'
 
 
 export const authOptions: NextAuthOptions = {
+  session:{
+    strategy: 'jwt'
+  },
   // Include user.id on session
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async jwt({user, token}){
+      if(user){
+        token.user = user;
       }
-      return session;
+      return Promise.resolve(token);
+    },
+    session: async ({ session, token, user }) => {
+      session.user = user
+      return Promise.resolve(session);
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

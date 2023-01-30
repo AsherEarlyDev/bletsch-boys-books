@@ -1,9 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut, getSession, useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "../utils/api";
+import bcrypt from 'bcryptjs'
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {<AuthShowcase />}
+              {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
           </div>
         </div>
       </main>
@@ -34,24 +35,23 @@ const Home: NextPage = () => {
 export default Home;
 
 const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
+  const sessionData = useSession();
+  console.log(sessionData);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-      </p>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard' })}
+        onClick={sessionData.status==='authenticated' ? () => void signOut() : () => void signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard' })}
       >
-        {sessionData ? "Sign out" : "Sign in"}
+        {sessionData.status==='authenticated' ? "Sign out" : "Sign in"}
       </button>
     </div>
   );
 };
 
 const CreateAdmin: React.FC = () => {
+  const SALT_ROUNDS = 10;
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const adminPass = api.admin.createAdminPassword.useMutation();
@@ -60,9 +60,12 @@ const CreateAdmin: React.FC = () => {
 
   function handlePasswordSubmit(pass: string, confirmPass: string){
       console.log(pass)
+      const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+      const hash = bcrypt.hashSync(pass, salt);
       if (pass === confirmPass){
         adminPass.mutate({
-          password: pass
+          id: 1,
+          password: hash
         });
       }
   }

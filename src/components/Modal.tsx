@@ -1,7 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
 import {CheckIcon} from "@heroicons/react/20/solid";
-import BookForm from "./BookForm";
 
 export default function MyModal(props) {
   let [isOpen, setIsOpen] = useState(false)

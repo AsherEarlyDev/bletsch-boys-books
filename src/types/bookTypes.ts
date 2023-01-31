@@ -11,7 +11,7 @@ export type googleBookInfo = {
     title: string,
     authors: Array<string>,
     publisher: string,
-    publishedDate?: string,
+    publishedDate: string,
     description?: string,
     industryIdentifiers?: Array<GoogleISBNInfo>,
     pageCount?: number,
@@ -30,18 +30,43 @@ export type googleBookInfo = {
     accessInfo?: {}
 }
 
-export type book = {
+export type externalBook = {
     isbn: string,
     title:string,
     publisher: string,
     author: Array<string>,
-    publicationYear?: string,
+    publicationYear: number,
     dimensions?: dimensions,
     pageCount?: number,
     genre?: string,
     retailPrice?: number
-
 }
+
+export type completeBook = {
+    isbn: string,
+    title:string,
+    publisher: string,
+    author: Array<string>,
+    publicationYear: number,
+    dimensions: Array<number>,
+    pageCount?: number,
+    genre: string,
+    retailPrice: number
+}
+
+export type databaseBook = {
+    isbn: string,
+    title:string,
+    publisher: string,
+    author: Array<string>,
+    publicationYear: number,
+    dimensions: Array<number>,
+    pageCount?: number,
+    genreID: string,
+    retailPrice: number
+}
+
+
 
 export type saleInfo = {
     country: string,
@@ -73,4 +98,9 @@ export type rawGoogleOutput = {
     kind:string,
     totalItems: number
 }
+
+export type id = {
+    id: string
+}
+
 

@@ -1,12 +1,17 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import MyModal from "./Modal";
+import { api } from "../utils/api";
 
 const book = [
-  { name: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
+  { title: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
   // More people...
 ]
+;
+
 
 export default function Table() {
+  const  books = api.googleBooks.getAllInternalBooks.useQuery().data
+  
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -94,23 +99,23 @@ export default function Table() {
                   </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                  {book.map((book) => (
+                    {books ?  books.map((book) => (
                       <tr>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                          {book.name}
+                          {book.title}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.isbn}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.author}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.price}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.genre}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.inventory}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.author.map((author) => author.name).join(", ")}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.retailPrice}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.genre.name}</td>
+                        {/* <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{book.inventory}</td> */}
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            Edit<span className="sr-only">, {book.name}</span>
+                            Edit<span className="sr-only">, {book.title}</span>
                           </a>
                         </td>
                       </tr>
-                  ))}
+                    )) : null}
                   </tbody>
                 </table>
               </div>

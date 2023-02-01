@@ -62,7 +62,7 @@ const getBookIfExists = async (ctx:context, isbn:string) =>{
 }
 
 export const BooksRouter = createTRPCRouter({
-  getBooks: publicProcedure.input(
+  findBooks: publicProcedure.input(
     z.array(z.string())
   ).query(async ({ctx, input}) => {
     const internalBooks: any[] | PromiseLike<any[]> = []
@@ -78,6 +78,16 @@ export const BooksRouter = createTRPCRouter({
     return({
       internalBooks: internalBooks,
       externalBooks: externalBooks
+    })
+  }),
+
+  getAllInternalBooks: publicProcedure
+  .query(async ({ctx, input}) => {
+    return await ctx.prisma.book.findMany({
+      include:{
+        author:true,
+        genre:true
+      }
     })
   }),
 

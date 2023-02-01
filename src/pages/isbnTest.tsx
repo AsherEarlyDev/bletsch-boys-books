@@ -1,11 +1,11 @@
 //src/pages/isbn_test.tsx
 import { completeBook } from "../types/bookTypes";
 import { api } from "../utils/api";
-const getBooks = api.googleBooks.getBooks;
+const getBooks = api.googleBooks.findBooks;
 
 
 const Isbn = () => {
-    //const data = getBooks.useQuery(["1283745637", "0393356256"]);
+    const data = getBooks.useQuery(["9780140449112", "2934857392"]);
     const saveBook = api.googleBooks.saveBook.useMutation();
     const editBook = api.googleBooks.editBook.useMutation();
     const deleteBook = api.googleBooks.deleteBookByISBN.useMutation();

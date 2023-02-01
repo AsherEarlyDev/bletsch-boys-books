@@ -2,6 +2,7 @@ import { createTRPCRouter } from "./trpc";
 
 import { BooksRouter } from "./routers/Books";
 import { adminRouter } from "./routers/admin";
+import { GenreRouter } from "./routers/Genres";
 
 
 /**
@@ -10,8 +11,9 @@ import { adminRouter } from "./routers/admin";
  * All routers added in /api/routers should be manually added here
  */
 export const appRouter = createTRPCRouter({
-  googleBooks: BooksRouter,
+  books: BooksRouter,
   admin: adminRouter,
+  genre: GenreRouter
 });
 
 // export type definition of API

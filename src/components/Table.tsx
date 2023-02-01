@@ -13,9 +13,9 @@ const book = [
 
 
 export default function Table() {
-  const  books = api.googleBooks.getAllInternalBooks.useQuery().data
+  const  books = api.books.getAllInternalBooks.useQuery().data
   const [isbns, setIsbns] = useState<string[]>([])
-  const bookInfo = api.googleBooks.findBooks.useQuery(isbns).data
+  const bookInfo = api.books.findBooks.useQuery(isbns).data
   const [displayEdit, setDisplayEdit] = useState(false)
   
   const handleSubmit = async (isbns:string[]) => {

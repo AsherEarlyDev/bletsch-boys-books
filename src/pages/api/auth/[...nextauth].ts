@@ -42,31 +42,31 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         password: { label: "Password", type: "password"}
       },
-      async authorize(credentials, req) {
+      async authorize (credentials, req) {
 
-        // Add logic here to look up the user from the credentials supplied
-        const user = await prisma.admin.findFirst({
+        const user = await prisma.admin.findUnique({
           where: { id: 1 },
         });
 
         if (!user){
+          console.log("No User")
           return null
         }
 
-        const pass = credentials ? credentials.password : ""
+        if (credentials && credentials.password){
+          const isValidPassword = bcrypt.compareSync(
+            credentials.password,
+            user.password
+          );
 
-        const isValidPassword = bcrypt.compareSync(
-          pass,
-          user.password
-        );
+          if (!isValidPassword) {
+            console.log("Wrong Password")
+            return null
+          } 
 
-        
+          return user;
+        }
 
-        if (!isValidPassword) {
-          console.log("Wrong Password")
-          return null
-        } 
-        return user;
       }
     })
   ]

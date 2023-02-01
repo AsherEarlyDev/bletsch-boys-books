@@ -1,6 +1,10 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+<<<<<<< HEAD
 import MyModal from "./Modal";
 import { api } from "../utils/api";
+=======
+import AddBookModal from "./AddBookModal";
+>>>>>>> 2c9341c49d8c06b65634f8445c6745c0d7564dcd
 
 const book = [
   { title: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
@@ -21,7 +25,7 @@ export default function Table() {
               A list of all the books in inventory.
             </p>
           </div>
-          <MyModal buttonText="Add Book" submitButton="Add Book(s)"></MyModal>
+          <AddBookModal buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
         </div>
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

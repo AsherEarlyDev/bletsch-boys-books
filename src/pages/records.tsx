@@ -8,7 +8,6 @@ export default function RecordPage() {
       <>
         <AppShell activePage="Records"></AppShell>
         <Table></Table>
-        <BookCard></BookCard>
       </>
   )
 }

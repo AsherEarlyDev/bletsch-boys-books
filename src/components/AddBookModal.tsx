@@ -3,6 +3,7 @@ import {Fragment, useRef, useState} from 'react'
 import {CheckIcon} from "@heroicons/react/20/solid";
 
 interface BookModalProp{
+  showBookEdit(isbn: string[]): Promise<void>,
   buttonText: string;
   submitText: string;
 }
@@ -27,11 +28,12 @@ export default function AddBookModal(props: BookModalProp) {
     if (tempIsbnArray.length == isbnArray.length){
       closeModal()
       alert("Valid " + isbnArray.length.toString() + " isbns inputted: " + isbnArray.toString())
+      props.showBookEdit(isbnArray)
     }
     else{
       alert("Specified input is invalid. Please separate all ISBN values by either a space or a comma.")
     }
-
+    
 
   }
 

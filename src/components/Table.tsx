@@ -1,6 +1,9 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { useState } from 'react';
+import { externalBook } from '../types/bookTypes';
 import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
+import BookCard from './BookCard';
 
 const book = [
   { title: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
@@ -11,7 +14,16 @@ const book = [
 
 export default function Table() {
   const  books = api.googleBooks.getAllInternalBooks.useQuery().data
+  const [isbns, setIsbns] = useState<string[]>([])
+  const bookInfo = api.googleBooks.findBooks.useQuery(isbns).data
+  const [displayEdit, setDisplayEdit] = useState(false)
   
+  const handleSubmit = async (isbns:string[]) => {
+    setIsbns(isbns)
+    if(bookInfo){
+      setDisplayEdit(true)
+    }
+  }
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -21,7 +33,7 @@ export default function Table() {
               A list of all the books in inventory.
             </p>
           </div>
-          <AddBookModal buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
+          <AddBookModal showBookEdit={handleSubmit} buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
         </div>
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -116,8 +128,13 @@ export default function Table() {
                         </td>
                       </tr>
                     )) : null}
+                    
                   </tbody>
                 </table>
+                <div>
+                  {displayEdit ? (bookInfo ?  
+                  bookInfo.externalBooks.map((book) => (<BookCard bookInfo={book}></BookCard>)) : null) : null}
+                </div>
               </div>
             </div>
           </div>

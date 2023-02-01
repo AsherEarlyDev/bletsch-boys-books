@@ -7,7 +7,7 @@ export default function DashboardPage() {
   if (sessionData.status === 'authenticated'){
     return (
         <>
-          <AppShell activePage="Dashboard"></AppShell>
+ -+         <AppShell activePage="Dashboard"></AppShell>
         </>
     )
   }

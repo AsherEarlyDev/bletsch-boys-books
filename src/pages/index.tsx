@@ -64,7 +64,6 @@ const CreateAdmin: React.FC = () => {
       const hash = bcrypt.hashSync(pass, salt);
       if (pass === confirmPass){
         adminPass.mutate({
-          id: 1,
           password: hash
         });
       }

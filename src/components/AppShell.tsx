@@ -2,8 +2,6 @@ import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
 import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
-import Router, { useRouter } from "next/router";
-import Unauthorized from "../pages/unauthorized";
 
 
 const user = {

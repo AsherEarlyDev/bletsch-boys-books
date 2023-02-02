@@ -68,12 +68,14 @@ export const purchaseOrderRouter = createTRPCRouter({
                       id: purchaseOrderId,
                       vendorName: vendor.name,
                       vendorId: vendor.id,
+                      date: purchaseOrder.date,
                       purchases: purchases
                     })
                   const order = {
                     id: purchaseOrderId,
                     vendorName: vendor.name,
                     vendorId: vendor.id,
+                    date: purchaseOrder.date,
                     purchases: purchases
                   }
                   purchaseOrderArray.push(order);

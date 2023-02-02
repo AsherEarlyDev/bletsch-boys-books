@@ -37,52 +37,52 @@ export const salesRouter = createTRPCRouter({
         }
       }),
 
-      modifySale: publicProcedure
-      .input(
-        z.object({
-            id: z.string(),
-            saleReconciliationId: z.string(),
-            isbn: z.string(),
-            quantity: z.string(),
-            price: z.string()
-          })
-      )
-      .mutation(async ({ ctx, input }) => {
-        try {
-          await ctx.prisma.sale.update({
-            where:
-          {
-            id: input.id
-        },
-          data: {
-            saleReconciliationId: input.saleReconciliationId,
-            bookId: input.isbn,
-            quantity: parseInt(input.quantity),
-            price: parseFloat(input.price)
-          },
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      }),
-
-      deleteSale: publicProcedure
-      .input(
-        z.object({
+    modifySale: publicProcedure
+    .input(
+      z.object({
           id: z.string(),
+          saleReconciliationId: z.string(),
+          isbn: z.string(),
+          quantity: z.string(),
+          price: z.string()
         })
-      )
-      .mutation(async ({ ctx, input }) => {
-        try {
-          await ctx.prisma.sale.delete({
-            where: {
-              id: input.id
-            }
-          })
-        } catch (error) {
-          console.log(error);
-        }
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.sale.update({
+          where:
+        {
+          id: input.id
+      },
+        data: {
+          saleReconciliationId: input.saleReconciliationId,
+          bookId: input.isbn,
+          quantity: parseInt(input.quantity),
+          price: parseFloat(input.price)
+        },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }),
+
+    deleteSale: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
       })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.sale.delete({
+          where: {
+            id: input.id
+          }
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    })
 
 
 });

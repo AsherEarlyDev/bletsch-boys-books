@@ -46,10 +46,12 @@ export const salesRecRouter = createTRPCRouter({
             )
             if (sales && saleRec){
                     console.log({
+                    date: saleRec.date,
                     id: salesRecId,
                     sales: sales
                     })
                 const rec = {
+                    date: saleRec.date,
                     id: salesRecId,
                     sales: sales
                 }

@@ -14,7 +14,7 @@ export const purchaseRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
-            const purchaseOrder = await ctx.prisma.vendor.findFirst({
+            const purchaseOrder = await ctx.prisma.purchaseOrder.findFirst({
                 where:
                 {
                   id: input.purchaseOrderId

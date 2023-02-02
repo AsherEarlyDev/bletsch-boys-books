@@ -25,7 +25,6 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {<TestPurchase/>}
               {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
           </div>
         </div>
@@ -83,35 +82,4 @@ const CreateAdmin: React.FC = () => {
 };
 
 
-const TestPurchase: React.FC = () => {
-  const [isbn, setISBN] = useState('');
-  const [orderId, setOrderId] = useState('');
-  const [id, setId] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-  const purchase = api.purchaseOrder.deletePurchaseOrder.useMutation();
 
-
-
-  function handlePasswordSubmit(isbn: string, quantity: string, orderId: string, price: string, id: string){
-      purchase.mutate({
-        purchaseOrderId: orderId,
-      })
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <label id="password" className="text-white">Order ID:</label>
-      <input type="text" id="first" name="first" onChange={e => {setOrderId(e.currentTarget.value)}}/>
-      <label id="password" className="text-white">ID:</label>
-      <input type="text" id="first" name="first" onChange={e => {setId(e.currentTarget.value)}}/>
-      <label id="password" className="text-white">ISBN:</label>
-      <input type="text" id="first" name="first" onChange={e => {setISBN(e.currentTarget.value)}}/>
-      <label id="confirm" className="text-white">Price:</label>
-      <input type='text' id="confirm" name="confirm" onChange={e => {setPrice(e.currentTarget.value)}}/>
-      <label id="confirm" className="text-white">Quantity:</label>
-      <input type="text" id="confirm" name="confirm" onChange={e => {setQuantity(e.currentTarget.value)}}/>
-      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(isbn, quantity, orderId, price, id)}>Submit</button>
-    </div>
-  );
-};

@@ -36,48 +36,52 @@ export const purchaseOrderRouter = createTRPCRouter({
    getPurchaseOrderDetails: publicProcedure
    .input(
        z.object({
-         purchaseOrderId: z.string()
+         purchaseOrderIdArray: z.array(z.string())
        })
      )
      .query(async ({ ctx, input }) => {
        try {
-           const purchases: any[] = await ctx.prisma.purchase.findMany({
-               where:
-               {
-                 purchaseOrderId: input.purchaseOrderId
-               }
-             })
-           const purchaseOrder: any = await ctx.prisma.purchaseOrder.findFirst(
-            {
-              where: {
-                id: input.purchaseOrderId
+           const purchaseOrderArray: any[] = [];
+           for (const purchaseOrderId of input.purchaseOrderIdArray){
+              const purchases: any[] = await ctx.prisma.purchase.findMany({
+                  where:
+                  {
+                    purchaseOrderId: purchaseOrderId
+                  }
+                })
+              const purchaseOrder: any = await ctx.prisma.purchaseOrder.findFirst(
+                {
+                  where: {
+                    id: purchaseOrderId
+                  }
+                }
+              )
+              const vendor: any = await ctx.prisma.vendor.findFirst(
+                {
+                  where: {
+                    id: purchaseOrder.vendorId
+                  }
+                }
+              )
+              if (purchases && purchaseOrder){
+                    console.log({
+                      id: purchaseOrderId,
+                      vendorName: vendor.name,
+                      vendorId: vendor.id,
+                      purchases: purchases
+                    })
+                  const order = {
+                    id: purchaseOrderId,
+                    vendorName: vendor.name,
+                    vendorId: vendor.id,
+                    purchases: purchases
+                  }
+                  purchaseOrderArray.push(order);
+              }
+              else{
+                console.log("Error in finding purchases or purchaseOrder")
               }
             }
-           )
-           const vendor: any = await ctx.prisma.vendor.findFirst(
-            {
-              where: {
-                id: purchaseOrder.vendorId
-              }
-            }
-           )
-           if (purchases && purchaseOrder){
-                console.log({
-                  id: input.purchaseOrderId,
-                  vendorName: vendor.name,
-                  vendorId: vendor.id,
-                  purchases: purchases
-                 })
-               return {
-                id: input.purchaseOrderId,
-                vendorName: vendor.name,
-                vendorId: vendor.id,
-                purchases: purchases
-               }
-           }
-           else{
-            console.log("Error in finding purchases or purchaseOrder")
-           }
        } catch (error) {
          console.log(error);
        }

@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs'
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
-  const {data: purchaseOrderData} = api.purchaseOrder.getPurchaseOrderDetails.useQuery({purchaseOrderId: '1'});
+  const {data: purchaseOrderData} = api.purchaseOrder.getPurchaseOrderDetails.useQuery({purchaseOrderIdArray: ['1']});
   console.log(purchaseOrderData)
   
 

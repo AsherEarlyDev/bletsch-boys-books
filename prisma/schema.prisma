@@ -18,6 +18,7 @@ model Book {
   genreID         String
   retailPrice     Float
   genre           Genre      @relation(fields: [genreID], references: [id])
+  inventory       Int @default(0)
   purchases       Purchase[]
   sales           Sale[]
   author          Author[]   @relation("AuthorToBook")
@@ -25,7 +26,7 @@ model Book {
 
 model Genre {
   id    String @id @default(cuid())
-  name  String
+  name  String  @unique
   books Book[]
 }
 

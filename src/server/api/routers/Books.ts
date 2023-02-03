@@ -214,7 +214,7 @@ const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   const {genre, ...data}= input
   try{
     if(genre){
-      const genreObj = await ctx.prisma.genre.findFirst({
+      const genreObj = await ctx.prisma.genre.findUnique({
         where:{
           name:genre 
         }

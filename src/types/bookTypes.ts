@@ -103,4 +103,8 @@ export type id = {
     id: string
 }
 
+export type genreRename = {
+    originalName: string,
+    newMane: string
+}
 

@@ -8,7 +8,8 @@ import { redirect } from "next/dist/server/api-utils";
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
-  
+  const {data: purchaseOrderData} = api.purchaseOrder.getPurchaseOrderDetails.useQuery({purchaseOrderIdArray: ['1']});
+  console.log(purchaseOrderData)
   
 
   return (
@@ -85,3 +86,6 @@ const CreateAdmin: React.FC = () => {
     </div>
   );
 };
+
+
+

@@ -31,13 +31,13 @@ export const salesRecRouter = createTRPCRouter({
        try {
         const salesRecArray: any[] = []
         for (const salesRecId of input.salesRecIdArray){
-            const sales: any[] = await ctx.prisma.sale.findMany({
+            const sales = await ctx.prisma.sale.findMany({
                 where:
                 {
-                    salesReconciliationId: salesRecId
+                    saleReconciliationId: salesRecId
                 }
                 })
-            const saleRec: any = await ctx.prisma.saleReconciliation.findFirst(
+            const saleRec = await ctx.prisma.saleReconciliation.findFirst(
                 {
                 where: {
                     id: salesRecId
@@ -71,56 +71,50 @@ export const salesRecRouter = createTRPCRouter({
      getSaleRecDetailsByDate: publicProcedure
    .input(
        z.object({
-         datesArray: z.array(z.string())
+         startDate: z.string(),
+         endDate: z.string()
        })
      )
      .query(async ({ ctx, input }) => {
        try {
-        const datesRecArray: any[] = []
-        for (const date of input.datesArray){
-            const saleRec: any = await ctx.prisma.saleReconciliation.findMany(
-                {
-                where: {
-                    date: new Date(date)
-                }
-                }
-            )
-
-            if (saleRec){
-                const salesRecArray: any[] = []
-                for (const record of saleRec){
-                    const sales: any[] = await ctx.prisma.sale.findMany({
-                        where:
-                        {
-                            salesReconciliationId: record.id
-                        }
-                        })
-
-                    if (sales){
-                            console.log({
-                            id: record.id,
-                            sales: sales
-                            })
-                        const rec = {
-                            id: record.id,
-                            sales: sales
-                        }
-        
-                        salesRecArray.push(rec)
-                    }
-                }
-                datesRecArray.push({
-                    date: date,
-                    salesRecs: salesRecArray
-                })
+          const salesRecArray: any[] = []
+          const salesRecs = await ctx.prisma.saleReconciliation.findMany({
+            where:{
+              date: {
+                gte: new Date(input.startDate),
+                lte: new Date(input.endDate)
+              }
             }
-            
+          })
+          console.log(salesRecs)
+          if(salesRecs){
+            console.log("Found SaleRecs")
+            for (const saleRec of salesRecs ){
+              const sales = await ctx.prisma.sale.findMany({
+                where:
+                {
+                    saleReconciliationId: saleRec.id
+                }
+                })
+                console.log({
+                  date: saleRec.date,
+                  id: saleRec.id,
+                  sales: sales
+                  })
+              const rec = {
+                  date: saleRec.date,
+                  id: saleRec.id,
+                  sales: sales
+              }
+              salesRecArray.push(rec)
+            }
           }
-          return datesRecArray
+          return salesRecArray
        } catch (error) {
          console.log(error);
        }
      }),
+
 
     modifySaleRec: publicProcedure
     .input(

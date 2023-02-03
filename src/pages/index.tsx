@@ -2,13 +2,12 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, getSession, useSession } from "next-auth/react";
-import { useState } from "react";
+import { EventHandler, useState } from "react";
 import { api } from "../utils/api";
-import bcrypt from 'bcryptjs'
+import { redirect } from "next/dist/server/api-utils";
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
-  
   
 
   return (
@@ -36,13 +35,21 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const sessionData = useSession();
-  console.log(sessionData);
+
+  const handleClick = async ()=>{
+    if (sessionData.status==='authenticated'){
+      const res = await signOut();
+      console.log(res)
+    }
+    const res = await signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard'},);
+    console.log(res)
+  }
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData.status==='authenticated' ? () => void signOut() : () => void signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard' })}
+        onClick={handleClick}
       >
         {sessionData.status==='authenticated' ? "Sign out" : "Sign in"}
       </button>
@@ -60,11 +67,9 @@ const CreateAdmin: React.FC = () => {
 
   function handlePasswordSubmit(pass: string, confirmPass: string){
       console.log(pass)
-      const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-      const hash = bcrypt.hashSync(pass, salt);
       if (pass === confirmPass){
         adminPass.mutate({
-          password: hash
+          password: pass
         });
       }
   }

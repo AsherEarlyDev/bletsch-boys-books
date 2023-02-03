@@ -3,6 +3,7 @@ import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropT
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 
+
 const user = {
   name: 'Hypothetical Books',
   imageUrl:
@@ -27,7 +28,6 @@ function classNames(...classes: string[]) {
 
 export default function AppShell(props: any) {
     const sessionData = useSession();
-
 
     return (
         <>
@@ -196,5 +196,4 @@ export default function AppShell(props: any) {
           </div>
         </>
     )
-    
 }

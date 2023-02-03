@@ -40,7 +40,7 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
     publisher: input.publisher,
     author: input.authors,
     publicationYear: (new Date(input.publishedDate)).getFullYear(),
-    dimensions: input.dimensions,
+    dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
     pageCount: input.pageCount,
     genre:input. mainCategory,
     retailPrice: input.saleInfo?.retailPrice.amount

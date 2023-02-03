@@ -1,12 +1,12 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
 import ImmutableCardProp from "./CardComponents/ImmutableCardProp";
 import MutableCardProp from "./CardComponents/MutableCardProp";
 import GenreCardProp from "./CardComponents/GenreCardProp";
 import CardTitle from "./CardComponents/CardTitle";
 import CardGrid from "./CardComponents/CardGrid";
 import SaveCardChanges from "./CardComponents/SaveCardChanges";
-import { databaseBook, externalBook } from '../types/bookTypes';
+import { completeBook, databaseBook, externalBook } from '../types/bookTypes';
 import { useState } from 'react';
+import { api } from '../utils/api';
 
 interface BookCardProp{
   bookInfo:  externalBook | undefined
@@ -14,9 +14,29 @@ interface BookCardProp{
 
 
 export default function BookCard(props:BookCardProp) {
-
-  const [book, setBook] = useState<databaseBook>()
-
+  const defaultPrice = props.bookInfo?.retailPrice ?? 25
+  const defaultPageCount = props.bookInfo?.pageCount ?? 0
+  const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
+  const [book, setBook] = useState<completeBook>()
+  const [genre, setGenre] = useState<{name:string}>()
+  const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
+  const [pageCount, setPageCount] = useState<number>(defaultPageCount)
+  const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
+  const [thickness, setThickness] = useState<number>(defaultDimenions[1] ?? 0)
+  const [height, setHeight] = useState<number>(defaultDimenions[2] ?? 0)
+  const save = api.books.saveBook.useMutation()
+  function saveBook(){
+    props.bookInfo  && genre? 
+    
+    setBook({
+      ...props.bookInfo,
+      retailPrice: Number(retailPrice),
+      pageCount: Number(pageCount),
+      dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
+      genre: genre.name
+    }) : alert("Need to choose a genre")
+    book ? save.mutate(book): null
+  }
   return (
     props.bookInfo ? 
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
@@ -27,12 +47,14 @@ export default function BookCard(props:BookCardProp) {
           <ImmutableCardProp heading="Author(s)" data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
           <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
           <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
-          <GenreCardProp></GenreCardProp>
-          <MutableCardProp heading="Retail Price" required="True" dataType="number" defaultValue={props.bookInfo.retailPrice ?? 25}></MutableCardProp>
-          <MutableCardProp heading="Page Count" dataType="number" defaultValue={props.bookInfo.pageCount ?? 0}></MutableCardProp>
-          <MutableCardProp heading="Dimensions" dataType="number" defaultValue={props.bookInfo.dimensions ?? ""}></MutableCardProp>
+          <GenreCardProp saveFunction = {setGenre}></GenreCardProp>
+          <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
+          <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
+          <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={defaultDimenions[0]}></MutableCardProp>
+          <MutableCardProp saveValue={setThickness} heading="Thickness" dataType="number" defaultValue={defaultDimenions[1]}></MutableCardProp>
+          <MutableCardProp saveValue={setHeight} heading="Height" dataType="number" defaultValue={defaultDimenions[2]}></MutableCardProp>
         </CardGrid>
-        <SaveCardChanges></SaveCardChanges>
+        <SaveCardChanges saveBook={saveBook}></SaveCardChanges>
       </div>
       : null
   )

@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { api } from '../utils/api'
@@ -12,10 +12,11 @@ const genres = [
   { id: 6, name: 'Poetry' },
 ]
 
-export default function GenreSelect() {
+export default function GenreSelect(props:{saveFunction: any}) {
   const [selected, setSelected] = useState('')
   const [query, setQuery] = useState('')
   const genres = api.genre.getGenres.useQuery().data
+  props.saveFunction(selected)
   
   const filteredPeople =
       genres ? (query === ''

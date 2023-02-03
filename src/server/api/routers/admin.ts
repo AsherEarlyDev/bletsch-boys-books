@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import bcrypt from 'bcryptjs'
+import SalesPage from "../../../pages/sales";
+
+const SALT_ROUNDS = 10;
 
 export const adminRouter = createTRPCRouter({
   createAdminPassword: publicProcedure
@@ -12,7 +16,7 @@ export const adminRouter = createTRPCRouter({
       try {
         await ctx.prisma.admin.create({
           data: {
-            password: input.password,
+            password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
           },
         });
       } catch (error) {
@@ -28,7 +32,7 @@ export const adminRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log("error", error);
+        console.log(error);
       }
     }),
     changePassword: publicProcedure
@@ -45,7 +49,7 @@ export const adminRouter = createTRPCRouter({
             id: 1
         },
           data: {
-            password: input.password,
+            password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
           },
         });
       } catch (error) {

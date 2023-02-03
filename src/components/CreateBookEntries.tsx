@@ -5,7 +5,7 @@ import BookCard from "./BookCard";
 
 interface CreateBookEntryInterface{
   submitText: string
-  children: React.ReactNode
+  children: React.ReactNode|React.ReactNode[];
 }
 
 export default function CreateBookEntries(props: CreateBookEntryInterface) {
@@ -46,7 +46,7 @@ export default function CreateBookEntries(props: CreateBookEntryInterface) {
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                  <Dialog.Panel className="relative transform overflow-y-auto rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all">
+                  <Dialog.Panel className="relative transform overflow-y-auto transition-all">
                     {props.children}
                   </Dialog.Panel>
                 </Transition.Child>

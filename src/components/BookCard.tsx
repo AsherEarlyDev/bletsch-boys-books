@@ -16,9 +16,7 @@ interface BookCardProp{
 export default function BookCard(props:BookCardProp) {
 
   const [book, setBook] = useState<databaseBook>()
-  if(props.bookInfo){
-    
-  }
+
   return (
     props.bookInfo ? 
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">

@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "./trpc";
 import { adminRouter } from "./routers/admin";
+import { vendorRouter } from "./routers/vendor";
 
 import { salesRouter } from "./routers/sales";
 import { salesRecRouter } from "./routers/salesRec";
@@ -14,6 +15,7 @@ import { purchaseRouter } from "./routers/purchase";
  */
 export const appRouter = createTRPCRouter({
   admin: adminRouter,
+  vendor: vendorRouter
   sales: salesRouter,
   salesRec: salesRecRouter
   purchaseOrder: purchaseOrderRouter,

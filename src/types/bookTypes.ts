@@ -30,14 +30,14 @@ export type googleBookInfo = {
     accessInfo?: {}
 }
 
-export type externalBook = {
+export type editableBook = {
     isbn: string,
     title:string,
     publisher: string,
     author: Array<string>,
     publicationYear: number,
     dimensions: Array<number>,
-    pageCount?: number,
+    pageCount?: number | null,
     genre?: string,
     retailPrice?: number
 }

@@ -4,16 +4,18 @@ import GenreCardProp from "./CardComponents/GenreCardProp";
 import CardTitle from "./CardComponents/CardTitle";
 import CardGrid from "./CardComponents/CardGrid";
 import SaveCardChanges from "./CardComponents/SaveCardChanges";
-import { completeBook, databaseBook, externalBook } from '../types/bookTypes';
+import { completeBook, databaseBook, editableBook } from '../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../utils/api';
 
-interface AddBookCardProp{
-  bookInfo:  externalBook | undefined
+
+interface BookCardProp{
+  bookInfo:  editableBook | undefined
+  cardType: string
 }
 
 
-export default function AddBookCard(props:AddBookCardProp) {
+export default function BookCard(props:BookCardProp) {
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
@@ -25,10 +27,11 @@ export default function AddBookCard(props:AddBookCardProp) {
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
   const [thickness, setThickness] = useState<number>(defaultDimenions[1] ?? 0)
   const [height, setHeight] = useState<number>(defaultDimenions[2] ?? 0)
-  const save = api.books.saveBook.useMutation()
+  const action = (props.cardType === "edit") ? (api.books.editBook.useMutation()) : (api.books.saveBook.useMutation())
+
   function saveBook(){
     if(props.bookInfo && genre){
-      save.mutate({
+      action.mutate({
         ...props.bookInfo,
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),

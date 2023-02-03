@@ -1,6 +1,6 @@
 import AppShell from "../components/AppShell";
 import Table from "../components/Table";
-import AddBookCard from "../components/AddBookCard";
+import BookCard from "../components/BookCard";
 
 
 export default function RecordPage() {

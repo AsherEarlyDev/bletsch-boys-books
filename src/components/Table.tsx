@@ -1,16 +1,14 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react';
-import { externalBook } from '../types/bookTypes';
+import { editableBook } from '../types/bookTypes';
 import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
-import AddBookCard from './AddBookCard';
+import BookCard from './BookCard';
 import TableDetails from "./TableComponents/TableDetails";
 import FilterableColumnHeading from "./TableComponents/FilterableColumnHeading";
 import TableHeader from "./TableComponents/TableHeader";
-import TableEntry from "./TableComponents/TableEntry";
 import CreateBookEntries from "./CreateBookEntries";
 import BookTableRow from "./TableComponents/BookTableRow";
-import EditBookCard from "./EditBookCard";
 
 const book = [
   { title: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
@@ -32,12 +30,11 @@ export default function Table() {
     }
   }
 
-  const handleBookEdit = async (isbn: string) => {
-    setDisplayBookEdit(true)
+  const handleBookEdit = async (isbn:string) => {
     setIsbns([isbn])
-    // if(bookInfo){
-    //   setDisplayBookEntries(true)
-    // }
+    if(bookInfo){
+      setDisplayBookEdit(true)
+    }
   }
 
 
@@ -45,15 +42,15 @@ export default function Table() {
     return <>
       {displayBookEntries ? (bookInfo ? (
           <CreateBookEntries submitText="Save book"> {bookInfo.externalBooks.map((book) => (
-              <AddBookCard bookInfo={book}></AddBookCard>))}</CreateBookEntries>) : null) : null}
+              <BookCard cardType="entry" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
     </>;
   }
 
   function renderBookEdit() {
     return <>
       {displayBookEdit ? (bookInfo ? (
-          <CreateBookEntries submitText="Edit book"> {bookInfo.externalBooks.map((book) => (
-              <EditBookCard bookInfo={book}></EditBookCard>))}</CreateBookEntries>) : null) : null}
+          <CreateBookEntries submitText="Edit book"> {bookInfo.internalBooks.map((book) => (
+              <BookCard cardType="edit" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
     </>;
   }
 
@@ -81,7 +78,7 @@ export default function Table() {
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {books ? books.map((book) => (
-                      <BookTableRow bookInfo={book}></BookTableRow>
+                      <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
                   )) : null}
                   </tbody>
                 </table>
@@ -91,6 +88,7 @@ export default function Table() {
         </div>
         <div>
           {renderBookEntries()}
+          {renderBookEdit()}
         </div>
       </div>
 

@@ -11,7 +11,7 @@ const Isbn = () => {
     const deleteBook = api.books.deleteBookByISBN.useMutation();
     async function  saveBookFunct () {
         saveBook.mutate({
-            isbn: "2934857392",
+            isbn: "1111111111",
             title: "test  save title",
             publisher: "bletsch boys books",
             author: ['rob cranston1'],
@@ -23,7 +23,7 @@ const Isbn = () => {
     }
     async function  changeBookFunct () {
         editBook.mutate({
-            isbn: "2934857392",
+            isbn: "1111111111",
             title: "test change book",
             publisher: "rob books",
             author: ['rob c'],
@@ -34,7 +34,7 @@ const Isbn = () => {
         })
     }
     async function  deleteBookFunct () {
-        deleteBook.mutate("2934857392")
+        deleteBook.mutate("1111111111")
     }
 
     return(

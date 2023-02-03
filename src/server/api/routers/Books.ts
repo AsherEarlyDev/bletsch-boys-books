@@ -1,7 +1,7 @@
 import {z} from "zod"
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { rawGoogleOutput, googleBookInfo, externalBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
+import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth/core/types";
 
 type context = {
@@ -34,7 +34,7 @@ const fetchBookFromExternal = async (isbn: string) => {
 }
 
 const transformRawBook = (input:googleBookInfo, isbn:string) =>{
-  const bookInfo: externalBook = {
+  const bookInfo: editableBook = {
     isbn: isbn,
     title: input.title,
     publisher: input.publisher,
@@ -48,11 +48,30 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
   return bookInfo
 } 
 
+const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; }) =>{
+  const bookInfo: editableBook = {
+    isbn: book.isbn,
+    title: book.title,
+    publisher: book.publisher,
+    author: book.author.map((author)=> author.name),
+    publicationYear: book.publicationYear,
+    dimensions: book.dimensions,
+    pageCount: book.pageCount,
+    genre:book.genre.name,
+    retailPrice: book.retailPrice
+  }
+  return bookInfo
+}
+
 const getBookIfExists = async (ctx:context, isbn:string) =>{
   try{
     return await ctx.prisma.book.findUnique({
       where:{
         isbn: isbn
+      },
+      include:{
+        author:true,
+        genre:true
       }
     })
   }
@@ -66,10 +85,10 @@ export const BooksRouter = createTRPCRouter({
     z.array(z.string())
   ).query(async ({ctx, input}) => {
     const internalBooks: any[] | PromiseLike<any[]> = []
-    const externalBooks: externalBook[] = []
+    const externalBooks: editableBook[] = []
     for(const isbn of input){
       var book = await getBookIfExists(ctx, isbn)
-      if(book) internalBooks.push(book)
+      if(book) internalBooks.push(transformDatabaseBook(book))
       else{
         const externalBook = await fetchBookFromExternal(isbn)
         if(externalBook) externalBooks.push(externalBook)
@@ -164,7 +183,7 @@ const deleteBook = async (ctx: context, isbn:string) =>{
   })
 }
 
-const prepData = async (ctx: context, input: completeBook) => {
+const prepData = async (ctx: context, input: any) => {
   const ids = await getAuthorIDs(ctx, input.author)
   const entry = await convertGenreFieldToID(ctx, input)
   

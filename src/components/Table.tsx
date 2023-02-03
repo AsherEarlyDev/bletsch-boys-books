@@ -71,7 +71,7 @@ export default function Table() {
           </div>
         </div>
         <div>
-          {bookInfo ? (<CreateBookEntries submitText="Save book"> {bookInfo.externalBooks.map((book) => (<BookCard bookInfo={book}></BookCard>))}</CreateBookEntries>) : null}
+          {displayEdit ? (bookInfo ? (<CreateBookEntries submitText="Save book"> {bookInfo.externalBooks.map((book) => (<BookCard bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
         </div>
       </div>
 

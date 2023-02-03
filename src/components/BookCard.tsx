@@ -19,6 +19,7 @@ export default function BookCard(props:BookCardProp) {
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
   const [book, setBook] = useState<completeBook>()
   const [genre, setGenre] = useState<{name:string}>()
+  const [open, setOpen] = useState(true)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
@@ -26,19 +27,27 @@ export default function BookCard(props:BookCardProp) {
   const [height, setHeight] = useState<number>(defaultDimenions[2] ?? 0)
   const save = api.books.saveBook.useMutation()
   function saveBook(){
-    props.bookInfo  && genre? 
-    
-    setBook({
-      ...props.bookInfo,
-      retailPrice: Number(retailPrice),
-      pageCount: Number(pageCount),
-      dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
-      genre: genre.name
-    }) : alert("Need to choose a genre")
-    book ? save.mutate(book): null
+    if(props.bookInfo && genre){
+      save.mutate({
+        ...props.bookInfo,
+        retailPrice: Number(retailPrice),
+        pageCount: Number(pageCount),
+        dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
+        genre: genre.name
+      })
+      closeModal()
+    }
+    else{
+      alert("Need to choose a genre")
+    }
   }
+
+  function closeModal(){
+    setOpen(false)
+  }
+
   return (
-    props.bookInfo ? 
+      (open ? (props.bookInfo ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Book Description" subheading="Confirm and validate book information below..."></CardTitle>
         <CardGrid>
@@ -54,8 +63,8 @@ export default function BookCard(props:BookCardProp) {
           <MutableCardProp saveValue={setThickness} heading="Thickness" dataType="number" defaultValue={defaultDimenions[1]}></MutableCardProp>
           <MutableCardProp saveValue={setHeight} heading="Height" dataType="number" defaultValue={defaultDimenions[2]}></MutableCardProp>
         </CardGrid>
-        <SaveCardChanges saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       </div>
-      : null
+      : null) : null)
   )
 }

@@ -115,7 +115,13 @@ export const BooksRouter = createTRPCRouter({
     }
   }),
 
-  editBook: publicProcedure.input(zBook)
+  editBook: publicProcedure.input(z.object({
+    isbn: z.string(),
+    dimensions: z.array(z.number()),
+    pageCount: z.optional(z.number()),
+    genre: z.string(),
+    retailPrice: z.number()
+  }))
   .mutation(async ({ctx, input}) => {
     try{
       const entry = await prepData(ctx, input)
@@ -126,10 +132,9 @@ export const BooksRouter = createTRPCRouter({
             isbn:entry.isbn
           },
           data:{
-            ...data,
-            author:{
-              set:authorIDs
-            },
+            dimensions: data.dimensions,
+            pageCount: data.pageCount,
+            retailPrice:data.retailPrice,
             genre:{
               connect:{id: genreID}
             }
@@ -164,7 +169,7 @@ const deleteBook = async (ctx: context, isbn:string) =>{
   })
 }
 
-const prepData = async (ctx: context, input: completeBook) => {
+const prepData = async (ctx: context, input: any) => {
   const ids = await getAuthorIDs(ctx, input.author)
   const entry = await convertGenreFieldToID(ctx, input)
   

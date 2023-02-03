@@ -36,7 +36,7 @@ export type externalBook = {
     publisher: string,
     author: Array<string>,
     publicationYear: number,
-    dimensions?: dimensions,
+    dimensions: Array<number>,
     pageCount?: number,
     genre?: string,
     retailPrice?: number

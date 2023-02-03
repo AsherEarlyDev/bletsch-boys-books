@@ -1,5 +1,5 @@
 import { PaperClipIcon } from '@heroicons/react/20/solid'
-import GenreSelect from "../GenreSelect";
+import GenreSelect from "../CardComponents/GenreSelect";
 
 
 export default function PrimaryButton(props: { onClick: ()=> void; buttonText: string}) {

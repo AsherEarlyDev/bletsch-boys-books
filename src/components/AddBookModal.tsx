@@ -1,6 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import {CheckIcon} from "@heroicons/react/20/solid";
 
 interface BookModalProp{
   showBookEdit(isbn: string[]): Promise<void>,

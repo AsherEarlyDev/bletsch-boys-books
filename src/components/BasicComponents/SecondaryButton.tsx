@@ -1,8 +1,3 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
-import ImmutableCardProp from "./ImmutableCardProp";
-import MutableCardProp from "./MutableCardProp";
-import GenreSelect from "../GenreSelect";
-import GenreCardProp from "./GenreCardProp";
 
 export default function SecondaryButton(props) {
   return (

@@ -8,12 +8,12 @@ import { completeBook, databaseBook, externalBook } from '../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../utils/api';
 
-interface BookCardProp{
+interface AddBookCardProp{
   bookInfo:  externalBook | undefined
 }
 
 
-export default function BookCard(props:BookCardProp) {
+export default function AddBookCard(props:AddBookCardProp) {
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]

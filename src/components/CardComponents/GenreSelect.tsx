@@ -1,7 +1,7 @@
 import { Dispatch, Fragment, SetStateAction, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import { api } from '../utils/api'
+import { api } from '../../utils/api'
 
 const genres = [
   { id: 1, name: 'Comedy' },

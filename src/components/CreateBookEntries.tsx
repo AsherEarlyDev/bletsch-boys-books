@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
-import {externalBook} from "../types/bookTypes";
+import {editableBook} from "../types/bookTypes";
 import BookCard from "./BookCard";
 
 interface CreateBookEntryInterface{

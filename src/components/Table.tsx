@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react';
-import { externalBook } from '../types/bookTypes';
+import { editableBook } from '../types/bookTypes';
 import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
 import BookCard from './BookCard';

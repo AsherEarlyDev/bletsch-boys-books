@@ -4,12 +4,12 @@ import GenreCardProp from "./CardComponents/GenreCardProp";
 import CardTitle from "./CardComponents/CardTitle";
 import CardGrid from "./CardComponents/CardGrid";
 import SaveCardChanges from "./CardComponents/SaveCardChanges";
-import { completeBook, databaseBook, externalBook } from '../types/bookTypes';
+import { completeBook, databaseBook, editableBook } from '../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../utils/api';
 
 interface BookCardProp{
-  bookInfo:  externalBook | undefined
+  bookInfo:  editableBook | undefined
 }
 
 

@@ -19,7 +19,7 @@ import { purchaseRouter } from "./routers/purchase";
 export const appRouter = createTRPCRouter({
   books: BooksRouter,
   admin: adminRouter,
-  genre: GenreRouter
+  genre: GenreRouter,
   vendor: vendorRouter,
   sales: salesRouter,
   salesRec: salesRecRouter,

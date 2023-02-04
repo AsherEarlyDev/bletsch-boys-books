@@ -11,7 +11,7 @@
 # database
 /prisma/db.sqlite
 /prisma/db.sqlite-journal
-
+/cypress.config.ts
 # next.js
 /.next/
 /out/

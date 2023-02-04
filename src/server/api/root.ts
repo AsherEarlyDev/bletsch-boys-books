@@ -1,11 +1,14 @@
 import { createTRPCRouter } from "./trpc";
-import { adminRouter } from "./routers/admin";
-import { vendorRouter } from "./routers/vendor";
 
+import { BooksRouter } from "./routers/Books";
+import { adminRouter } from "./routers/admin";
+import { GenreRouter } from "./routers/Genres";
+import { vendorRouter } from "./routers/vendor";
 import { salesRouter } from "./routers/sales";
 import { salesRecRouter } from "./routers/salesRec";
 import { purchaseOrderRouter } from "./routers/purchaseOrder";
 import { purchaseRouter } from "./routers/purchase";
+
 
 
 /**
@@ -14,7 +17,9 @@ import { purchaseRouter } from "./routers/purchase";
  * All routers added in /api/routers should be manually added here
  */
 export const appRouter = createTRPCRouter({
+  books: BooksRouter,
   admin: adminRouter,
+  genre: GenreRouter
   vendor: vendorRouter,
   sales: salesRouter,
   salesRec: salesRecRouter,

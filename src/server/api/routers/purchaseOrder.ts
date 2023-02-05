@@ -84,6 +84,7 @@ export const purchaseOrderRouter = createTRPCRouter({
                 console.log("Error in finding purchases or purchaseOrder")
               }
             }
+            return purchaseOrderArray
        } catch (error) {
          console.log(error);
        }
@@ -129,11 +130,41 @@ export const purchaseOrderRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.purchase.deleteMany({
+        console.log("here")
+        const purchases = await ctx.prisma.purchase.findMany({
           where: {
             purchaseOrderId: input.purchaseOrderId
           }
         })
+        for (const purch of purchases){
+          const book = await ctx.prisma.book.findFirst({
+            where:{
+              isbn: purch.bookId
+            }
+          })
+          const inventory: number = parseInt(book.inventory) - parseInt(purch.quantity)
+          console.log(inventory)
+          if (inventory >= 0){
+            await ctx.prisma.purchase.delete({
+              where:{
+                id: purch.id
+              }
+            })
+
+            await ctx.prisma.book.update({
+              where:{
+                isbn: purch.bookId
+              },
+              data:{
+                inventory: inventory
+              }
+            })
+          }
+          else{
+            let errorString: string = 'Cannot delete Purchase Order, "'+ book.title +'" would have a negative inventory'
+            throw new Error(errorString)
+          }
+        }
         await ctx.prisma.purchaseOrder.delete({
           where: {
             id: input.purchaseOrderId

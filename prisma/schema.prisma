@@ -17,6 +17,7 @@ model Book {
   pageCount       Int?
   genreID         String
   retailPrice     Float
+  inventory       Int        @default(0)
   genre           Genre      @relation(fields: [genreID], references: [id])
   purchases       Purchase[]
   sales           Sale[]
@@ -25,7 +26,7 @@ model Book {
 
 model Genre {
   id    String @id @default(cuid())
-  name  String
+  name  String @unique
   books Book[]
 }
 

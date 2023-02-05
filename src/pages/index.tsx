@@ -23,6 +23,7 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
+              {<Testing/>}
               {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
           </div>
         </div>
@@ -81,6 +82,36 @@ const CreateAdmin: React.FC = () => {
       <label id="confirm" className="text-white">Re-Type Password:</label>
       <input type="text" id="confirm" name="confirm" onChange={e => {setConfirmPassword(e.currentTarget.value)}}/>
       <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}>Submit</button>
+    </div>
+  );
+};
+
+const Testing: React.FC = () => {
+  const [isbn, setIsbn] = useState('');
+  const [orderId, setOrderId] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
+  const purchase = api.purchaseOrder.deletePurchaseOrder.useMutation();
+
+
+
+  function handlePasswordSubmit(id: string, isbn: string, quantity: string, price: string){
+      purchase.mutate({
+        purchaseOrderId: id,
+      })
+  }
+  return (
+    <div className="flex flex-col items-center justify-center gap-4">
+      <p className="text-white">Create Pruchase</p>
+      <label id="password" className="text-white">Enter Order Id:</label>
+      <input type="text" id="first" name="first" onChange={e => {setOrderId(e.currentTarget.value)}}/>
+      <label id="confirm" className="text-white">Enter ISBN:</label>
+      <input type="text" id="confirm" name="confirm" onChange={e => {setIsbn(e.currentTarget.value)}}/>
+      <label id="password" className="text-white">Enter Quantity:</label>
+      <input type="text" id="first" name="first" onChange={e => {setQuantity(e.currentTarget.value)}}/>
+      <label id="confirm" className="text-white">Enter Price:</label>
+      <input type="text" id="confirm" name="confirm" onChange={e => {setPrice(e.currentTarget.value)}}/>
+      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(orderId, isbn, quantity, price)}>Submit</button>
     </div>
   );
 };

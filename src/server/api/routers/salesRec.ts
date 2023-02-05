@@ -147,11 +147,29 @@ export const salesRecRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.sale.deleteMany({
+        const sales = await ctx.prisma.sale.findMany({
           where: {
-            salesReconciliationId: input.saleRecId
+            saleReconciliationId: input.saleRecId
           }
         })
+        for (const sale of sales){
+          await ctx.prisma.book.update({
+            where:{
+              isbn: sale.bookId
+            },
+            data:{
+              inventory: {
+                increment: sale.quantity
+              }
+            }
+          })
+
+          await ctx.prisma.sale.delete({
+            where: {
+              id: sale.id
+            }
+          })
+        }
         await ctx.prisma.saleReconciliation.delete({
           where: {
             id: input.saleRecId

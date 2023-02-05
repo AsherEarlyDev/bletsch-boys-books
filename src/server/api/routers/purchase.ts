@@ -60,18 +60,43 @@ export const purchaseRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
-          await ctx.prisma.purchase.update({
-            where:
-          {
-            id: input.id
-        },
-          data: {
-            purchaseOrderId: input.purchaseOrderId,
-            bookId: input.isbn,
-            quantity: parseInt(input.quantity),
-            price: parseFloat(input.price)
-          },
+          const purchase = await ctx.prisma.purchase.findFirst({
+              where:
+            {
+              id: input.id
+            }
           });
+          const book = await ctx.prisma.book.findFirst({
+            where:{
+              isbn: input.isbn
+            }
+          })
+          const change: number = parseInt(input.quantity) - purchase.quantity 
+          if (book.inventory + change >= 0){
+            await ctx.prisma.book.update({
+              where:{
+                isbn: book.isbn
+              },
+              data:{
+                inventory: book.inventory + change
+              }
+            })
+            await ctx.prisma.purchase.update({
+              where:
+            {
+              id: input.id
+          },
+            data: {
+              purchaseOrderId: input.purchaseOrderId,
+              bookId: input.isbn,
+              quantity: parseInt(input.quantity),
+              price: parseFloat(input.price)
+            },
+            });
+          }
+          else{
+            console.log("This change would make the inventory negative")
+          }
         } catch (error) {
           console.log(error);
         }

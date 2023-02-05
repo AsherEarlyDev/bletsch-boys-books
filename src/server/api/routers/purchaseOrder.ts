@@ -130,7 +130,6 @@ export const purchaseOrderRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        console.log("here")
         const purchases = await ctx.prisma.purchase.findMany({
           where: {
             purchaseOrderId: input.purchaseOrderId

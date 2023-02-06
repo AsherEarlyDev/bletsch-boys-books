@@ -45,15 +45,30 @@ export const salesRecRouter = createTRPCRouter({
                 }
             )
             if (sales && saleRec){
-                    console.log({
-                    date: saleRec.date,
-                    id: salesRecId,
-                    sales: sales
-                    })
+                const salesArray: any[] = [];
+                let total = 0
+                let unique: string[] = []
+                let revenue = 0
+                for (const sale of sales){
+                  total = total + parseInt(sale.quantity)
+                  const subtotal = (parseInt(sale.quantity) * parseFloat(sale.price))
+                  revenue = revenue + subtotal
+                  const sub = {
+                    subtotal: subtotal,
+                    sale: sale,
+                  }
+                  unique.push(sale.bookId)
+                  salesArray.push(sub)
+                }
+                let uniqueSet = new Set(unique)
                 const rec = {
-                    date: saleRec.date,
-                    id: salesRecId,
-                    sales: sales
+                  id: salesRecId,
+                  vendorId: saleRec.vendorId,
+                  date: saleRec.date,
+                  purchases: salesArray,
+                  totalBooks: total,
+                  uniqueBooks: uniqueSet.size,
+                  revenue: revenue
                 }
 
                 salesRecArray.push(rec)
@@ -68,52 +83,6 @@ export const salesRecRouter = createTRPCRouter({
        }
      }),
 
-     getSaleRecDetailsByDate: publicProcedure
-   .input(
-       z.object({
-         startDate: z.string(),
-         endDate: z.string()
-       })
-     )
-     .query(async ({ ctx, input }) => {
-       try {
-          const salesRecArray: any[] = []
-          const salesRecs = await ctx.prisma.saleReconciliation.findMany({
-            where:{
-              date: {
-                gte: new Date(input.startDate),
-                lte: new Date(input.endDate)
-              }
-            }
-          })
-          console.log(salesRecs)
-          if(salesRecs){
-            console.log("Found SaleRecs")
-            for (const saleRec of salesRecs ){
-              const sales = await ctx.prisma.sale.findMany({
-                where:
-                {
-                    saleReconciliationId: saleRec.id
-                }
-                })
-                console.log({
-                  date: saleRec.date,
-                  id: saleRec.id,
-                  sales: sales
-                  })
-              const rec = {
-                  date: saleRec.date,
-                  id: saleRec.id,
-                  sales: sales
-              }
-              salesRecArray.push(rec)
-            }
-          }
-          return salesRecArray
-       } catch (error) {
-         console.log(error);
-       }
-     }),
 
 
     modifySaleRec: publicProcedure

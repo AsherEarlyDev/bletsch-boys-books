@@ -8,23 +8,23 @@ export const purchaseOrderRouter = createTRPCRouter({
     createPurchaseOrder: publicProcedure
     .input(
         z.object({
-          vendorName: z.string(),
+          vendorId: z.string(),
           date: z.string()
         })
       )
       .mutation(async ({ ctx, input }) => {
         try {
-            const vendorId = await ctx.prisma.vendor.findFirst({
+            const vendor = await ctx.prisma.vendor.findFirst({
                 where:
                 {
-                  name: input.vendorName
+                  id: input.vendorId
                 }
               })
-            if (vendorId){
+            if (vendor){
                 await ctx.prisma.purchaseOrder.create({
                     data: {
                         date: new Date(input.date),
-                        vendorId: vendorId.id
+                        vendorId: input.vendorId
                     },
                 });
             }
@@ -41,9 +41,9 @@ export const purchaseOrderRouter = createTRPCRouter({
      )
      .query(async ({ ctx, input }) => {
        try {
-           const purchaseOrderArray: any[] = [];
+           const purchaseOrderArray = [];
            for (const purchaseOrderId of input.purchaseOrderIdArray){
-              const purchases: any[] = await ctx.prisma.purchase.findMany({
+              const purchases = await ctx.prisma.purchase.findMany({
                   where:
                   {
                     purchaseOrderId: purchaseOrderId
@@ -56,27 +56,32 @@ export const purchaseOrderRouter = createTRPCRouter({
                   }
                 }
               )
-              const vendor: any = await ctx.prisma.vendor.findFirst(
-                {
-                  where: {
-                    id: purchaseOrder.vendorId
-                  }
-                }
-              )
               if (purchases && purchaseOrder){
-                    console.log({
-                      id: purchaseOrderId,
-                      vendorName: vendor.name,
-                      vendorId: vendor.id,
-                      date: purchaseOrder.date,
-                      purchases: purchases
-                    })
+                  const purchasesArray: any[] = [];
+                  let total = 0
+                  let unique: string[] = []
+                  let cost = 0
+                  for (const purchase of purchases){
+                    total = total + parseInt(purchase.quantity)
+                    const subtotal = (parseInt(purchase.quantity) * parseFloat(purchase.price))
+                    cost = cost + subtotal
+                    const sub = {
+                      subtotal: subtotal,
+                      purchase: purchase,
+                    }
+                    unique.push(purchase.bookId)
+                    purchasesArray.push(sub)
+                  }
+                  let uniqueSet = new Set(unique)
+
                   const order = {
                     id: purchaseOrderId,
-                    vendorName: vendor.name,
-                    vendorId: vendor.id,
+                    vendorId: purchaseOrder.vendorId,
                     date: purchaseOrder.date,
-                    purchases: purchases
+                    purchases: purchasesArray,
+                    totalBooks: total,
+                    uniqueBooks: uniqueSet.size,
+                    cost: cost
                   }
                   purchaseOrderArray.push(order);
               }
@@ -94,19 +99,12 @@ export const purchaseOrderRouter = createTRPCRouter({
     .input(
       z.object({
         purchaseOrderId: z.string(),
-        vendorName: z.string(),
+        vendorId: z.string(),
         date: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const vendor = await ctx.prisma.vendor.findFirst(
-          {
-            where: {
-              name: input.vendorName
-            }
-          }
-         )
         await ctx.prisma.purchaseOrder.update({
           where:
           {
@@ -114,7 +112,7 @@ export const purchaseOrderRouter = createTRPCRouter({
         },
           data: {
             date: new Date(input.date),
-            vendorId: vendor.id
+            vendorId: input.vendorId
           },
         });
       } catch (error) {

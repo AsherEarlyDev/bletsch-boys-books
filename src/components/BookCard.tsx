@@ -19,7 +19,6 @@ export default function BookCard(props:BookCardProp) {
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
-  const [book, setBook] = useState<completeBook>()
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
@@ -59,6 +58,7 @@ export default function BookCard(props:BookCardProp) {
           <ImmutableCardProp heading="Author(s)" data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
           <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
           <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
+          <ImmutableCardProp heading="Inventory" data={props.bookInfo.inventory}></ImmutableCardProp>
           <GenreCardProp saveFunction = {setGenre}></GenreCardProp>
           <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
           <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>

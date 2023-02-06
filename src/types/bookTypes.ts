@@ -39,7 +39,8 @@ export type editableBook = {
     dimensions: Array<number>,
     pageCount?: number | null,
     genre?: string,
-    retailPrice?: number
+    retailPrice?: number,
+    inventory: number
 }
 
 export type completeBook = {

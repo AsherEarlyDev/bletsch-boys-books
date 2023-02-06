@@ -26,7 +26,12 @@ export default function Table() {
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
     if(bookInfo){
-      setDisplayBookEntries(true)
+      if(bookInfo.absentBooks.length >0){
+        alert("Cannot find following books: " + bookInfo.absentBooks.join(", "))
+      }
+      if(bookInfo.internalBooks.length > 0 || bookInfo.externalBooks.length > 0){
+        setDisplayBookEntries(true)
+      }
     }
   }
 

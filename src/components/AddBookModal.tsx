@@ -18,7 +18,7 @@ export default function AddBookModal(props: BookModalProp) {
     setIsOpen(true)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const isbnString = formData.get("bookIsbns") as string
@@ -27,7 +27,7 @@ export default function AddBookModal(props: BookModalProp) {
     if (tempIsbnArray.length == isbnArray.length){
       closeModal()
       alert("Valid " + isbnArray.length.toString() + " isbns inputted: " + isbnArray.toString())
-      props.showBookEdit(isbnArray)
+      await props.showBookEdit(isbnArray)
     }
     else{
       alert("Specified input is invalid. Please separate all ISBN values by either a space or a comma.")

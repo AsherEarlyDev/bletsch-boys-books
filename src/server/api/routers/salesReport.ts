@@ -1,6 +1,6 @@
 import { Input } from "postcss";
 import { z } from "zod";
-import { topSellers } from "../../../types/salesTypes";
+import { Cost, Revenue, topSellers } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 
@@ -16,7 +16,7 @@ export const salesReportRouter = createTRPCRouter({
      .query(async ({ ctx, input }) => {
        try {
           let totalRevenue = 0
-          const resultsArray: any[] = []
+          let dateMap = new Map<Date, Revenue>();
           const salesRecs = await ctx.prisma.saleReconciliation.findMany({
             where:{
               date: {
@@ -26,30 +26,38 @@ export const salesReportRouter = createTRPCRouter({
             }
           })
           if(salesRecs){
-            for (let i = 0; i < salesRecs.length; i++){
+            for (const saleRec of salesRecs){
               let revenue = 0
-              const saleRec = salesRecs[i]
               const sales = await ctx.prisma.sale.findMany({
                 where:
                 {
                     saleReconciliationId: saleRec.id
                 }
                 })
-              for (let j = 0; j < sales.length; j++){
-                revenue += parseInt(sales[j].quantity) * parseFloat(sales[j].price)
+              for (const sale of sales){
+                revenue += parseInt(sale.quantity) * parseFloat(sale.price)
               }
-              const rec = {
+              const dateMapObj = dateMap.get(saleRec.date)
+              if (dateMapObj){
+                dateMap.set(saleRec.date, {
+                  revenue: dateMapObj.revenue + revenue,
+                  sales: [...dateMapObj.sales, ...sales]
+                })
+              }
+              else{
+                dateMap.set(saleRec.date, {
                   revenue: revenue,
-                  date: saleRec.date,
-                  sales: sales,
+                  sales: [...sales]
+                })
               }
+              
               totalRevenue += revenue
-              resultsArray.push(rec)
             }
           }
           return {
             totalRevenue: totalRevenue,
-            results: resultsArray
+            resultsMap: new Map([...dateMap.entries()]
+            .sort((a: [Date, Revenue], b: [Date, Revenue]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
          console.log(error);
@@ -66,7 +74,7 @@ export const salesReportRouter = createTRPCRouter({
      .query(async ({ ctx, input }) => {
        try {
           let totalCost = 0
-          const resultsArray: any[] = []
+          let dateMap = new Map<Date, Cost>();
           const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
             where:{
               date: {
@@ -76,31 +84,38 @@ export const salesReportRouter = createTRPCRouter({
             }
           })
           if(purchaseOrders){
-            for (let i = 0; i < purchaseOrders.length; i++){
+            for (const purchaseOrder of purchaseOrders){
               let cost = 0
-              const purchaseOrder = purchaseOrders[i]
-              const pur = await ctx.prisma.purchase.findMany({
+              const purchases = await ctx.prisma.purchase.findMany({
                 where:
                 {
                     purchaseOrderId: purchaseOrder.id
                 }
                 })
               
-              for (let j = 0; j < pur.length; j++){
-                cost += parseInt(pur[j].quantity) * parseFloat(pur[j].price)
+              for (const pur of purchases){
+                cost += parseInt(pur.quantity) * parseFloat(pur.price)
               }
-              const rec = {
+              const dateMapObj = dateMap.get(purchaseOrder.date)
+              if (dateMapObj){
+                dateMap.set(purchaseOrder.date, {
+                  cost: dateMapObj.cost + cost,
+                  purchases: [...dateMapObj.purchases, ...purchases]
+                })
+              }
+              else{
+                dateMap.set(purchaseOrder.date, {
                   cost: cost,
-                  date: purchaseOrder.date,
-                  purchases: pur
+                  purchases: [...purchases]
+                })
               }
               totalCost += cost
-              resultsArray.push(rec)
             }
           }
           return {
             totalCost: totalCost,
-            results: resultsArray
+            resultsMap: new Map([...dateMap.entries()]
+            .sort((a: [Date, Cost], b: [Date, Cost]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
          console.log(error);

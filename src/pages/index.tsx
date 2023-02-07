@@ -8,15 +8,6 @@ import { redirect } from "next/dist/server/api-utils";
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
-  // const {data: details} = api.salesRec.getSaleRecDetails.useQuery({salesRecIdArray: ["cldosff5b0004scgsycvos7k4","1"]});
-  // console.log(details)
-  // const {data: costDetails} = api.salesReport.generateCostReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
-  // console.log(costDetails)
-  // const {data: revDetails} = api.salesReport.generateRevenueReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
-  // console.log(revDetails)
-  // const {data: sellDetails} = api.salesReport.getTopSelling.useQuery({startDate: '01/01/2023', endDate: '02/06/2023'});
-  // console.log(sellDetails)
-  
 
   return (
     <>
@@ -50,7 +41,7 @@ const AuthShowcase: React.FC = () => {
       const res = await signOut();
       console.log(res)
     }
-    const res = await signIn("credentials",{ callbackUrl: 'http://localhost:3000/dashboard'},);
+    const res = await signIn("credentials",{ callbackUrl: '/dashboard'},);
     console.log(res)
   }
 
@@ -66,31 +57,31 @@ const AuthShowcase: React.FC = () => {
   );
 };
 
-const CreateAdmin: React.FC = () => {
-  const SALT_ROUNDS = 10;
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const adminPass = api.admin.createAdminPassword.useMutation();
-
-
-
-  function handlePasswordSubmit(pass: string, confirmPass: string){
-      console.log(pass)
-      if (pass === confirmPass){
-        adminPass.mutate({
-          password: pass
-        });
-      }
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-white">Please create an Admin Password</p>
-      <label id="password" className="text-white">Enter Password:</label>
-      <input type="text" id="first" name="first" onChange={e => {setNewPassword(e.currentTarget.value)}}/>
-      <label id="confirm" className="text-white">Re-Type Password:</label>
-      <input type="text" id="confirm" name="confirm" onChange={e => {setConfirmPassword(e.currentTarget.value)}}/>
-      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}>Submit</button>
-    </div>
-  );
-};
+// const CreateAdmin: React.FC = () => {
+//   const SALT_ROUNDS = 10;
+//   const [newPassword, setNewPassword] = useState('');
+//   const [confirmPassword, setConfirmPassword] = useState('');
+//   const adminPass = api.admin.createAdminPassword.useMutation();
+//
+//
+//
+//   function handlePasswordSubmit(pass: string, confirmPass: string){
+//       console.log(pass)
+//       if (pass === confirmPass){
+//         adminPass.mutate({
+//           password: pass
+//         });
+//       }
+//   }
+//
+//   return (
+//     <div className="flex flex-col items-center justify-center gap-4">
+//       <p className="text-white">Please create an Admin Password</p>
+//       <label id="password" className="text-white">Enter Password:</label>
+//       <input type="text" id="first" name="first" onChange={e => {setNewPassword(e.currentTarget.value)}}/>
+//       <label id="confirm" className="text-white">Re-Type Password:</label>
+//       <input type="text" id="confirm" name="confirm" onChange={e => {setConfirmPassword(e.currentTarget.value)}}/>
+//       <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}>Submit</button>
+//     </div>
+//   );
+// };

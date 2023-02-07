@@ -19,7 +19,8 @@ export default function SalesReport(props:salesReportProps){
     const costMap = costReport?.resultsMap
     const reportArray = createSalesReportArray(revMap, costMap)
     const totalProfit = totalRevenue - totalCost
-    let topSellers = api.salesReport.getTopSelling.useQuery({startDate: props.start, endDate: props.end}).data
+    const topSellers = api.salesReport.getTopSelling.useQuery({startDate: props.start, endDate: props.end}).data
+    console.log(topSellers)
 
     function createSalesReportArray(revMap: Map<Date,Revenue>, costMap: Map<Date,Cost>) {
         const resultsArray = []
@@ -107,8 +108,8 @@ export default function SalesReport(props:salesReportProps){
                     <FilterableColumnHeading label="Book ISBN"
                                              firstEntry={true}></FilterableColumnHeading>
                     <FilterableColumnHeading label="Number of Books"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Cost Most-Recent"></FilterableColumnHeading>
                     <FilterableColumnHeading label="Total Revenue"></FilterableColumnHeading>
+                    <FilterableColumnHeading label="Total Cost Most-Recent"></FilterableColumnHeading>
                     <FilterableColumnHeading label="Total Profit"></FilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">

@@ -54,6 +54,7 @@ export const salesReportRouter = createTRPCRouter({
               totalRevenue += revenue
             }
           }
+          
           return {
             totalRevenue: totalRevenue,
             resultsMap: new Map([...dateMap.entries()]
@@ -187,9 +188,20 @@ export const salesReportRouter = createTRPCRouter({
                   recentCost: purchase.price * purchase.quantity, profit: booksObj.revenue - purchase.price * purchase.quantity})
             }
         }
-        books = new Map([...books.entries()]
-        .sort((a: [string, topSellers], b: [string, topSellers]) => (a[1].numBooks < b[1].numBooks) ? 1 : -1));
-        return books
+        let results = []
+        books.forEach((value,key)=>{
+          const res = {
+            isbn: key,
+            numBooks: value.numBooks,
+            recentCost: value.recentCost,
+            revenue: value.revenue,
+            profit: value.profit
+          }
+          results.push(res)
+        })
+
+        results = results.sort((a: any, b: any) => (a.numBooks > b.numBooks) ? 1 : -1)
+        return results.slice(0, 10)
        } catch (error) {
          console.log(error);
        }

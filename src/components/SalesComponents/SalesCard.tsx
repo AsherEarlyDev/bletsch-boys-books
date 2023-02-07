@@ -6,6 +6,9 @@ import SaveCardChanges from "../CardComponents/SaveCardChanges";
 import { useState } from 'react';
 import { api } from '../../utils/api';
 import { Sale, SalesRec } from "../../types/salesTypes";
+import SaleDeleteCard from "./SaleDeleteCard";
+import CreateSaleEntries from './CreateSaleEntries';
+import PrimaryButton from '../BasicComponents/PrimaryButton';
 
 
 
@@ -23,6 +26,7 @@ export default function SaleDetailsCard(props:SalesProp) {
   const [isbn, setIsbn] = useState(props.saleComplete.sale.bookId)
   const [quantity, setQuantity] = useState(props.saleComplete.sale.quantity)
   const [price, setPrice] = useState(props.saleComplete.sale.price)
+  const [displayDelete, setDelete] = useState(false)
   const modSale = api.sales.modifySale.useMutation()
   const addSale = api.sales.createSale.useMutation()
 
@@ -53,6 +57,18 @@ export default function SaleDetailsCard(props:SalesProp) {
     }
   }
 
+  function renderDelete() {
+    return <>
+      {displayDelete ? <CreateSaleEntries submitText='Delete Sale'>
+            <SaleDeleteCard salesId={props.saleComplete.sale.id}></SaleDeleteCard>
+      </CreateSaleEntries>: null}
+  </>;
+  }
+
+  function handleDelete() {
+    setDelete(true)
+  }
+
   function closeModal(){
     setOpen(false)
   }
@@ -60,7 +76,10 @@ export default function SaleDetailsCard(props:SalesProp) {
   return (
     (open ? (props.saleComplete ?
     <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-      <CardTitle heading="Sale Reconciliation" subheading="Create new sale below..."></CardTitle>
+      <div className="flex-row ">
+      <CardTitle heading="Sale Reconciliation" subheading="Edit sale below..."></CardTitle>
+      <PrimaryButton buttonText="Delete Sale" onClick={handleDelete}></PrimaryButton>
+      </div>
       <CardGrid>
         <ImmutableCardProp heading="Sale ID" data={props.saleComplete.sale.id}></ImmutableCardProp>
         <ImmutableCardProp heading="Subtotal" data={props.saleComplete.subtotal}></ImmutableCardProp>
@@ -72,6 +91,9 @@ export default function SaleDetailsCard(props:SalesProp) {
         defaultValue={props.saleComplete.sale.price}></MutableCardProp>
       </CardGrid>
       <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+      <div>
+        {renderDelete()}
+      </div>
     </div>
     : null) : null)
 )

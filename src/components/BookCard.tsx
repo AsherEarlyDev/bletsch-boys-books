@@ -59,7 +59,7 @@ export default function BookCard(props:BookCardProp) {
           <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
           <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
           <ImmutableCardProp heading="Inventory" data={props.bookInfo.inventory}></ImmutableCardProp>
-          <GenreCardProp saveFunction = {setGenre}></GenreCardProp>
+          <GenreCardProp saveFunction = {setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
           <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
           <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
           <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={defaultDimenions[0]}></MutableCardProp>

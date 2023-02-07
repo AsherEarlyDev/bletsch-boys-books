@@ -1,6 +1,4 @@
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react';
-import { editableBook } from '../types/bookTypes';
 import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
 import BookCard from './BookCard';
@@ -9,14 +7,12 @@ import FilterableColumnHeading from "./TableComponents/FilterableColumnHeading";
 import TableHeader from "./TableComponents/TableHeader";
 import CreateBookEntries from "./CreateBookEntries";
 import BookTableRow from "./TableComponents/BookTableRow";
-
-const book = [
-  { title: 'Book 1', isbn: '13478392489', author: 'John Snow', price: 100, genre: 'comedy', inventory: 5},
-  // More people...
-]
-;
-
-
+import { Dialog, Transition } from '@headlessui/react'
+import HeadingPanel from './BasicComponents/HeadingPanel';
+import { editableBook } from '../types/bookTypes';
+import { editableBook } from '../types/bookTypes';
+import { editableBook } from '../types/bookTypes';
+import { Book, Genre, Author } from '@prisma/client';
 export default function Table() {
   const  books = api.books.getAllInternalBooks.useQuery().data
   const [isbns, setIsbns] = useState<string[]>([])
@@ -25,13 +21,8 @@ export default function Table() {
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
-    if(bookInfo){
-      if(bookInfo.absentBooks.length >0){
-        alert("Cannot find following books: " + bookInfo.absentBooks.join(", "))
-      }
-      if(bookInfo.internalBooks.length > 0 || bookInfo.externalBooks.length > 0){
-        setDisplayBookEntries(true)
-      }
+    if (bookInfo) {
+      setDisplayBookEntries(true);
     }
   }
 
@@ -45,19 +36,40 @@ export default function Table() {
 
   function renderBookEntries() {
     return <>
-      {displayBookEntries ? (bookInfo ? (
-          <CreateBookEntries submitText="Save book"> {bookInfo.externalBooks.map((book) => (
-              <BookCard cardType="entry" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
+      <div>
+        {displayBookEntries ? (bookInfo ? (
+          <CreateBookEntries submitText="Save book"> 
+            
+            {bookInfo.externalBooks.length > 0 ? 
+            <div><HeadingPanel displayText="New Books"></HeadingPanel>
+             {bookInfo.externalBooks.map((book: editableBook) => (
+              <BookCard cardType="entry" bookInfo={book}></BookCard>))}</div>: null}
+            {bookInfo.internalBooks.length > 0 ? 
+            <div><HeadingPanel displayText="Existing Books"></HeadingPanel>
+             {bookInfo.internalBooks.map((book: editableBook) => (
+              <BookCard cardType="edit" bookInfo={book}></BookCard>))}</div>: null}
+            {(bookInfo.absentBooks.length > 0 ? 
+            <center><Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div className="text-center">
+                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                  The following books could not be found: {bookInfo.absentBooks.join(", ")}
+                </Dialog.Title>
+              </div>
+            </Dialog.Panel></center> : null)}
+          </CreateBookEntries>) : null ): null}
+      </div>
     </>;
   }
 
   function renderBookEdit() {
     return <>
       {displayBookEdit ? (bookInfo ? (
-          <CreateBookEntries submitText="Edit book"> {bookInfo.internalBooks.map((book) => (
+          <CreateBookEntries submitText="Edit book"> {bookInfo.internalBooks.map((book: editableBook) => (
               <BookCard cardType="edit" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
     </>;
   }
+
+
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -82,7 +94,7 @@ export default function Table() {
                     <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                  {books ? books.map((book) => (
+                  {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
                       <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
                   )) : null}
                   </tbody>

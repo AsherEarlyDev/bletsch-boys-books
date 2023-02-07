@@ -1,6 +1,7 @@
 import {Author, Book, Genre } from "@prisma/client";
 import TableEntry from "./TableEntry";
 import React from "react";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 interface BookTableRowProp{
   bookInfo: Book  & {
@@ -26,6 +27,9 @@ export default function BookTableRow(props:BookTableRowProp) {
           <button onClick={handleClick} className="text-indigo-600 hover:text-indigo-900">
             Edit<span className="sr-only">, {props.bookInfo.title}</span>
           </button>
+        </td>
+        <td>
+          <DeleteConfirmationModal isbn={props.bookInfo.isbn} buttonText="Delete" submitText="DELETE BOOK"></DeleteConfirmationModal>
         </td>
       </tr>
   )

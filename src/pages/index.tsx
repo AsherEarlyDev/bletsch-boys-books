@@ -8,6 +8,14 @@ import { redirect } from "next/dist/server/api-utils";
 
 const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
+  // const {data: details} = api.salesRec.getSaleRecDetails.useQuery({salesRecIdArray: ["cldosff5b0004scgsycvos7k4","1"]});
+  // console.log(details)
+  // const {data: costDetails} = api.salesReport.generateCostReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
+  // console.log(costDetails)
+  // const {data: revDetails} = api.salesReport.generateRevenueReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
+  // console.log(revDetails)
+  // const {data: sellDetails} = api.salesReport.getTopSelling.useQuery({startDate: '01/01/2023', endDate: '02/06/2023'});
+  // console.log(sellDetails)
   
 
   return (
@@ -23,6 +31,7 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
+              {/* {<Testing/>} */}
               {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
           </div>
         </div>
@@ -81,6 +90,39 @@ const CreateAdmin: React.FC = () => {
       <label id="confirm" className="text-white">Re-Type Password:</label>
       <input type="text" id="confirm" name="confirm" onChange={e => {setConfirmPassword(e.currentTarget.value)}}/>
       <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(newPassword, confirmPassword)}>Submit</button>
+    </div>
+  );
+};
+
+const Testing: React.FC = () => {
+  const [isbn, setIsbn] = useState('');
+  const [orderId, setOrderId] = useState('');
+  const [saleId, setSaleId] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
+  const sale = api.salesRec.deleteSaleRec.useMutation();
+
+
+
+  function handlePasswordSubmit(id: string, isbn: string, quantity: string, price: string, saleId: string){
+      sale.mutate({
+        saleRecId: id,
+      })
+  }
+  return (
+    <div className="flex flex-col items-center justify-center gap-4">
+      <p className="text-white">Create Pruchase</p>
+      <label id="password" className="text-white">Enter Order Id:</label>
+      <input type="text" id="first" name="first" onChange={e => {setOrderId(e.currentTarget.value)}}/>
+      <label id="password" className="text-white">Enter Sale Id:</label>
+      <input type="text" id="first" name="first" onChange={e => {setSaleId(e.currentTarget.value)}}/>
+      <label id="confirm" className="text-white">Enter ISBN:</label>
+      <input type="text" id="confirm" name="confirm" onChange={e => {setIsbn(e.currentTarget.value)}}/>
+      <label id="password" className="text-white">Enter Quantity:</label>
+      <input type="text" id="first" name="first" onChange={e => {setQuantity(e.currentTarget.value)}}/>
+      <label id="confirm" className="text-white">Enter Price:</label>
+      <input type="text" id="confirm" name="confirm" onChange={e => {setPrice(e.currentTarget.value)}}/>
+      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(orderId, isbn, quantity, price, saleId)}>Submit</button>
     </div>
   );
 };

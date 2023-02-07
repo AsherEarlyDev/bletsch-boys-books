@@ -21,6 +21,7 @@ export default function Table() {
   const  books = api.books.getAllInternalBooks.useQuery().data
   const [isbns, setIsbns] = useState<string[]>([])
   const bookInfo = api.books.findBooks.useQuery(isbns).data
+  console.log("BookInfo: "+bookInfo)
   const [displayBookEntries, setDisplayBookEntries] = useState(false)
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
   const handleISBNSubmit = async (isbns:string[]) => {
@@ -47,6 +48,7 @@ export default function Table() {
   }
 
   function renderBookEdit() {
+    console.log(bookInfo)
     return <>
       {displayBookEdit ? (bookInfo ? (
           <CreateBookEntries submitText="Edit book"> {bookInfo.internalBooks.map((book) => (

@@ -10,12 +10,12 @@ const Home: NextPage = () => {
   const {data: passwordData} = api.admin.getPassword.useQuery();
   // const {data: details} = api.salesRec.getSaleRecDetails.useQuery({salesRecIdArray: ["cldosff5b0004scgsycvos7k4","1"]});
   // console.log(details)
-  const {data: costDetails} = api.salesReport.generateCostReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
-  console.log(costDetails)
-  const {data: revDetails} = api.salesReport.generateRevenueReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
-  console.log(revDetails)
-  const {data: sellDetails} = api.salesReport.getTopSelling.useQuery({startDate: '01/01/2023', endDate: '02/06/2023'});
-  console.log(sellDetails)
+  // const {data: costDetails} = api.salesReport.generateCostReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
+  // console.log(costDetails)
+  // const {data: revDetails} = api.salesReport.generateRevenueReport.useQuery({startDate: '02/01/2023', endDate: '02/05/2023'});
+  // console.log(revDetails)
+  // const {data: sellDetails} = api.salesReport.getTopSelling.useQuery({startDate: '01/01/2023', endDate: '02/06/2023'});
+  // console.log(sellDetails)
   
 
   return (
@@ -31,7 +31,7 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {<Testing/>}
+              {/* {<Testing/>} */}
               {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
           </div>
         </div>

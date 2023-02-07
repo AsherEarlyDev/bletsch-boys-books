@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SalesRec } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const salesRecRouter = createTRPCRouter({
@@ -20,31 +21,42 @@ export const salesRecRouter = createTRPCRouter({
           console.log(error);
         }
       }),
+    
+    getSaleRec: publicProcedure
+    .input(
+      z.array(z.string())
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const recs = []
+        for (const id of input){
+          const saleRec = await ctx.prisma.saleReconciliation.findFirst({
+            where: {
+                id: id
+            },
+        });
+        recs.push(saleRec)
+        }
+          return {salesRec: recs}
+      } catch (error) {
+        console.log(error);
+      }
+    }),
 
    getSaleRecDetails: publicProcedure
-   .input(
-       z.object({
-         salesRecIdArray: z.array(z.string())
-       })
-     )
      .query(async ({ ctx, input }) => {
        try {
-        const salesRecArray: any[] = []
-        for (const salesRecId of input.salesRecIdArray){
+        const salesRecArray: SalesRec[] = []
+        const salesRecs = await ctx.prisma.saleReconciliation.findMany()
+        for (const salesRec of salesRecs){
+            const salesRecId = salesRec.id
             const sales = await ctx.prisma.sale.findMany({
                 where:
                 {
                     saleReconciliationId: salesRecId
                 }
                 })
-            const saleRec = await ctx.prisma.saleReconciliation.findFirst(
-                {
-                where: {
-                    id: salesRecId
-                }
-                }
-            )
-            if (sales && saleRec){
+            if (sales && salesRec){
                 const salesArray: any[] = [];
                 let total = 0
                 let unique: string[] = []
@@ -63,9 +75,8 @@ export const salesRecRouter = createTRPCRouter({
                 let uniqueSet = new Set(unique)
                 const rec = {
                   id: salesRecId,
-                  vendorId: saleRec.vendorId,
-                  date: saleRec.date,
-                  purchases: salesArray,
+                  date: (salesRec.date.getMonth()+1)+"-"+(salesRec.date.getDate())+"-"+salesRec.date.getFullYear(),
+                  sales: salesArray,
                   totalBooks: total,
                   uniqueBooks: uniqueSet.size,
                   revenue: revenue

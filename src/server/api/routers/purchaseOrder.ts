@@ -1,6 +1,5 @@
 import { Input } from "postcss";
 import { z } from "zod";
-import { Purchase } from "../../../types/purchaseTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 
@@ -34,15 +33,12 @@ export const purchaseOrderRouter = createTRPCRouter({
       }),
 
    getPurchaseOrderDetails: publicProcedure
-   .input(
-       z.object({
-         purchaseOrderIdArray: z.array(z.string())
-       })
-     )
      .query(async ({ ctx, input }) => {
        try {
            const purchaseOrderArray = [];
-           for (const purchaseOrderId of input.purchaseOrderIdArray){
+           const purchaseOrders = await ctx.prisma.purchaseOrder.findMany()
+           for (const pur of purchaseOrders){
+              const purchaseOrderId = pur.id
               const purchases = await ctx.prisma.purchase.findMany({
                   where:
                   {
@@ -77,7 +73,7 @@ export const purchaseOrderRouter = createTRPCRouter({
                   const order = {
                     id: purchaseOrderId,
                     vendorId: purchaseOrder.vendorId,
-                    date: purchaseOrder.date,
+                    date: (purchaseOrder.date.getMonth()+1)+"-"+(purchaseOrder.date.getDay())+"-"+purchaseOrder.date.getFullYear(),
                     purchases: purchasesArray,
                     totalBooks: total,
                     uniqueBooks: uniqueSet.size,

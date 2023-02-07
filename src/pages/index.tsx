@@ -93,36 +93,3 @@ const CreateAdmin: React.FC = () => {
     </div>
   );
 };
-
-const Testing: React.FC = () => {
-  const [isbn, setIsbn] = useState('');
-  const [orderId, setOrderId] = useState('');
-  const [saleId, setSaleId] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-  const sale = api.salesRec.deleteSaleRec.useMutation();
-
-
-
-  function handlePasswordSubmit(id: string, isbn: string, quantity: string, price: string, saleId: string){
-      sale.mutate({
-        saleRecId: id,
-      })
-  }
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-white">Create Pruchase</p>
-      <label id="password" className="text-white">Enter Order Id:</label>
-      <input type="text" id="first" name="first" onChange={e => {setOrderId(e.currentTarget.value)}}/>
-      <label id="password" className="text-white">Enter Sale Id:</label>
-      <input type="text" id="first" name="first" onChange={e => {setSaleId(e.currentTarget.value)}}/>
-      <label id="confirm" className="text-white">Enter ISBN:</label>
-      <input type="text" id="confirm" name="confirm" onChange={e => {setIsbn(e.currentTarget.value)}}/>
-      <label id="password" className="text-white">Enter Quantity:</label>
-      <input type="text" id="first" name="first" onChange={e => {setQuantity(e.currentTarget.value)}}/>
-      <label id="confirm" className="text-white">Enter Price:</label>
-      <input type="text" id="confirm" name="confirm" onChange={e => {setPrice(e.currentTarget.value)}}/>
-      <button type="submit" className="text-white" onClick={e => handlePasswordSubmit(orderId, isbn, quantity, price, saleId)}>Submit</button>
-    </div>
-  );
-};

@@ -1,7 +1,7 @@
 import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
 import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 
 
 const user = {
@@ -28,6 +28,11 @@ function classNames(...classes: string[]) {
 
 export default function AppShell(props: any) {
     const sessionData = useSession();
+
+    async function logOut(e) {
+      const res = await signOut();
+      console.log(res)
+    }
 
     return (
         <>
@@ -95,21 +100,33 @@ export default function AppShell(props: any) {
                               >
                                 <Menu.Items
                                     className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                  {userNavigation.map((item) => (
-                                      <Menu.Item key={item.name}>
-                                        {({active}) => (
-                                            <a
-                                                className={classNames(
-                                                    active ? 'bg-gray-100' : '',
-                                                    'block px-4 py-2 text-sm text-gray-700'
-                                                )}
-                                                href={item.href}
-                                            >
-                                              {item.name}
-                                            </a>
-                                        )}
-                                      </Menu.Item>
-                                  ))}
+                                  <Menu.Item key="change-password">
+                                    {({active}) => (
+                                        <a
+                                            className={classNames(
+                                                active ? 'bg-gray-100' : '',
+                                                'block px-4 py-2 text-sm text-gray-700'
+                                            )}
+                                            href="\reset-password"
+                                        >
+                                          Change Password
+                                        </a>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item key="sign-out">
+                                    {({active}) => (
+                                        <a
+                                            className={classNames(
+                                                active ? 'bg-gray-100' : '',
+                                                'block px-4 py-2 text-sm text-gray-700'
+                                            )}
+                                            onClick={logOut}
+                                            href="\"
+                                        >
+                                          Sign Out
+                                        </a>
+                                    )}
+                                  </Menu.Item>
                                 </Menu.Items>
                               </Transition>
                             </Menu>
@@ -165,6 +182,7 @@ export default function AppShell(props: any) {
                           </button>
                         </div>
                         <div className="mt-3 space-y-1 px-2">
+
                           {userNavigation.map((item) => (
                               <Disclosure.Button
                                   key={item.name}

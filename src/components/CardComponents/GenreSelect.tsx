@@ -12,7 +12,7 @@ const genres = [
   { id: 6, name: 'Poetry' },
 ]
 
-export default function GenreSelect(props:{saveFunction: any}) {
+export default function GenreSelect(props:{saveFunction: any, defaultValue:string}) {
   const [selected, setSelected] = useState('')
   const [query, setQuery] = useState('')
   const genres = api.genre.getGenres.useQuery().data
@@ -35,6 +35,7 @@ export default function GenreSelect(props:{saveFunction: any}) {
             <div className="relative w-full cursor-default overflow-hidden border border-gray-300 rounded-md bg-white text-left shadow-sd focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-500 sm:text-sm">
               <Combobox.Input
                   className="w-full border-none py-1 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+                  defaultValue={props.defaultValue}
                   displayValue={(genre) => genre ? genre.name: ""}
                   onChange={(event) => setQuery(event.target.value)}
               />

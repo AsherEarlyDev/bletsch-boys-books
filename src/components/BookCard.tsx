@@ -19,7 +19,6 @@ export default function BookCard(props:BookCardProp) {
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
-  const [book, setBook] = useState<completeBook>()
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
@@ -32,7 +31,11 @@ export default function BookCard(props:BookCardProp) {
   function saveBook(){
     if(props.bookInfo && genre){
       action.mutate({
-        ...props.bookInfo,
+        isbn: props.bookInfo.isbn,
+        title: props.bookInfo.title ?? "",
+        publisher: props.bookInfo.publisher ?? "",
+        publicationYear: props.bookInfo.publicationYear ?? -1,
+        author: props.bookInfo.author ?? [],
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
@@ -59,7 +62,8 @@ export default function BookCard(props:BookCardProp) {
           <ImmutableCardProp heading="Author(s)" data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
           <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
           <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
-          <GenreCardProp saveFunction = {setGenre}></GenreCardProp>
+          <ImmutableCardProp heading="Inventory" data={props.bookInfo.inventory}></ImmutableCardProp>
+          <GenreCardProp saveFunction = {setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
           <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
           <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
           <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={defaultDimenions[0]}></MutableCardProp>

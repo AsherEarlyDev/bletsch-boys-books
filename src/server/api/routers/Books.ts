@@ -1,4 +1,4 @@
-import {z} from "zod"
+import {number, z} from "zod"
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
@@ -8,6 +8,8 @@ type context = {
   session: Session | null;
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>;
 }
+const DEFAULT_EMPTY_STRING_FIELD_VALUE = ""
+const DEFAULT_EMPTY_NUMBER_FIELD_VALUE = 0
 
 const zBook = z.object({
   isbn: z.string(),
@@ -43,7 +45,8 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
     dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
     pageCount: input.pageCount,
     genre:input. mainCategory,
-    retailPrice: input.saleInfo?.retailPrice.amount
+    retailPrice: input.saleInfo?.retailPrice.amount,
+    inventory: 0
   }
   return bookInfo
 } 
@@ -58,7 +61,8 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     dimensions: book.dimensions,
     pageCount: book.pageCount,
     genre:book.genre.name,
-    retailPrice: book.retailPrice
+    retailPrice: book.retailPrice,
+    inventory: book.inventory
   }
   return bookInfo
 }
@@ -84,30 +88,69 @@ export const BooksRouter = createTRPCRouter({
   findBooks: publicProcedure.input(
     z.array(z.string())
   ).query(async ({ctx, input}) => {
+    const absentBooks:string[] = []
     const internalBooks: any[] | PromiseLike<any[]> = []
     const externalBooks: editableBook[] = []
     for(const isbn of input){
-      var book = await getBookIfExists(ctx, isbn)
-      if(book) internalBooks.push(transformDatabaseBook(book))
-      else{
-        const externalBook = await fetchBookFromExternal(isbn)
-        if(externalBook) externalBooks.push(externalBook)
+      try{
+        var book = await getBookIfExists(ctx, isbn)
+        if(book) internalBooks.push(transformDatabaseBook(book))
+        else{
+          const externalBook = await fetchBookFromExternal(isbn)
+          if(externalBook) externalBooks.push(externalBook)
+        }
+      }
+      catch{
+        absentBooks.push(isbn)
       }
     }
     return({
       internalBooks: internalBooks,
-      externalBooks: externalBooks
+      externalBooks: externalBooks,
+      absentBooks: absentBooks
     })
   }),
 
   getAllInternalBooks: publicProcedure
+  .input(z.object({
+    pageNumber: z.number(),
+    booksPerPage: z.number(),
+    sortBy: z.string(),
+    descOrAsc: z.string()
+  }))
   .query(async ({ctx, input}) => {
-    return await ctx.prisma.book.findMany({
-      include:{
-        author:true,
-        genre:true
-      }
-    })
+    if(input){
+      return await ctx.prisma.book.findMany({
+        take: input.booksPerPage,
+        skip: input.pageNumber*input.booksPerPage,
+        include:{
+          author:true,
+          genre:true
+        },
+        orderBy: input.sortBy==="genre" ? {
+          genre:{
+            name: input.descOrAsc
+          }
+        } : [
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+        ]
+      })
+    }
+    else{
+      return await ctx.prisma.book.findMany({
+        include:{
+          author:true,
+          genre:true
+        }
+      })
+    }
+  }),
+
+  getNumberOfBooks:publicProcedure
+  .query(async ({ctx, input}) => {
+    return await ctx.prisma.book.count()
   }),
 
   saveBook:publicProcedure.input(zBook)
@@ -118,7 +161,13 @@ export const BooksRouter = createTRPCRouter({
         const {genreID, authorIDs, ...data} = entry
         await ctx.prisma.book.create({
           data: {
-            ...data,
+            isbn: data.isbn,
+            title: data.title ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
+            publisher: data.publisher ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
+            publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,
+            dimensions: data.dimensions,
+            pageCount: data.pageCount,
+            retailPrice: data.retailPrice,
             author:{
               connect:authorIDs
             },

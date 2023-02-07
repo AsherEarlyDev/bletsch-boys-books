@@ -6,6 +6,7 @@ import {editableBook} from "../types/bookTypes";
 interface CreateBookEntryInterface{
   submitText: string
   children: React.ReactNode[];
+  closeStateFunction: any
 }
 
 export default function CreateBookEntries(props: CreateBookEntryInterface) {
@@ -14,6 +15,8 @@ export default function CreateBookEntries(props: CreateBookEntryInterface) {
 
   function closeModal() {
     setIsOpen(false)
+    props.closeStateFunction(false)
+
   }
 
   function openModal() {

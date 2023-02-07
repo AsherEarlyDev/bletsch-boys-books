@@ -31,8 +31,8 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {/* {<Testing/>} */}
-              {passwordData ? <AuthShowcase/> : <CreateAdmin/>}
+              {/*{passwordData ? <AuthShowcase/> : <CreateAdmin/>}*/}
+            <AuthShowcase></AuthShowcase>
           </div>
         </div>
       </main>
@@ -82,6 +82,7 @@ const CreateAdmin: React.FC = () => {
         });
       }
   }
+
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-white">Please create an Admin Password</p>

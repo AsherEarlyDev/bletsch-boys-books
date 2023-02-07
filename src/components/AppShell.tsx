@@ -30,7 +30,7 @@ export default function AppShell(props: any) {
     const sessionData = useSession();
 
     async function logOut(e) {
-      const res = await signOut();
+      const res = await signOut({callbackUrl: "/"});
       console.log(res)
     }
 

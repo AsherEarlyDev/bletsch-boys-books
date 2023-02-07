@@ -12,8 +12,10 @@ const user = {
 const navigation = [
   {name: 'Dashboard', href: '/dashboard'},
   {name: 'Records', href: '/records'},
+  {name: 'Vendors', href: '/vendors'},
   {name: 'Sales', href: '/sales'},
-  {name: 'Documentation', href: '/documentation'},
+  {name: 'Purchases', href: '/purchases'},
+  {name: 'Documentation', href: '/documentation'}
 ]
 const userNavigation = [
   {name: 'Change Password', href: '/reset-password'},

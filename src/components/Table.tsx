@@ -11,6 +11,7 @@ import { Dialog } from '@headlessui/react'
 import HeadingPanel from './BasicComponents/HeadingPanel';
 import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
+
 export default function Table() {
   const BOOKS_PER_PAGE = 5
   const [isbns, setIsbns] = useState<string[]>([])

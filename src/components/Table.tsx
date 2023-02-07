@@ -7,10 +7,8 @@ import FilterableColumnHeading from "./TableComponents/FilterableColumnHeading";
 import TableHeader from "./TableComponents/TableHeader";
 import CreateBookEntries from "./CreateBookEntries";
 import BookTableRow from "./TableComponents/BookTableRow";
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog } from '@headlessui/react'
 import HeadingPanel from './BasicComponents/HeadingPanel';
-import { editableBook } from '../types/bookTypes';
-import { editableBook } from '../types/bookTypes';
 import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 export default function Table() {
@@ -33,13 +31,11 @@ export default function Table() {
     }
   }
 
-
   function renderBookEntries() {
     return <>
       <div>
         {displayBookEntries ? (bookInfo ? (
-          <CreateBookEntries submitText="Save book"> 
-            
+          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEdit}> 
             {bookInfo.externalBooks.length > 0 ? 
             <div><HeadingPanel displayText="New Books"></HeadingPanel>
              {bookInfo.externalBooks.map((book: editableBook) => (
@@ -64,12 +60,10 @@ export default function Table() {
   function renderBookEdit() {
     return <>
       {displayBookEdit ? (bookInfo ? (
-          <CreateBookEntries submitText="Edit book"> {bookInfo.internalBooks.map((book: editableBook) => (
+          <CreateBookEntries submitText="Edit book" closeStateFunction={setDisplayBookEdit}> {bookInfo.internalBooks.map((book: editableBook) => (
               <BookCard cardType="edit" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
     </>;
   }
-
-
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">

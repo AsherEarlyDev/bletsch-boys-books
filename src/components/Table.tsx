@@ -3,7 +3,7 @@ import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
 import BookCard from './BookCard';
 import TableDetails from "./TableComponents/TableDetails";
-import FilterableColumnHeading from "./TableComponents/FilterableColumnHeading";
+import SortedFilterableColumnHeading from "./TableComponents/SortedFilterableColumnHeading";
 import TableHeader from "./TableComponents/TableHeader";
 import CreateBookEntries from "./CreateBookEntries";
 import BookTableRow from "./TableComponents/BookTableRow";
@@ -12,11 +12,15 @@ import HeadingPanel from './BasicComponents/HeadingPanel';
 import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 export default function Table() {
-  const  books = api.books.getAllInternalBooks.useQuery().data
+  const BOOKS_PER_PAGE = 5
   const [isbns, setIsbns] = useState<string[]>([])
   const bookInfo = api.books.findBooks.useQuery(isbns).data
   const [displayBookEntries, setDisplayBookEntries] = useState(false)
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
+  const [pageNumber, setPageNumber] = useState(0)
+  const [sortField, setSortField] = useState("title")
+  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery().data / BOOKS_PER_PAGE)
+  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
     if (bookInfo) {
@@ -79,13 +83,13 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <FilterableColumnHeading label="Title"
-                                             firstEntry={true}></FilterableColumnHeading>
-                    <FilterableColumnHeading label="ISBN"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Author(s)"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Price"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Genre"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Title"
+                                             firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Author(s)" databaseLabel="author"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
@@ -93,6 +97,12 @@ export default function Table() {
                   )) : null}
                   </tbody>
                 </table>
+                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                  Previous     
+                </button>
+                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
+                  Next
+                </button></center>
               </div>
             </div>
           </div>

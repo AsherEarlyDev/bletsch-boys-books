@@ -1,4 +1,4 @@
-import {z} from "zod"
+import {number, z} from "zod"
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
@@ -112,13 +112,45 @@ export const BooksRouter = createTRPCRouter({
   }),
 
   getAllInternalBooks: publicProcedure
+  .input(z.object({
+    pageNumber: z.number(),
+    booksPerPage: z.number(),
+    sortBy: z.string(),
+    descOrAsc: z.string()
+  }))
   .query(async ({ctx, input}) => {
-    return await ctx.prisma.book.findMany({
-      include:{
-        author:true,
-        genre:true
-      }
-    })
+    if(input){
+      return await ctx.prisma.book.findMany({
+        take: input.booksPerPage,
+        skip: input.pageNumber*input.booksPerPage,
+        include:{
+          author:true,
+          genre:true
+        },
+        orderBy: input.sortBy==="genre" ? {
+          genre:{
+            name: input.descOrAsc
+          }
+        } : [
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+        ]
+      })
+    }
+    else{
+      return await ctx.prisma.book.findMany({
+        include:{
+          author:true,
+          genre:true
+        }
+      })
+    }
+  }),
+
+  getNumberOfBooks:publicProcedure
+  .query(async ({ctx, input}) => {
+    return await ctx.prisma.book.count()
   }),
 
   saveBook:publicProcedure.input(zBook)

@@ -31,7 +31,11 @@ export default function BookCard(props:BookCardProp) {
   function saveBook(){
     if(props.bookInfo && genre){
       action.mutate({
-        ...props.bookInfo,
+        isbn: props.bookInfo.isbn,
+        title: props.bookInfo.title ?? "",
+        publisher: props.bookInfo.publisher ?? "",
+        publicationYear: props.bookInfo.publicationYear ?? -1,
+        author: props.bookInfo.author ?? [],
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],

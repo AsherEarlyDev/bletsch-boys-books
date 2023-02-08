@@ -4,7 +4,7 @@ import TableDetails from "../TableComponents/TableDetails";
 import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading";
 import TableHeader from "../TableComponents/TableHeader";
 import { VendorTableRow } from '../TableComponents/VendorTableRow';
-import CreateSaleEntries from '../SalesComponents/CreateSaleEntries';
+import CreateSaleEntries from '../CreateEntries';
 import VendorCard from './VendorCard';
 import AddVendorModal from './AddVendorModal';
 

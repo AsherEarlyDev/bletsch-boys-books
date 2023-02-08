@@ -5,7 +5,7 @@ import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading"
 import TableHeader from "../TableComponents/TableHeader";
 import SalesRecTableRow from '../TableComponents/SalesRecTableRow';
 import SalesRecCard from './SalesRecCard';
-import CreateSaleEntries from './CreateSaleEntries';
+import CreateSaleEntries from '../CreateEntries';
 import AddModal from './AddSaleRecModal';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
 import SalesRecDeleteCard from './SalesRecDeleteCard';
@@ -35,10 +35,16 @@ export default function SalesTable() {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [displayAdd, setDisplayAdd] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
+  const createSalesRec = api.salesRec.createSaleRec.useMutation()
 
   const handleSaleRecSubmit = async (date: string) => {
-    setDate(date)
-    setDisplayEntries(true)
+    // setDate(date)
+    // setDisplayEntries(true)
+    if (createSalesRec){
+      createSalesRec.mutate({
+        date: date
+      })
+    }
   }
 
   const handleEdit = async (id:string) => {
@@ -98,13 +104,13 @@ export default function SalesTable() {
       setSalesReport(true)
   }
 
-  function renderEntries() {
-    return <>
-      {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
-            <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
-      </CreateSaleEntries>: null}
-    </>;
-  }
+  // function renderEntries() {
+  //   return <>
+  //     {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
+  //           <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
+  //     </CreateSaleEntries>: null}
+  //   </>;
+  // }
 
   function renderEdit() {
     return <>
@@ -188,7 +194,7 @@ export default function SalesTable() {
           </div>
         </div>
         <div>
-          {renderEntries()}
+          {/* {renderEntries()} */}
           {renderEdit()}
           {renderDelete()}
           {renderDetails()}

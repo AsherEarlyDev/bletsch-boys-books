@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { api } from '../../utils/api';
 import { Sale, SalesRec } from "../../types/salesTypes";
 import SaleDeleteCard from "./SaleDeleteCard";
-import CreateSaleEntries from './CreateSaleEntries';
+import CreateSaleEntries from '../CreateEntries';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
 
 

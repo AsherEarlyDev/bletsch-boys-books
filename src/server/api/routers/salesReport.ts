@@ -35,7 +35,7 @@ export const salesReportRouter = createTRPCRouter({
                 }
                 })
               for (const sale of sales){
-                revenue += parseInt(sale.quantity) * parseFloat(sale.price)
+                revenue += sale.quantity * sale.price
               }
               const dateMapObj = dateMap.get(saleRec.date)
               if (dateMapObj){
@@ -95,7 +95,7 @@ export const salesReportRouter = createTRPCRouter({
                 })
               
               for (const pur of purchases){
-                cost += parseInt(pur.quantity) * parseFloat(pur.price)
+                cost += pur.quantity * pur.price
               }
               const dateMapObj = dateMap.get(purchaseOrder.date)
               if (dateMapObj){
@@ -185,7 +185,7 @@ export const salesReportRouter = createTRPCRouter({
                 let booksObj = books.get(purchase.bookId)
                 if (booksObj)
                 books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
-                  recentCost: purchase.price * purchase.quantity, profit: booksObj.revenue - purchase.price * purchase.quantity})
+                  recentCost: purchase.price * booksObj.numBooks, profit: booksObj.revenue - purchase.price * booksObj.numBooks})
             }
         }
         let results = []

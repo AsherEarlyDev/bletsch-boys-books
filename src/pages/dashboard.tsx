@@ -7,8 +7,8 @@ export default function DashboardPage() {
     return (
         <>
          <AppShell activePage="Dashboard"></AppShell>
-          <ErrorAlert errorMessage="You can't do that..."></ErrorAlert>
-          <SuccessAlert successMessage="Well done."></SuccessAlert>
+          <ErrorAlert message="error" messageDetails="You can't do that..."></ErrorAlert>
+          <SuccessAlert message="great job" messageDetails="Well done."></SuccessAlert>
         </>
     )
 }

@@ -71,13 +71,12 @@ export default function AddVendorModal(props: VendorModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
-                            rows={1}
-                            name="vendorName"
-                            id="vendorName"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
+                          <input
+                              name="vendorName"
+                              id="vendorName"
+                              required={true}
+                              className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:border focus:ring-indigo-500 sm:text-sm py-1"
+                          />
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

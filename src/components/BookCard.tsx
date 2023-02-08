@@ -70,7 +70,7 @@ export default function BookCard(props:BookCardProp) {
           <MutableCardProp saveValue={setThickness} heading="Thickness" dataType="number" defaultValue={defaultDimenions[1]}></MutableCardProp>
           <MutableCardProp saveValue={setHeight} heading="Height" dataType="number" defaultValue={defaultDimenions[2]}></MutableCardProp>
         </CardGrid>
-        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       </div>
       : null) : null)
   )

@@ -73,7 +73,7 @@ export default function SalesRecCard(props:SalesRecProp) {
           <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="string" 
           defaultValue={props.date}></MutableCardProp>
         </CardGrid>
-        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
         <div>
           {props.cardType === 'edit' ? renderConfirmation(): null}
         </div>

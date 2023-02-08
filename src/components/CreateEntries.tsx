@@ -12,7 +12,7 @@ export default function CreateEntries(props: CreateEntryInterface) {
   const [isOpen, setIsOpen] = useState(true)
 
 
-  function closeModal() {
+  function close() {
     setIsOpen(false)
     props.closeStateFunction(false)
   }
@@ -24,7 +24,7 @@ export default function CreateEntries(props: CreateEntryInterface) {
   return (
       <>
           <Transition.Root show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10"  onClose={closeModal}>
+            <Dialog as="div" className="relative z-10"  onClose={close}>
               <Transition.Child
                   as={Fragment}
                   enter="ease-out duration-300"

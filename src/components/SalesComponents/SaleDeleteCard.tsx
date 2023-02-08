@@ -38,7 +38,7 @@ export default function SaleDeleteCard(props:SaleDeleteProp) {
       (open ? (props.salesId ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Sale" subheading="Confirm to delete this Sale"></CardTitle>
-        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       </div>
       : null) : null)
   )

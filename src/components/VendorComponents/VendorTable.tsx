@@ -9,6 +9,8 @@ import DeleteVendorCard from './DeleteVendorCard';
 import AddVendorModal from './AddVendorModal';
 import CreateEntries from "../CreateEntries";
 import EditVendorCard from "./EditVendorCard";
+import SuccessAlert from "../BasicComponents/SuccessAlert";
+
 
 export default function VendorTable() {
     const vendors = api.vendor.getVendors.useQuery().data
@@ -67,27 +69,35 @@ export default function VendorTable() {
     function closeDisplayDelete(){
       setDisplayDelete(false)
       setVendorDeleteConfirmation(true)
+
     }
 
 
-    function renderEdit() {
-      return <>
-        {(displayEdit && currVendor) ?
-            <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Vendor">
-                <EditVendorCard newName={setNewName} closeOut={closeDisplayEdit} vendorId={currVendor.id} vendorName={currVendor.name}></EditVendorCard></CreateEntries> : null}
-      </>;
-      }
+    function renderEditVendorView() {
+      return(
+          <>
+            {(displayEdit && currVendor) ?
+              <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Vendor">
+                <EditVendorCard newName={setNewName} closeOut={closeDisplayEdit} vendorId={currVendor.id} vendorName={currVendor.name}></EditVendorCard>
+              </CreateEntries> : null}
+          </>
+      )
+    }
 
 
-    function renderEditConfirm() {
+    function closeEditVendorConfirmationAlert() {
+      setVendorNameChangeConfirmation(false)
+    }
+
+    function renderEditVendorConfirmationAlert() {
     return <>
-      {(vendorNameChangeConfirmation && currVendor) ? ("Vendor name changed to: " + newName) : null}
+      {(vendorNameChangeConfirmation && currVendor) ? <SuccessAlert message="Name change success." messageDetails={("Vendor name changed to: " + newName)} closeAlert={closeEditVendorConfirmationAlert}></SuccessAlert> : null}
     </>
 
   }
 
     
-    function renderDelete() {
+    function renderDeleteVendorView() {
         return <>
           {(displayDelete && currVendor) ?
               <CreateEntries closeStateFunction={setDisplayDelete} submitText="Delete Vendor">
@@ -99,6 +109,7 @@ export default function VendorTable() {
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
+        {renderEditVendorConfirmationAlert()}
         <TableDetails tableName="Vendors" tableDescription="A list of all the Vendors.">
           <AddVendorModal showVendorEdit={handleVendorSubmit} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
         </TableDetails>
@@ -122,9 +133,8 @@ export default function VendorTable() {
           </div>
         </div>
         <div>
-          {renderEdit()}
-          {renderDelete()}
-          {renderEditConfirm()}
+          {renderEditVendorView()}
+          {renderDeleteVendorView()}
         </div>
       </div>
 

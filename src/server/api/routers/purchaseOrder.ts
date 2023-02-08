@@ -1,3 +1,4 @@
+import { createWSClient } from "@trpc/client";
 import { Input } from "postcss";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -58,8 +59,8 @@ export const purchaseOrderRouter = createTRPCRouter({
                   let unique: string[] = []
                   let cost = 0
                   for (const purchase of purchases){
-                    total = total + parseInt(purchase.quantity)
-                    const subtotal = (parseInt(purchase.quantity) * parseFloat(purchase.price))
+                    total = total + purchase.quantity
+                    const subtotal = (purchase.quantity * purchase.price)
                     cost = cost + subtotal
                     const sub = {
                       subtotal: subtotal,
@@ -70,9 +71,16 @@ export const purchaseOrderRouter = createTRPCRouter({
                   }
                   let uniqueSet = new Set(unique)
 
+                  const vendor = await ctx.prisma.vendor.findFirst({
+                    where:{
+                      id: purchaseOrder.vendorId
+                    }
+                  })
+
                   const order = {
                     id: purchaseOrderId,
                     vendorId: purchaseOrder.vendorId,
+                    vendorName: vendor.name,
                     date: (purchaseOrder.date.getMonth()+1)+"-"+(purchaseOrder.date.getDay())+"-"+purchaseOrder.date.getFullYear(),
                     purchases: purchasesArray,
                     totalBooks: total,
@@ -135,7 +143,7 @@ export const purchaseOrderRouter = createTRPCRouter({
               isbn: purch.bookId
             }
           })
-          const inventory: number = parseInt(book.inventory) - parseInt(purch.quantity)
+          const inventory: number = book.inventory - purch.quantity
           console.log(inventory)
           if (inventory >= 0){
             await ctx.prisma.purchase.delete({

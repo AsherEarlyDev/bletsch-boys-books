@@ -2,12 +2,12 @@ import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
 
 
-interface CreateSaleEntryInterface{
+interface CreateEntryInterface{
   submitText: string
   children: React.ReactNode;
 }
 
-export default function CreateSaleEntries(props: CreateSaleEntryInterface) {
+export default function CreateEntries(props: CreateEntryInterface) {
   const [isOpen, setIsOpen] = useState(true)
 
 

@@ -13,3 +13,11 @@ export type Vendor = {
     id: string, 
     name: string
 }
+
+export type Purchase = {
+    id: string,
+    bookId: string,
+    purchaseOrderId: string,
+    quantity: number,
+    price: number
+}

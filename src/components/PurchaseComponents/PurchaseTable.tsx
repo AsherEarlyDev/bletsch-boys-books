@@ -6,6 +6,8 @@ import TableHeader from "../TableComponents/TableHeader";
 import CreateEntries from '../CreateEntries';
 import PurchaseOrderTableRow from '../TableComponents/PurchaseOrderTableRow';
 import AddPurchaseOrderModal from './AddPurchaseOrderModal';
+import PurchasesCard from './PurchasesCard';
+import PurchaseDetailsCard from './PurchaseDetailsCard';
 
 
 
@@ -21,6 +23,7 @@ export default function PurchaseTable() {
   const [currOrder, setCurrOrder] = useState({
     id: '',
     date: '',
+    vendorName:''
   })
 //   const [displayEntries, setDisplayEntries] = useState(false)
   const [displayEdit, setDisplayEdit] = useState(false)
@@ -50,6 +53,7 @@ export default function PurchaseTable() {
           setCurrOrder({
             id: order.id, 
             date: order.date,
+            vendorName: order.vendorName
           })
         }
       }
@@ -65,6 +69,7 @@ export default function PurchaseTable() {
             setCurrOrder({
               id: order.id, 
               date: order.date,
+              vendorName: order.vendorName
             })
           }
         }
@@ -103,47 +108,47 @@ export default function PurchaseTable() {
   //   </>;
   // }
 
-//   function renderEdit() {
-//     return <>
-//       {(displayEdit && currOrder) ?
-//           <CreateEntries submitText="Edit Sale Rec"> 
-//             <SalesRecCard date={currOrder.date} cardType="edit" salesRecId={currOrder.id}></SalesRecCard></CreateEntries> : null}
-//   </>;
-//   }
+  function renderEdit() {
+    return <>
+      {(displayEdit && currOrder) ?
+          <CreateEntries submitText="Edit Purchase Order"> 
+            <PurchasesCard date={currOrder.date} cardType="edit" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard></CreateEntries> : null}
+  </>;
+  }
 
-//   function renderDelete() {
-//     return <>
-//       {displayDelete ? <CreateEntries submitText='Delete Sale Reconciliation'>
-//             <SalesRecDeleteCard cardType="delete" salesRecId={currRec.id}></SalesRecDeleteCard>
-//       </CreateEntries>: null}
-//   </>;
-//   }
+  function renderDelete() {
+    return <>
+      {displayDelete ? <CreateEntries submitText='Delete Purchase Order'>
+            <PurchasesCard date={currOrder.date} cardType="delete" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard>
+      </CreateEntries>: null}
+  </>;
+  }
 
-//   function renderDetails() {
-//     return <>
-//       {displayDetails ? (purchases ? (
-//           <CreateEntries submitText="Show Sales Details"> {purchases.map((purchase) => (
-//             <SaleDetailsCard cardType={'edit'} saleComplete={purchase}></SaleDetailsCard>))}</CreateEntries>) : null) : null}
-//   </>;
-//   }
+  function renderDetails() {
+    return <>
+      {displayDetails ? (purchases ? (
+          <CreateEntries submitText="Show Purchase Details"> {purchases.map((purchase) => (
+            <PurchaseDetailsCard cardType={'edit'} purchaseComplete={purchase}></PurchaseDetailsCard>))}</CreateEntries>) : null) : null}
+  </>;
+  }
 
-//   function renderAdd() {
-//     const dummyPurchase = {
-//       sale: {
-//         id: '',
-//         saleReconciliationId: saleRecId,
-//         price: 0,
-//         quantity: 0,
-//         bookId: ''
-//       },
-//       subtotal: 0
-//     }
-//     return <>
-//       {(displayAdd && saleRecId)? 
-//           <CreateEntries submitText="Add Sale"> 
-//             <SaleDetailsCard cardType={'entry'} saleComplete={dummyPurchase}></SaleDetailsCard></CreateEntries> : null}
-//   </>;
-//   }
+  function renderAdd() {
+    const dummyPurchase = {
+      purchase: {
+        id: '',
+        purchaseOrderId: purchaseOrderId,
+        price: 0,
+        quantity: 0,
+        bookId: ''
+      },
+      subtotal: 0
+    }
+    return <>
+      {(displayAdd && purchaseOrderId)? 
+          <CreateEntries submitText="Add Sale"> 
+            <PurchaseDetailsCard cardType={'entry'} purchaseComplete={dummyPurchase}></PurchaseDetailsCard></CreateEntries> : null}
+  </>;
+  }
 
 
   return (
@@ -180,10 +185,10 @@ export default function PurchaseTable() {
         </div>
         <div>
           {/* {renderEntries()} */}
-          {/* {renderEdit()}
+          {renderEdit()}
           {renderDelete()}
           {renderDetails()}
-          {renderAdd()} */}
+          {renderAdd()}
         </div>
       </div>
 

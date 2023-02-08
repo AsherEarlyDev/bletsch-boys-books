@@ -39,9 +39,6 @@ export default function SalesRecDeleteCard(props:SalesRecDeleteProp) {
       (open ? (props.salesRecId ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Sale Reconciliation" subheading="Confirm to delete this Sale Reconciliation"></CardTitle>
-        <CardGrid>
-          <ImmutableCardProp heading="Sale Reconciliation ID" data={props.salesRecId}></ImmutableCardProp>
-        </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       </div>
       : null) : null)

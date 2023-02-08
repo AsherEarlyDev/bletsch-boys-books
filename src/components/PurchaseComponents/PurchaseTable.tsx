@@ -17,9 +17,6 @@ export default function PurchaseTable() {
   const purchaseOrder = api.purchaseOrder.getPurchaseOrderDetails.useQuery().data;
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
-  const [date, setDate] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
   const [currOrder, setCurrOrder] = useState({
     id: '',
     date: '',
@@ -36,8 +33,6 @@ export default function PurchaseTable() {
   const handleOrderSubmit = async (date: string, vendorId: string) => {
     // setDate(date)
     // setDisplayEntries(true)
-    console.log("Date: "+date)
-    console.log(vendorId)
     if (createPurchaseOrder){
         createPurchaseOrder.mutate({
         date: date,

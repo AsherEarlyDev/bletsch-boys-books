@@ -9,6 +9,7 @@ import CreateSaleEntries from '../CreateEntries';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
 import { Purchase } from "../../types/purchaseTypes";
 import PurchaseDeleteCard from "./PurchaseDeleteCard";
+import ConfirmCard from "../CardComponents/ConfirmationCard";
 
 
 
@@ -32,34 +33,42 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
   const [quantity, setQuantity] = useState(props.purchaseComplete.purchase.quantity)
   const [price, setPrice] = useState(props.purchaseComplete.purchase.price)
   const [displayDelete, setDelete] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+  const [displayConfirm, setDisplayConfirm] = useState(false)
   const modPurchase = api.purchase.modifyPurchase.useMutation()
   const addPurchase = api.purchase.createPurchase.useMutation()
 
 
   function saveBook(){
-    if(props.purchaseComplete){
-      if (props.cardType === 'edit'){
-        modPurchase.mutate({
-            id: props.purchaseComplete.purchase.id,
-            purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-        })
+    if (confirm){
+      if(props.purchaseComplete){
+        if (props.cardType === 'edit'){
+          modPurchase.mutate({
+              id: props.purchaseComplete.purchase.id,
+              purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
+              isbn: isbn,
+              quantity: quantity.toString(),
+              price: price.toString()
+          })
+        }
+        else{
+          addPurchase.mutate({
+              purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
+              isbn: isbn,
+              quantity: quantity.toString(),
+              price: price.toString()
+          })
+        }
+        closeModal()
       }
       else{
-        addPurchase.mutate({
-            purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-        })
+        alert("Error")
       }
-      closeModal()
     }
     else{
-      alert("Error")
+      setDisplayConfirm(true)
     }
+    
   }
 
 
@@ -70,6 +79,15 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
       </CreateSaleEntries>: null}
   </>;
   }
+
+  function renderConfirmation(){
+    return <>
+    {(displayConfirm) ?
+        <CreateSaleEntries closeStateFunction={setDisplayConfirm} submitText="Confirm"> 
+          <ConfirmCard onConfirm={setConfirm} confirmHeading="Purchase Confirmation"
+          confirmMessage="Confirm and Resubmit to make changes to Purchase"></ConfirmCard></CreateSaleEntries> : null}
+    </>;
+      }
 
   function handleDelete() {
     setDelete(true)
@@ -100,6 +118,7 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
       <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       <div>
         {renderDelete()}
+        {renderConfirmation()}
       </div>
     </div>
     : <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
@@ -118,6 +137,9 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
       defaultValue={props.purchaseComplete.purchase.price}></MutableCardProp>
     </CardGrid>
     <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+    <div>
+        {renderConfirmation()}
+      </div>
     <div>
     </div>
   </div>) : null) : null)

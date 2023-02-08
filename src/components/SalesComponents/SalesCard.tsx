@@ -9,6 +9,7 @@ import { Sale, SalesRec } from "../../types/salesTypes";
 import SaleDeleteCard from "./SaleDeleteCard";
 import CreateSaleEntries from '../CreateEntries';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
+import ConfirmCard from "../CardComponents/ConfirmationCard";
 
 
 
@@ -32,34 +33,42 @@ export default function SaleDetailsCard(props:SalesProp) {
   const [quantity, setQuantity] = useState(props.saleComplete.sale.quantity)
   const [price, setPrice] = useState(props.saleComplete.sale.price)
   const [displayDelete, setDelete] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+  const [displayConfirm, setDisplayConfirm] = useState(false)
   const modSale = api.sales.modifySale.useMutation()
   const addSale = api.sales.createSale.useMutation()
 
 
   function saveBook(){
-    if(props.saleComplete){
-      if (props.cardType === 'edit'){
-        modSale.mutate({
-            id: props.saleComplete.sale.id,
-            saleReconciliationId: props.saleComplete.sale.saleReconciliationId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-        })
+    if (confirm){
+      if(props.saleComplete){
+        if (props.cardType === 'edit'){
+          modSale.mutate({
+              id: props.saleComplete.sale.id,
+              saleReconciliationId: props.saleComplete.sale.saleReconciliationId,
+              isbn: isbn,
+              quantity: quantity.toString(),
+              price: price.toString()
+          })
+        }
+        else{
+          addSale.mutate({
+              saleReconciliationId: props.saleComplete.sale.saleReconciliationId,
+              isbn: isbn,
+              quantity: quantity.toString(),
+              price: price.toString()
+          })
+        }
+        closeModal()
       }
       else{
-        addSale.mutate({
-            saleReconciliationId: props.saleComplete.sale.saleReconciliationId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-        })
+        alert("Error")
       }
-      closeModal()
     }
     else{
-      alert("Error")
+      setDisplayConfirm(true)
     }
+    
   }
 
   function renderDelete() {
@@ -69,6 +78,15 @@ export default function SaleDetailsCard(props:SalesProp) {
       </CreateSaleEntries>: null}
   </>;
   }
+
+  function renderConfirmation(){
+    return <>
+    {(displayConfirm) ?
+        <CreateSaleEntries closeStateFunction={setDisplayConfirm} submitText="Confirm"> 
+          <ConfirmCard onConfirm={setConfirm} confirmHeading="Sale Confirmation"
+          confirmMessage="Confirm and Resubmit to make changes to Sale"></ConfirmCard></CreateSaleEntries> : null}
+    </>;
+      }
 
   function handleDelete() {
     setDelete(true)
@@ -99,6 +117,7 @@ export default function SaleDetailsCard(props:SalesProp) {
       <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       <div>
         {renderDelete()}
+        {renderConfirmation()}
       </div>
     </div>
     : <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
@@ -117,6 +136,9 @@ export default function SaleDetailsCard(props:SalesProp) {
       defaultValue={props.saleComplete.sale.price}></MutableCardProp>
     </CardGrid>
     <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+    <div>
+        {renderConfirmation()}
+      </div>
   </div>) : null): null)
 )
 }

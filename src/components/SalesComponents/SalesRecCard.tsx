@@ -48,7 +48,7 @@ export default function SalesRecCard(props:SalesRecProp) {
   return (
       (open ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-        <CardTitle heading="Sale Reconciliation" subheading="Confirm and validate sales information below..."></CardTitle>
+        <CardTitle heading="Sale Reconciliation" subheading="Confirm and validate Sales Reconciliation information below..."></CardTitle>
         <CardGrid>
           <ImmutableCardProp heading="Sale Reconciliation ID" data={props.salesRecId}></ImmutableCardProp>
           <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="string" 

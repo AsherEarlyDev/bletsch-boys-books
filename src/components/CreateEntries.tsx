@@ -5,6 +5,7 @@ import React, {Fragment, useRef, useState} from 'react'
 interface CreateEntryInterface{
   submitText: string
   children: React.ReactNode;
+  closeStateFunction: any
 }
 
 export default function CreateEntries(props: CreateEntryInterface) {
@@ -13,6 +14,7 @@ export default function CreateEntries(props: CreateEntryInterface) {
 
   function closeModal() {
     setIsOpen(false)
+    props.closeStateFunction(false)
   }
 
   function openModal() {

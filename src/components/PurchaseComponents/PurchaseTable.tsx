@@ -111,14 +111,14 @@ export default function PurchaseTable() {
   function renderEdit() {
     return <>
       {(displayEdit && currOrder) ?
-          <CreateEntries submitText="Edit Purchase Order"> 
+          <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Purchase Order"> 
             <PurchasesCard date={currOrder.date} cardType="edit" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard></CreateEntries> : null}
   </>;
   }
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateEntries submitText='Delete Purchase Order'>
+      {displayDelete ? <CreateEntries closeStateFunction={setDelete} submitText='Delete Purchase Order'>
             <PurchasesCard date={currOrder.date} cardType="delete" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard>
       </CreateEntries>: null}
   </>;
@@ -127,7 +127,7 @@ export default function PurchaseTable() {
   function renderDetails() {
     return <>
       {displayDetails ? (purchases ? (
-          <CreateEntries submitText="Show Purchase Details"> {purchases.map((purchase) => (
+          <CreateEntries closeStateFunction={setDisplayDetails} submitText="Show Purchase Details"> {purchases.map((purchase) => (
             <PurchaseDetailsCard cardType={'edit'} purchaseComplete={purchase}></PurchaseDetailsCard>))}</CreateEntries>) : null) : null}
   </>;
   }
@@ -145,7 +145,7 @@ export default function PurchaseTable() {
     }
     return <>
       {(displayAdd && purchaseOrderId)? 
-          <CreateEntries submitText="Add Sale"> 
+          <CreateEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
             <PurchaseDetailsCard cardType={'entry'} purchaseComplete={dummyPurchase}></PurchaseDetailsCard></CreateEntries> : null}
   </>;
   }
@@ -153,8 +153,8 @@ export default function PurchaseTable() {
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <TableDetails tableName="Sales Reconciliations"
-                      tableDescription="A list of all the Sales Reconciliations and Sales.">
+        <TableDetails tableName="Purchase Orders"
+                      tableDescription="A list of all the Purchase Orders and Purchases.">
           <AddPurchaseOrderModal showPurchaseOrderEdit={handleOrderSubmit} buttonText="Create Purchase Order"
                         submitText="Create Purchase Order" vendorList={vendors}></AddPurchaseOrderModal>
         </TableDetails>

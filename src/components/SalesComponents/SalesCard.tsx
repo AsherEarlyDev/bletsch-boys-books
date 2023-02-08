@@ -24,6 +24,11 @@ interface SalesProp{
 export default function SaleDetailsCard(props:SalesProp) {
   const [open, setOpen] = useState(true)
   const [isbn, setIsbn] = useState(props.saleComplete.sale.bookId)
+  const book = api.books.findInternalBook.useQuery({isbn: props.saleComplete.sale.bookId}).data
+  let title = ''
+  if (book){
+    title = book.title
+  }
   const [quantity, setQuantity] = useState(props.saleComplete.sale.quantity)
   const [price, setPrice] = useState(props.saleComplete.sale.price)
   const [displayDelete, setDelete] = useState(false)
@@ -59,7 +64,7 @@ export default function SaleDetailsCard(props:SalesProp) {
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateSaleEntries submitText='Delete Sale'>
+      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale'>
             <SaleDeleteCard salesId={props.saleComplete.sale.id}></SaleDeleteCard>
       </CreateSaleEntries>: null}
   </>;
@@ -74,15 +79,16 @@ export default function SaleDetailsCard(props:SalesProp) {
   }
 
   return (
-    (open ? (props.saleComplete ?
+    (open ? (props.saleComplete ? (props.cardType==='edit' ?
     <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
       <div className="flex-row ">
-      <CardTitle heading="Sale Reconciliation" subheading="Edit sale below..."></CardTitle>
+      <CardTitle heading="Sale" subheading="Edit sale below..."></CardTitle>
       <PrimaryButton buttonText="Delete Sale" onClick={handleDelete}></PrimaryButton>
       </div>
       <CardGrid>
         <ImmutableCardProp heading="Sale ID" data={props.saleComplete.sale.id}></ImmutableCardProp>
         <ImmutableCardProp heading="Subtotal" data={props.saleComplete.subtotal}></ImmutableCardProp>
+        <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
         <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
         defaultValue={props.saleComplete.sale.bookId}></MutableCardProp>
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
@@ -95,6 +101,22 @@ export default function SaleDetailsCard(props:SalesProp) {
         {renderDelete()}
       </div>
     </div>
-    : null) : null)
+    : <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
+    <div className="flex-row ">
+    <CardTitle heading="Sale" subheading="Add sale information below..."></CardTitle>
+    </div>
+    <CardGrid>
+      <ImmutableCardProp heading="Sale ID" data={props.saleComplete.sale.id}></ImmutableCardProp>
+      <ImmutableCardProp heading="Subtotal" data={props.saleComplete.subtotal}></ImmutableCardProp>
+      <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
+      <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
+      defaultValue={props.saleComplete.sale.bookId}></MutableCardProp>
+      <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
+      defaultValue={props.saleComplete.sale.quantity}></MutableCardProp>
+      <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
+      defaultValue={props.saleComplete.sale.price}></MutableCardProp>
+    </CardGrid>
+    <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+  </div>) : null): null)
 )
 }

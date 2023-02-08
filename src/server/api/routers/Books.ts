@@ -111,6 +111,20 @@ export const BooksRouter = createTRPCRouter({
     })
   }),
 
+    findInternalBook: publicProcedure.input(
+      z.object({
+        isbn: z.string()
+      })
+    ).query(async ({ctx, input}) => {
+        try{
+          let book = await getBookIfExists(ctx, input.isbn)
+          if(book) return transformDatabaseBook(book)
+        }
+        catch{
+          console.log("error")
+        }
+    }),
+
   getAllInternalBooks: publicProcedure
   .input(z.object({
     pageNumber: z.number(),

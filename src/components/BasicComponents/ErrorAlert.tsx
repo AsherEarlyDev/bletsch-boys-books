@@ -4,18 +4,11 @@ import {useState} from "react";
 interface ErrorAlertProps {
   message: string
   messageDetails: string
-  openAlert: boolean
+  closeAlert: () => void
 }
 
 
 export default function ErrorAlert(props: ErrorAlertProps) {
-  const [open, toggleOpen] = useState(props.openAlert)
-
-
-  function closeAlert(){
-    toggleOpen(false)
-  }
-
   return (
       open ? <div className="fixed rounded-md bg-red-50 p-4 z-10 top-58 inset-x-64 m:auto bg-shadow-xl drop-shadow-md">
         <div className="flex">
@@ -32,7 +25,7 @@ export default function ErrorAlert(props: ErrorAlertProps) {
                 <button
                     type="button"
                     className="ml-3 rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
-                    onClick={closeAlert}
+                    onClick={props.closeAlert}
                 >
                   Dismiss
                 </button>

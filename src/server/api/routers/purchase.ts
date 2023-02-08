@@ -14,10 +14,19 @@ export const purchaseRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
-            const purchaseOrder = await ctx.prisma.purchaseOrder.findFirst({
+            const purchaseOrder = await ctx.prisma.purchaseOrder.update({
                 where:
                 {
                   id: input.purchaseOrderId
+                },
+                data:
+                {
+                  totalBooks: {
+                    increment: parseInt(input.quantity)
+                  },
+                  cost: {
+                    increment: parseInt(input.quantity) * parseFloat(input.price)
+                  },
                 }
               })
             if (purchaseOrder){
@@ -26,7 +35,8 @@ export const purchaseRouter = createTRPCRouter({
                        purchaseOrderId: input.purchaseOrderId,
                        bookId: input.isbn,
                        quantity: parseInt(input.quantity),
-                       price: parseFloat(input.price)
+                       price: parseFloat(input.price),
+                       subtotal: parseInt(input.quantity)*parseFloat(input.price)
                     },
                 });
                 await ctx.prisma.book.update({
@@ -90,7 +100,8 @@ export const purchaseRouter = createTRPCRouter({
               purchaseOrderId: input.purchaseOrderId,
               bookId: input.isbn,
               quantity: parseInt(input.quantity),
-              price: parseFloat(input.price)
+              price: parseFloat(input.price),
+              subtotal: parseInt(input.quantity)*parseFloat(input.price)
             },
             });
           }

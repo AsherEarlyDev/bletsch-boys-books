@@ -8,7 +8,7 @@ interface FilterableColumnHeadingInterface  {
   databaseLabel: string
 }
 
-export default function FilterableColumnHeading(props: FilterableColumnHeadingInterface) {
+export default function SortedFilterableColumnHeading(props: FilterableColumnHeadingInterface) {
   if (props.firstEntry == true) {
     return (
         <th scope="col"

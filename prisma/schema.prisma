@@ -18,6 +18,7 @@ model Book {
   genreID         String
   retailPrice     Float
   inventory       Int        @default(0)
+  authorNames     String[]
   genre           Genre      @relation(fields: [genreID], references: [id])
   purchases       Purchase[]
   sales           Sale[]
@@ -48,14 +49,19 @@ model Purchase {
   price           Float
   bookId          String
   purchaseOrderId String
+  subtotal        Int           @default(0)
   book            Book          @relation(fields: [bookId], references: [isbn])
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
 
 model PurchaseOrder {
-  id        String     @id @default(cuid())
-  vendorId  String
-  date      DateTime
+  id             String     @id @default(cuid())
+  vendorId       String
+  vendorName     String     @default("")
+  date           DateTime
+  uniqueBooks    Int        @default(0)
+  totalBooks     Int        @default(0)
+  cost           Int        @default(0)
   purchases Purchase[]
   vendor    Vendor     @relation(fields: [vendorId], references: [id])
 }

@@ -23,6 +23,7 @@ export default function Table() {
   const [sortField, setSortField] = useState("title")
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery().data / BOOKS_PER_PAGE)
   const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+  console.log(books)
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
     if (bookInfo) {

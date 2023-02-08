@@ -8,13 +8,15 @@ import PurchaseOrderTableRow from '../TableComponents/PurchaseOrderTableRow';
 import AddPurchaseOrderModal from './AddPurchaseOrderModal';
 import PurchasesCard from './PurchasesCard';
 import PurchaseDetailsCard from './PurchaseDetailsCard';
+import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
+
 
 
 
 
 
 export default function PurchaseTable() {
-  const purchaseOrder = api.purchaseOrder.getPurchaseOrderDetails.useQuery().data;
+  const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currOrder, setCurrOrder] = useState({
@@ -22,7 +24,14 @@ export default function PurchaseTable() {
     date: '',
     vendorName:''
   })
+  const [pageNumber, setPageNumber] = useState(0)
+  const [sortField, setSortField] = useState("date")
 //   const [displayEntries, setDisplayEntries] = useState(false)
+  console.log("Page Number: "+pageNumber)
+  const purchaseOrder: any[] = api.purchaseOrder.getPurchaseOrderDetails
+  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data;
+  console.log(purchaseOrder)
+  const numberOfPages = Math.ceil(api.purchaseOrder.getNumPurchaseOrder.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEdit, setDisplayEdit] = useState(false)
   const [displayDelete, setDelete] = useState(false)
   const [displayDetails, setDisplayDetails] = useState(false)
@@ -160,13 +169,18 @@ export default function PurchaseTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <FilterableColumnHeading label="Purchase Order ID"
-                                             firstEntry={true}></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Date Created"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Vendor Name"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Unique Books"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Books"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Cost"></FilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id" 
+                    label="Purchase Order ID" firstEntry={true}></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date" 
+                    label="Date Created"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="vendorName" 
+                    label="Vendor Name"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading  sortFields={setSortField} databaseLabel="uniqueBooks" 
+                    label="Unique Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks" 
+                    label="Total Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="cost" 
+                    label="Total Cost"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {purchaseOrder ? purchaseOrder.map((order) => (
@@ -174,6 +188,12 @@ export default function PurchaseTable() {
                   )) : null}
                   </tbody>
                 </table>
+                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                  Previous     
+                </button>
+                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
+                  Next
+                </button></center>
               </div>
             </div>
           </div>

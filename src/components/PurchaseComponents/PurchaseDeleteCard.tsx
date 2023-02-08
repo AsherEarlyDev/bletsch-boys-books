@@ -37,9 +37,6 @@ export default function PurchaseDeleteCard(props:PurchaseDeleteProp) {
       (open ? (props.purchaseId ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Purchase" subheading="Confirm to delete this Purchase"></CardTitle>
-        <CardGrid>
-          <ImmutableCardProp heading="Purchase ID" data={props.purchaseId}></ImmutableCardProp>
-        </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       </div>
       : null) : null)

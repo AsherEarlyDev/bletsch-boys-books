@@ -57,7 +57,7 @@ export default function VendorTable() {
         console.log(currVendor)
         return <>
           {(displayEdit && currVendor) ?
-              <CreateSaleEntries submitText="Edit Vendor"> 
+              <CreateSaleEntries closeStateFunction={setDisplayEdit} submitText="Edit Vendor"> 
                 <VendorCard vendorId={currVendor.id} cardType="edit" vendorName={currVendor.name}></VendorCard></CreateSaleEntries> : null}
       </>;
       }
@@ -67,7 +67,7 @@ export default function VendorTable() {
     function renderDelete() {
         return <>
           {(displayDelete && currVendor) ?
-              <CreateSaleEntries submitText="Delete Vendor"> 
+              <CreateSaleEntries closeStateFunction={setDelete} submitText="Delete Vendor"> 
                 <VendorCard vendorId={currVendor.id} cardType="delete" vendorName={currVendor.name}></VendorCard></CreateSaleEntries> : null}
       </>;
       }

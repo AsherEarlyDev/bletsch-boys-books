@@ -5,7 +5,7 @@ import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading"
 import TableHeader from "../TableComponents/TableHeader";
 import SalesRecTableRow from '../TableComponents/SalesRecTableRow';
 import SalesRecCard from './SalesRecCard';
-import CreateSaleEntries from './CreateSaleEntries';
+import CreateSaleEntries from '../CreateEntries';
 import AddModal from './AddSaleRecModal';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
 import SalesRecDeleteCard from './SalesRecDeleteCard';
@@ -35,10 +35,16 @@ export default function SalesTable() {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [displayAdd, setDisplayAdd] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
+  const createSalesRec = api.salesRec.createSaleRec.useMutation()
 
   const handleSaleRecSubmit = async (date: string) => {
-    setDate(date)
-    setDisplayEntries(true)
+    // setDate(date)
+    // setDisplayEntries(true)
+    if (createSalesRec){
+      createSalesRec.mutate({
+        date: date
+      })
+    }
   }
 
   const handleEdit = async (id:string) => {
@@ -98,25 +104,25 @@ export default function SalesTable() {
       setSalesReport(true)
   }
 
-  function renderEntries() {
-    return <>
-      {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
-            <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
-      </CreateSaleEntries>: null}
-    </>;
-  }
+  // function renderEntries() {
+  //   return <>
+  //     {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
+  //           <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
+  //     </CreateSaleEntries>: null}
+  //   </>;
+  // }
 
   function renderEdit() {
     return <>
       {(displayEdit && currRec) ?
-          <CreateSaleEntries submitText="Edit Sale Rec"> 
+          <CreateSaleEntries closeStateFunction={setDisplayEdit} submitText="Edit Sale Rec"> 
             <SalesRecCard date={currRec.date} cardType="edit" salesRecId={currRec.id}></SalesRecCard></CreateSaleEntries> : null}
   </>;
   }
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateSaleEntries submitText='Delete Sale Reconciliation'>
+      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale Reconciliation'>
             <SalesRecDeleteCard cardType="delete" salesRecId={currRec.id}></SalesRecDeleteCard>
       </CreateSaleEntries>: null}
   </>;
@@ -125,7 +131,7 @@ export default function SalesTable() {
   function renderDetails() {
     return <>
       {displayDetails ? (sales ? (
-          <CreateSaleEntries submitText="Show Sales Details"> {sales.map((sale) => (
+          <CreateSaleEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
             <SaleDetailsCard cardType={'edit'} saleComplete={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
   </>;
   }
@@ -143,7 +149,7 @@ export default function SalesTable() {
     }
     return <>
       {(displayAdd && saleRecId)? 
-          <CreateSaleEntries submitText="Add Sale"> 
+          <CreateSaleEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
             <SaleDetailsCard cardType={'entry'} saleComplete={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
   </>;
   }
@@ -188,7 +194,7 @@ export default function SalesTable() {
           </div>
         </div>
         <div>
-          {renderEntries()}
+          {/* {renderEntries()} */}
           {renderEdit()}
           {renderDelete()}
           {renderDetails()}

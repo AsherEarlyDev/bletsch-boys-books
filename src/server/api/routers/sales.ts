@@ -25,7 +25,7 @@ export const salesRouter = createTRPCRouter({
                 }
               })
             if (saleRec && book){
-              const inventory: number = parseInt(book.inventory) - parseInt(input.quantity)
+              const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
                 await ctx.prisma.sale.create({
                     data: {
@@ -132,7 +132,7 @@ export const salesRouter = createTRPCRouter({
             },
             data:{
               inventory: {
-                increment: parseInt(sale.quantity)
+                increment: sale.quantity
               }
             }
           })

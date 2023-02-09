@@ -124,7 +124,5 @@ export default function SalesReport(props:salesReportProps){
           </div>
         </div>
       </div>
-
-      
     )
 }

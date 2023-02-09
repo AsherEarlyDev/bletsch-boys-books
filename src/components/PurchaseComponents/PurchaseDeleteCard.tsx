@@ -5,24 +5,22 @@ import CardGrid from "../CardComponents/CardGrid";
 import SaveCardChanges from "../CardComponents/SaveCardChanges";
 import { useState } from 'react';
 import { api } from '../../utils/api';
-import { SalesRec } from "../../types/salesTypes";
 
 
-interface SalesRecDeleteProp{
-  salesRecId:  string
-  cardType: string
+interface PurchaseDeleteProp{
+  purchaseId:  string
 }
 
 
-export default function SalesRecDeleteCard(props:SalesRecDeleteProp) {
+export default function PurchaseDeleteCard(props:PurchaseDeleteProp) {
   const [open, setOpen] = useState(true)
-  const deleteSaleRec = api.salesRec.deleteSaleRec.useMutation()
+  const deletePurchase = api.purchase.deletePurchase.useMutation()
 
 
   function saveBook(){
-    if(props.salesRecId){
-      deleteSaleRec.mutate({
-        saleRecId: props.salesRecId
+    if(props.purchaseId){
+      deletePurchase.mutate({
+        id: props.purchaseId
       })
       closeModal()
     }
@@ -36,9 +34,9 @@ export default function SalesRecDeleteCard(props:SalesRecDeleteProp) {
   }
 
   return (
-      (open ? (props.salesRecId ?
+      (open ? (props.purchaseId ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-        <CardTitle heading="Sale Reconciliation" subheading="Confirm to delete this Sale Reconciliation"></CardTitle>
+        <CardTitle heading="Purchase" subheading="Confirm to delete this Purchase"></CardTitle>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       </div>
       : null) : null)

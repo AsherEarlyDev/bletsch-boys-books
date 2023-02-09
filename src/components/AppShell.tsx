@@ -1,19 +1,21 @@
 import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
 import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 
 
 const user = {
   name: 'Hypothetical Books',
   imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      'https://source.unsplash.com/9DaOYUYnOls',
 }
 const navigation = [
   {name: 'Dashboard', href: '/dashboard'},
   {name: 'Records', href: '/records'},
+  {name: 'Vendors', href: '/vendors'},
   {name: 'Sales', href: '/sales'},
-  {name: 'Documentation', href: '/documentation'},
+  {name: 'Purchases', href: '/purchases'},
+  {name: 'Documentation', href: '/documentation'}
 ]
 const userNavigation = [
   {name: 'Change Password', href: '/reset-password'},
@@ -29,16 +31,13 @@ function classNames(...classes: string[]) {
 export default function AppShell(props: any) {
     const sessionData = useSession();
 
+    async function logOut(e) {
+      const res = await signOut({callbackUrl: "/"});
+      console.log(res)
+    }
+
     return (
         <>
-          {/*
-          This example requires updating your template:
-
-          ```
-          <html class="h-full bg-gray-100">
-          <body class="h-full">
-          ```
-        */}
           <div className="min-h-full">
             <Disclosure as="nav" className="bg-gray-800">
               {({open}) => (
@@ -95,21 +94,33 @@ export default function AppShell(props: any) {
                               >
                                 <Menu.Items
                                     className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                  {userNavigation.map((item) => (
-                                      <Menu.Item key={item.name}>
-                                        {({active}) => (
-                                            <a
-                                                className={classNames(
-                                                    active ? 'bg-gray-100' : '',
-                                                    'block px-4 py-2 text-sm text-gray-700'
-                                                )}
-                                                href={item.href}
-                                            >
-                                              {item.name}
-                                            </a>
-                                        )}
-                                      </Menu.Item>
-                                  ))}
+                                  <Menu.Item key="change-password">
+                                    {({active}) => (
+                                        <a
+                                            className={classNames(
+                                                active ? 'bg-gray-100' : '',
+                                                'block px-4 py-2 text-sm text-gray-700'
+                                            )}
+                                            href="\reset-password"
+                                        >
+                                          Change Password
+                                        </a>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item key="sign-out">
+                                    {({active}) => (
+                                        <a
+                                            className={classNames(
+                                                active ? 'bg-gray-100' : '',
+                                                'block px-4 py-2 text-sm text-gray-700'
+                                            )}
+                                            onClick={logOut}
+                                            href="\"
+                                        >
+                                          Sign Out
+                                        </a>
+                                    )}
+                                  </Menu.Item>
                                 </Menu.Items>
                               </Transition>
                             </Menu>
@@ -165,6 +176,7 @@ export default function AppShell(props: any) {
                           </button>
                         </div>
                         <div className="mt-3 space-y-1 px-2">
+
                           {userNavigation.map((item) => (
                               <Disclosure.Button
                                   key={item.name}

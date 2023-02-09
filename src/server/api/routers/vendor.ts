@@ -34,29 +34,21 @@ export const vendorRouter = createTRPCRouter({
     modifyVendor: publicProcedure
     .input(
       z.object({
-        originalName: z.string(),
+        vendorId: z.string(),
         newName: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const vendorId = await ctx.prisma.vendor.findFirst({
+        await ctx.prisma.vendor.update({
           where:
           {
-            name: input.originalName
-          }
-        })
-        if (vendorId){
-          await ctx.prisma.vendor.update({
-            where:
-            {
-              id: vendorId.id
+            id: input.vendorId
+        },
+          data: {
+            name: input.newName,
           },
-            data: {
-              name: input.newName,
-            },
-          });
-        }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -65,35 +57,28 @@ export const vendorRouter = createTRPCRouter({
     deleteVendor: publicProcedure
     .input(
       z.object({
-        vendorName: z.string(),
+        vendorId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const vendorId = await ctx.prisma.vendor.findFirst({
-          where: {
-            name: input.vendorName,
-          },
-        })
-        if (vendorId){
-          const purchaseOrders = await ctx.prisma.purchaseOrder.findFirst(
+        const purchaseOrders = await ctx.prisma.purchaseOrder.findFirst(
+          {
+            where:
             {
-              where:
-              {
-                vendorId: vendorId.id
-              }
+              vendorId: input.vendorId
             }
-          );
-          if (purchaseOrders){
-            console.log("Cannot delete vendor")
           }
-          else{
-            await ctx.prisma.vendor.delete({
-              where: {
-                id: vendorId.id
-              }
-            })
-          }
+        );
+        if (purchaseOrders){
+          console.log("Cannot delete vendor")
+        }
+        else{
+          await ctx.prisma.vendor.delete({
+            where: {
+              id: input.vendorId
+            }
+          })
         }
       } catch (error) {
         console.log(error);

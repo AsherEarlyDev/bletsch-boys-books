@@ -14,6 +14,7 @@ import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from './FilterModal';
 import GenreTableRow from './TableComponents/GenreTableRow';
+import FilterableColumnHeading from './TableComponents/FilterableColumnHeading';
 
 export default function Table() {
   const BOOKS_PER_PAGE = 5
@@ -30,10 +31,11 @@ export default function Table() {
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
+  const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
-  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / BOOKS_PER_PAGE)
-  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:"asc"}).data
+  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
+  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
   
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
@@ -46,6 +48,10 @@ export default function Table() {
     if(bookInfo){
       setDisplayBookEdit(true)
     }
+  }
+  function setGenreFilter(genre: string){
+    setFilters({isbn:"", title:"", author:"", publisher:"", genre:genre})
+    setPageNumber(0)
   }
 
   function renderBookEntries() {
@@ -85,77 +91,78 @@ export default function Table() {
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <TableDetails tableName="Inventory"
-                      tableDescription="A list of all the books in inventory.">
-          <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
-          <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
-                        submitText="Add Book(s)"></AddBookModal>
-        </TableDetails>
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div
-                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-auto">
-                  <TableHeader>
+        <div className="mb-8">
+          <TableDetails tableName="Inventory"
+                        tableDescription="A list of all the books in inventory.">
+            <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
+            <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
+                          submitText="Add Book(s)"></AddBookModal>
+          </TableDetails>
+          <div className="mt-8 flex flex-col">
+            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <div
+                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-300 table-auto">
+                    <TableHeader>
 
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
-                                             firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
-                  </TableHeader>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                  {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
-                      <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
-                  )) : null}
-                  </tbody>
-                </table>
-                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                  Previous     
-                </button>
-                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                  Next
-                </button></center>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
+                                                     firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
+                    </TableHeader>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                    {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
+                        <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
+                    )) : null}
+                    </tbody>
+                  </table>
+                  <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                    Previous
+                  </button>
+                    <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
+                      Next
+                    </button></center>
+                </div>
               </div>
             </div>
           </div>
+          <div>
+            {renderBookEntries()}
+            {renderBookEdit()}
+          </div>
         </div>
-        <div>
-          {renderBookEntries()}
-          {renderBookEdit()}
-        </div>
-        <div className="px-4 sm:px-6 lg:px-8">
-        <TableDetails tableName="Genres"
-                      tableDescription="A list of all the genres.">
-          <AddGenreModal buttonText="Add Genre"
-                        submitText="Add Genre"></AddGenreModal>
-        </TableDetails>
-        </div>
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div
-                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-auto">
-                  <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setGenreSortField} label="Name"
-                                             firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
-                  </TableHeader>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                  {genres ? genres.map((genre: Genre) => (
-                       <GenreTableRow onEdit={handleBookEdit} genre={genre}></GenreTableRow>
-                  )) : null}
-                  </tbody>
-                </table>
-                <center><button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber-1)} disabled ={genrePageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                  Previous     
-                </button>
-                <button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber+1)} disabled={genrePageNumber===numberOfGenrePages-1} className="text-indigo-600 hover:text-indigo-900">
-                  Next
-                </button></center>
+        <div className="my-8">
+          <TableDetails tableName="Genres" tableDescription="A list of all the genres.">
+            <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>
+          </TableDetails>
+          <div className="mt-8 flex flex-col">
+            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <div
+                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-300 table-auto">
+                    <TableHeader>
+                      <SortedFilterableColumnHeading resetPage={setGenrePageNumber} setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
+                                                     firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
+                      <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
+                    </TableHeader>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                    {genres ? genres.map((genre: Genre) => (
+                        <GenreTableRow setGenreFilter={setGenreFilter} onEdit={handleBookEdit} genre={genre}></GenreTableRow>
+                    )) : null}
+                    </tbody>
+                  </table>
+                  <center><button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber-1)} disabled ={genrePageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                    Previous
+                  </button>
+                    <button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber+1)} disabled={genrePageNumber===numberOfGenrePages-1} className="text-indigo-600 hover:text-indigo-900">
+                      Next
+                    </button></center>
+                </div>
               </div>
             </div>
           </div>

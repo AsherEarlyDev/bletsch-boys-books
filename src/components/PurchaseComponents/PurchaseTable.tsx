@@ -109,7 +109,7 @@ export default function PurchaseTable() {
   // function renderEntries() {
   //   return <>
   //     {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
-  //           <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
+  //           <EditSalesRecModal date={date} cardType="entry" salesRecId={' '}></EditSalesRecModal>
   //     </CreateSaleEntries>: null}
   //   </>;
   // }

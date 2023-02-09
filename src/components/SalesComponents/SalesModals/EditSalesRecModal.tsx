@@ -1,44 +1,37 @@
-import ImmutableCardProp from "../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../CardComponents/MutableCardProp";
-import CardTitle from "../CardComponents/CardTitle";
-import CardGrid from "../CardComponents/CardGrid";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../CardComponents/MutableCardProp";
+import CardTitle from "../../CardComponents/CardTitle";
+import CardGrid from "../../CardComponents/CardGrid";
+import SaveCardChanges from "../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
-import { api } from '../../utils/api';
-import { SalesRec } from "../../types/salesTypes";
-import ConfirmCard from "../CardComponents/ConfirmationCard";
-import CreateSaleEntries from '../CreateEntries';
+import { api } from '../../../utils/api';
+import { SalesRec } from "../../../types/salesTypes";
+import ConfirmCard from "../../CardComponents/ConfirmationCard";
+import CreateSaleEntries from '../../CreateEntries';
 
 
 interface SalesRecProp{
   salesRecId:  string
-  cardType: string
   date: string
+  closeOut: () => void
 }
 
 
-export default function SalesRecCard(props:SalesRecProp) {
+export default function EditSalesRecModal(props:SalesRecProp) {
   const [open, setOpen] = useState(true)
   const [date, setDate] = useState(props.date)
   const [confirm, setConfirm] = useState(false)
   const [displayConfirm, setDisplayConfirm] = useState(false)
-  const newSaleRec = api.salesRec.createSaleRec.useMutation()
   const modifySaleRec = api.salesRec.modifySaleRec.useMutation()
 
 
   function saveBook(){
     if (confirm){
       if(props.salesRecId && props.date){
-        if (props.cardType === "entry"){
-          newSaleRec.mutate({date: props.date})
-        }
-        else{
-          modifySaleRec.mutate({
-              date: date,
-              saleRecId: props.salesRecId
-            })
-        }
-        
+        modifySaleRec.mutate({
+          date: date,
+          saleRecId: props.salesRecId
+        })
         closeModal()
       }
       else{
@@ -53,6 +46,7 @@ export default function SalesRecCard(props:SalesRecProp) {
 
   function closeModal(){
     setOpen(false)
+    props.closeOut
   }
 
   function renderConfirmation(){
@@ -75,7 +69,7 @@ export default function SalesRecCard(props:SalesRecProp) {
         </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
         <div>
-          {props.cardType === 'edit' ? renderConfirmation(): null}
+          {renderConfirmation()}
         </div>
       </div>
       : null)

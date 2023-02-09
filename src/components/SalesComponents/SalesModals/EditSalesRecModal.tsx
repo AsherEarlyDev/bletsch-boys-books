@@ -12,34 +12,26 @@ import CreateSaleEntries from '../../CreateEntries';
 
 interface SalesRecProp{
   salesRecId:  string
-  cardType: string
   date: string
   closeOut: () => void
 }
 
 
-export default function SalesRecCard(props:SalesRecProp) {
+export default function EditSalesRecModal(props:SalesRecProp) {
   const [open, setOpen] = useState(true)
   const [date, setDate] = useState(props.date)
   const [confirm, setConfirm] = useState(false)
   const [displayConfirm, setDisplayConfirm] = useState(false)
-  const newSaleRec = api.salesRec.createSaleRec.useMutation()
   const modifySaleRec = api.salesRec.modifySaleRec.useMutation()
 
 
   function saveBook(){
     if (confirm){
       if(props.salesRecId && props.date){
-        if (props.cardType === "entry"){
-          newSaleRec.mutate({date: props.date})
-        }
-        else{
-          modifySaleRec.mutate({
-              date: date,
-              saleRecId: props.salesRecId
-            })
-        }
-        
+        modifySaleRec.mutate({
+          date: date,
+          saleRecId: props.salesRecId
+        })
         closeModal()
       }
       else{
@@ -77,7 +69,7 @@ export default function SalesRecCard(props:SalesRecProp) {
         </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
         <div>
-          {props.cardType === 'edit' ? renderConfirmation(): null}
+          {renderConfirmation()}
         </div>
       </div>
       : null)

@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { api } from "../../utils/api";
 import TableDetails from "../TableComponents/TableDetails";
-import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading";
 import TableHeader from "../TableComponents/TableHeader";
-import SalesRecTableRow from '../TableComponents/SalesRecTableRow';
-import SalesRecCard from './SalesRecCard';
+import SalesRecTableRow from "../TableComponents/SalesRecTableRow";
+import EditSalesRecModal from "./SalesModals/EditSalesRecModal";
 import CreateSaleEntries from '../CreateEntries';
-import AddModal from './AddSaleRecModal';
-import PrimaryButton from '../BasicComponents/PrimaryButton';
 import SalesRecDeleteCard from './SalesRecDeleteCard';
 import SaleDetailsCard from './SalesCard';
-import AddSaleRecModal from './AddSaleRecModal';
+import AddSaleRecModal from "./SalesModals/AddSaleRecModal";
 import GenSalesReportModal from './SalesReportModal';
 import SalesReport from './SalesReport';
 import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
@@ -23,7 +20,6 @@ export default function SalesTable() {
   const ENTRIES_PER_PAGE = 5
   const [sales, setSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
-  const [date, setDate] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [currRec, setCurrRec] = useState({
@@ -32,7 +28,6 @@ export default function SalesTable() {
   })
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("id")
-//   const [displayEntries, setDisplayEntries] = useState(false)
   const salesRecs: any[] = api.salesRec.getSaleRecDetails
   .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
@@ -44,8 +39,6 @@ export default function SalesTable() {
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
 
   const handleSaleRecSubmit = async (date: string) => {
-    // setDate(date)
-    // setDisplayEntries(true)
     if (createSalesRec){
       createSalesRec.mutate({
         date: date
@@ -58,14 +51,14 @@ export default function SalesTable() {
       for (const rec of salesRecs){
         if (rec.id === id){
           setCurrRec({
-            id: rec.id, 
+            id: rec.id,
             date: rec.date,
           })
         }
       }
       setDisplayEdit(true)
     }
-    
+
   }
 
   const handleDelete = async (id:string) => {
@@ -73,7 +66,7 @@ export default function SalesTable() {
       for (const rec of salesRecs){
         if (rec.id === id){
           setCurrRec({
-            id: rec.id, 
+            id: rec.id,
             date: rec.date,
           })
         }
@@ -86,6 +79,7 @@ export default function SalesTable() {
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
+          console.log(rec)
           setSales(rec.sales)
         }
       }
@@ -105,15 +99,15 @@ export default function SalesTable() {
   }
 
   const generateReport = async (startDate: string, endDate: string) =>{
-      setEndDate(endDate)
-      setStartDate(startDate)
-      setSalesReport(true)
+    setEndDate(endDate)
+    setStartDate(startDate)
+    setSalesReport(true)
   }
 
   // function renderEntries() {
   //   return <>
   //     {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
-  //           <SalesRecCard date={date} cardType="entry" salesRecId={' '}></SalesRecCard>
+  //           <EditSalesRecModal date={date} cardType="entry" salesRecId={' '}></EditSalesRecModal>
   //     </CreateSaleEntries>: null}
   //   </>;
   // }
@@ -121,49 +115,49 @@ export default function SalesTable() {
   function renderEdit() {
     return <>
       {(displayEdit && currRec) ?
-          <CreateSaleEntries closeStateFunction={setDisplayEdit} submitText="Edit Sale Rec"> 
-            <SalesRecCard date={currRec.date} cardType="edit" salesRecId={currRec.id}></SalesRecCard></CreateSaleEntries> : null}
-  </>;
+          <CreateSaleEntries closeStateFunction={setDisplayEdit} submitText="Edit Sale Rec">
+            <EditSalesRecModal date={currRec.date} cardType="edit" salesRecId={currRec.id}></EditSalesRecModal></CreateSaleEntries> : null}
+    </>;
   }
 
   function renderDelete() {
     return <>
       {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale Reconciliation'>
-            <SalesRecDeleteCard cardType="delete" salesRecId={currRec.id}></SalesRecDeleteCard>
+        <SalesRecDeleteCard cardType="delete" salesRecId={currRec.id}></SalesRecDeleteCard>
       </CreateSaleEntries>: null}
-  </>;
+    </>;
   }
 
   function renderDetails() {
     return <>
       {displayDetails ? (sales ? (
           <CreateSaleEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
-            <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
-  </>;
+              <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
+    </>;
   }
 
   function renderAdd() {
     const dummySale = {
-        id: '',
-        saleReconciliationId: saleRecId,
-        price: 0,
-        quantity: 0,
-        bookId: '',
-        subtotal: 0
-      }
-      
-    
+      id: '',
+      saleReconciliationId: saleRecId,
+      price: 0,
+      quantity: 0,
+      bookId: '',
+      subtotal: 0
+    }
+
+
     return <>
-      {(displayAdd && saleRecId)? 
-          <CreateSaleEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
+      {(displayAdd && saleRecId)?
+          <CreateSaleEntries closeStateFunction={setDisplayAdd} submitText="Add Sale">
             <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
-  </>;
+    </>;
   }
 
   function renderSalesReport(){
     return <>
       {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
-  </>;
+    </>;
   }
 
   return (
@@ -171,9 +165,9 @@ export default function SalesTable() {
         <TableDetails tableName="Sales Reconciliations"
                       tableDescription="A list of all the Sales Reconciliations and Sales.">
           <AddSaleRecModal showSaleRecEdit={handleSaleRecSubmit} buttonText="Create Sale Reconciliation"
-                        submitText="Create Sale Reconciliation"></AddSaleRecModal>
+                           submitText="Create Sale Reconciliation"></AddSaleRecModal>
           <GenSalesReportModal genSalesReport={generateReport} buttonText="Generate Sales Report"
-                        submitText="Generate Sales Report"></GenSalesReportModal>
+                               submitText="Generate Sales Report"></GenSalesReportModal>
         </TableDetails>
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -182,16 +176,16 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id" 
-                    label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date" 
-                    label="Date Created"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="uniqueBooks" 
-                    label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks" 
-                    label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="revenue" 
-                    label="Total Revenue"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id"
+                                                   label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date"
+                                                   label="Date Created"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="uniqueBooks"
+                                                   label="Unique Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks"
+                                                   label="Total Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="revenue"
+                                                   label="Total Revenue"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {salesRecs ? salesRecs.map((rec) => (
@@ -200,11 +194,11 @@ export default function SalesTable() {
                   </tbody>
                 </table>
                 <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                  Previous     
+                  Previous
                 </button>
-                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                  Next
-                </button></center>
+                  <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
+                    Next
+                  </button></center>
               </div>
             </div>
           </div>

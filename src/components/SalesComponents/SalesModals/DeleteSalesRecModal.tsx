@@ -6,33 +6,32 @@ import PrimaryButton from "../../BasicComponents/PrimaryButton";
 import {useState} from "react";
 
 
-interface DeleteVendorProp{
-  vendorId:  string
-  vendorName: string
+interface DeleteSalesRecProp{
+  salesRecId:  string
   closeOut: () => void
 }
 
 
-export default function DeleteVendorModal(props:DeleteVendorProp) {
-  const deleteVendor = api.vendor.deleteVendor.useMutation();
+export default function DeleteSalesRecModal(props:DeleteSalesRecProp) {
   const [open, setOpen] = useState(true)
-  const message = ("Are you sure you want to delete " + props.vendorName + " from the vendor database? This action cannot be undone.")
+  const deleteSaleRec = api.salesRec.deleteSaleRec.useMutation()
+  const message = ("Are you sure you want to delete this sales rec from the database? This action cannot be undone.")
 
   function closeModal(){
     setOpen(false)
     props.closeOut()
   }
 
-  function handleDeleteVendor(){
-    if(props.vendorId){
-      deleteVendor.mutate({
-        vendorId: props.vendorId
+  function handleDeleteSalesRec(){
+    if(props.salesRecId){
+      deleteSaleRec.mutate({
+        saleRecId: props.salesRecId
       })
       closeModal()
     }
     else{
-        alert("error")
-      }
+      alert("Error")
+    }
   }
 
   return (
@@ -42,8 +41,7 @@ export default function DeleteVendorModal(props:DeleteVendorProp) {
               <CardTitle heading="Delete Vendor..." subheading={message}></CardTitle>
               <div className="gap-5 flex flex-row justify-around px-4 py-4 sm:px-6">
                 <SecondaryButton onClick={props.closeOut} buttonText="Cancel"></SecondaryButton>
-                <PrimaryButton onClick={handleDeleteVendor}
-                               buttonText="Delete Vendor"></PrimaryButton>
+                <PrimaryButton onClick={handleDeleteSalesRec} buttonText="Delete Sales Rec."></PrimaryButton>
               </div>
             </div>) : null}
       </>

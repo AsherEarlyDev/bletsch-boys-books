@@ -9,7 +9,8 @@ import { SalesRec } from "../../types/salesTypes";
 
 
 interface SaleDeleteProp{
-  salesId:  string
+  salesId:  string,
+  onClose: (close: boolean)=>void
 }
 
 
@@ -24,6 +25,7 @@ export default function SaleDeleteCard(props:SaleDeleteProp) {
         id: props.salesId
       })
       closeModal()
+      props.onClose(false)
     }
     else{
       alert("Error")

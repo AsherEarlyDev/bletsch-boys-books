@@ -20,6 +20,7 @@ interface SalesProp{
 
 
 export default function SaleDetailsCard(props:SalesProp) {
+  
   const [open, setOpen] = useState(true)
   const [isbn, setIsbn] = useState(props.sale.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: props.sale.bookId}).data
@@ -37,6 +38,7 @@ export default function SaleDetailsCard(props:SalesProp) {
 
 
   function saveBook(){
+    console.log("HERE")
     if (confirm){
       if(props.sale){
         if (props.cardType === 'edit'){
@@ -111,7 +113,7 @@ export default function SaleDetailsCard(props:SalesProp) {
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
-            <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+            <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
             <div>
               {renderDelete()}
               {renderConfirmation()}

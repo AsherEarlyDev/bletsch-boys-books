@@ -79,7 +79,7 @@ export default function SalesTable() {
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
-          console.log(rec)
+          console.log(rec.sales)
           setSales(rec.sales)
         }
       }

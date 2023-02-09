@@ -1,30 +1,32 @@
 import { useState } from "react";
 import { api } from "../utils/api";
+import SuccessAlert from "./BasicComponents/SuccessAlert";
 
 export default function PasswordChange() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [alert, toggleAlert] = useState(false);
   const adminPass = api.admin.changePassword.useMutation();
-    function handlePasswordSubmit(pass: string, confirmPass: string){
-      console.log(pass)
-      if (pass === confirmPass){
-        adminPass.mutate({
-          password: pass
-        });
-      }
+  function handlePasswordSubmit(pass: string, confirmPass: string){
+    if (pass === confirmPass){
+      adminPass.mutate({
+        password: pass
+      });
+      toggleAlert(true)
     }
+  }
+
+  function closeAlert(){
+    toggleAlert(false)
+  }
+
+
+
 
   return (
       <>
-        {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-50">
-        <body class="h-full">
-        ```
-      */}
         <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+          {alert ? <SuccessAlert message="Password change success." messageDetails="You have successfully changed the administration password." toggleAlert={closeAlert}></SuccessAlert> : null}
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Set a new password.</h2>
           </div>

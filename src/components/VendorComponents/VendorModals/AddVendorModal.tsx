@@ -18,7 +18,7 @@ export default function AddVendorModal(props: VendorModalProp) {
     setIsOpen(true)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  function handleAddVendorSubmission(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const vendorName = formData.get("vendorName") as string
@@ -63,7 +63,7 @@ export default function AddVendorModal(props: VendorModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <form method="post" onSubmit={handleSubmit}>
+                    <form method="post" onSubmit={handleAddVendorSubmission}>
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
@@ -71,13 +71,12 @@ export default function AddVendorModal(props: VendorModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
-                            rows={1}
-                            name="vendorName"
-                            id="vendorName"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
+                          <input
+                              name="vendorName"
+                              id="vendorName"
+                              required={true}
+                              className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:border focus:ring-indigo-500 sm:text-sm py-1"
+                          />
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

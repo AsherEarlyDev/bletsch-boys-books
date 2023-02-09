@@ -16,20 +16,19 @@ export default function Table() {
   const BOOKS_PER_PAGE = 5
   const [isbns, setIsbns] = useState<string[]>([])
   const bookInfo = api.books.findBooks.useQuery(isbns).data
-  console.log("BookInfo: "+bookInfo)
   const [displayBookEntries, setDisplayBookEntries] = useState(false)
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery().data / BOOKS_PER_PAGE)
-  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+  const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
     if (bookInfo) {
       setDisplayBookEntries(true);
     }
   }
-
   const handleBookEdit = async (isbn:string) => {
     setIsbns([isbn])
     if(bookInfo){
@@ -86,8 +85,7 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Title"
-                                             firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} label="Title" firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading sortFields={setSortField} label="Author(s)" databaseLabel="author"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>

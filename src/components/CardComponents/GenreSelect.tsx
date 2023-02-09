@@ -3,14 +3,7 @@ import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { api } from '../../utils/api'
 
-const genres = [
-  { id: 1, name: 'Comedy' },
-  { id: 2, name: 'Horror' },
-  { id: 3, name: 'Biography' },
-  { id: 4, name: 'History' },
-  { id: 5, name: 'Novel' },
-  { id: 6, name: 'Poetry' },
-]
+
 
 export default function GenreSelect(props:{saveFunction: any, defaultValue:string}) {
   const [selected, setSelected] = useState('')

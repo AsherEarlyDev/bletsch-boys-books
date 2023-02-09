@@ -40,7 +40,8 @@ export type editableBook = {
     pageCount?: number | null,
     genre?: string,
     retailPrice?: number,
-    inventory: number
+    inventory: number,
+    authorNames: string
 }
 
 export type completeBook = {

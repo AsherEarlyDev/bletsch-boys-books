@@ -12,6 +12,7 @@ import { Dialog } from '@headlessui/react'
 import HeadingPanel from './BasicComponents/HeadingPanel';
 import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
+import FilterModal from './FilterModal';
 import GenreTableRow from './TableComponents/GenreTableRow';
 
 export default function Table() {
@@ -23,9 +24,10 @@ export default function Table() {
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
-  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery().data / BOOKS_PER_PAGE)
-
-  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"asc"}).data
+  const [sortOrder, setSortOrder] = useState("asc")
+  const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
+  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
+  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
@@ -49,7 +51,7 @@ export default function Table() {
     return <>
       <div>
         {displayBookEntries ? (bookInfo ? (
-          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEdit}> 
+          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEntries}> 
             {bookInfo.externalBooks.length > 0 ? 
             <div><HeadingPanel displayText="New Books"></HeadingPanel>
              {bookInfo.externalBooks.map((book: editableBook) => (
@@ -84,6 +86,7 @@ export default function Table() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Inventory"
                       tableDescription="A list of all the books in inventory.">
+          <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
           <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
                         submitText="Add Book(s)"></AddBookModal>
         </TableDetails>
@@ -94,12 +97,14 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Title" firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Author(s)" databaseLabel="author"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
+
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
+                                             firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (

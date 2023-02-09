@@ -159,21 +159,26 @@ export const salesReportRouter = createTRPCRouter({
             })
 
             for (const sale of sales){
+              const book = await ctx.prisma.book.findFirst({
+                where:{
+                  isbn: sale.bookId
+                }
+              })
               if (books.get(sale.bookId)){
                 let updatedNumBooks = books.get(sale.bookId)?.numBooks + sale.quantity 
                 let rev = sale.quantity * sale.price
                 let currRev = books.get(sale.bookId)?.revenue
-                if(currRev)
+                if(currRev && book)
                   books.set(sale.bookId, {numBooks: updatedNumBooks, revenue: rev+currRev, 
-                    recentCost: 0, profit: 0})
+                    recentCost: 0, profit: 0, title: book.title})
               }
               else{
                 books.set(sale.bookId, {numBooks: sale.quantity, revenue: sale.quantity * sale.price, 
-                  recentCost: 0, profit: 0})
+                  recentCost: 0, profit: 0, title: book.title})
               }
             }
         }
-
+        
         for (const order of purchaseOrders){
           const purchases = await ctx.prisma.purchase.findMany({
             where:
@@ -181,17 +186,27 @@ export const salesReportRouter = createTRPCRouter({
                 purchaseOrderId: order.id
             }
             })
+            console.log(purchases)
             for (const purchase of purchases){
+              
                 let booksObj = books.get(purchase.bookId)
-                if (booksObj)
-                books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
-                  recentCost: purchase.price * booksObj.numBooks, profit: booksObj.revenue - purchase.price * booksObj.numBooks})
+                if (booksObj){
+                  console.log("Revenue: "+booksObj.revenue)
+                  console.log("Price: "+purchase.price)
+                  console.log("NumBooks: "+booksObj.numBooks)
+                  books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
+                    recentCost: purchase.price * booksObj.numBooks, profit: booksObj.revenue - purchase.price * booksObj.numBooks,
+                     title: booksObj.title})
+                }
             }
         }
         let results = []
-        books.forEach((value,key)=>{
+        console.log(books)
+        books.forEach( (value,key)=> {
+          
           const res = {
             isbn: key,
+            title: value.title,
             numBooks: value.numBooks,
             recentCost: value.recentCost,
             revenue: value.revenue,

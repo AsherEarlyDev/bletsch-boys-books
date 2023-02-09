@@ -24,7 +24,8 @@ export const purchaseOrderRouter = createTRPCRouter({
                 await ctx.prisma.purchaseOrder.create({
                     data: {
                         date: new Date(input.date),
-                        vendorId: input.vendorId
+                        vendorId: input.vendorId,
+                        vendorName: vendor.vendorName
                     },
                 });
             }
@@ -32,8 +33,24 @@ export const purchaseOrderRouter = createTRPCRouter({
           console.log(error);
         }
       }),
+    getNumPurchaseOrder: publicProcedure
+    
+   .query(async ({ ctx, input }) => {
+     try {
+         const orders = await ctx.prisma.purchaseOrder.findMany()
+         return orders.length
+     } catch (error) {
+       console.log(error);
+     }
+   }),
 
    getPurchaseOrderDetails: publicProcedure
+      .input(z.object({
+        pageNumber: z.number(),
+        entriesPerPage: z.number(),
+        sortBy: z.string(),
+        descOrAsc: z.string()
+      }))
      .query(async ({ ctx, input }) => {
        try {
            const purchaseOrderArray = [];
@@ -41,58 +58,69 @@ export const purchaseOrderRouter = createTRPCRouter({
            for (const pur of purchaseOrders){
               const purchaseOrderId = pur.id
               const purchases = await ctx.prisma.purchase.findMany({
-                  where:
-                  {
-                    purchaseOrderId: purchaseOrderId
-                  }
-                })
-              const purchaseOrder: any = await ctx.prisma.purchaseOrder.findFirst(
-                {
-                  where: {
-                    id: purchaseOrderId
-                  }
+                where: {
+                  purchaseOrderId: purchaseOrderId
                 }
-              )
-              if (purchases && purchaseOrder){
-                  const purchasesArray: any[] = [];
+              })
+              if (purchases){
+                  let unique = new Set()
                   let total = 0
-                  let unique: string[] = []
                   let cost = 0
-                  for (const purchase of purchases){
-                    total = total + purchase.quantity
-                    const subtotal = (purchase.quantity * purchase.price)
-                    cost = cost + subtotal
-                    const sub = {
-                      subtotal: subtotal,
-                      purchase: purchase,
-                    }
-                    unique.push(purchase.bookId)
-                    purchasesArray.push(sub)
-                  }
-                  let uniqueSet = new Set(unique)
+                  purchases.map((purch)=>{
+                    unique.add(purch.bookId)
+                    total = total + purch.quantity
+                    cost = cost + purch.quantity*purch.price
+                  })
 
-                  const vendor = await ctx.prisma.vendor.findFirst({
+
+                  await ctx.prisma.purchaseOrder.update({
                     where:{
-                      id: purchaseOrder.vendorId
+                      id: purchaseOrderId
+                    },
+                    data:{
+                      uniqueBooks: unique.size,
+                      cost: cost,
+                      totalBooks: total
                     }
                   })
 
-                  const order = {
-                    id: purchaseOrderId,
-                    vendorId: purchaseOrder.vendorId,
-                    vendorName: vendor.name,
-                    date: (purchaseOrder.date.getMonth()+1)+"-"+(purchaseOrder.date.getDay())+"-"+purchaseOrder.date.getFullYear(),
-                    purchases: purchasesArray,
-                    totalBooks: total,
-                    uniqueBooks: uniqueSet.size,
-                    cost: cost
-                  }
-                  purchaseOrderArray.push(order);
               }
               else{
                 console.log("Error in finding purchases or purchaseOrder")
               }
             }
+            const sortedPurchaseOrders = await ctx.prisma.purchaseOrder.findMany({
+                take: input.entriesPerPage,
+                skip: input.pageNumber*input.entriesPerPage,
+                orderBy: {
+                  [input.sortBy]: input.descOrAsc
+                }
+            })
+
+            for (const sorted of sortedPurchaseOrders){
+              const vendor = await ctx.prisma.vendor.findFirst({
+                where:{
+                  id: sorted.vendorId
+                }
+              })
+              const purch = await ctx.prisma.purchase.findMany({
+                where: {
+                  purchaseOrderId: sorted.id
+                }
+              })
+              const order = {
+                id: sorted.id,
+                vendorId: sorted.vendorId,
+                vendorName: vendor.name,
+                date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+                purchases: purch,
+                totalBooks: sorted.totalBooks,
+                uniqueBooks: sorted.uniqueBooks,
+                cost: sorted.cost
+              }
+              purchaseOrderArray.push(order);
+            }
+            
             return purchaseOrderArray
        } catch (error) {
          console.log(error);
@@ -144,7 +172,6 @@ export const purchaseOrderRouter = createTRPCRouter({
             }
           })
           const inventory: number = book.inventory - purch.quantity
-          console.log(inventory)
           if (inventory >= 0){
             await ctx.prisma.purchase.delete({
               where:{

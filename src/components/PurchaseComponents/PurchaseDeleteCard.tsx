@@ -8,7 +8,8 @@ import { api } from '../../utils/api';
 
 
 interface PurchaseDeleteProp{
-  purchaseId:  string
+  purchaseId:  string,
+  onClose: (close: boolean)=> void
 }
 
 
@@ -23,6 +24,7 @@ export default function PurchaseDeleteCard(props:PurchaseDeleteProp) {
         id: props.purchaseId
       })
       closeModal()
+      props.onClose(false)
     }
     else{
       alert("Error")

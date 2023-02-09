@@ -28,29 +28,32 @@ export default function PurchasesCard(props:PurchasesProp) {
   const deleteOrder = api.purchaseOrder.deletePurchaseOrder.useMutation()
   const vendors = api.vendor.getVendors.useQuery().data
 
-
-
-
   function saveBook(){
-    if(confirm){
+    
       if(props.vendorName && props.date && props.purchaseOrderId){
         if (props.cardType === 'edit'){
-          let vendorId
-          
-          for (const vendor of vendors){
-              if (vendor.name === vendorName){
-                  vendorId = vendor.id
+          if(confirm){
+              let vendorId
+              
+              for (const vendor of vendors){
+                  if (vendor.name === vendorName){
+                      vendorId = vendor.id
+                  }
               }
-          }
-          if (vendorId){
-              editOrder.mutate({
-                  date: date,
-                  purchaseOrderId: props.purchaseOrderId,
-                  vendorId: vendorId
-                })
-          }
+              if (vendorId){
+                  editOrder.mutate({
+                      date: date,
+                      purchaseOrderId: props.purchaseOrderId,
+                      vendorId: vendorId
+                    })
+              }
+              else{
+                  alert("No vendor under that name")
+              }
+              closeModal()
+         }
           else{
-              alert("No vendor under that name")
+            setDisplayConfirm(true)
           }
           
         }
@@ -58,16 +61,14 @@ export default function PurchasesCard(props:PurchasesProp) {
           deleteOrder.mutate({
             purchaseOrderId: props.purchaseOrderId
           })
+          closeModal()
         }
-        closeModal()
+        
       }
       else{
         alert("error")
       }
-    }
-    else{
-      setDisplayConfirm(true)
-    }
+    
     
   }
 
@@ -78,7 +79,7 @@ export default function PurchasesCard(props:PurchasesProp) {
   function renderConfirmation(){
     return <>
     {(displayConfirm) ?
-        <CreateEntries closeStateFunction={setDisplayConfirm} submitText="Confirm"> 
+        <CreateEntries closeStateFunction={setDisplayConfirm} submitText="Edit Purchase Order"> 
           <ConfirmCard onConfirm={setConfirm} confirmHeading="Purchase Order Edit Confirmation"
           confirmMessage="Confirm and Resubmit to make changes to Purchase Order"></ConfirmCard></CreateEntries> : null}
     </>;

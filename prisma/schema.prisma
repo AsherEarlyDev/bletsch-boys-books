@@ -81,9 +81,11 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
+
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
   revenue     Int      @default(0)
+
   sales       Sale[]
 }
 

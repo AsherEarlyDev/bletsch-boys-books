@@ -3,7 +3,8 @@ export type topSellers = {
     numBooks: number,
     revenue: number,
     recentCost: number,
-    profit: number
+    profit: number,
+    title: string
 }
 
 export type Revenue = {
@@ -19,7 +20,7 @@ export type Cost = {
 export type SalesRec = {
     id: string,
     date: string,
-    sales: any[],
+    sales: Sale[],
     totalBooks: number,
     uniqueBooks: number,
     revenue: number
@@ -30,5 +31,6 @@ export type Sale = {
     bookId: string,
     saleReconciliationId: string,
     quantity: number,
-    price: number
+    price: number,
+    subtotal: number
 }

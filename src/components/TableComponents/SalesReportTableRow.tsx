@@ -22,6 +22,7 @@ interface TotalTableRowProp{
 interface TopBooksTableRowProp{
     topBooksInfo: {
         isbn: string
+        title: string
         numBooks: number,
         recentCost: number,
         revenue: number,
@@ -46,6 +47,7 @@ export function TopSellingTableRow(props:TopBooksTableRowProp) {
   return (
       <tr>
         <TableEntry firstEntry={true}>{props.topBooksInfo.isbn}</TableEntry>
+        <TableEntry>{props.topBooksInfo.title}</TableEntry>
         <TableEntry>{props.topBooksInfo.numBooks}</TableEntry>
         <TableEntry>{props.topBooksInfo.revenue}</TableEntry>
         <TableEntry>{props.topBooksInfo.recentCost}</TableEntry>

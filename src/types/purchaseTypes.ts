@@ -19,5 +19,6 @@ export type Purchase = {
     bookId: string,
     purchaseOrderId: string,
     quantity: number,
-    price: number
+    price: number,
+    subtotal: number
 }

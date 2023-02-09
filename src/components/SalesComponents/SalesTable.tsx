@@ -13,13 +13,14 @@ import SaleDetailsCard from './SalesCard';
 import AddSaleRecModal from './AddSaleRecModal';
 import GenSalesReportModal from './SalesReportModal';
 import SalesReport from './SalesReport';
+import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
 
 
 
 
 
 export default function SalesTable() {
-  const salesRecs = api.salesRec.getSaleRecDetails.useQuery().data;
+  const ENTRIES_PER_PAGE = 5
   const [sales, setSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [date, setDate] = useState('')
@@ -29,7 +30,12 @@ export default function SalesTable() {
     id: '',
     date: '',
   })
-  const [displayEntries, setDisplayEntries] = useState(false)
+  const [pageNumber, setPageNumber] = useState(0)
+  const [sortField, setSortField] = useState("id")
+//   const [displayEntries, setDisplayEntries] = useState(false)
+  const salesRecs: any[] = api.salesRec.getSaleRecDetails
+  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+  const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEdit, setDisplayEdit] = useState(false)
   const [displayDelete, setDelete] = useState(false)
   const [displayDetails, setDisplayDetails] = useState(false)
@@ -132,25 +138,25 @@ export default function SalesTable() {
     return <>
       {displayDetails ? (sales ? (
           <CreateSaleEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
-            <SaleDetailsCard cardType={'edit'} saleComplete={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
+            <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
   </>;
   }
 
   function renderAdd() {
     const dummySale = {
-      sale: {
         id: '',
         saleReconciliationId: saleRecId,
         price: 0,
         quantity: 0,
-        bookId: ''
-      },
-      subtotal: 0
-    }
+        bookId: '',
+        subtotal: 0
+      }
+      
+    
     return <>
       {(displayAdd && saleRecId)? 
           <CreateSaleEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
-            <SaleDetailsCard cardType={'entry'} saleComplete={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
+            <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
   </>;
   }
 
@@ -176,12 +182,16 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <FilterableColumnHeading label="Sale Reconciliation ID"
-                                             firstEntry={true}></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Date Created"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Unique Books"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Books"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Revenue"></FilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id" 
+                    label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date" 
+                    label="Date Created"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="uniqueBooks" 
+                    label="Unique Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks" 
+                    label="Total Books"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="revenue" 
+                    label="Total Revenue"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {salesRecs ? salesRecs.map((rec) => (
@@ -189,6 +199,12 @@ export default function SalesTable() {
                   )) : null}
                   </tbody>
                 </table>
+                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                  Previous     
+                </button>
+                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
+                  Next
+                </button></center>
               </div>
             </div>
           </div>

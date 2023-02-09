@@ -107,6 +107,7 @@ export default function SalesReport(props:salesReportProps){
                 <TableHeader>
                     <FilterableColumnHeading label="Book ISBN"
                                              firstEntry={true}></FilterableColumnHeading>
+                    <FilterableColumnHeading label="Book Title"></FilterableColumnHeading>
                     <FilterableColumnHeading label="Number of Books"></FilterableColumnHeading>
                     <FilterableColumnHeading label="Total Revenue"></FilterableColumnHeading>
                     <FilterableColumnHeading label="Total Cost Most-Recent"></FilterableColumnHeading>
@@ -115,7 +116,7 @@ export default function SalesReport(props:salesReportProps){
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {topSellers ? topSellers.map((result) => (
                       <TopSellingTableRow topBooksInfo={{
-                        isbn: result.isbn, numBooks: result.numBooks, recentCost: result.recentCost, revenue: result.revenue, profit: result.profit}}></TopSellingTableRow>
+                        isbn: result.isbn, title: result.title, numBooks: result.numBooks, recentCost: result.recentCost, revenue: result.revenue, profit: result.profit}}></TopSellingTableRow>
                     )) : null}
                   </tbody>
                 </table>

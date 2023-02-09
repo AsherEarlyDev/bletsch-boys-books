@@ -26,7 +26,8 @@ export const purchaseRouter = createTRPCRouter({
                        purchaseOrderId: input.purchaseOrderId,
                        bookId: input.isbn,
                        quantity: parseInt(input.quantity),
-                       price: parseFloat(input.price)
+                       price: parseFloat(input.price),
+                       subtotal: parseInt(input.quantity)*parseFloat(input.price)
                     },
                 });
                 await ctx.prisma.book.update({
@@ -73,6 +74,7 @@ export const purchaseRouter = createTRPCRouter({
           })
           const change: number = parseInt(input.quantity) - purchase.quantity 
           if (book.inventory + change >= 0){
+            console.log()
             await ctx.prisma.book.update({
               where:{
                 isbn: book.isbn
@@ -90,7 +92,8 @@ export const purchaseRouter = createTRPCRouter({
               purchaseOrderId: input.purchaseOrderId,
               bookId: input.isbn,
               quantity: parseInt(input.quantity),
-              price: parseFloat(input.price)
+              price: parseFloat(input.price),
+              subtotal: parseInt(input.quantity)*parseFloat(input.price)
             },
             });
           }

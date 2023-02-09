@@ -12,7 +12,7 @@ interface FilterableColumnHeadingInterface  {
   setOrder: any
 }
 
-export default function FilterableColumnHeading(props: FilterableColumnHeadingInterface) {
+export default function SortedFilterableColumnHeading(props: FilterableColumnHeadingInterface) {
 function flipOrder(){
   if(props.currentField===props.databaseLabel){
     if(props.currentOrder === "desc") props.setOrder("asc")

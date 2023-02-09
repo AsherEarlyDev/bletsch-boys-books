@@ -21,6 +21,16 @@ export const salesRecRouter = createTRPCRouter({
           console.log(error);
         }
       }),
+
+    getNumSalesRec: publicProcedure
+   .query(async ({ ctx, input }) => {
+     try {
+         const recs = await ctx.prisma.saleReconciliation.findMany()
+         return recs.length
+     } catch (error) {
+       console.log(error);
+     }
+   }),
     
     getSaleRec: publicProcedure
     .input(
@@ -44,49 +54,69 @@ export const salesRecRouter = createTRPCRouter({
     }),
 
    getSaleRecDetails: publicProcedure
+      .input(z.object({
+        pageNumber: z.number(),
+        entriesPerPage: z.number(),
+        sortBy: z.string(),
+        descOrAsc: z.string()
+      }))
      .query(async ({ ctx, input }) => {
        try {
         const salesRecArray: SalesRec[] = []
         const salesRecs = await ctx.prisma.saleReconciliation.findMany()
         for (const salesRec of salesRecs){
+            
             const salesRecId = salesRec.id
             const sales = await ctx.prisma.sale.findMany({
-                where:
-                {
-                    saleReconciliationId: salesRecId
-                }
-                })
-            if (sales && salesRec){
-                const salesArray: any[] = [];
-                let total = 0
-                let unique: string[] = []
-                let revenue = 0
-                for (const sale of sales){
-                  total = total + parseInt(sale.quantity)
-                  const subtotal = (parseInt(sale.quantity) * parseFloat(sale.price))
-                  revenue = revenue + subtotal
-                  const sub = {
-                    subtotal: subtotal,
-                    sale: sale,
-                  }
-                  unique.push(sale.bookId)
-                  salesArray.push(sub)
-                }
-                let uniqueSet = new Set(unique)
-                const rec = {
-                  id: salesRecId,
-                  date: (salesRec.date.getMonth()+1)+"-"+(salesRec.date.getDate())+"-"+salesRec.date.getFullYear(),
-                  sales: salesArray,
-                  totalBooks: total,
-                  uniqueBooks: uniqueSet.size,
-                  revenue: revenue
-                }
+              where: {
+                saleReconciliationId: salesRecId
+              }
+              
+            })
+            if (sales){
+              let unique = new Set()
+              let total = 0
+              let revenue = 0
+              sales.map((sale)=>{
+                unique.add(sale.bookId)
+                total = total + sale.quantity
+                revenue = revenue + sale.quantity*sale.price
+              })
 
-                salesRecArray.push(rec)
+
+              await ctx.prisma.saleReconciliation.update({
+                where:{
+                  id: salesRecId
+                },
+                data:{
+                  uniqueBooks: unique.size,
+                  revenue: revenue,
+                  totalBooks: total
+                }
+              })
             }
             else{
                 console.log("Error in finding sales or saleRec")
             }
+          }
+          const sortedSaleRecs = await ctx.prisma.saleReconciliation.findMany({
+            take: input.entriesPerPage,
+            skip: input.pageNumber * input.entriesPerPage,
+            orderBy: {
+              [input.sortBy]: input.descOrAsc
+            }
+        })
+
+          for (const sorted of sortedSaleRecs){
+            const rec = {
+              id: sorted.id,
+              date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+              sales: sorted.sales,
+              totalBooks: sorted.totalBooks,
+              uniqueBooks: sorted.uniqueBooks,
+              revenue: sorted.revenue
+            }
+            salesRecArray.push(rec);
           }
           return salesRecArray
        } catch (error) {

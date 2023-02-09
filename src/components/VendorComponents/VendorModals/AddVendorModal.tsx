@@ -18,7 +18,7 @@ export default function AddVendorModal(props: VendorModalProp) {
     setIsOpen(true)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  function handleAddVendorSubmission(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const vendorName = formData.get("vendorName") as string
@@ -63,7 +63,7 @@ export default function AddVendorModal(props: VendorModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <form method="post" onSubmit={handleSubmit}>
+                    <form method="post" onSubmit={handleAddVendorSubmission}>
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">

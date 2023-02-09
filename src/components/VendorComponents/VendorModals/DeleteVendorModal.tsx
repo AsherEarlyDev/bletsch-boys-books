@@ -1,8 +1,8 @@
-import CardTitle from "../CardComponents/CardTitle";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
-import { api } from '../../utils/api';
-import SecondaryButton from "../BasicComponents/SecondaryButton";
-import PrimaryButton from "../BasicComponents/PrimaryButton";
+import CardTitle from "../../CardComponents/CardTitle";
+import SaveCardChanges from "../../CardComponents/SaveCardChanges";
+import { api } from '../../../utils/api';
+import SecondaryButton from "../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../BasicComponents/PrimaryButton";
 import {useState} from "react";
 
 
@@ -13,7 +13,7 @@ interface DeleteVendorProp{
 }
 
 
-export default function DeleteVendorCard(props:DeleteVendorProp) {
+export default function DeleteVendorModal(props:DeleteVendorProp) {
   const deleteVendor = api.vendor.deleteVendor.useMutation();
   const [open, setOpen] = useState(true)
   const message = ("Are you sure you want to delete " + props.vendorName + " from the vendor database? This action cannot be undone.")

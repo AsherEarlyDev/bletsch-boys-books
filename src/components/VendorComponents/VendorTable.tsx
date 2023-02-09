@@ -5,24 +5,21 @@ import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading"
 import TableHeader from "../TableComponents/TableHeader";
 import { VendorTableRow } from './VendorTableRow';
 import CreateSaleEntries from '../CreateEntries';
-import DeleteVendorCard from './DeleteVendorCard';
-import AddVendorModal from './AddVendorModal';
+import DeleteVendorModal from './VendorModals/DeleteVendorModal';
+import AddVendorModal from './VendorModals/AddVendorModal';
 import CreateEntries from "../CreateEntries";
-import EditVendorCard from "./EditVendorCard";
+import EditVendorModal from "./VendorModals/EditVendorModal";
 import SuccessAlert from "../BasicComponents/SuccessAlert";
 
 
 export default function VendorTable() {
     const vendors = api.vendor.getVendors.useQuery().data
     const newVendor = api.vendor.createVendor.useMutation()
-    const [displayEdit, setDisplayEdit] = useState(false)
-    const [newName, setNewName] = useState("")
-    const [vendorNameChangeConfirmation, setVendorNameChangeConfirmation] = useState(false)
-    const [vendorDeleteConfirmation, setVendorDeleteConfirmation] = useState(false)
-    const [displayDelete, setDisplayDelete] = useState(false)
-    const [currVendor, setCurrVendor] = useState({id: '', name: ''})
+    const [displayEditVendorView, setDisplayEditVendorView] = useState(false)
+    const [displayDeleteVendorView, setDisplayDeleteVendorView] = useState(false)
+    const [currentVendor, setCurrentVendor] = useState({id: '', name: ''})
 
-    const handleVendorSubmit = async (name: string) => {
+    const handleNewVendorSubmission = async (name: string) => {
         if (newVendor){
             newVendor.mutate({
                 name: name
@@ -30,88 +27,62 @@ export default function VendorTable() {
         }
       }
 
-
-    const handleEditVendor = async (id:string) => {
+    const openEditVendorView = async (id:string) => {
         if (vendors){
           for (const ven of vendors){
             if (ven.id === id){
-              setCurrVendor({
+              setCurrentVendor({
                 id: ven.id, 
                 name: ven.name,
               })
             }
           }
-          setDisplayEdit(true) 
+          setDisplayEditVendorView(true)
         }
       }
-    
-    const handleDelete = async (id:string) => {
-        if (vendors){
-            for (const ven of vendors){
-              if (ven.id === id){
-                setCurrVendor({
-                  id: ven.id, 
-                  name: ven.name,
-                })
-              }
-            }
-            setDisplayDelete(true)
-        }
-    }
-
-
-
-    function closeDisplayEdit(){
-      setDisplayEdit(false)
-      setVendorNameChangeConfirmation(true)
-    }
-
-    function closeDisplayDelete(){
-      setDisplayDelete(false)
-      setVendorDeleteConfirmation(true)
-
-    }
-
-
     function renderEditVendorView() {
       return(
           <>
-            {(displayEdit && currVendor) ?
-              <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Vendor">
-                <EditVendorCard newName={setNewName} closeOut={closeDisplayEdit} vendorId={currVendor.id} vendorName={currVendor.name}></EditVendorCard>
+            {(displayEditVendorView && currentVendor) ?
+              <CreateEntries closeStateFunction={setDisplayEditVendorView} submitText="Edit Vendor">
+                <EditVendorModal closeOut={closeEditVendorView} vendorId={currentVendor.id} vendorName={currentVendor.name}></EditVendorModal>
               </CreateEntries> : null}
           </>
       )
     }
-
-
-    function closeEditVendorConfirmationAlert() {
-      setVendorNameChangeConfirmation(false)
+    function closeEditVendorView(){
+      setDisplayEditVendorView(false)
     }
 
-    function renderEditVendorConfirmationAlert() {
-    return <>
-      {(vendorNameChangeConfirmation && currVendor) ? <SuccessAlert message="Name change success." messageDetails={("Vendor name changed to: " + newName)} closeAlert={closeEditVendorConfirmationAlert}></SuccessAlert> : null}
-    </>
-
-  }
-
-    
-    function renderDeleteVendorView() {
-        return <>
-          {(displayDelete && currVendor) ?
-              <CreateEntries closeStateFunction={setDisplayDelete} submitText="Delete Vendor">
-                <DeleteVendorCard closeOut={closeDisplayDelete} vendorId={currVendor.id} vendorName={currVendor.name}></DeleteVendorCard></CreateEntries> : null}
-      </>;
+    const openDeleteVendorView = async (id:string) => {
+      if (vendors){
+        for (const ven of vendors){
+          if (ven.id === id){
+            setCurrentVendor({
+              id: ven.id,
+              name: ven.name,
+            })
+          }
+        }
+        setDisplayDeleteVendorView(true)
       }
-    
-  
+    }
+    function renderDeleteVendorView() {
+      return <>
+        {(displayDeleteVendorView && currentVendor) ?
+            <CreateEntries closeStateFunction={setDisplayDeleteVendorView} submitText="Delete Vendor">
+              <DeleteVendorModal closeOut={closeDeleteVendorView} vendorId={currentVendor.id} vendorName={currentVendor.name}></DeleteVendorModal></CreateEntries> : null}
+      </>;
+    }
+    function closeDeleteVendorView(){
+      setDisplayDeleteVendorView(false)
+    }
+
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
-        {renderEditVendorConfirmationAlert()}
         <TableDetails tableName="Vendors" tableDescription="A list of all the Vendors.">
-          <AddVendorModal showVendorEdit={handleVendorSubmit} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
+          <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
         </TableDetails>
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -124,8 +95,8 @@ export default function VendorTable() {
                     <FilterableColumnHeading label="Vendor Name"></FilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {vendors ? vendors.map((vendor)=>(<VendorTableRow onEdit={handleEditVendor}
-                    onDelete={handleDelete} vendorInfo={{id: vendor.id, name: vendor.name}} ></VendorTableRow>)): null}
+                    {vendors ? vendors.map((vendor)=>(<VendorTableRow onEdit={openEditVendorView}
+                    onDelete={openDeleteVendorView} vendorInfo={{id: vendor.id, name: vendor.name}} ></VendorTableRow>)): null}
                   </tbody>
                 </table>
               </div>

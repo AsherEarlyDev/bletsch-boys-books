@@ -9,7 +9,8 @@ interface FilterableColumnHeadingInterface  {
   databaseLabel: string
   currentField: string
   currentOrder: string
-  setOrder: any
+  setOrder: any,
+  resetPage: any
 }
 
 export default function SortedFilterableColumnHeading(props: FilterableColumnHeadingInterface) {
@@ -26,6 +27,7 @@ function flipOrder(){
             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
           <button onClick={() => {
             flipOrder()
+            props.resetPage(0)
             props.sortFields(props.databaseLabel)
           }
           } className="group inline-flex">
@@ -43,6 +45,7 @@ function flipOrder(){
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
             <button onClick={() =>  {
             flipOrder()
+            props.resetPage(0)
             props.sortFields(props.databaseLabel)
           }
           } className="group inline-flex">

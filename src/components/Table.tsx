@@ -105,13 +105,13 @@ export default function Table() {
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
 
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
                                              firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
@@ -147,7 +147,7 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
+                    <SortedFilterableColumnHeading resetPage={setGenrePageNumber} setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
                                              firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
                     <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
                   </TableHeader>

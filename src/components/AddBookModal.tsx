@@ -43,7 +43,7 @@ export default function AddBookModal(props: BookModalProp) {
     }
 
     const secondArray: string[] = []
-    initialArray.forEach((item, index) => {secondArray[index] = item.split("-").join("")})
+    initialArray.forEach((item, index) => {secondArray[index] = (item.split("-").join("")).replace(",", "")})
 
     return secondArray
 

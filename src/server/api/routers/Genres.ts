@@ -60,5 +60,22 @@ export const GenreRouter = createTRPCRouter({
         catch{
             throw("Can't delete genre")
         }
+    }),
+
+    getGenreInventory:publicProcedure
+    .input(z.string())
+    .query(async ({ctx, input}) => {
+        try{
+            return await ctx.prisma.book.count({
+                where:{
+                    genre:{
+                        name:input
+                    }
+                }
+            })
+        }
+        catch{
+            throw("Genre Inventory can't be pulled")
+        }
     })
 })

@@ -35,7 +35,7 @@ export default function BookTableRow(props:BookTableRowProp) {
           </button>
         </td>
         <td>
-          <DeleteConfirmationModal itemIdentifier={props.bookInfo.isbn} buttonText="Delete" submitText="DELETE BOOK"></DeleteConfirmationModal>
+          <DeleteConfirmationModal disabled={props.bookInfo.inventory != 0} itemIdentifier={props.bookInfo.isbn} buttonText="Delete" submitText="DELETE BOOK"></DeleteConfirmationModal>
         </td>
       </tr>
   )

@@ -11,7 +11,7 @@ export default function FilterableColumnHeading(props: FilterableColumnHeadingIn
     return (
         <th scope="col"
             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          <a href="#" className="group inline-flex">
+          <a className="group inline-flex">
             {props.label}
             <span
                 className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
@@ -24,7 +24,7 @@ export default function FilterableColumnHeading(props: FilterableColumnHeadingIn
   else{
     return (
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-            <a href="#" className="group inline-flex">
+            <a  className="group inline-flex">
               {props.label}
               <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
                             <ChevronDownIcon

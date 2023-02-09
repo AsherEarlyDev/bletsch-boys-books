@@ -7,6 +7,7 @@ interface BookModalProp{
   buttonText: string,
   submitText: string,
   genre?: boolean
+  disabled?: boolean
 }
 
 export default function DeleteBookModal(props: BookModalProp) {
@@ -29,7 +30,7 @@ export default function DeleteBookModal(props: BookModalProp) {
   return (
       <>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
+          <button disabled={props.disabled} onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
             {props.buttonText}
           </button>
         </div>

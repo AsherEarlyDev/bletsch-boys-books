@@ -14,6 +14,7 @@ import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from './FilterModal';
 import GenreTableRow from './TableComponents/GenreTableRow';
+import FilterableColumnHeading from './TableComponents/FilterableColumnHeading';
 
 export default function Table() {
   const BOOKS_PER_PAGE = 5
@@ -30,10 +31,11 @@ export default function Table() {
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
+  const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
-  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / BOOKS_PER_PAGE)
-  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:"asc"}).data
+  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
+  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
   
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
@@ -46,6 +48,10 @@ export default function Table() {
     if(bookInfo){
       setDisplayBookEdit(true)
     }
+  }
+  function setGenreFilter(genre: string){
+    setFilters({isbn:"", title:"", author:"", publisher:"", genre:genre})
+    setPageNumber(0)
   }
 
   function renderBookEntries() {
@@ -141,12 +147,13 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setGenreSortField} label="Name"
+                    <SortedFilterableColumnHeading setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
                                              firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
+                    <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {genres ? genres.map((genre: Genre) => (
-                       <GenreTableRow onEdit={handleBookEdit} genre={genre}></GenreTableRow>
+                       <GenreTableRow setGenreFilter={setGenreFilter} onEdit={handleBookEdit} genre={genre}></GenreTableRow>
                   )) : null}
                   </tbody>
                 </table>

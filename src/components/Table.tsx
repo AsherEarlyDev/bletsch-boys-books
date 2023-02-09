@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from "../utils/api";
 import AddBookModal from "./AddBookModal";
+import AddGenreModal from "./AddGenreModal";
 import BookCard from './BookCard';
 import TableDetails from "./TableComponents/TableDetails";
 import SortedFilterableColumnHeading from "./TableComponents/SortedFilterableColumnHeading";
@@ -11,26 +12,35 @@ import { Dialog } from '@headlessui/react'
 import HeadingPanel from './BasicComponents/HeadingPanel';
 import { editableBook } from '../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
+import FilterModal from './FilterModal';
+import GenreTableRow from './TableComponents/GenreTableRow';
 
 export default function Table() {
   const BOOKS_PER_PAGE = 5
+  const GENRES_PER_PAGE = 5
   const [isbns, setIsbns] = useState<string[]>([])
   const bookInfo = api.books.findBooks.useQuery(isbns).data
-  console.log("BookInfo: "+bookInfo)
   const [displayBookEntries, setDisplayBookEntries] = useState(false)
   const [displayBookEdit, setDisplayBookEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
-  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery().data / BOOKS_PER_PAGE)
-  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
-  console.log(books)
+
+  const [sortOrder, setSortOrder] = useState("asc")
+  const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
+  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
+  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
+
+  const [genrePageNumber, setGenrePageNumber] = useState(0)
+  const [genreSortField, setGenreSortField] = useState("name")
+  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / BOOKS_PER_PAGE)
+  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:"asc"}).data
+  
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
     if (bookInfo) {
       setDisplayBookEntries(true);
     }
   }
-
   const handleBookEdit = async (isbn:string) => {
     setIsbns([isbn])
     if(bookInfo){
@@ -42,7 +52,7 @@ export default function Table() {
     return <>
       <div>
         {displayBookEntries ? (bookInfo ? (
-          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEdit}> 
+          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEntries}> 
             {bookInfo.externalBooks.length > 0 ? 
             <div><HeadingPanel displayText="New Books"></HeadingPanel>
              {bookInfo.externalBooks.map((book: editableBook) => (
@@ -77,6 +87,7 @@ export default function Table() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Inventory"
                       tableDescription="A list of all the books in inventory.">
+          <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
           <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
                         submitText="Add Book(s)"></AddBookModal>
         </TableDetails>
@@ -87,13 +98,14 @@ export default function Table() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Title"
+
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
                                              firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Author(s)" databaseLabel="author"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
+                    <SortedFilterableColumnHeading setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
@@ -114,6 +126,39 @@ export default function Table() {
         <div>
           {renderBookEntries()}
           {renderBookEdit()}
+        </div>
+        <div className="px-4 sm:px-6 lg:px-8">
+        <TableDetails tableName="Genres"
+                      tableDescription="A list of all the genres.">
+          <AddGenreModal buttonText="Add Genre"
+                        submitText="Add Genre"></AddGenreModal>
+        </TableDetails>
+        </div>
+        <div className="mt-8 flex flex-col">
+          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+              <div
+                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <table className="min-w-full divide-y divide-gray-300 table-auto">
+                  <TableHeader>
+                    <SortedFilterableColumnHeading sortFields={setGenreSortField} label="Name"
+                                             firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
+                  </TableHeader>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                  {genres ? genres.map((genre: Genre) => (
+                       <GenreTableRow onEdit={handleBookEdit} genre={genre}></GenreTableRow>
+                  )) : null}
+                  </tbody>
+                </table>
+                <center><button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber-1)} disabled ={genrePageNumber===0} className="text-indigo-600 hover:text-indigo-900">
+                  Previous     
+                </button>
+                <button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber+1)} disabled={genrePageNumber===numberOfGenrePages-1} className="text-indigo-600 hover:text-indigo-900">
+                  Next
+                </button></center>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

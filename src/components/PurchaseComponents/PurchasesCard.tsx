@@ -96,7 +96,7 @@ export default function PurchasesCard(props:PurchasesProp) {
           <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="string" 
           defaultValue={props.date}></MutableCardProp>
         </CardGrid>
-        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
         <div>
           {renderConfirmation()}
         </div>
@@ -104,7 +104,7 @@ export default function PurchasesCard(props:PurchasesProp) {
       : 
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Purchase Order Confirmation" subheading="Confirm to delete this purchase order."></CardTitle>
-        <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+        <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       </div>
       
       ): null)

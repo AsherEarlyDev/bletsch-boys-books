@@ -1,6 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
 }
 
 datasource db {
@@ -18,7 +19,7 @@ model Book {
   genreID         String
   retailPrice     Float
   inventory       Int        @default(0)
-  authorNames     String?
+  authorNames     String
   genre           Genre      @relation(fields: [genreID], references: [id])
   purchases       Purchase[]
   sales           Sale[]
@@ -80,9 +81,11 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
-  revenue     Int      @default(0)
+
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
+  revenue     Int      @default(0)
+
   sales       Sale[]
 }
 

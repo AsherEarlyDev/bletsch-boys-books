@@ -115,7 +115,7 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
         defaultValue={props.purchase.price}></MutableCardProp>
       </CardGrid>
-      <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+      <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       <div>
         {renderDelete()}
         {renderConfirmation()}
@@ -136,7 +136,7 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
       defaultValue={props.purchase.price}></MutableCardProp>
     </CardGrid>
-    <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+    <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
     <div>
         {renderConfirmation()}
       </div>

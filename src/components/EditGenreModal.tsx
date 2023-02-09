@@ -2,16 +2,15 @@ import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
 import { api } from '../utils/api';
 
-interface BookModalProp{
+interface EditGenreModalProp{
   itemIdentifier: string,
   buttonText: string,
   submitText: string,
-  genre?: boolean
 }
 
-export default function DeleteBookModal(props: BookModalProp) {
+export default function EditGenreModal(props: EditGenreModalProp) {
   const [isOpen, setIsOpen] = useState(false);
-  const deleteItem =props.genre ? api.genre.deleteGenreByName.useMutation() : api.books.deleteBookByISBN.useMutation();
+  const changeGenre = api.genre.changeGenreName.useMutation()
 
   function closeModal() {
     setIsOpen(false)
@@ -21,9 +20,15 @@ export default function DeleteBookModal(props: BookModalProp) {
     setIsOpen(true)
   }
 
-  async function handleDelete(){
+  async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const genre = formData.get("genre") as string
+    changeGenre.mutate({
+      originalName:props.itemIdentifier,
+      newName: genre
+    })
     closeModal()
-    deleteItem.mutate(props.itemIdentifier)
   }
 
   return (
@@ -59,16 +64,26 @@ export default function DeleteBookModal(props: BookModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                    <form method="post" onSubmit={handleSubmit}>
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                          Are you sure you want to delete this item.
+                            Enter new Genre Name
                           </Dialog.Title>
+                        </div>
+                        <div className="mt-5">
+                        <textarea
+                            rows={1}
+                            name="genre"
+                            id="genre"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            defaultValue=""
+                        />
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                        <button 
-                            onClick = {() => handleDelete()}
+                        <button
+                            type="submit"
                             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                         >
                           {props.submitText}
@@ -81,6 +96,7 @@ export default function DeleteBookModal(props: BookModalProp) {
                           Cancel
                         </button>
                       </div>
+                    </form>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

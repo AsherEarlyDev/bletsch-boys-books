@@ -1,20 +1,23 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
+import BookCard from "./BookCard";
+import {editableBook} from "../types/bookTypes";
 
-
-interface CreateEntryInterface{
+interface EditBookModalProps{
   submitText: string
-  children: React.ReactNode;
+  children: React.ReactNode[];
   closeStateFunction: any
+  book: editableBook
 }
 
-export default function CreateEntries(props: CreateEntryInterface) {
+export default function EditBookModal(props: EditBookModalProps) {
   const [isOpen, setIsOpen] = useState(true)
 
 
-  function close() {
+  function closeModal() {
     setIsOpen(false)
     props.closeStateFunction(false)
+
   }
 
   function openModal() {
@@ -24,7 +27,7 @@ export default function CreateEntries(props: CreateEntryInterface) {
   return (
       <>
           <Transition.Root show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10"  onClose={close}>
+            <Dialog as="div" className="relative z-10"  onClose={closeModal}>
               <Transition.Child
                   as={Fragment}
                   enter="ease-out duration-300"
@@ -49,7 +52,7 @@ export default function CreateEntries(props: CreateEntryInterface) {
                       leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                   >
                     <Dialog.Panel className="relative transform overflow-y-auto transition-all">
-                      {props.children}
+                      <BookCard cardType="edit" bookInfo={props.book}></BookCard>
                     </Dialog.Panel>
                   </Transition.Child>
                 </div>

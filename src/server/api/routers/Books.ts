@@ -46,7 +46,8 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
     pageCount: input.pageCount,
     genre:input. mainCategory,
     retailPrice: input.saleInfo?.retailPrice.amount,
-    inventory: 0
+    inventory: 0,
+    authorNames:input.authors.join(", ")
   }
   return bookInfo
 } 
@@ -62,7 +63,8 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     pageCount: book.pageCount,
     genre:book.genre.name,
     retailPrice: book.retailPrice,
-    inventory: book.inventory
+    inventory: book.inventory,
+    authorNames: book.authorNames
   }
   return bookInfo
 }
@@ -116,7 +118,14 @@ export const BooksRouter = createTRPCRouter({
     pageNumber: z.number(),
     booksPerPage: z.number(),
     sortBy: z.string(),
-    descOrAsc: z.string()
+    descOrAsc: z.string(),
+    filters: z.object({
+      title: z.string(),
+      isbn: z.string(),
+      publisher: z.string(),
+      genre: z.string(),
+      author: z.string()
+    })
   }))
   .query(async ({ctx, input}) => {
     if(input){
@@ -131,11 +140,38 @@ export const BooksRouter = createTRPCRouter({
           genre:{
             name: input.descOrAsc
           }
-        } : [
+        } :  [
           {
             [input.sortBy]: input.descOrAsc,
           }
-        ]
+        ],
+        where:{
+          title:{
+            contains: input.filters.title,
+            mode: 'insensitive'
+          },
+          authorNames:{
+            contains: input.filters.author,
+            mode: 'insensitive'
+          },
+          
+          publisher:{
+            contains: input.filters.publisher,
+            mode: 'insensitive'
+          },
+          genre:{
+            name:{
+              contains: input.filters.genre,
+              mode: 'insensitive'
+            }
+          },
+          isbn:{
+            contains: input.filters.isbn,
+            mode: 'insensitive'
+          }
+
+        }
+      
       })
     }
     else{
@@ -149,8 +185,44 @@ export const BooksRouter = createTRPCRouter({
   }),
 
   getNumberOfBooks:publicProcedure
+  .input(z.object({
+    filters: z.object({
+      title: z.string(),
+      isbn: z.string(),
+      publisher: z.string(),
+      genre: z.string(),
+      author: z.string()
+    })
+  }))
   .query(async ({ctx, input}) => {
-    return await ctx.prisma.book.count()
+    return await ctx.prisma.book.count({
+      where:{
+        title:{
+          contains: input.filters.title,
+          mode: 'insensitive'
+        },
+        authorNames:{
+          contains: input.filters.author,
+          mode: 'insensitive'
+        },
+        
+        publisher:{
+          contains: input.filters.publisher,
+          mode: 'insensitive'
+        },
+        genre:{
+          name:{
+            contains: input.filters.genre,
+            mode: 'insensitive'
+          }
+        },
+        isbn:{
+          contains: input.filters.isbn,
+          mode: 'insensitive'
+        }
+
+      }
+    })
   }),
 
   saveBook:publicProcedure.input(zBook)
@@ -168,6 +240,7 @@ export const BooksRouter = createTRPCRouter({
             dimensions: data.dimensions,
             pageCount: data.pageCount,
             retailPrice: data.retailPrice,
+            authorNames: data.author.join(", "),
             author:{
               connect:authorIDs
             },

@@ -1,6 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
 }
 
 datasource db {
@@ -18,6 +19,7 @@ model Book {
   genreID         String
   retailPrice     Float
   inventory       Int        @default(0)
+  authorNames     String
   genre           Genre      @relation(fields: [genreID], references: [id])
   purchases       Purchase[]
   sales           Sale[]
@@ -48,16 +50,21 @@ model Purchase {
   price           Float
   bookId          String
   purchaseOrderId String
+  subtotal        Int           @default(0)
   book            Book          @relation(fields: [bookId], references: [isbn])
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
 
 model PurchaseOrder {
-  id        String     @id @default(cuid())
-  vendorId  String
-  date      DateTime
-  purchases Purchase[]
-  vendor    Vendor     @relation(fields: [vendorId], references: [id])
+  id          String     @id @default(cuid())
+  vendorId    String
+  date        DateTime
+  cost        Int        @default(0)
+  totalBooks  Int        @default(0)
+  uniqueBooks Int        @default(0)
+  vendorName  String     @default("")
+  purchases   Purchase[]
+  vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }
 
 model Sale {
@@ -66,14 +73,18 @@ model Sale {
   price                Float
   bookId               String
   saleReconciliationId String
+  subtotal             Int                @default(0)
   book                 Book               @relation(fields: [bookId], references: [isbn])
   saleReconciliation   saleReconciliation @relation(fields: [saleReconciliationId], references: [id])
 }
 
 model saleReconciliation {
-  id    String   @id @default(cuid())
-  date  DateTime
-  sales Sale[]
+  id          String   @id @default(cuid())
+  date        DateTime
+  totalBooks  Int      @default(0)
+  uniqueBooks Int      @default(0)
+  revenue     Int      @default(0)
+  sales       Sale[]
 }
 
 model Account {

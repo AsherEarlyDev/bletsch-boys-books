@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@heroicons/react/20/solid'
+import { setDefaultResultOrder } from 'dns';
 import React from "react";
 
 interface FilterableColumnHeadingInterface  {
@@ -6,14 +7,28 @@ interface FilterableColumnHeadingInterface  {
   firstEntry?: boolean
   sortFields?: any
   databaseLabel: string
+  currentField: string
+  currentOrder: string
+  setOrder: any
 }
 
 export default function FilterableColumnHeading(props: FilterableColumnHeadingInterface) {
+function flipOrder(){
+  if(props.currentField===props.databaseLabel){
+    if(props.currentOrder === "desc") props.setOrder("asc")
+    if(props.currentOrder === "asc") props.setOrder("desc")
+  }
+}
+
   if (props.firstEntry == true) {
     return (
         <th scope="col"
             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          <button onClick={() => props.sortFields(props.databaseLabel)} className="group inline-flex">
+          <button onClick={() => {
+            flipOrder()
+            props.sortFields(props.databaseLabel)
+          }
+          } className="group inline-flex">
             {props.label}
             <span
                 className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
@@ -26,7 +41,11 @@ export default function FilterableColumnHeading(props: FilterableColumnHeadingIn
   else{
     return (
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-            <button onClick={() => props.sortFields(props.databaseLabel)} className="group inline-flex">
+            <button onClick={() =>  {
+            flipOrder()
+            props.sortFields(props.databaseLabel)
+          }
+          } className="group inline-flex">
               {props.label}
               <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
                             <ChevronDownIcon

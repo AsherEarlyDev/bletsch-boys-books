@@ -2,20 +2,24 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import {number, z} from "zod"
 export const GenreRouter = createTRPCRouter({
     getGenres:publicProcedure
-    .input(z.object({
+    .input(z.optional(z.object({
         genrePageNumber: z.number(),
         genresPerPage: z.number(),
         genreSortBy: z.string(),
         genreDescOrAsc: z.string()
-      }))
+      })))
     .query(async({ctx, input}) => {
-        return await ctx.prisma.genre.findMany({
-            take: input.genresPerPage,
-            skip: input.genrePageNumber*input.genresPerPage,
-            orderBy:[{
-                [input.genreSortBy]: input.genreDescOrAsc,
-              }]
-        })
+        if(input){
+            return await ctx.prisma.genre.findMany({
+                take: input.genresPerPage,
+                skip: input.genrePageNumber*input.genresPerPage,
+                orderBy:[{
+                    [input.genreSortBy]: input.genreDescOrAsc,
+                }]
+            })
+        }
+        else{
+            return await ctx.prisma.genre.findMany({})}
     }),
 
     changeGenreName:publicProcedure.input(z.object({

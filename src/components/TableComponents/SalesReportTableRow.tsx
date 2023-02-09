@@ -56,9 +56,10 @@ export function TopSellingTableRow(props:TopBooksTableRowProp) {
   )
 }
 
-export function SalesReportTotalTabelRow(props: TotalTableRowProp){
+export function SalesReportTotalTableRow(props: TotalTableRowProp){
   return (
       <tr>
+        <TableEntry firstEntry={true}>{}</TableEntry>
         <TableEntry>{props.salesReportInfo.cost}</TableEntry>
         <TableEntry>{props.salesReportInfo.revenue}</TableEntry>
         <TableEntry>{props.salesReportInfo.profit}</TableEntry>

@@ -1,7 +1,7 @@
 import TableDetails from "../TableComponents/TableDetails";
 import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading";
 import TableHeader from "../TableComponents/TableHeader";
-import {SalesReportTableRow, SalesReportTotalTabelRow, TopSellingTableRow} from "../TableComponents/SalesReportTableRow";
+import {SalesReportTableRow, SalesReportTotalTableRow, TopSellingTableRow} from "../TableComponents/SalesReportTableRow";
 import { api } from '../../utils/api';
 import { Cost, Revenue, Sale } from "../../types/salesTypes";
 
@@ -56,26 +56,14 @@ export default function SalesReport(props:salesReportProps){
     }
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="my-8 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg border border-grey-400 shadow-md p-8 sm:px-6 lg:px-8">
         <TableDetails tableName="Sales Report"
-                      tableDescription="A summary of financial information by date">
+                      tableDescription={"A summary of financial information from: " + props.start + " to " + props.end}>
         </TableDetails>
-        <div className="mt-8 flex flex-col">
+        <div className="mb-14 mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div
-                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-auto">
-                  <TableHeader>
-                    <FilterableColumnHeading label="Total Cost"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Revenue"></FilterableColumnHeading>
-                    <FilterableColumnHeading label="Total Profit"></FilterableColumnHeading>
-                  </TableHeader>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                      {<SalesReportTotalTabelRow salesReportInfo={{cost: totalCost, 
-                        revenue: totalRevenue, profit: totalProfit}}></SalesReportTotalTabelRow>}
-                  </tbody>
-                </table>    
+              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
                     <FilterableColumnHeading label="Date"
@@ -88,7 +76,17 @@ export default function SalesReport(props:salesReportProps){
                   {reportArray ? reportArray.map((result) => (
                       <SalesReportTableRow salesReportInfo={{
                         date: result.date, cost: result.cost, revenue: result.revenue, profit: result.profit}}></SalesReportTableRow>
-                    )) : null}
+                  )) : null}
+                  </tbody>
+                  <TableHeader>
+                    <FilterableColumnHeading label={""} firstEntry={true}></FilterableColumnHeading>
+                    <FilterableColumnHeading label="Total Cost"></FilterableColumnHeading>
+                    <FilterableColumnHeading label="Total Revenue"></FilterableColumnHeading>
+                    <FilterableColumnHeading label="Total Profit"></FilterableColumnHeading>
+                  </TableHeader>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                  {<SalesReportTotalTableRow salesReportInfo={{cost: totalCost,
+                    revenue: totalRevenue, profit: totalProfit}}></SalesReportTotalTableRow>}
                   </tbody>
                 </table>
               </div>
@@ -96,7 +94,7 @@ export default function SalesReport(props:salesReportProps){
           </div>
         </div>
         <TableDetails tableName="Top Selling Books"
-                      tableDescription="Top 10 Highest Selling Books">
+                      tableDescription={"Top 10 selling books from: " + props.start + " to " + props.end}>
         </TableDetails>
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Book, Genre, Author } from '@prisma/client';
-import {Fragment, useRef, useState} from 'react'
+import React, {Fragment, useRef, useState} from 'react'
 import { editableBook } from '../../types/bookTypes';
 import { api } from '../../utils/api'
 import CardGrid from '../CardComponents/CardGrid';
@@ -9,6 +9,7 @@ import GenreCardProp from '../CardComponents/GenreCardProp';
 import ImmutableCardProp from '../CardComponents/ImmutableCardProp';
 import MutableCardProp from '../CardComponents/MutableCardProp';
 import SaveCardChanges from '../CardComponents/SaveCardChanges';
+import {ArrowsPointingOutIcon} from "@heroicons/react/20/solid";
 
 interface BookModalProp{
   bookInfo: Book  & {
@@ -37,11 +38,12 @@ export default function ViewBookModal(props: BookModalProp) {
 
   return (
       <>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
-            {props.buttonText}
+          <button onClick={openModal} className="italic text-indigo-600 hover:text-indigo-900 inline-flex group">
+              {props.buttonText}
+              <span className="invisible ml-2 flex-none rounded text-indigo-900 group-hover:visible">
+                    <ArrowsPointingOutIcon className="h-5 w-5 " aria-hidden="true"/>
+                </span>
           </button>
-        </div>
         <Transition.Root show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10"  onClose={closeModal}>
             <Transition.Child

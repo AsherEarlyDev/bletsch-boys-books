@@ -1,19 +1,20 @@
-import ImmutableCardProp from "../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../CardComponents/MutableCardProp";
-import CardTitle from "../CardComponents/CardTitle";
-import CardGrid from "../CardComponents/CardGrid";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../CardComponents/MutableCardProp";
+import CardTitle from "../../CardComponents/CardTitle";
+import CardGrid from "../../CardComponents/CardGrid";
+import SaveCardChanges from "../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
-import { api } from '../../utils/api';
-import { SalesRec } from "../../types/salesTypes";
-import ConfirmCard from "../CardComponents/ConfirmationCard";
-import CreateSaleEntries from '../CreateEntries';
+import { api } from '../../../utils/api';
+import { SalesRec } from "../../../types/salesTypes";
+import ConfirmCard from "../../CardComponents/ConfirmationCard";
+import CreateSaleEntries from '../../CreateEntries';
 
 
 interface SalesRecProp{
   salesRecId:  string
   cardType: string
   date: string
+  closeOut: () => void
 }
 
 
@@ -53,6 +54,7 @@ export default function SalesRecCard(props:SalesRecProp) {
 
   function closeModal(){
     setOpen(false)
+    props.closeOut
   }
 
   function renderConfirmation(){

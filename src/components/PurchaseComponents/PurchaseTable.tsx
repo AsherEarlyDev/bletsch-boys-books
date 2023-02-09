@@ -27,10 +27,8 @@ export default function PurchaseTable() {
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
 //   const [displayEntries, setDisplayEntries] = useState(false)
-  console.log("Page Number: "+pageNumber)
   const purchaseOrder: any[] = api.purchaseOrder.getPurchaseOrderDetails
   .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data;
-  console.log(purchaseOrder)
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumPurchaseOrder.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEdit, setDisplayEdit] = useState(false)
   const [displayDelete, setDelete] = useState(false)
@@ -70,6 +68,7 @@ export default function PurchaseTable() {
     if (purchaseOrder){
         for (const order of purchaseOrder){
           if (order.id === id){
+            
             setCurrOrder({
               id: order.id, 
               date: order.date,
@@ -82,13 +81,16 @@ export default function PurchaseTable() {
   }
 
   const handleView = async (id:string) => {
+    console.log("View")
     if (purchaseOrder){
+      console.log(purchaseOrder)
       for (const order of purchaseOrder){
-        if (order.id === id){
+        if (order.id === id && order.purchases){
           setPurchases(order.purchases)
         }
       }
       setDisplayDetails(true)
+      console.log(displayDetails)
     }
   }
 
@@ -132,25 +134,23 @@ export default function PurchaseTable() {
     return <>
       {displayDetails ? (purchases ? (
           <CreateEntries closeStateFunction={setDisplayDetails} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-            <PurchaseDetailsCard cardType={'edit'} purchaseComplete={purchase}></PurchaseDetailsCard>))}</CreateEntries>) : null) : null}
+            <PurchaseDetailsCard cardType={'edit'} purchase={purchase}></PurchaseDetailsCard>))}</CreateEntries>) : null) : null}
   </>;
   }
 
   function renderAdd() {
     const dummyPurchase = {
-      purchase: {
         id: '',
         purchaseOrderId: purchaseOrderId,
         price: 0,
         quantity: 0,
-        bookId: ''
-      },
-      subtotal: 0
+        bookId: '',
+        subtotal: 0
     }
     return <>
       {(displayAdd && purchaseOrderId)? 
           <CreateEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
-            <PurchaseDetailsCard cardType={'entry'} purchaseComplete={dummyPurchase}></PurchaseDetailsCard></CreateEntries> : null}
+            <PurchaseDetailsCard cardType={'entry'} purchase={dummyPurchase}></PurchaseDetailsCard></CreateEntries> : null}
   </>;
   }
 

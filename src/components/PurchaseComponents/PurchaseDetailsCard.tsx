@@ -10,28 +10,27 @@ import PrimaryButton from '../BasicComponents/PrimaryButton';
 import { Purchase } from "../../types/purchaseTypes";
 import PurchaseDeleteCard from "./PurchaseDeleteCard";
 import ConfirmCard from "../CardComponents/ConfirmationCard";
+import CreateEntries from "../CreateEntries";
 
 
 
 interface PurchaseProp{
-  purchaseComplete:  {
-    purchase: Purchase
-    subtotal: number
-  }
+  purchase:  Purchase
   cardType: string
 }
 
 
 export default function PurchaseDetailsCard(props:PurchaseProp) {
+  console.log(props.purchase)
   const [open, setOpen] = useState(true)
-  const [isbn, setIsbn] = useState(props.purchaseComplete.purchase.bookId)
-  const book = api.books.findInternalBook.useQuery({isbn: props.purchaseComplete.purchase.bookId}).data
+  const [isbn, setIsbn] = useState(props.purchase.bookId)
+  const book = api.books.findInternalBook.useQuery({isbn: props.purchase.bookId}).data
   let title = ''
   if (book){
     title = book.title
   }
-  const [quantity, setQuantity] = useState(props.purchaseComplete.purchase.quantity)
-  const [price, setPrice] = useState(props.purchaseComplete.purchase.price)
+  const [quantity, setQuantity] = useState(props.purchase.quantity)
+  const [price, setPrice] = useState(props.purchase.price)
   const [displayDelete, setDelete] = useState(false)
   const [confirm, setConfirm] = useState(false)
   const [displayConfirm, setDisplayConfirm] = useState(false)
@@ -41,11 +40,12 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
 
   function saveBook(){
     if (confirm){
-      if(props.purchaseComplete){
+      console.log("Confirm")
+      if(props.purchase){
         if (props.cardType === 'edit'){
           modPurchase.mutate({
-              id: props.purchaseComplete.purchase.id,
-              purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
+              id: props.purchase.id,
+              purchaseOrderId: props.purchase.purchaseOrderId,
               isbn: isbn,
               quantity: quantity.toString(),
               price: price.toString()
@@ -53,7 +53,7 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
         }
         else{
           addPurchase.mutate({
-              purchaseOrderId: props.purchaseComplete.purchase.purchaseOrderId,
+              purchaseOrderId: props.purchase.purchaseOrderId,
               isbn: isbn,
               quantity: quantity.toString(),
               price: price.toString()
@@ -74,9 +74,9 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale'>
-            <PurchaseDeleteCard purchaseId={props.purchaseComplete.purchase.id}></PurchaseDeleteCard>
-      </CreateSaleEntries>: null}
+      {displayDelete ? <CreateEntries closeStateFunction={setDelete} submitText='Delete Sale'>
+            <PurchaseDeleteCard onClose={setOpen} purchaseId={props.purchase.id}></PurchaseDeleteCard>
+      </CreateEntries>: null}
   </>;
   }
 
@@ -98,22 +98,22 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
   }
 
   return (
-    (open ? (props.purchaseComplete ? (props.cardType === 'edit' ?
+    (open ? (props.purchase ? (props.cardType === 'edit' ?
     <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
       <div className="flex-row ">
       <CardTitle heading="Purchase" subheading="Edit purchase below..."></CardTitle>
       <PrimaryButton buttonText="Delete Purchase" onClick={handleDelete}></PrimaryButton>
       </div>
       <CardGrid>
-        <ImmutableCardProp heading="Purchase ID" data={props.purchaseComplete.purchase.id}></ImmutableCardProp>
-        <ImmutableCardProp heading="Subtotal" data={props.purchaseComplete.subtotal}></ImmutableCardProp>
+        <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
+        <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
         <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
         <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
-        defaultValue={props.purchaseComplete.purchase.bookId}></MutableCardProp>
+        defaultValue={props.purchase.bookId}></MutableCardProp>
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
-        defaultValue={props.purchaseComplete.purchase.quantity}></MutableCardProp>
+        defaultValue={props.purchase.quantity}></MutableCardProp>
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
-        defaultValue={props.purchaseComplete.purchase.price}></MutableCardProp>
+        defaultValue={props.purchase.price}></MutableCardProp>
       </CardGrid>
       <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
       <div>
@@ -126,15 +126,15 @@ export default function PurchaseDetailsCard(props:PurchaseProp) {
     <CardTitle heading="Purchase" subheading="Add purchase information below..."></CardTitle>
     </div>
     <CardGrid>
-      <ImmutableCardProp heading="Purchase ID" data={props.purchaseComplete.purchase.id}></ImmutableCardProp>
-      <ImmutableCardProp heading="Subtotal" data={props.purchaseComplete.subtotal}></ImmutableCardProp>
+      <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
+      <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
       <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
       <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
-      defaultValue={props.purchaseComplete.purchase.bookId}></MutableCardProp>
+      defaultValue={props.purchase.bookId}></MutableCardProp>
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
-      defaultValue={props.purchaseComplete.purchase.quantity}></MutableCardProp>
+      defaultValue={props.purchase.quantity}></MutableCardProp>
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
-      defaultValue={props.purchaseComplete.purchase.price}></MutableCardProp>
+      defaultValue={props.purchase.price}></MutableCardProp>
     </CardGrid>
     <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
     <div>

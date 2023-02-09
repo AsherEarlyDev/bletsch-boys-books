@@ -57,10 +57,19 @@ export const purchaseOrderRouter = createTRPCRouter({
            const purchaseOrders = await ctx.prisma.purchaseOrder.findMany()
            for (const pur of purchaseOrders){
               const purchaseOrderId = pur.id
-              if (pur.purchases){
+              const purchases = await ctx.prisma.purchase.findMany({
+                where: {
+                  purchaseOrderId: purchaseOrderId
+                }
+              })
+              if (purchases){
                   let unique = new Set()
-                  pur.purchases.map((purch)=>{
+                  let total = 0
+                  let cost = 0
+                  purchases.map((purch)=>{
                     unique.add(purch.bookId)
+                    total = total + purch.quantity
+                    cost = cost + purch.quantity*purch.price
                   })
 
 
@@ -69,7 +78,9 @@ export const purchaseOrderRouter = createTRPCRouter({
                       id: purchaseOrderId
                     },
                     data:{
-                      uniqueBooks: unique.size
+                      uniqueBooks: unique.size,
+                      cost: cost,
+                      totalBooks: total
                     }
                   })
 
@@ -92,12 +103,17 @@ export const purchaseOrderRouter = createTRPCRouter({
                   id: sorted.vendorId
                 }
               })
+              const purch = await ctx.prisma.purchase.findMany({
+                where: {
+                  purchaseOrderId: sorted.id
+                }
+              })
               const order = {
                 id: sorted.id,
                 vendorId: sorted.vendorId,
                 vendorName: vendor.name,
-                date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDay())+"-"+sorted.date.getFullYear(),
-                purchases: sorted.purchases,
+                date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+                purchases: purch,
                 totalBooks: sorted.totalBooks,
                 uniqueBooks: sorted.uniqueBooks,
                 cost: sorted.cost

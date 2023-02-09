@@ -17,7 +17,7 @@ export const salesRouter = createTRPCRouter({
                 where:
                 {
                   id: input.saleReconciliationId
-                }
+                },
               })
               const book = await ctx.prisma.book.findFirst({
                 where:{
@@ -32,7 +32,8 @@ export const salesRouter = createTRPCRouter({
                        saleReconciliationId: input.saleReconciliationId,
                        bookId: input.isbn,
                        quantity: parseInt(input.quantity),
-                       price: parseFloat(input.price)
+                       price: parseFloat(input.price),
+                       subtotal: parseInt(input.quantity) * parseFloat(input.price)
                     },
                 });
                 await ctx.prisma.book.update({
@@ -99,7 +100,8 @@ export const salesRouter = createTRPCRouter({
           saleReconciliationId: input.saleReconciliationId,
           bookId: input.isbn,
           quantity: parseInt(input.quantity),
-          price: parseFloat(input.price)
+          price: parseFloat(input.price),
+          subtotal: parseFloat(input.price) * parseInt(input.quantity)
         },
         });
       }

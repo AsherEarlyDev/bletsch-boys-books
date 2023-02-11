@@ -1,7 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { api } from '../utils/api';
-import GenreSelect from './CardComponents/GenreSelect';
 
 interface FilterProp{
   buttonText: string;
@@ -13,7 +11,8 @@ interface FilterProp{
 export default function FilterModal(props: FilterProp) {
   const [isOpen, setIsOpen] = useState(false)
   const [genre, setGenre] = useState({name:""})
-  
+  const labels = [["ISBN", "isbn"], ["Title", "title"], ["Author", "author"], ["Publisher", "publisher"], ["Genre", "genre"]]
+  const [testDisp, setTestDisp] = useState("")
 
   function closeModal() {
     setIsOpen(false)
@@ -48,7 +47,6 @@ export default function FilterModal(props: FilterProp) {
     props.resetPageNumber(0)
     closeModal()
   }
-
 
   return (
       <>
@@ -95,65 +93,21 @@ export default function FilterModal(props: FilterProp) {
                           </Dialog.Title>
 
                         </div>
-                        
-                        <div className="mt-5">
-                        <p className="font-small leading-6 text-gray-900">
-                          ISBN:
-                        </p>
-                        <textarea
-                            rows={1}
-                            name="isbn"
-                            id="isbn"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
-                        </div>
-                        
-                        <div className="mt-5">
-                        <p className="font-small leading-6 text-gray-900">
-                          Title:
-                        </p>
-                        <textarea
-                            rows={1}
-                            name="title"
-                            id="title"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
-                        </div>
-                        
-                        <div className="mt-5">
-                        <p className="font-small leading-6 text-gray-900">
-                          Author:
-                        </p>
-                        <textarea
-                            rows={1}
-                            name="author"
-                            id="author"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
-                        </div>
-                        
-                        <div className="mt-5">
-                        <p className="font-small leading-6 text-gray-900">
-                          Publisher:
-                        </p>
-                        <textarea
-                            rows={1}
-                            name="publisher"
-                            id="publisher"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue=""
-                        />
-                        </div>
-                        
-                        <div className="mt-5">
-                        <p className="font-small leading-6 text-gray-900">
-                          Genre:
-                        </p>
-                        <GenreSelect saveFunction={setGenre} defaultValue=""></GenreSelect>
-                        </div>
+                        {labels.map((label) => {
+                          return(<div className="mt-5">
+                          <p className="font-small leading-6 text-gray-900">
+                          {label[0]}:
+                          </p>
+                          <textarea
+                              rows={1}
+                              name={label[1]}
+                              id={label[1]}
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              defaultValue=""
+                              onChange={(value) => setTestDisp(value.target.value)}
+                          />
+                          </div>)
+                        })}
                         
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

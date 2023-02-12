@@ -5,7 +5,7 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEnt from "../TableEntries/ViewTableEnt";
 
 
-interface VendorProps{
+interface VendorRowProps{
     vendorInfo: {
         id: string
         name: string
@@ -16,7 +16,7 @@ interface VendorProps{
   }
 
 
-export function VendorTableRow(props: VendorProps){
+export function VendorTableRow(props: VendorRowProps){
     function handleEdit(){
       props.onEdit(props.vendorInfo.id)
     }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
-import AddBookModal from "../../AddBookModal";
+import AddBookModal from "../Modals/BookModals/AddBookModal";
 import AddGenreModal from "../../AddGenreModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
@@ -15,59 +15,118 @@ import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
 import GenreTableRow from '../TableRows/GenreTableRow';
 import FilterableColumnHeading from '../FilterableColumnHeading';
-
+import CreateEntries from "../../CreateEntries";
+import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
+import EditBookModal from "../Modals/BookModals/EditBookModal";
+import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 export default function Table() {
   const BOOKS_PER_PAGE = 5
-  const GENRES_PER_PAGE = 5
-  const [isbns, setIsbns] = useState<string[]>([])
-  const bookInfo = api.books.findBooks.useQuery(isbns).data
-  const [displayBookEntries, setDisplayBookEntries] = useState(false)
-  const [displayBookEdit, setDisplayBookEdit] = useState(false)
+  const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
+  const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
+  const [displayEditBookView, setDisplayEditBookView] = useState(false)
+  const [displayBookView, setDisplayBookView] = useState(false)
+  const [displayDeleteBookView, setDisplayDeleteBookView] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
-
   const [sortOrder, setSortOrder] = useState("asc")
   const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
-  const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
-
-  const [genreSortOrder, setGenreSortOrder] = useState("asc")
-  const [genrePageNumber, setGenrePageNumber] = useState(0)
-  const [genreSortField, setGenreSortField] = useState("name")
-  const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
-  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
-  
-  const handleISBNSubmit = async (isbns:string[]) => {
-    setIsbns(isbns)
+  const bookInfo = api.books.findBooks.useQuery(currentIsbns).data
+  const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
+  const handleNewBookSubmission = async (isbns:string[]) => {
+    setCurrentIsbns(isbns)
     if (bookInfo) {
-      setDisplayBookEntries(true);
+      setDisplayNewBookEntriesView(true);
     }
   }
-  const handleBookEdit = async (isbn:string) => {
-    setIsbns([isbn])
-    if(bookInfo){
-      setDisplayBookEdit(true)
+
+
+  async function openEditBookView(isbn: string){
+    if (books){
+      for (const book of books){
+        if (book.isbn === isbn){
+          setCurrentIsbns([isbn])
+        }
+      }
+      setDisplayEditBookView(true)
     }
   }
-  function setGenreFilter(genre: string){
-    setFilters({isbn:"", title:"", author:"", publisher:"", genre:genre})
-    setPageNumber(0)
+  function renderEditBookView() {
+    return(
+        <>
+          {(displayEditBookView && bookInfo) ?
+              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
+                <EditBookModal cardType="edit" bookInfo={bookInfo.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
+              </CreateEntries> : null}
+        </>
+    )
+  }
+  function closeEditBookView(){
+    setDisplayEditBookView(false)
+  }
+
+  async function openDeleteBookView(isbn: string){
+    if (books){
+      for (const book of books){
+        if (book.isbn === isbn){
+          setCurrentIsbns([isbn])
+        }
+      }
+      setDisplayDeleteBookView(true)
+    }
+  }
+  function renderDeleteBookView() {
+    return(
+        <>
+          {(displayDeleteBookView && bookInfo) ?
+              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Delete Book">
+                <DeleteBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeDeleteBookView}></DeleteBookModal>
+              </CreateEntries> : null}
+        </>
+    )
+  }
+  function closeDeleteBookView(){
+    setDisplayDeleteBookView(false)
+  }
+
+  async function openBookView(isbn: string){
+    if (books){
+      for (const book of books){
+        if (book.isbn === isbn){
+          setCurrentIsbns([isbn])
+        }
+      }
+      setDisplayBookView(true)
+    }
+  }
+  function renderBookView() {
+    return(
+        <>
+          {(displayBookView && bookInfo) ?
+              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
+                <ViewBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
+              </CreateEntries> : null}
+        </>
+    )
+  }
+  function closeBookView(){
+    setDisplayBookView(false)
   }
 
   function renderBookEntries() {
     return <>
       <div>
-        {displayBookEntries ? (bookInfo ? (
-          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayBookEntries}> 
-            {bookInfo.externalBooks.length > 0 ? 
+        {displayNewBookEntriesView ? (bookInfo ? (
+          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayNewBookEntriesView}>
+            {bookInfo.externalBooks.length > 0 ?
             <div><HeadingPanel displayText="New Books"></HeadingPanel>
              {bookInfo.externalBooks.map((book: editableBook) => (
               <BookCard cardType="entry" bookInfo={book}></BookCard>))}</div>: null}
-            {bookInfo.internalBooks.length > 0 ? 
+            {bookInfo.internalBooks.length > 0 ?
             <div><HeadingPanel displayText="Existing Books"></HeadingPanel>
              {bookInfo.internalBooks.map((book: editableBook) => (
               <BookCard cardType="edit" bookInfo={book}></BookCard>))}</div>: null}
-            {(bookInfo.absentBooks.length > 0 ? 
+            {(bookInfo.absentBooks.length > 0 ?
             <center><Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
               <div className="text-center">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
@@ -80,23 +139,13 @@ export default function Table() {
     </>;
   }
 
-  function renderBookEdit() {
-    console.log(bookInfo)
-    return <>
-      {displayBookEdit ? (bookInfo ? (
-          <CreateBookEntries submitText="Edit book" closeStateFunction={setDisplayBookEdit}> {bookInfo.internalBooks.map((book: editableBook) => (
-              <BookCard cardType="edit" bookInfo={book}></BookCard>))}</CreateBookEntries>) : null) : null}
-    </>;
-  }
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <TableDetails tableName="Inventory"
                         tableDescription="A list of all the books in inventory.">
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
-            <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
-                          submitText="Add Book(s)"></AddBookModal>
+            <AddBookModal showBookEdit={handleNewBookSubmission} buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
           <div className="mt-8 flex flex-col">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -116,7 +165,7 @@ export default function Table() {
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
                     {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
-                        <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
+                        <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
                     )) : null}
                     </tbody>
                   </table>
@@ -131,40 +180,10 @@ export default function Table() {
             </div>
           </div>
           <div>
-            {renderBookEntries()}
-            {renderBookEdit()}
-          </div>
-        </div>
-        <div className="my-8">
-          <TableDetails tableName="Genres" tableDescription="A list of all the genres.">
-            <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>
-          </TableDetails>
-          <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div
-                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-300 table-auto">
-                    <TableHeader>
-                      <SortedFilterableColumnHeading resetPage={setGenrePageNumber} setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
-                                                     firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
-                      <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
-                    </TableHeader>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                    {genres ? genres.map((genre: Genre) => (
-                        <GenreTableRow setGenreFilter={setGenreFilter} onEdit={handleBookEdit} genre={genre}></GenreTableRow>
-                    )) : null}
-                    </tbody>
-                  </table>
-                  <center><button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber-1)} disabled ={genrePageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                    Previous
-                  </button>
-                    <button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber+1)} disabled={genrePageNumber===numberOfGenrePages-1} className="text-indigo-600 hover:text-indigo-900">
-                      Next
-                    </button></center>
-                </div>
-              </div>
-            </div>
+            {/*{renderBookEntries()}*/}
+            {renderEditBookView()}
+            {renderDeleteBookView()}
+            {renderBookView()}
           </div>
         </div>
       </div>

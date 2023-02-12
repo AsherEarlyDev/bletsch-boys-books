@@ -8,6 +8,7 @@ import { api } from '../../../utils/api';
 import { SalesRec } from "../../../types/salesTypes";
 import ConfirmCard from "../../CardComponents/ConfirmationCard";
 import CreateSaleEntries from '../../CreateEntries';
+import CreateEntries from "../../CreateEntries";
 
 
 interface SalesRecProp{
@@ -52,9 +53,9 @@ export default function EditSalesRecModal(props:SalesRecProp) {
   function renderConfirmation(){
     return <>
     {(displayConfirm) ?
-        <CreateSaleEntries closeStateFunction={setDisplayConfirm} submitText="Confirm"> 
+        <CreateEntries closeStateFunction={setDisplayConfirm} submitText="Confirm"> 
           <ConfirmCard onConfirm={setConfirm} confirmHeading="Sales Reconciliation Edit Confirmation"
-          confirmMessage="Confirm and Resubmit to make changes to Sale Reconciliation"></ConfirmCard></CreateSaleEntries> : null}
+          confirmMessage="Confirm and Resubmit to make changes to Sale Reconciliation"></ConfirmCard></CreateEntries> : null}
     </>;
       }
 

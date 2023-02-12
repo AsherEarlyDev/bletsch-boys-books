@@ -16,7 +16,7 @@ import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableCo
 
 
 export default function PurchaseTable() {
-  const ENTRIES_PER_PAGE = 5
+  const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currOrder, setCurrOrder] = useState({
@@ -27,8 +27,9 @@ export default function PurchaseTable() {
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
 //   const [displayEntries, setDisplayEntries] = useState(false)
+  const [sortOrder, setSortOrder] = useState("asc")
   const purchaseOrder: any[] = api.purchaseOrder.getPurchaseOrderDetails
-  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data;
+  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data;
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumPurchaseOrder.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEdit, setDisplayEdit] = useState(false)
   const [displayDelete, setDelete] = useState(false)
@@ -169,17 +170,17 @@ export default function PurchaseTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id" 
                     label="Purchase Order ID" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date" 
                     label="Date Created"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="vendorName" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="vendorName" 
                     label="Vendor Name"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading  sortFields={setSortField} databaseLabel="uniqueBooks" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks" 
                     label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks" 
                     label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="cost" 
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="cost" 
                     label="Total Cost"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">

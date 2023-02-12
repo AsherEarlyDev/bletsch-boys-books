@@ -4,7 +4,7 @@ import TableDetails from "../TableComponents/TableDetails";
 import TableHeader from "../TableComponents/TableHeader";
 import SalesRecTableRow from "../TableComponents/SalesRecTableRow";
 import EditSalesRecModal from "./SalesModals/EditSalesRecModal";
-import CreateSaleEntries from '../CreateEntries';
+import CreateEntries from '../CreateEntries';
 import SalesRecDeleteCard from './SalesRecDeleteCard';
 import SaleDetailsCard from './SalesCard';
 import AddSaleRecModal from "./SalesModals/AddSaleRecModal";
@@ -28,8 +28,9 @@ export default function SalesTable() {
   })
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("id")
+  const [sortOrder, setSortOrder] = useState("desc")
   const salesRecs: any[] = api.salesRec.getSaleRecDetails
-  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc: sortOrder}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEdit, setDisplayEdit] = useState(false)
   const [displayDelete, setDelete] = useState(false)
@@ -115,24 +116,24 @@ export default function SalesTable() {
   function renderEdit() {
     return <>
       {(displayEdit && currRec) ?
-          <CreateSaleEntries closeStateFunction={setDisplayEdit} submitText="Edit Sale Rec">
-            <EditSalesRecModal date={currRec.date} cardType="edit" salesRecId={currRec.id}></EditSalesRecModal></CreateSaleEntries> : null}
+          <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Sale Rec">
+            <EditSalesRecModal date={currRec.date} salesRecId={currRec.id}></EditSalesRecModal></CreateEntries> : null}
     </>;
   }
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale Reconciliation'>
+      {displayDelete ? <CreateEntries closeStateFunction={setDelete} submitText='Delete Sale Reconciliation'>
         <SalesRecDeleteCard cardType="delete" salesRecId={currRec.id}></SalesRecDeleteCard>
-      </CreateSaleEntries>: null}
+      </CreateEntries>: null}
     </>;
   }
 
   function renderDetails() {
     return <>
       {displayDetails ? (sales ? (
-          <CreateSaleEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
-              <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
+          <CreateEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
+              <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateEntries>) : null) : null}
     </>;
   }
 
@@ -149,8 +150,8 @@ export default function SalesTable() {
 
     return <>
       {(displayAdd && saleRecId)?
-          <CreateSaleEntries closeStateFunction={setDisplayAdd} submitText="Add Sale">
-            <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
+          <CreateEntries closeStateFunction={setDisplayAdd} submitText="Add Sale">
+            <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateEntries> : null}
     </>;
   }
 
@@ -176,15 +177,15 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id"
                                                    label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date"
                                                    label="Date Created"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="uniqueBooks"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks"
                                                    label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks"
                                                    label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="revenue"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="revenue"
                                                    label="Total Revenue"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">

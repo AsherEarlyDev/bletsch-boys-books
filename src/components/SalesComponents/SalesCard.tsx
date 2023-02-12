@@ -10,6 +10,7 @@ import SaleDeleteCard from "./SaleDeleteCard";
 import CreateSaleEntries from '../CreateEntries';
 import PrimaryButton from '../BasicComponents/PrimaryButton';
 import ConfirmCard from "../CardComponents/ConfirmationCard";
+import CreateEntries from "../CreateEntries";
 
 
 
@@ -72,18 +73,18 @@ export default function SaleDetailsCard(props:SalesProp) {
 
   function renderDelete() {
     return <>
-      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale'>
+      {displayDelete ? <CreateEntries closeStateFunction={setDelete} submitText='Delete Sale'>
         <SaleDeleteCard onClose={setOpen} salesId={props.sale.id}></SaleDeleteCard>
-      </CreateSaleEntries>: null}
+      </CreateEntries>: null}
     </>;
   }
 
   function renderConfirmation(){
     return <>
       {(displayConfirm) ?
-          <CreateSaleEntries closeStateFunction={setDisplayConfirm} submitText="Confirm">
+          <CreateEntries closeStateFunction={setDisplayConfirm} submitText="Confirm">
             <ConfirmCard onConfirm={setConfirm} confirmHeading="Sale Confirmation"
-                         confirmMessage="Confirm and Resubmit to make changes to Sale"></ConfirmCard></CreateSaleEntries> : null}
+                         confirmMessage="Confirm and Resubmit to make changes to Sale"></ConfirmCard></CreateEntries> : null}
     </>;
   }
 

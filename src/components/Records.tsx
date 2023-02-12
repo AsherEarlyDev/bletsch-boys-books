@@ -15,8 +15,9 @@ import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from './FilterModal';
 import GenreTableRow from './TableComponents/GenreTableRow';
 import FilterableColumnHeading from './TableComponents/FilterableColumnHeading';
+import Table from "./TableComponents/Table"
 
-export default function Table() {
+export default function Records() {
   const BOOKS_PER_PAGE = 5
   const GENRES_PER_PAGE = 5
   const [isbns, setIsbns] = useState<string[]>([])
@@ -100,47 +101,17 @@ export default function Table() {
             <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
                           submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
-          <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div
-                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-300 table-auto">
-                    <TableHeader>
-                      {headers.map((header => {
-                        return <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
-                      }))}
-                    </TableHeader>
-                    <TableHeader>
-                    {labels.map((label) => {
-                          return label==="publisher" ? <td></td> : (<td className="mt-5">
-                          <textarea
-                              rows={1}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              defaultValue=""
-                              onChange={(value) => {
-                                setFilters({...filters, [label]:value.target.value})
-                                setPageNumber(0)}}
-                          />
-                          </td>)
-                        })}
-                    </TableHeader>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                    {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
-                        <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
-                    )) : null}
-                    </tbody>
-                  </table>
-                  <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                    Previous
-                  </button>
-                    <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                      Next
-                    </button></center>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}} 
+            setPage= {setPageNumber} 
+            setFilters= {setFilters}
+            filterLabels={labels}
+            headers={headers}
+            items= {books}
+            handleBookEdit={handleBookEdit}
+            filters={filters}
+            pageNumber={pageNumber}
+            numberOfPages={numberOfPages}
+        ></Table>
           <div>
             {renderBookEntries()}
             {renderBookEdit()}

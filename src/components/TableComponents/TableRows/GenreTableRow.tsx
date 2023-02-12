@@ -1,9 +1,9 @@
 import {Author, Book, Genre } from "@prisma/client";
-import TableEntry from "./TableEntry";
+import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import EditGenreModal from "../EditGenreModal";
-import { api } from "../../utils/api";
+import DeleteConfirmationModal from "../../DeleteConfirmationModal";
+import EditGenreModal from "../../EditGenreModal";
+import { api } from "../../../utils/api";
 
 interface GenreTableRowProp{
   genre: Genre;

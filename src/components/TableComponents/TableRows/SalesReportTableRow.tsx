@@ -1,6 +1,6 @@
-import TableEntry from "./TableEntry";
+import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import { SalesRec } from "../../types/salesTypes";
+import { SalesRec } from "../../../types/salesTypes";
 
 interface SalesReportTableRowProp{
     salesReportInfo: {

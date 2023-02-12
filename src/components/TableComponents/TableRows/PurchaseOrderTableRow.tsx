@@ -1,6 +1,6 @@
-import TableEntry from "./TableEntry";
+import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import { PurchaseOrder } from "../../types/purchaseTypes";
+import { PurchaseOrder } from "../../../types/purchaseTypes";
 
 interface PurchaseOrderTableRowProp{
     purchaseOrderInfo: PurchaseOrder,

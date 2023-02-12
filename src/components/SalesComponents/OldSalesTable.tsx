@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from "../../utils/api";
 import TableDetails from "../TableComponents/TableDetails";
 import TableHeader from "../TableComponents/TableHeader";
-import SalesRecTableRow from '../TableComponents/SalesRecTableRow';
+import SalesRecTableRow from '../TableComponents/TableRows/SalesRecTableRow';
 import EditSalesRecModal from './SalesModals/EditSalesRecModal';
 import CreateSaleEntries from '../CreateEntries';
 import SaleDetailsCard from './SalesCard';

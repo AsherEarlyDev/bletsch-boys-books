@@ -1,5 +1,5 @@
 import AppShell from "../components/AppShell";
-import Table from "../components/Table";
+import Table from "../components/TableComponents/Tables/Table";
 import BookCard from "../components/BookCard";
 
 

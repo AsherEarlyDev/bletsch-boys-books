@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { api } from "../../utils/api";
-import TableDetails from "../TableComponents/TableDetails";
-import TableHeader from "../TableComponents/TableHeader";
-import SalesRecTableRow from "../TableComponents/SalesRecTableRow";
-import EditSalesRecModal from "./SalesModals/EditSalesRecModal";
-import CreateSaleEntries from '../CreateEntries';
-import SalesRecDeleteCard from './SalesRecDeleteCard';
-import SaleDetailsCard from './SalesCard';
-import AddSaleRecModal from "./SalesModals/AddSaleRecModal";
-import GenSalesReportModal from './SalesReportModal';
-import SalesReport from './SalesReport';
-import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
+import { api } from "../../../utils/api";
+import TableDetails from "../TableDetails";
+import TableHeader from "../TableHeader";
+import SalesRecTableRow from "../TableRows/SalesRecTableRow";
+import EditSalesRecModal from "../../SalesComponents/SalesModals/EditSalesRecModal";
+import CreateSaleEntries from '../../CreateEntries';
+import SalesRecDeleteCard from '../../SalesComponents/SalesRecDeleteCard';
+import SaleDetailsCard from '../../SalesComponents/SalesCard';
+import AddSaleRecModal from "../../SalesComponents/SalesModals/AddSaleRecModal";
+import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
+import SalesReport from '../../SalesComponents/SalesReport';
+import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
 
 
 

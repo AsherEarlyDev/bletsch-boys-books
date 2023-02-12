@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { api } from "../../utils/api";
-import TableDetails from "../TableComponents/TableDetails";
-import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading";
-import TableHeader from "../TableComponents/TableHeader";
-import CreateEntries from '../CreateEntries';
-import PurchaseOrderTableRow from '../TableComponents/PurchaseOrderTableRow';
-import AddPurchaseOrderModal from './AddPurchaseOrderModal';
-import PurchasesCard from './PurchasesCard';
-import PurchaseDetailsCard from './PurchaseDetailsCard';
-import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
+import { api } from "../../../utils/api";
+import TableDetails from "../TableDetails";
+import TableHeader from "../TableHeader";
+import CreateEntries from '../../CreateEntries';
+import PurchaseOrderTableRow from '../TableRows/PurchaseOrderTableRow';
+import AddPurchaseOrderModal from '../../PurchaseComponents/AddPurchaseOrderModal';
+import PurchasesCard from '../../PurchaseComponents/PurchasesCard';
+import PurchaseDetailsCard from '../../PurchaseComponents/PurchaseDetailsCard';
+import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
 
 
 

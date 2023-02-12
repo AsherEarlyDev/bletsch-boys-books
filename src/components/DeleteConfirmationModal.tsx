@@ -12,7 +12,7 @@ interface BookModalProp{
 
 export default function DeleteBookModal(props: BookModalProp) {
   const [isOpen, setIsOpen] = useState(false);
-  const deleteItem =props.genre ? api.genre.deleteGenreByName.useMutation() : api.books.deleteBookByISBN.useMutation();
+  const deleteItem = props.genre ? api.genre.deleteGenreByName.useMutation() : api.books.deleteBookByISBN.useMutation();
 
   function closeModal() {
     setIsOpen(false)

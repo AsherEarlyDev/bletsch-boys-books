@@ -18,7 +18,7 @@ export default function AddVendorModal(props: VendorModalProp) {
     setIsOpen(true)
   }
 
-  function handleAddVendorSubmission(e: React.FormEvent<HTMLInputElement>){
+  function handleAddVendorSubmission(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const vendorName = formData.get("vendorName") as string

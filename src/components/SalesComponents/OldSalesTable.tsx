@@ -9,7 +9,7 @@ import ViewSalesRecModal from '../TableComponents/Modals/SalesModals/ViewSalesRe
 import AddSaleRecModal from '../TableComponents/Modals/SalesModals/AddSaleRecModal';
 import GenSalesReportModal from './SalesReportModal';
 import SalesReport from './SalesReport';
-import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
+import SortedFilterableColumnHeading from '../TableComponents/TableColumnHeadings/SortedFilterableColumnHeading';
 import CreateEntries from "../CreateEntries";
 import DeleteSalesRecModal from "../TableComponents/Modals/SalesModals/DeleteSalesRecModal";
 

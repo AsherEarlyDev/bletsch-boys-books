@@ -7,7 +7,7 @@ import PurchaseOrderTableRow from '../TableRows/PurchaseOrderTableRow';
 import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
 import PurchasesCard from '../Modals/PurchaseModals/PurchasesCard';
 import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
-import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
+import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
 

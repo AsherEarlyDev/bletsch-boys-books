@@ -1,5 +1,5 @@
 import TableDetails from "../TableComponents/TableDetails";
-import FilterableColumnHeading from "../TableComponents/FilterableColumnHeading";
+import FilterableColumnHeading from "../TableComponents/TableColumnHeadings/FilterableColumnHeading";
 import TableHeader from "../TableComponents/TableHeader";
 import {SalesReportTableRow, SalesReportTotalTableRow, TopSellingTableRow} from "../TableComponents/TableRows/SalesReportTableRow";
 import { api } from '../../utils/api';

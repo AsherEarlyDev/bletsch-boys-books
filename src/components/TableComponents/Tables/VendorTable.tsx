@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import FilterableColumnHeading from "../FilterableColumnHeading";
+import FilterableColumnHeading from "../TableColumnHeadings/FilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
 import DeleteVendorModal from '../Modals/VendorModals/DeleteVendorModal';

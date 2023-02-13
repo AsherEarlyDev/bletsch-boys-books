@@ -3,7 +3,7 @@ import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import SortedFilterableColumnHeading from "../SortedFilterableColumnHeading";
+import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
@@ -16,6 +16,7 @@ import CreateEntries from "../../CreateEntries";
 import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
+import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 export default function BookTable() {
   const BOOKS_PER_PAGE = 5
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
@@ -150,14 +151,14 @@ export default function BookTable() {
                     className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-300 table-auto">
                     <TableHeader>
-
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
-                                                     firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
+                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title" firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
                       <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
                       <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
                       <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
                       <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
                       <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
+                      <ColumnHeading label="Edit"></ColumnHeading>
+                      <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
                     {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (

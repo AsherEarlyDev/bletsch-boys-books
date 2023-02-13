@@ -7,7 +7,7 @@ interface EditRowEntryProp  {
 
 export default function EditRowEntry(props: EditRowEntryProp) {
   return(
-      <td className="relative whitespace-nowrap py-2 pr-2 pl-1 text-right text-sm font-medium sm:pr-6">
+      <td className="relative whitespace-nowrap py-2 px-1 text-right text-sm font-medium sm:pr-6">
         <button onClick={props.onEdit} className="text-indigo-600 hover:text-indigo-900">
           <PencilSquareIcon className="h-4 w-4"/>
         </button>

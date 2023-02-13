@@ -4,7 +4,7 @@ import AddBookModal from "../Modals/BookModals/AddBookModal";
 import AddGenreModal from "../../AddGenreModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import SortedFilterableColumnHeading from "../SortedFilterableColumnHeading";
+import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
@@ -14,7 +14,7 @@ import { editableBook } from '../../../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
 import GenreTableRow from '../TableRows/GenreTableRow';
-import FilterableColumnHeading from '../FilterableColumnHeading';
+import FilterableColumnHeading from '../TableColumnHeadings/FilterableColumnHeading';
 
 export default function GenreTable() {
   const BOOKS_PER_PAGE = 5

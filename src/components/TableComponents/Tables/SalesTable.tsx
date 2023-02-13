@@ -5,18 +5,18 @@ import TableHeader from "../TableHeader";
 import SalesRecTableRow from "../TableRows/SalesRecTableRow";
 import EditSalesRecModal from "../Modals/SalesModals/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
-import SalesRecDeleteCard from '../../SalesComponents/SalesRecDeleteCard';
-import SaleDetailsCard from '../../SalesComponents/SalesCard';
+import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import SalesReport from '../../SalesComponents/SalesReport';
 import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
+import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 
 
 
 export default function SalesTable() {
   const ENTRIES_PER_PAGE = 5
-  const [sales, setSales] = useState<any[]>([])
+  const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -27,8 +27,8 @@ export default function SalesTable() {
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("id")
   const [displayEditSalesRecView, setDisplayEditSalesRecView] = useState(false)
-  const [displayDeleteSalesRecView, setDeleteSalesRecView] = useState(false)
-  const [displayDetails, setDisplayDetails] = useState(false)
+  const [displayDeleteSalesRecView, setDisplayDeleteSalesRecView] = useState(false)
+  const [displaySalesRecView, setDisplaySalesRecView] = useState(false)
   const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
@@ -71,7 +71,7 @@ export default function SalesTable() {
     setDisplayEditSalesRecView(false)
   }
 
-  const handleDelete = async (id:string) => {
+  async function openDeleteSalesRecView(id: string){
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
@@ -81,20 +81,50 @@ export default function SalesTable() {
           })
         }
       }
-      setDeleteSalesRecView(true)
+      setDisplayDeleteSalesRecView(true)
     }
   }
+  function renderDeleteSalesRecView() {
+    return(
+        <>
+          {(displayDeleteSalesRecView && currentSalesRec) ?
+              <CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sale Rec">
+                <DeleteSalesRecModal closeOut={closeDeleteSalesRecView} salesRecId={currentSalesRec.id}></DeleteSalesRecModal></CreateSaleEntries>
+              : null}
+        </>
+    )
+  }
+  function closeDeleteSalesRecView(){
+    setDisplayDeleteSalesRecView(false)
+  }
 
-  const handleView = async (id:string) => {
+  async function openSalesRecView(id: string){
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
-          console.log(rec)
-          setSales(rec.sales)
+          setCurrentSalesRec({
+            id: rec.id,
+            date: rec.date,
+          })
+          setCurrentSales(rec.sales)
         }
       }
-      setDisplayDetails(true)
+      setDisplaySalesRecView(true)
     }
+  }
+  function renderSalesRecView() {
+    return(
+        <>
+          {(displaySalesRecView && currentSalesRec) ?
+              (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details"> {currentSales.map((sale) => (
+                      <ViewSalesRecModal closeOut={closeSalesRecView} cardType={'edit'} sale={sale}></ViewSalesRecModal>))}
+              </CreateSaleEntries>)
+              : null}
+        </>
+    )
+  }
+  function closeSalesRecView(){
+    setDisplayDeleteSalesRecView(false)
   }
 
   const handleAdd = async (id:string) => {
@@ -114,22 +144,6 @@ export default function SalesTable() {
     setSalesReport(true)
   }
 
-  function renderDelete() {
-    return <>
-      {displayDeleteSalesRecView ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale Reconciliation'>
-        <SalesRecDeleteCard cardType="delete" salesRecId={currentSalesRec.id}></SalesRecDeleteCard>
-      </CreateSaleEntries>: null}
-    </>;
-  }
-
-  function renderDetails() {
-    return <>
-      {displayDetails ? (sales ? (
-          <CreateSaleEntries closeStateFunction={setDisplayDetails} submitText="Show Sales Details"> {sales.map((sale) => (
-              <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
-    </>;
-  }
-
   function renderAdd() {
     const dummySale = {
       id: '',
@@ -140,11 +154,10 @@ export default function SalesTable() {
       subtotal: 0
     }
 
-
     return <>
       {(displayAddSaleView && saleRecId)?
           <CreateSaleEntries closeStateFunction={setDisplayAddSaleView} submitText="Add Sale">
-            <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
+            <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries> : null}
     </>;
   }
 
@@ -183,7 +196,7 @@ export default function SalesTable() {
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {salesRecs ? salesRecs.map((rec) => (
-                      <SalesRecTableRow onAdd={handleAdd} onView={handleView} onDelete={handleDelete} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
+                      <SalesRecTableRow onAdd={handleAdd} onView={openSalesRecView} onDelete={openDeleteSalesRecView} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
                   )) : null}
                   </tbody>
                 </table>
@@ -200,8 +213,8 @@ export default function SalesTable() {
         <div>
           {/* {renderEntries()} */}
           {renderEditSalesRecView()}
-          {renderDelete()}
-          {renderDetails()}
+          {renderDeleteSalesRecView()}
+          {renderSalesRecView()}
           {renderAdd()}
           {renderSalesReport()}
         </div>

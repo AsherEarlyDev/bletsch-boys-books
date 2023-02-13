@@ -1,25 +1,26 @@
-import ImmutableCardProp from "../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../CardComponents/MutableCardProp";
-import CardTitle from "../CardComponents/CardTitle";
-import CardGrid from "../CardComponents/CardGrid";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import CardTitle from "../../../CardComponents/CardTitle";
+import CardGrid from "../../../CardComponents/CardGrid";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
-import { api } from '../../utils/api';
-import { Sale, SalesRec } from "../../types/salesTypes";
-import SaleDeleteCard from "./SaleDeleteCard";
-import CreateSaleEntries from '../CreateEntries';
-import PrimaryButton from '../BasicComponents/PrimaryButton';
-import ConfirmCard from "../CardComponents/ConfirmationCard";
+import { api } from '../../../../utils/api';
+import { Sale} from "../../../../types/salesTypes";
+import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
+import CreateSaleEntries from '../../../CreateEntries';
+import PrimaryButton from '../../../BasicComponents/PrimaryButton';
+import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 
 
 
 interface SalesProp{
   sale:  Sale
   cardType: string
+  closeOut?: () => void
 }
 
 
-export default function SaleDetailsCard(props:SalesProp) {
+export default function ViewSalesRecModal(props:SalesProp) {
   const [open, setOpen] = useState(true)
   const [isbn, setIsbn] = useState(props.sale.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: props.sale.bookId}).data
@@ -29,76 +30,79 @@ export default function SaleDetailsCard(props:SalesProp) {
   }
   const [quantity, setQuantity] = useState(props.sale.quantity)
   const [price, setPrice] = useState(props.sale.price)
-  const [displayDelete, setDelete] = useState(false)
-  const [confirm, setConfirm] = useState(false)
-  const [displayConfirm, setDisplayConfirm] = useState(false)
+  const [displayDeleteSaleView, setDeleteSaleView] = useState(false)
+  const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const modSale = api.sales.modifySale.useMutation()
   const addSale = api.sales.createSale.useMutation()
 
-
-  function saveBook(){
-    if (confirm){
-      if(props.sale){
-        if (props.cardType === 'edit'){
-          modSale.mutate({
-            id: props.sale.id,
-            saleReconciliationId: props.sale.saleReconciliationId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-          })
-        }
-        else{
-          addSale.mutate({
-            saleReconciliationId: props.sale.saleReconciliationId,
-            isbn: isbn,
-            quantity: quantity.toString(),
-            price: price.toString()
-          })
-        }
-        closeModal()
-      }
-      else{
-        alert("Error")
-      }
-    }
-    else{
-      setDisplayConfirm(true)
-    }
-
+  function closeModal(){
+    setOpen(false)
+    props.closeOut()
   }
 
-  function renderDelete() {
+  function editSale(){
+    if(props.sale){
+      if (props.cardType === 'edit'){
+        modSale.mutate({
+          id: props.sale.id,
+          saleReconciliationId: props.sale.saleReconciliationId,
+          isbn: isbn,
+          quantity: quantity.toString(),
+          price: price.toString()
+        })
+      }
+      else{
+        addSale.mutate({
+          saleReconciliationId: props.sale.saleReconciliationId,
+          isbn: isbn,
+          quantity: quantity.toString(),
+          price: price.toString()
+        })
+      }
+      closeModal()
+    }
+    else{
+      alert("Error")
+    }
+  }
+
+  function openConfirmationView(){
+    setDisplayConfirmationView(true)
+  }
+  function renderConfirmationView(){
     return <>
-      {displayDelete ? <CreateSaleEntries closeStateFunction={setDelete} submitText='Delete Sale'>
-        <SaleDeleteCard onClose={setOpen} salesId={props.sale.id}></SaleDeleteCard>
+      {(displayConfirmationView) ?
+          <CreateSaleEntries closeStateFunction={setDisplayConfirmationView} submitText="Confirm">
+            <ConfirmCard onClose={closeConfirmationView} onConfirm={editSale} confirmHeading="Sale Edit Confirmation"
+                         confirmMessage="Confirm to make changes to a Sale"></ConfirmCard></CreateSaleEntries> : null}
+    </>;
+  }
+  function closeConfirmationView(){
+    setDisplayConfirmationView(false)
+  }
+
+  function openDeleteSaleView() {
+    setDeleteSaleView(true)
+  }
+  function renderDeleteSaleView() {
+    return <>
+      {displayDeleteSaleView ? <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
+        <SaleDeleteCard salesId={props.sale.id}></SaleDeleteCard>
       </CreateSaleEntries>: null}
     </>;
   }
-
-  function renderConfirmation(){
-    return <>
-      {(displayConfirm) ?
-          <CreateSaleEntries closeStateFunction={setDisplayConfirm} submitText="Confirm">
-            <ConfirmCard onConfirm={setConfirm} confirmHeading="Sale Confirmation"
-                         confirmMessage="Confirm and Resubmit to make changes to Sale"></ConfirmCard></CreateSaleEntries> : null}
-    </>;
+  function closeDeleteSaleView(){
+    setDeleteSaleView(false)
   }
 
-  function handleDelete() {
-    setDelete(true)
-  }
 
-  function closeModal(){
-    setOpen(false)
-  }
 
   return (
-      (open ? (props.sale ? (props.cardType==='edit' ?
+      ((open && props.sale) ? (props.cardType==='edit' ?
           <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
             <div className="flex-row ">
               <CardTitle heading="Sale" subheading="Edit sale below..."></CardTitle>
-              <PrimaryButton buttonText="Delete Sale" onClick={handleDelete}></PrimaryButton>
+              <PrimaryButton buttonText="Delete Sale" onClick={openDeleteSaleView}></PrimaryButton>
             </div>
             <CardGrid>
               <ImmutableCardProp heading="Sale ID" data={props.sale.id}></ImmutableCardProp>
@@ -111,10 +115,10 @@ export default function SaleDetailsCard(props:SalesProp) {
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
-            <SaveCardChanges closeModal={closeModal} saveBook={saveBook}></SaveCardChanges>
+            <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>
             <div>
-              {renderDelete()}
-              {renderConfirmation()}
+              {renderDeleteSaleView()}
+              {renderConfirmationView()}
             </div>
           </div>
           : <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
@@ -132,10 +136,10 @@ export default function SaleDetailsCard(props:SalesProp) {
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
-            <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
+            <SaveCardChanges closeModal={closeModal} saveModal={editSale}></SaveCardChanges>
             <div>
-              {renderConfirmation()}
+              {/*{renderConfirmation()}*/}
             </div>
-          </div>) : null): null)
+          </div>) : null)
   )
 }

@@ -20,7 +20,6 @@ interface SalesRecProp{
 export default function EditSalesRecModal(props:SalesRecProp) {
   const [open, setOpen] = useState(true)
   const [date, setDate] = useState(props.date)
-  const [confirm, setConfirm] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const modifySaleRec = api.salesRec.modifySaleRec.useMutation()
 

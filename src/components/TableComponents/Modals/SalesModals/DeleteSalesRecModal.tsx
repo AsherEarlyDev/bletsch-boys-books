@@ -38,7 +38,7 @@ export default function DeleteSalesRecModal(props:DeleteSalesRecProp) {
       <>
         {open ? (
             <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-              <CardTitle heading="Delete Vendor..." subheading={message}></CardTitle>
+              <CardTitle heading="Delete Sales Reconciliation..." subheading={message}></CardTitle>
               <div className="gap-5 flex flex-row justify-around px-4 py-4 sm:px-6">
                 <SecondaryButton onClick={props.closeOut} buttonText="Cancel"></SecondaryButton>
                 <PrimaryButton onClick={handleDeleteSalesRec} buttonText="Delete Sales Rec."></PrimaryButton>

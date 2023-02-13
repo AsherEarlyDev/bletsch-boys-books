@@ -19,7 +19,6 @@ interface SalesProp{
   closeOut?: () => void
 }
 
-
 export default function ViewSalesRecModal(props:SalesProp) {
   const [open, setOpen] = useState(true)
   const [isbn, setIsbn] = useState(props.sale.bookId)
@@ -87,7 +86,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
   function renderDeleteSaleView() {
     return <>
       {displayDeleteSaleView ? <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
-        <SaleDeleteCard salesId={props.sale.id}></SaleDeleteCard>
+        <SaleDeleteCard onClose={closeDeleteSaleView} salesId={props.sale.id}></SaleDeleteCard>
       </CreateSaleEntries>: null}
     </>;
   }

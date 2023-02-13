@@ -26,7 +26,6 @@ export default function AddBookModal(props: BookModalProp) {
     const isbnArray = tempIsbnArray.filter(isbn => isbn.length === 10 || isbn.length === 13)
     if (tempIsbnArray.length == isbnArray.length){
       closeModal()
-      alert("Valid " + isbnArray.length.toString() + " isbns inputted: " + isbnArray.toString())
       await props.showBookEdit(isbnArray)
     }
     else{

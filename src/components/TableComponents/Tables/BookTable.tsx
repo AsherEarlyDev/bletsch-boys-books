@@ -31,11 +31,25 @@ export default function BookTable() {
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const bookInfo = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
-  const handleNewBookSubmission = async (isbns:string[]) => {
+
+  async function openNewBookSubmissionsView(isbns:string[]){
     setCurrentIsbns(isbns)
     if (bookInfo) {
       setDisplayNewBookEntriesView(true);
     }
+  }
+  function renderNewBookEntriesView(){
+    return(
+        <>
+          {(displayNewBookEntriesView && bookInfo) ?
+              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Save Books">
+                <EditBookModal cardType="edit" bookInfo={bookInfo.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
+              </CreateEntries> : null}
+        </>
+    )
+  }
+  function closeNewBookEntriesView(){
+    setDisplayNewBookEntriesView(false)
   }
 
   async function openEditBookView(isbn: string){
@@ -142,7 +156,7 @@ export default function BookTable() {
           <TableDetails tableName="Inventory"
                         tableDescription="A list of all the books in inventory.">
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
-            <AddBookModal showBookEdit={handleNewBookSubmission} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
+            <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
           <div className="mt-8 flex flex-col">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

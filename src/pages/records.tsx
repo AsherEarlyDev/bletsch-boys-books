@@ -7,7 +7,7 @@ export default function RecordPage() {
       <>
         <AppShell activePage="Records"></AppShell>
         <BookTable></BookTable>
-        {/*<GenreTable></GenreTable>*/}
+        <GenreTable></GenreTable>
       </>
   )
 }

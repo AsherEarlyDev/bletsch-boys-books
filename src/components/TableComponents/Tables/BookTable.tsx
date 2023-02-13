@@ -3,8 +3,6 @@ import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import SortedFilterableColumnHeading from "../SortedFilterableColumnHeading";
-import TableHeader from "../TableHeader";
 import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
 import { Dialog } from '@headlessui/react'
@@ -16,8 +14,10 @@ import CreateEntries from "../../CreateEntries";
 import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
+import Table from './Table';
 export default function BookTable() {
-  const BOOKS_PER_PAGE = 5
+  const BOOKS_PER_PAGE = 20
+  const HEADERS = [ ["Title", "title"], ["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "price"], ["Inventory", "inventory"]]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
   const [displayEditBookView, setDisplayEditBookView] = useState(false)
@@ -109,6 +109,12 @@ export default function BookTable() {
     setDisplayBookView(false)
   }
 
+  function renderBookRow(items:any[]){
+    return(books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
+      <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
+  )) : null)
+  }
+
   function renderBookEntries() {
     return <>
       <div>
@@ -135,6 +141,8 @@ export default function BookTable() {
     </>;
   }
 
+
+
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -143,38 +151,17 @@ export default function BookTable() {
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
             <AddBookModal showBookEdit={handleNewBookSubmission} buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
-          <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div
-                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-300 table-auto">
-                    <TableHeader>
-
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Title"
-                                                     firstEntry={true} databaseLabel="title"></SortedFilterableColumnHeading>
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="ISBN" databaseLabel="isbn"></SortedFilterableColumnHeading>
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Author(s)" databaseLabel="authorNames"></SortedFilterableColumnHeading>
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Price" databaseLabel="retailPrice"></SortedFilterableColumnHeading>
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Genre" databaseLabel="genre"></SortedFilterableColumnHeading>
-                      <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} label="Inventory" databaseLabel="inventory"></SortedFilterableColumnHeading>
-                    </TableHeader>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                    {books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
-                        <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
-                    )) : null}
-                    </tbody>
-                  </table>
-                  <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                    Previous
-                  </button>
-                    <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                      Next
-                    </button></center>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}} 
+            setPage= {setPageNumber} 
+            setFilters= {setFilters}
+            headers={HEADERS}
+            items= {books}
+            filters={filters}
+            headersNotFiltered={["price", "inventory"]}
+            pageNumber={pageNumber}
+            numberOfPages={numberOfPages}
+            renderRow={renderBookRow}
+        ></Table>
           <div>
             {/*{renderBookEntries()}*/}
             {renderEditBookView()}

@@ -12,9 +12,7 @@ interface GenreTableRowProp{
 
 
 export default function GenreTableRow(props:GenreTableRowProp) {
-  function handleClick(){
-    // props.onEdit(props.bookInfo.isbn)
-  }
+
   const inventory = api.genre.getGenreInventory.useQuery(props.genre.name).data
 
   return (

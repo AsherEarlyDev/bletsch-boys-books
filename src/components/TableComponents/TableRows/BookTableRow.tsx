@@ -1,11 +1,9 @@
 import {Author, Book, Genre } from "@prisma/client";
 import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import DeleteConfirmationModal from "../../DeleteConfirmationModal";
-import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
-import ViewTableEnt from "../TableEntries/ViewTableEnt";
+import ViewTableEntry from "../TableEntries/ViewTableEntry";
 
 interface BookTableRowProp{
   bookInfo: Book  & {
@@ -31,10 +29,7 @@ export default function BookTableRow(props:BookTableRowProp) {
 
   return (
       <tr>
-        <ViewTableEnt onView={handleView}>{props.bookInfo.title}</ViewTableEnt>
-        {/*<TableEntry firstEntry={true}>*/}
-        {/*    <ViewTableEntry openEdit={handleEdit} bookInfo={props.bookInfo} buttonText={props.bookInfo.title} submitText="Edit Book"></ViewTableEntry>*/}
-        {/*</TableEntry>*/}
+        <ViewTableEntry onView={handleView}>{props.bookInfo.title}</ViewTableEntry>
         <TableEntry>{props.bookInfo.isbn}</TableEntry>
         <TableEntry>{props.bookInfo.author.map((author) => author.name).join(", ")}</TableEntry>
         <TableEntry>{props.bookInfo.retailPrice}</TableEntry>
@@ -42,9 +37,6 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry>{props.bookInfo.inventory}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
-        {/*<td>*/}
-        {/*  {isInStock ? null : <DeleteConfirmationModal disabled={props.bookInfo.inventory != 0} itemIdentifier={props.bookInfo.isbn} buttonText="Delete" submitText="DELETE BOOK"></DeleteConfirmationModal>}*/}
-        {/*</td>*/}
       </tr>
   )
 }

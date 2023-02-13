@@ -1,4 +1,3 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
 
 export default function MutableCardProp(props:any) {
   const handleChange = (event: { target: { value: any; }; }) => {

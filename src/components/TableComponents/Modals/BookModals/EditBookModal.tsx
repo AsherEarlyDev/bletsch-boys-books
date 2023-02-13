@@ -7,6 +7,8 @@ import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import { completeBook, databaseBook, editableBook } from '../../../../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../../../../utils/api';
+import ImmutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
+import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 
 
 interface BookCardProp{
@@ -25,8 +27,8 @@ export default function EditBookModal(props:BookCardProp) {
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
-  const [thickness, setThickness] = useState<number>(defaultDimenions[1] ?? 0)
-  const [height, setHeight] = useState<number>(defaultDimenions[2] ?? 0)
+  const [thickness, setHeight] = useState<number>(defaultDimenions[1] ?? 0)
+  const [height, setLength] = useState<number>(defaultDimenions[2] ?? 0)
   const action = api.books.editBook.useMutation()
 
   function closeModal(){
@@ -68,9 +70,7 @@ export default function EditBookModal(props:BookCardProp) {
           <GenreCardProp saveFunction = {setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
           <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
           <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
-          <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={defaultDimenions[0]}></MutableCardProp>
-          <MutableCardProp saveValue={setThickness} heading="Thickness" dataType="number" defaultValue={defaultDimenions[1]}></MutableCardProp>
-          <MutableCardProp saveValue={setHeight} heading="Height" dataType="number" defaultValue={defaultDimenions[2]}></MutableCardProp>
+          <MutableDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsCardProp>
         </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>
       </div>

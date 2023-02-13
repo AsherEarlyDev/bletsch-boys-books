@@ -1,12 +1,13 @@
 import AppShell from "../components/AppShell";
-import Records from "../components/Records";
-
+import BookTable from "../components/TableComponents/Tables/BookTable";
+import GenreTable from "../components/TableComponents/Tables/GenreTable";
 
 export default function RecordPage() {
   return (
       <>
         <AppShell activePage="Records"></AppShell>
-        <Records></Records>
+        <BookTable></BookTable>
+        <GenreTable></GenreTable>
       </>
   )
 }

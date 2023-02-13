@@ -14,6 +14,7 @@ interface ConfirmCardProp{
     onConfirm: (confirm: boolean) => void
     confirmMessage: string
     confirmHeading: string
+    onClose: () => void
   }
 
 
@@ -29,6 +30,7 @@ export default function ConfirmCard(props:ConfirmCardProp) {
 
   function closeModal(){
     setOpen(false)
+    props.onClose()
   }
 
   return (

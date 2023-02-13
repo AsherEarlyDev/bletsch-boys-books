@@ -1,12 +1,12 @@
-import ImmutableCardProp from "../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../CardComponents/MutableCardProp";
-import CardTitle from "../CardComponents/CardTitle";
-import CardGrid from "../CardComponents/CardGrid";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import CardTitle from "../../../CardComponents/CardTitle";
+import CardGrid from "../../../CardComponents/CardGrid";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
-import { api } from '../../utils/api';
-import CreateEntries from "../CreateEntries";
-import ConfirmCard from "../CardComponents/ConfirmationCard";
+import { api } from '../../../../utils/api';
+import CreateEntries from "../../../CreateEntries";
+import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 
 
 
@@ -15,6 +15,7 @@ interface PurchasesProp{
   vendorName:  string
   date: string
   cardType: string
+  closeOut: () => void
 }
 
 
@@ -29,7 +30,6 @@ export default function PurchasesCard(props:PurchasesProp) {
   const vendors = api.vendor.getVendors.useQuery().data
 
   function saveBook(){
-    
       if(props.vendorName && props.date && props.purchaseOrderId){
         if (props.cardType === 'edit'){
           if(confirm){
@@ -74,6 +74,7 @@ export default function PurchasesCard(props:PurchasesProp) {
 
   function closeModal(){
     setOpen(false)
+    props.closeOut()
   }
 
   function renderConfirmation(){

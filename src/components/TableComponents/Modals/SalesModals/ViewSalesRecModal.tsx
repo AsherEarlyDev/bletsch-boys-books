@@ -136,9 +136,9 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
-            <SaveCardChanges closeModal={closeModal} saveModal={editSale}></SaveCardChanges>
+            <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>
             <div>
-              {/*{renderConfirmation()}*/}
+              {renderConfirmationView()}
             </div>
           </div>) : null)
   )

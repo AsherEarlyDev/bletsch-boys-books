@@ -12,7 +12,7 @@ import { api } from '../utils/api';
 interface BookCardProp{
   bookInfo:  editableBook | undefined
   cardType: string
-  closeOut: () => void
+  closeOut?: () => void
 }
 
 

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
-import AddGenreModal from "../../AddGenreModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
 import SortedFilterableColumnHeading from "../SortedFilterableColumnHeading";
@@ -13,13 +12,11 @@ import HeadingPanel from '../../BasicComponents/HeadingPanel';
 import { editableBook } from '../../../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
-import GenreTableRow from '../TableRows/GenreTableRow';
-import FilterableColumnHeading from '../FilterableColumnHeading';
 import CreateEntries from "../../CreateEntries";
 import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
-export default function Table() {
+export default function BookTable() {
   const BOOKS_PER_PAGE = 5
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
@@ -39,7 +36,6 @@ export default function Table() {
       setDisplayNewBookEntriesView(true);
     }
   }
-
 
   async function openEditBookView(isbn: string){
     if (books){
@@ -79,7 +75,7 @@ export default function Table() {
     return(
         <>
           {(displayDeleteBookView && bookInfo) ?
-              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Delete Book">
+              <CreateEntries closeStateFunction={setDisplayDeleteBookView} submitText="Delete Book">
                 <DeleteBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeDeleteBookView}></DeleteBookModal>
               </CreateEntries> : null}
         </>
@@ -103,7 +99,7 @@ export default function Table() {
     return(
         <>
           {(displayBookView && bookInfo) ?
-              <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
+              <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
                 <ViewBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
               </CreateEntries> : null}
         </>

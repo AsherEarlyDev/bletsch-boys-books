@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { Vendor } from '../../types/purchaseTypes';
+import { Vendor } from '../../../../types/purchaseTypes';
 
 interface PurchaseOrderModalProp{
   showPurchaseOrderEdit(date: string, vendorId: string): Promise<void>,
@@ -27,7 +27,7 @@ export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
         setId(e.target.value)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string

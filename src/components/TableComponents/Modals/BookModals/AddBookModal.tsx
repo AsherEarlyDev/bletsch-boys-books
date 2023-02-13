@@ -18,7 +18,7 @@ export default function AddBookModal(props: BookModalProp) {
     setIsOpen(true)
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const isbnString = formData.get("bookIsbns") as string

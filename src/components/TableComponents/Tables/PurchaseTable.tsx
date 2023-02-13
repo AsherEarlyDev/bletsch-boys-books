@@ -4,10 +4,12 @@ import TableDetails from "../TableDetails";
 import TableHeader from "../TableHeader";
 import CreateEntries from '../../CreateEntries';
 import PurchaseOrderTableRow from '../TableRows/PurchaseOrderTableRow';
-import AddPurchaseOrderModal from '../../PurchaseComponents/AddPurchaseOrderModal';
-import PurchasesCard from '../../PurchaseComponents/PurchasesCard';
-import PurchaseDetailsCard from '../../PurchaseComponents/PurchaseDetailsCard';
+import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
+import PurchasesCard from '../Modals/PurchaseModals/PurchasesCard';
+import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
+import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
+import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
 
 
 
@@ -18,27 +20,24 @@ export default function PurchaseTable() {
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
-  const [currOrder, setCurrOrder] = useState({
+  const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
     vendorName:''
   })
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
-//   const [displayEntries, setDisplayEntries] = useState(false)
   const purchaseOrder: any[] = api.purchaseOrder.getPurchaseOrderDetails
   .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data;
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumPurchaseOrder.useQuery().data / ENTRIES_PER_PAGE)
-  const [displayEdit, setDisplayEdit] = useState(false)
-  const [displayDelete, setDelete] = useState(false)
-  const [displayDetails, setDisplayDetails] = useState(false)
-  const [displayAdd, setDisplayAdd] = useState(false)
+  const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
+  const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
+  const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
+  const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
   const vendors = api.vendor.getVendors.useQuery().data
 
-  const handleOrderSubmit = async (date: string, vendorId: string) => {
-    // setDate(date)
-    // setDisplayEntries(true)
+  async function handlePurchaseOrderSubmission(date: string, vendorId: string){
     if (createPurchaseOrder){
         createPurchaseOrder.mutate({
         date: date,
@@ -47,40 +46,62 @@ export default function PurchaseTable() {
     }
   }
 
-  const handleEdit = async (id:string) => {
+  async function openEditPurchaseView(id: string){
     if (purchaseOrder){
       for (const order of purchaseOrder){
         if (order.id === id){
-          setCurrOrder({
-            id: order.id, 
+          setCurrentOrder({
+            id: order.id,
             date: order.date,
             vendorName: order.vendorName
           })
         }
       }
-      setDisplayEdit(true)
+      setDisplayEditPurchaseView(true)
     }
-    
+  }
+  function renderEditPurchaseView() {
+    return(
+        <>
+          {(displayEditPurchaseView && currentOrder) ?
+              <CreateEntries closeStateFunction={setDisplayEditPurchaseView} submitText="Edit Purchase Order">
+                <EditPurchaseOrderModal closeOut={closeEditPurchaseView} date={currentOrder.date} purchaseOrderId={currentOrder.id} vendorName={currentOrder.vendorName}></EditPurchaseOrderModal></CreateEntries> : null}
+        </>
+    )
+  }
+  function closeEditPurchaseView(){
+    setDisplayEditPurchaseView(false)
   }
 
-  const handleDelete = async (id:string) => {
+  async function openDeletePurchaseView(id: string){
     if (purchaseOrder){
-        for (const order of purchaseOrder){
-          if (order.id === id){
-            
-            setCurrOrder({
-              id: order.id, 
-              date: order.date,
-              vendorName: order.vendorName
-            })
-          }
+      for (const order of purchaseOrder){
+        if (order.id === id){
+          setCurrentOrder({
+            id: order.id,
+            date: order.date,
+            vendorName: order.vendorName
+          })
         }
-        setDelete(true)
       }
+      setDisplayDeletePurchaseView(true)
+    }
+  }
+  function renderDeletePurchaseView() {
+    return(
+        <>
+          {(displayDeletePurchaseView && currentOrder) ?
+              <CreateEntries closeStateFunction={setDisplayDeletePurchaseView} submitText='Delete Purchase Order'>
+              <DeletePurchaseOrderModal closeOut={closeDeletePurchaseView} purchaseId={currentOrder.id}></DeletePurchaseOrderModal>
+          </CreateEntries>: null}
+        </>
+    )
+  }
+  function closeDeletePurchaseView(){
+    setDisplayDeletePurchaseView(false)
   }
 
-  const handleView = async (id:string) => {
-    console.log("View")
+  async function openPurchaseView(id: string){
     if (purchaseOrder){
       console.log(purchaseOrder)
       for (const order of purchaseOrder){
@@ -88,10 +109,23 @@ export default function PurchaseTable() {
           setPurchases(order.purchases)
         }
       }
-      setDisplayDetails(true)
-      console.log(displayDetails)
+      setDisplayPurchaseView(true)
+      console.log(displayPurchaseView)
     }
   }
+  function renderPurchaseView() {
+    return(
+        <>
+          {displayPurchaseView ? (purchases ? (
+              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
+                  <ViewPurchaseModal closeOut={closePurchaseView} cardType={'edit'} purchase={purchase}></ViewPurchaseModal>))}</CreateEntries>) : null) : null}
+        </>
+    )
+  }
+  function closePurchaseView(){
+    setDisplayPurchaseView(false)
+  }
+
 
   const handleAdd = async (id:string) => {
     if (purchaseOrder){
@@ -100,41 +134,8 @@ export default function PurchaseTable() {
           setId(order.id)
         }
       }
-      setDisplayAdd(true)
+      setDisplayAddPurchaseView(true)
     }
-  }
-
-
-  // function renderEntries() {
-  //   return <>
-  //     {displayEntries ? <CreateSaleEntries submitText='Create Sale Reconciliation'>
-  //           <EditSalesRecModal date={date} cardType="entry" salesRecId={' '}></EditSalesRecModal>
-  //     </CreateSaleEntries>: null}
-  //   </>;
-  // }
-
-  function renderEdit() {
-    return <>
-      {(displayEdit && currOrder) ?
-          <CreateEntries closeStateFunction={setDisplayEdit} submitText="Edit Purchase Order"> 
-            <PurchasesCard date={currOrder.date} cardType="edit" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard></CreateEntries> : null}
-  </>;
-  }
-
-  function renderDelete() {
-    return <>
-      {displayDelete ? <CreateEntries closeStateFunction={setDelete} submitText='Delete Purchase Order'>
-            <PurchasesCard date={currOrder.date} cardType="delete" purchaseOrderId={currOrder.id} vendorName={currOrder.vendorName}></PurchasesCard>
-      </CreateEntries>: null}
-  </>;
-  }
-
-  function renderDetails() {
-    return <>
-      {displayDetails ? (purchases ? (
-          <CreateEntries closeStateFunction={setDisplayDetails} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-            <PurchaseDetailsCard cardType={'edit'} purchase={purchase}></PurchaseDetailsCard>))}</CreateEntries>) : null) : null}
-  </>;
   }
 
   function renderAdd() {
@@ -147,9 +148,9 @@ export default function PurchaseTable() {
         subtotal: 0
     }
     return <>
-      {(displayAdd && purchaseOrderId)? 
-          <CreateEntries closeStateFunction={setDisplayAdd} submitText="Add Sale"> 
-            <PurchaseDetailsCard cardType={'entry'} purchase={dummyPurchase}></PurchaseDetailsCard></CreateEntries> : null}
+      {(displayAddPurchaseView && purchaseOrderId)?
+          <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
+            <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}></ViewPurchaseModal></CreateEntries> : null}
   </>;
   }
 
@@ -158,7 +159,7 @@ export default function PurchaseTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          <AddPurchaseOrderModal showPurchaseOrderEdit={handleOrderSubmit} buttonText="Create Purchase Order"
+          <AddPurchaseOrderModal showPurchaseOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order"
                         submitText="Create Purchase Order" vendorList={vendors}></AddPurchaseOrderModal>
         </TableDetails>
         <div className="mt-8 flex flex-col">
@@ -183,7 +184,7 @@ export default function PurchaseTable() {
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
                   {purchaseOrder ? purchaseOrder.map((order) => (
-                      <PurchaseOrderTableRow onAdd={handleAdd} onView={handleView} onDelete={handleDelete} onEdit={handleEdit} purchaseOrderInfo={order}></PurchaseOrderTableRow>
+                      <PurchaseOrderTableRow onAdd={handleAdd} onView={openPurchaseView} onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView} purchaseOrderInfo={order}></PurchaseOrderTableRow>
                   )) : null}
                   </tbody>
                 </table>
@@ -199,9 +200,9 @@ export default function PurchaseTable() {
         </div>
         <div>
           {/* {renderEntries()} */}
-          {renderEdit()}
-          {renderDelete()}
-          {renderDetails()}
+          {renderEditPurchaseView()}
+          {renderDeletePurchaseView()}
+          {renderPurchaseView()}
           {renderAdd()}
         </div>
       </div>

@@ -19,7 +19,7 @@ export default function AddSaleRecModal(props: SaleRecModalProp) {
     setIsOpen(true)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string

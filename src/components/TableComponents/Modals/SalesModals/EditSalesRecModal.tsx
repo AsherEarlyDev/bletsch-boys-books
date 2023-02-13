@@ -29,7 +29,7 @@ export default function EditSalesRecModal(props:SalesRecProp) {
   }
 
 
-  function editBook(){
+  function editSalesRec(){
     if(props.salesRecId && props.date){
       modifySaleRec.mutate({
         date: date,
@@ -46,12 +46,11 @@ export default function EditSalesRecModal(props:SalesRecProp) {
   function openConfirmationView(){
     setDisplayConfirmationView(true)
   }
-
   function renderConfirmationView(){
     return <>
     {(displayConfirmationView) ?
         <CreateSaleEntries closeStateFunction={setDisplayConfirmationView} submitText="Confirm">
-          <ConfirmCard onClose={closeConfirmationView} onConfirm={editBook} confirmHeading="Sales Reconciliation Edit Confirmation"
+          <ConfirmCard onClose={closeConfirmationView} onConfirm={editSalesRec} confirmHeading="Sales Reconciliation Edit Confirmation"
           confirmMessage="Confirm and Resubmit to make changes to Sale Reconciliation"></ConfirmCard></CreateSaleEntries> : null}
     </>;
   }

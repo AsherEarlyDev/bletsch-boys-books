@@ -7,15 +7,12 @@ import { api } from "../../../utils/api";
 
 interface GenreTableRowProp{
   genre: Genre;
-  onEdit: (isbn:string) => void
   setGenreFilter: any
 }
 
 
 export default function GenreTableRow(props:GenreTableRowProp) {
-  function handleClick(){
-    // props.onEdit(props.bookInfo.isbn)
-  }
+
   const inventory = api.genre.getGenreInventory.useQuery(props.genre.name).data
 
   return (

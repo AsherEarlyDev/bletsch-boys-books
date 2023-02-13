@@ -27,7 +27,7 @@ export default function EditVendorModal(props:EditVendorCardProp) {
     props.closeOut()
   }
 
-  function saveVendor(){
+  function handleEditVendor(){
     if(props.vendorId && props.vendorName){
       editVendor.mutate({
         vendorId: props.vendorId,
@@ -49,7 +49,7 @@ export default function EditVendorModal(props:EditVendorCardProp) {
               <ImmutableCardProp heading="Old Vendor Name" data={props.vendorName}></ImmutableCardProp>
               <MutableCardProp saveValue={setName} heading="New Vendor Name" required="True" dataType="string"></MutableCardProp>
             </CardGrid>
-            <SaveCardChanges closeModal={closeModal} saveModal={saveVendor}></SaveCardChanges>
+            <SaveCardChanges closeModal={closeModal} saveModal={handleEditVendor}></SaveCardChanges>
           </div>
           : null)
   )

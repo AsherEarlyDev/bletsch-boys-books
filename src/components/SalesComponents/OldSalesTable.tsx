@@ -3,15 +3,15 @@ import { api } from "../../utils/api";
 import TableDetails from "../TableComponents/TableDetails";
 import TableHeader from "../TableComponents/TableHeader";
 import SalesRecTableRow from '../TableComponents/TableRows/SalesRecTableRow';
-import EditSalesRecModal from './SalesModals/EditSalesRecModal';
+import EditSalesRecModal from '../TableComponents/Modals/SalesModals/EditSalesRecModal';
 import CreateSaleEntries from '../CreateEntries';
 import SaleDetailsCard from './SalesCard';
-import AddSaleRecModal from './SalesModals/AddSaleRecModal';
+import AddSaleRecModal from '../TableComponents/Modals/SalesModals/AddSaleRecModal';
 import GenSalesReportModal from './SalesReportModal';
 import SalesReport from './SalesReport';
 import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
 import CreateEntries from "../CreateEntries";
-import DeleteSalesRecModal from "./SalesModals/DeleteSalesRecModal";
+import DeleteSalesRecModal from "../TableComponents/Modals/SalesModals/DeleteSalesRecModal";
 
 
 

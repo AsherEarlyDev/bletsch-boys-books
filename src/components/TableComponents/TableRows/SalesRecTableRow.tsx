@@ -2,6 +2,9 @@ import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
 import { SalesRec } from "../../../types/salesTypes";
 import {TrashIcon} from "@heroicons/react/20/solid";
+import ViewTableEnt from "../TableEntries/ViewTableEnt";
+import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
+import EditRowEntry from "../TableEntries/EditRowEntry";
 
 interface SalesRecTableRowProp{
     salesRecInfo: SalesRec,
@@ -27,31 +30,18 @@ export default function SalesRecTableRow(props:SalesRecTableRowProp) {
       }
   return (
       <tr>
-        <TableEntry firstEntry={true}>{props.salesRecInfo.id}</TableEntry>
+        <ViewTableEnt onView={handleView}>{props.salesRecInfo.id}</ViewTableEnt>
         <TableEntry>{props.salesRecInfo.date}</TableEntry>
         <TableEntry>{props.salesRecInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.totalBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.revenue}</TableEntry>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-          <button onClick={handleView} className="text-indigo-600 hover:text-indigo-900">
-            View Details<span className="sr-only">, {props.salesRecInfo.id}</span>
-          </button>
-        </td>
-        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
           <button onClick={handleAdd} className="text-indigo-600 hover:text-indigo-900">
             Add Sale<span className="sr-only">, {props.salesRecInfo.id}</span>
           </button>
         </td>
-        <td className="relative whitespace-nowrap py-4 pl-1 text-right text-sm font-medium sm:pr-6">
-          <button onClick={handleEdit} className="text-indigo-600 hover:text-indigo-900">
-            Edit<span className="sr-only">, {props.salesRecInfo.id}</span>
-          </button>
-        </td>
-        <td className="relative whitespace-nowrap py-2 pr-2 text-right text-sm font-sm sm:pr-6">
-          <button onClick={handleDelete} className="text-indigo-600 hover:text-indigo-900">
-            <TrashIcon className="h-4 w-4"/> <span className="sr-only">, {props.salesRecInfo.id}</span>
-          </button>
-        </td>
+        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
+        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>
   )
 }

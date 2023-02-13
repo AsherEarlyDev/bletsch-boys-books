@@ -1,8 +1,8 @@
-import CardTitle from "../../CardComponents/CardTitle";
-import SaveCardChanges from "../../CardComponents/SaveCardChanges";
-import { api } from '../../../utils/api';
-import SecondaryButton from "../../BasicComponents/SecondaryButton";
-import PrimaryButton from "../../BasicComponents/PrimaryButton";
+import CardTitle from "../../../CardComponents/CardTitle";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import { api } from '../../../../utils/api';
+import SecondaryButton from "../../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {useState} from "react";
 
 

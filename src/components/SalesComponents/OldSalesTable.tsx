@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { api } from "../../utils/api";
 import TableDetails from "../TableComponents/TableDetails";
 import TableHeader from "../TableComponents/TableHeader";
-import SalesRecTableRow from '../TableComponents/SalesRecTableRow';
-import EditSalesRecModal from './SalesModals/EditSalesRecModal';
+import SalesRecTableRow from '../TableComponents/TableRows/SalesRecTableRow';
+import EditSalesRecModal from '../TableComponents/Modals/SalesModals/EditSalesRecModal';
 import CreateSaleEntries from '../CreateEntries';
-import SaleDetailsCard from './SalesCard';
-import AddSaleRecModal from './SalesModals/AddSaleRecModal';
+import ViewSalesRecModal from '../TableComponents/Modals/SalesModals/ViewSalesRecModal';
+import AddSaleRecModal from '../TableComponents/Modals/SalesModals/AddSaleRecModal';
 import GenSalesReportModal from './SalesReportModal';
 import SalesReport from './SalesReport';
 import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
 import CreateEntries from "../CreateEntries";
-import DeleteSalesRecModal from "./SalesModals/DeleteSalesRecModal";
+import DeleteSalesRecModal from "../TableComponents/Modals/SalesModals/DeleteSalesRecModal";
 
 
 
@@ -139,7 +139,7 @@ export default function OldSalesTable() {
     return <>
       {displaySalesRecDetailsView ? (sales ? (
           <CreateSaleEntries closeStateFunction={setDisplaySalesRecDetailsView} submitText="Show Sales Details"> {sales.map((sale) => (
-            <SaleDetailsCard cardType={'edit'} sale={sale}></SaleDetailsCard>))}</CreateSaleEntries>) : null) : null}
+            <ViewSalesRecModal cardType={'edit'} sale={sale}></ViewSalesRecModal>))}</CreateSaleEntries>) : null) : null}
   </>;
   }
 
@@ -157,7 +157,7 @@ export default function OldSalesTable() {
     return <>
       {(displaySaleAddView && saleRecId) ?
           <CreateSaleEntries closeStateFunction={setDisplaySaleAddView} submitText="Add Sale">
-            <SaleDetailsCard cardType={'entry'} sale={dummySale}></SaleDetailsCard></CreateSaleEntries> : null}
+            <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries> : null}
   </>;
   }
 

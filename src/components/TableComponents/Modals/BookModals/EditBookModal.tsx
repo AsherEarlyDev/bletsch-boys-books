@@ -67,7 +67,7 @@ export default function EditBookModal(props:BookCardProp) {
           <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
           <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
           <ImmutableCardProp heading="Inventory" data={props.bookInfo.inventory}></ImmutableCardProp>
-          <GenreCardProp saveFunction = {setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
+          <GenreCardProp saveFunction={setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
           <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
           <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
           <MutableDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsCardProp>

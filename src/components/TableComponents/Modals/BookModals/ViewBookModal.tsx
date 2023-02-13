@@ -45,7 +45,7 @@ export default function ViewBookModal(props: BookModalProp) {
                                data={props.bookInfo.publisher}></ImmutableCardProp>
             <ImmutableCardProp heading="Inventory"
                                data={props.bookInfo.inventory}></ImmutableCardProp>
-            <ImmutableCardProp heading="genre" data={props.bookInfo.genre.name}></ImmutableCardProp>
+            <ImmutableCardProp heading="Genre" data={props.bookInfo.genre}></ImmutableCardProp>
             <ImmutableCardProp heading="Retail Price"
                                data={props.bookInfo.retailPrice}></ImmutableCardProp>
             <ImmutableCardProp heading="Page Count"

@@ -9,7 +9,6 @@ interface MutableDimensionsCardPropProps{
 }
 
 export default function MutableDimensionsCardProp(props: MutableDimensionsCardPropProps) {
-  const dimensions = ((props.length > 0 ? props.length + "cm " : "N/A ") + "x "  + (props.width > 0 ? props.width + "cm " : "N/A ") + "x " + (props.height > 0 ? props.height + "cm " : "N/A "))
   function handleChangeLength(event: { target: { value: any; }; }){
     props.saveLength(event.target.value)
   };
@@ -26,7 +25,7 @@ export default function MutableDimensionsCardProp(props: MutableDimensionsCardPr
             Dimensions (L x W x H)
           </label>
         </dt>
-        <dd className="mt-1 text-sm text-gray-900 flex gap-1 flex-row">
+        <dd className="mt-1 text-sm text-gray-900 flex gap-1 flex-row justify-center">
           <input
               placeholder={props.defaultLength}
               type="number"

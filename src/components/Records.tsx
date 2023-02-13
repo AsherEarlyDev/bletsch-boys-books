@@ -29,16 +29,18 @@ export default function Records() {
   const labels = [ "title", "isbn", "author", "publisher", "genre"]
   const [headers, setHeaders] = useState([ ["Title", "title"], ["ISBN", "isbn"], ["Author(s)", "author"], ["Price", "price"], ["Genre", "genre"]])
 
+
   const [sortOrder, setSortOrder] = useState("asc")
   const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const  books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
+  const [genreHeaders, setGenreHeaders] = useState([ ["Name", "name"], ["Inventory", "name"]])
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
   const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
-  const  genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
+  const  genres:Genre[] = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
   
   const handleISBNSubmit = async (isbns:string[]) => {
     setIsbns(isbns)
@@ -55,6 +57,18 @@ export default function Records() {
   function setGenreFilter(genre: string){
     setFilters({isbn:"", title:"", author:"", publisher:"", genre:genre})
     setPageNumber(0)
+  }
+
+  function renderBookRow(items:any[]){
+    return(items ? items.map((book: Book & { genre: Genre; author: Author[]; }) => (
+       <BookTableRow onEdit={handleBookEdit} bookInfo={book}></BookTableRow>
+  )) : null)
+  }
+
+  function renderGenreRow(items:any[]){
+    return (genres ? genres.map((genre: Genre) => (
+      <GenreTableRow setGenreFilter={setGenreFilter} genre={genre}></GenreTableRow>
+  )) : null)
   }
 
   function renderBookEntries() {
@@ -97,20 +111,20 @@ export default function Records() {
         <div className="mb-8">
           <TableDetails tableName="Inventory"
                         tableDescription="A list of all the books in inventory.">
-            <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
+            <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter/Search" submitText="Add Filters"></FilterModal>
             <AddBookModal showBookEdit={handleISBNSubmit} buttonText="Add Book"
                           submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
           <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}} 
             setPage= {setPageNumber} 
             setFilters= {setFilters}
-            filterLabels={labels}
             headers={headers}
             items= {books}
-            handleBookEdit={handleBookEdit}
             filters={filters}
+            headersNotFiltered={["price"]}
             pageNumber={pageNumber}
             numberOfPages={numberOfPages}
+            renderRow={renderBookRow}
         ></Table>
           <div>
             {renderBookEntries()}
@@ -121,33 +135,13 @@ export default function Records() {
           <TableDetails tableName="Genres" tableDescription="A list of all the genres.">
             <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>
           </TableDetails>
-          <div className="mt-8 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div
-                    className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-300 table-auto">
-                    <TableHeader>
-                      <SortedFilterableColumnHeading resetPage={setGenrePageNumber} setOrder={setGenreSortOrder} currentOrder={genreSortOrder} currentField={genreSortField} sortFields={setGenreSortField} label="Name"
-                                                     firstEntry={true} databaseLabel="name"></SortedFilterableColumnHeading>
-                      <FilterableColumnHeading label="Inventory"></FilterableColumnHeading>
-                    </TableHeader>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                    {genres ? genres.map((genre: Genre) => (
-                        <GenreTableRow setGenreFilter={setGenreFilter} onEdit={handleBookEdit} genre={genre}></GenreTableRow>
-                    )) : null}
-                    </tbody>
-                  </table>
-                  <center><button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber-1)} disabled ={genrePageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                    Previous
-                  </button>
-                    <button style={{padding:"10px"}} onClick={()=>setGenrePageNumber(genrePageNumber+1)} disabled={genrePageNumber===numberOfGenrePages-1} className="text-indigo-600 hover:text-indigo-900">
-                      Next
-                    </button></center>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Table sorting = {{setOrder:setGenreSortOrder, setField:setGenreSortField, currentOrder:genreSortOrder, currentField:genreSortField}} 
+            setPage= {setGenrePageNumber} 
+            headers={genreHeaders}
+            items= {genres}
+            pageNumber={genrePageNumber}
+            numberOfPages={numberOfGenrePages}
+            renderRow={renderGenreRow}></Table>   
         </div>
       </div>
 

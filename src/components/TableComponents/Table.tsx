@@ -11,14 +11,14 @@ interface TableProps{
         currentField:string
     }
     setPage:any
-    setFilters:any
-    filterLabels:Array<string>
+    setFilters?:any
+    headersNotFiltered?:Array<string>
     headers:Array<Array<string>>
-    items: Book[]
-    handleBookEdit:any
-    filters:any
+    items: any[]
+    filters?:any
     pageNumber:number
     numberOfPages:number
+    renderRow:any
 }
 
 export default function Table(props:TableProps) {
@@ -34,24 +34,23 @@ return(
                             return <SortedFilterableColumnHeading resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
                             }))}
                         </TableHeader>
+                        {(props.filters && props.setFilters) ?
                         <TableHeader>
-                        {props.filterLabels.map((label) => {
-                                return label==="publisher" ? <td></td> : (<td className="mt-5">
+                         {props.headers.map((label) => {
+                                return props.headersNotFiltered.includes(label[1]) ? <td></td> : (<td className="mt-5">
                                 <textarea
                                     rows={1}
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     defaultValue=""
                                     onChange={(value) => {
-                                    props.setFilters({...props.filters, [label]:value.target.value})
+                                    props.setFilters({...props.filters, [label[1]]:value.target.value})
                                     props.setPage(0)}}
                                 />
                                 </td>)
-                            })}
-                        </TableHeader>
+                            }) }
+                        </TableHeader>: null}
                         <tbody className="divide-y divide-gray-200 bg-white">
-                        {props.items ? props.items.map((book: Book & { genre: Genre; author: Author[]; }) => (
-                            <BookTableRow onEdit={props.handleBookEdit} bookInfo={book}></BookTableRow>
-                        )) : null}
+                        {props.renderRow(props.items)}
                         </tbody>
                     </table>
                     <center><button style={{padding:"10px"}} onClick={()=>props.setPage(props.pageNumber-1)} disabled ={props.pageNumber===0} className="text-indigo-600 hover:text-indigo-900">

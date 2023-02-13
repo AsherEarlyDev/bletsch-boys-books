@@ -7,7 +7,6 @@ import { api } from "../../utils/api";
 
 interface GenreTableRowProp{
   genre: Genre;
-  onEdit: (isbn:string) => void
   setGenreFilter: any
 }
 

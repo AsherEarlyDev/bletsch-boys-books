@@ -142,7 +142,7 @@ export default function BookTable() {
           <TableDetails tableName="Inventory"
                         tableDescription="A list of all the books in inventory.">
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
-            <AddBookModal showBookEdit={handleNewBookSubmission} buttonText="Add Book" submitText="Add Book(s)"></AddBookModal>
+            <AddBookModal showBookEdit={handleNewBookSubmission} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
           </TableDetails>
           <div className="mt-8 flex flex-col">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

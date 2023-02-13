@@ -22,7 +22,7 @@ export default function AddBookModal(props: BookModalProp) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const isbnString = formData.get("bookIsbns") as string
-    const tempIsbnArray = parseIsbns(isbnString)
+    const tempIsbnArray = parseIsbns(isbnString.trim())
     const isbnArray = tempIsbnArray.filter(isbn => isbn.length === 10 || isbn.length === 13)
     if (tempIsbnArray.length == isbnArray.length){
       closeModal()
@@ -90,7 +90,7 @@ export default function AddBookModal(props: BookModalProp) {
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Add book ISBNs
+                            Add book(s) ISBN
                           </Dialog.Title>
                           <p className="font-small leading-6 text-gray-900">
                             Seperate values by commas or spaces.

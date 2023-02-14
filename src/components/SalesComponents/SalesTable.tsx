@@ -9,8 +9,10 @@ import SalesRecDeleteCard from './SalesRecDeleteCard';
 import SaleDetailsCard from './SalesCard';
 import AddSaleRecModal from "./SalesModals/AddSaleRecModal";
 import GenSalesReportModal from './SalesReportModal';
-import SalesReport from './SalesReport';
+import { createSalesReportArray, generateSalesReportPDF } from './SalesReport';
 import SortedFilterableColumnHeading from '../TableComponents/SortedFilterableColumnHeading';
+import { start } from 'repl';
+
 
 
 
@@ -38,6 +40,13 @@ export default function SalesTable() {
   const [displayAdd, setDisplayAdd] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
+  const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
+  const costReport = api.salesReport.generateCostReport.useQuery({startDate: startDate, endDate: endDate}).data
+  const topSellers = api.salesReport.getTopSelling.useQuery({startDate: startDate, endDate: endDate}).data
+  console.log("Start: "+startDate)
+  
+
+
 
   const handleSaleRecSubmit = async (date: string) => {
     if (createSalesRec){
@@ -99,11 +108,14 @@ export default function SalesTable() {
     }
   }
 
-  const generateReport = async (startDate: string, endDate: string) =>{
-    setEndDate(endDate)
-    setStartDate(startDate)
-    setSalesReport(true)
+
+
+  function generateReport (){
+    const reportObj = createSalesReportArray(revenueReport, costReport, startDate, endDate)
+    generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
   }
+
+  
 
   // function renderEntries() {
   //   return <>
@@ -155,11 +167,11 @@ export default function SalesTable() {
     </>;
   }
 
-  function renderSalesReport(){
-    return <>
-      {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
-    </>;
-  }
+  // function renderSalesReport(){
+  //   return <>
+  //     {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
+  //   </>;
+  // }
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -167,7 +179,7 @@ export default function SalesTable() {
                       tableDescription="A list of all the Sales Reconciliations and Sales.">
           <AddSaleRecModal showSaleRecEdit={handleSaleRecSubmit} buttonText="Create Sale Reconciliation"
                            submitText="Create Sale Reconciliation"></AddSaleRecModal>
-          <GenSalesReportModal genSalesReport={generateReport} buttonText="Generate Sales Report"
+          <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>
         </TableDetails>
         <div className="mt-8 flex flex-col">
@@ -210,7 +222,6 @@ export default function SalesTable() {
           {renderDelete()}
           {renderDetails()}
           {renderAdd()}
-          {renderSalesReport()}
         </div>
       </div>
 

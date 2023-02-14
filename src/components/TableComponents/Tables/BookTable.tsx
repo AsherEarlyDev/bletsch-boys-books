@@ -16,7 +16,6 @@ import CreateEntries from "../../CreateEntries";
 import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
-import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
 export default function BookTable() {
@@ -47,7 +46,7 @@ export default function BookTable() {
         <>
           {(displayNewBookEntriesView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Save Books">
-                <NewBookEntryTable newBookEntries={entryBookData}></NewBookEntryTable>
+                <NewBookEntryTable closeOut={closeNewBookEntriesView} newBookEntries={entryBookData}></NewBookEntryTable>
               </CreateEntries> : null}
         </>
     )

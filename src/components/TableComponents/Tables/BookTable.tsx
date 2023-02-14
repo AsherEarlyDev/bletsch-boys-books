@@ -18,6 +18,7 @@ import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import Table from './Table';
+import NewBookEntryTable from "./NewBookEntryTable";
 export default function BookTable() {
   const BOOKS_PER_PAGE = 20
   const SORTABLE_HEADERS = [ ["Title", "title"], ["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "price"], ["Inventory", "inventory"]]
@@ -32,21 +33,21 @@ export default function BookTable() {
   const [sortOrder, setSortOrder] = useState("asc")
   const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
-  const bookInfo = api.books.findBooks.useQuery(currentIsbns).data
+  const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
   async function openNewBookSubmissionsView(isbns:string[]){
     setCurrentIsbns(isbns)
-    if (bookInfo) {
+    if (entryBookData) {
       setDisplayNewBookEntriesView(true);
     }
   }
   function renderNewBookEntriesView(){
     return(
         <>
-          {(displayNewBookEntriesView && bookInfo) ?
+          {(displayNewBookEntriesView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Save Books">
-
+                <NewBookEntryTable newBookEntries={entryBookData}></NewBookEntryTable>
               </CreateEntries> : null}
         </>
     )
@@ -68,9 +69,9 @@ export default function BookTable() {
   function renderEditBookView() {
     return(
         <>
-          {(displayEditBookView && bookInfo) ?
+          {(displayEditBookView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
-                <EditBookModal cardType="edit" bookInfo={bookInfo.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
+                <EditBookModal cardType="edit" bookInfo={entryBookData.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
               </CreateEntries> : null}
         </>
     )
@@ -92,9 +93,9 @@ export default function BookTable() {
   function renderDeleteBookView() {
     return(
         <>
-          {(displayDeleteBookView && bookInfo) ?
+          {(displayDeleteBookView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayDeleteBookView} submitText="Delete Book">
-                <DeleteBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeDeleteBookView}></DeleteBookModal>
+                <DeleteBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeDeleteBookView}></DeleteBookModal>
               </CreateEntries> : null}
         </>
     )
@@ -116,9 +117,9 @@ export default function BookTable() {
   function renderBookView() {
     return(
         <>
-          {(displayBookView && bookInfo) ?
+          {(displayBookView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
-                <ViewBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
+                <ViewBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
               </CreateEntries> : null}
         </>
     )
@@ -136,21 +137,21 @@ export default function BookTable() {
   function renderBookEntries() {
     return <>
       <div>
-        {displayNewBookEntriesView ? (bookInfo ? (
+        {displayNewBookEntriesView ? (entryBookData ? (
           <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayNewBookEntriesView}>
-            {bookInfo.externalBooks.length > 0 ?
+            {entryBookData.externalBooks.length > 0 ?
             <div><HeadingPanel displayText="New Books"></HeadingPanel>
-             {bookInfo.externalBooks.map((book: editableBook) => (
+             {entryBookData.externalBooks.map((book: editableBook) => (
               <BookCard cardType="entry" bookInfo={book}></BookCard>))}</div>: null}
-            {bookInfo.internalBooks.length > 0 ?
+            {entryBookData.internalBooks.length > 0 ?
             <div><HeadingPanel displayText="Existing Books"></HeadingPanel>
-             {bookInfo.internalBooks.map((book: editableBook) => (
+             {entryBookData.internalBooks.map((book: editableBook) => (
               <BookCard cardType="edit" bookInfo={book}></BookCard>))}</div>: null}
-            {(bookInfo.absentBooks.length > 0 ?
+            {(entryBookData.absentBooks.length > 0 ?
             <center><Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
               <div className="text-center">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  The following books could not be found: {bookInfo.absentBooks.join(", ")}
+                  The following books could not be found: {entryBookData.absentBooks.join(", ")}
                 </Dialog.Title>
               </div>
             </Dialog.Panel></center> : null)}
@@ -180,7 +181,7 @@ export default function BookTable() {
                  numberOfPages={numberOfPages}
                  renderRow={renderBookRow}></Table>
           <div>
-            {/*{renderBookEntries()}*/}
+            {renderNewBookEntriesView()}
             {renderEditBookView()}
             {renderDeleteBookView()}
             {renderBookView()}

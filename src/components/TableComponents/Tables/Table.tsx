@@ -3,7 +3,7 @@ import TableHeader from "../TableHeader";
 import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 
 interface TableProps{
-    sorting:{
+    sorting?:{
         setOrder:any
         setField:any
         currentOrder:string

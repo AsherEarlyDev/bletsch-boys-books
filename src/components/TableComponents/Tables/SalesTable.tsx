@@ -8,7 +8,7 @@ import CreateSaleEntries from '../../CreateEntries';
 import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
-import SalesReport from '../../SalesComponents/SalesReport';
+import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
 import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 
@@ -31,9 +31,13 @@ export default function SalesTable() {
   const [displaySalesRecView, setDisplaySalesRecView] = useState(false)
   const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
+  const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
-  const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:"desc"}).data
+  const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
+  const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
+  const costReport = api.salesReport.generateCostReport.useQuery({startDate: startDate, endDate: endDate}).data
+  const topSellers = api.salesReport.getTopSelling.useQuery({startDate: startDate, endDate: endDate}).data
 
   const handleSaleRecSubmission = async (date: string) => {
     if (createSalesRec){
@@ -138,10 +142,11 @@ export default function SalesTable() {
     }
   }
 
-  const generateReport = async (startDate: string, endDate: string) =>{
-    setEndDate(endDate)
-    setStartDate(startDate)
-    setSalesReport(true)
+
+
+  function generateReport (){
+    const reportObj = createSalesReportArray(revenueReport, costReport, startDate, endDate)
+    generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
   }
 
   function renderAdd() {
@@ -161,11 +166,11 @@ export default function SalesTable() {
     </>;
   }
 
-  function renderSalesReport(){
-    return <>
-      {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
-    </>;
-  }
+  // function renderSalesReport(){
+  //   return <>
+  //     {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
+  //   </>;
+  // }
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -173,7 +178,7 @@ export default function SalesTable() {
                       tableDescription="A list of all the Sales Reconciliations and Sales.">
           <AddSaleRecModal showSaleRecEdit={handleSaleRecSubmission} buttonText="Create Sale Reconciliation"
                            submitText="Create Sale Reconciliation"></AddSaleRecModal>
-          <GenSalesReportModal genSalesReport={generateReport} buttonText="Generate Sales Report"
+          <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>
         </TableDetails>
         <div className="mt-8 flex flex-col">
@@ -183,15 +188,15 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="id"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id"
                                                    label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="date"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date"
                                                    label="Date Created"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="uniqueBooks"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks"
                                                    label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="totalBooks"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks"
                                                    label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading sortFields={setSortField} databaseLabel="revenue"
+                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="revenue"
                                                    label="Total Revenue"></SortedFilterableColumnHeading>
                   </TableHeader>
                   <tbody className="divide-y divide-gray-200 bg-white">
@@ -216,7 +221,6 @@ export default function SalesTable() {
           {renderDeleteSalesRecView()}
           {renderSalesRecView()}
           {renderAdd()}
-          {renderSalesReport()}
         </div>
       </div>
 

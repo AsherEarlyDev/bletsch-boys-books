@@ -2,7 +2,9 @@ import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
 
 interface SaleReportModalProp{
-  genSalesReport(beginDate: string, endDate: string): Promise<void>,
+  startDate(beginDate: string): void;
+  endDate(endDate: string): void;
+  generateReport(): void;
   buttonText: string;
   submitText: string;
 }
@@ -21,12 +23,11 @@ export default function GenSalesReportModal(props: SaleReportModalProp) {
 
   function handleSubmit(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const begDate = formData.get("startdate") as string
-    const endDate = formData.get("enddate") as string
+    props.generateReport()
     closeModal()
-    props.genSalesReport(begDate, endDate)
   }
+
+
 
   return (
       <>
@@ -77,7 +78,8 @@ export default function GenSalesReportModal(props: SaleReportModalProp) {
                             name="startdate"
                             id="startdate"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
+                            // defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
+                            onChange={(e)=>{props.startDate(e.currentTarget.value)}}
                         />
                         </div>
                       </div>
@@ -92,7 +94,8 @@ export default function GenSalesReportModal(props: SaleReportModalProp) {
                             name="enddate"
                             id="enddate"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
+                            // defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
+                            onChange={(e)=>{props.endDate(e.currentTarget.value)}}
                         />
                         </div>
                       </div>

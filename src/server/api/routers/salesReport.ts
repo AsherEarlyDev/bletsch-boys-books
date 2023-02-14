@@ -170,11 +170,11 @@ export const salesReportRouter = createTRPCRouter({
                 let currRev = books.get(sale.bookId)?.revenue
                 if(currRev && book)
                   books.set(sale.bookId, {numBooks: updatedNumBooks, revenue: rev+currRev, 
-                    recentCost: 0, profit: 0, title: book.title})
+                    recentCost: 0, title: book.title})
               }
               else{
                 books.set(sale.bookId, {numBooks: sale.quantity, revenue: sale.quantity * sale.price, 
-                  recentCost: 0, profit: 0, title: book.title})
+                  recentCost: 0, title: book.title})
               }
             }
         }
@@ -191,12 +191,12 @@ export const salesReportRouter = createTRPCRouter({
               
                 let booksObj = books.get(purchase.bookId)
                 if (booksObj){
+                  console.log("ID: "+purchase.bookId)
                   console.log("Revenue: "+booksObj.revenue)
                   console.log("Price: "+purchase.price)
                   console.log("NumBooks: "+booksObj.numBooks)
                   books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
-                    recentCost: purchase.price * booksObj.numBooks, profit: booksObj.revenue - purchase.price * booksObj.numBooks,
-                     title: booksObj.title})
+                    recentCost: purchase.price * booksObj.numBooks, title: booksObj.title})
                 }
             }
         }
@@ -210,7 +210,7 @@ export const salesReportRouter = createTRPCRouter({
             numBooks: value.numBooks,
             recentCost: value.recentCost,
             revenue: value.revenue,
-            profit: value.profit
+            profit: value.revenue - value.recentCost
           }
           results.push(res)
         })

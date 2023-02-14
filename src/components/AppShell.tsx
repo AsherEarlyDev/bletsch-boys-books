@@ -1,5 +1,5 @@
 import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
-import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
+import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import {signOut, useSession} from "next-auth/react";
 
@@ -31,7 +31,7 @@ export default function AppShell(props: any) {
     const sessionData = useSession();
 
     async function logOut(e) {
-      const res = await signOut({callbackUrl: "/"});
+      const res = await signOut({callbackUrl: "/", redirect: false});
       console.log(res)
     }
 

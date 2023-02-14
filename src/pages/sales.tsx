@@ -1,5 +1,5 @@
 import AppShell from "../components/AppShell";
-import SalesTable from "../components/SalesComponents/SalesTable";
+import SalesTable from "../components/TableComponents/Tables/SalesTable";
 import OldSalesTable from "../components/SalesComponents/OldSalesTable";
 
 

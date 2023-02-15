@@ -3,8 +3,6 @@ import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
 import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
-import TableHeader from "../TableHeader";
 import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
 import { Dialog } from '@headlessui/react'
@@ -33,6 +31,7 @@ export default function BookTable() {
   const [sortOrder, setSortOrder] = useState("asc")
   const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
+  const totalNumberOfEntries = api.books.getNumberOfBooks.useQuery({filters:filters}).data
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
 
@@ -181,6 +180,7 @@ export default function BookTable() {
                  pageNumber={pageNumber}
                  numberOfPages={numberOfPages}
                  entriesPerPage={BOOKS_PER_PAGE}
+                 numberOfEntries={totalNumberOfEntries}
                  renderRow={renderBookRow}></Table>
           <div>
             {renderNewBookEntriesView()}

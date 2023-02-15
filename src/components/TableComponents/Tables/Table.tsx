@@ -21,6 +21,7 @@ interface TableProps{
     entriesPerPage?:number
     pageNumber:number
     numberOfPages:number
+    numberOfEntries:number
     renderRow:any
 }
 
@@ -61,7 +62,7 @@ return(
                         {props.renderRow(props.items)}
                         </tbody>
                     </table>
-                    <PaginationBar pageNumber={props.pageNumber} numberOfPages={props.numberOfPages} entriesPerPage={props.entriesPerPage} numberOfItems={numberOfItems} setPage={props.setPage}></PaginationBar>
+                    <PaginationBar pageNumber={props.pageNumber} numberOfPages={props.numberOfPages} entriesPerPage={props.entriesPerPage} numberOfItems={numberOfItems} setPage={props.setPage} totalNumberOfEntries={props.numberOfEntries}></PaginationBar>
                 </div>
             </div>
         </div>

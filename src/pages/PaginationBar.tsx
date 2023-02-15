@@ -4,6 +4,7 @@ interface PaginationBarProps{
   numberOfPages:number
   entriesPerPage:number
   numberOfItems:number
+  totalNumberOfEntries:number
   setPage: (page: number) => void
 }
 
@@ -19,7 +20,7 @@ export default function PaginationBar(props: PaginationBarProps) {
         <div className="hidden sm:block">
           <p className="text-sm text-gray-700">
             Showing <span className="font-medium">{(props.pageNumber * props.entriesPerPage) + 1}</span> to <span className="font-medium">{(props.pageNumber * props.entriesPerPage) + props.numberOfItems}</span> of{' '}
-            <span className="font-medium">{(props.pageNumber===props.numberOfPages-1) ? ((props.numberOfPages - 1) * props.entriesPerPage) + props.numberOfItems : (props.numberOfPages * props.entriesPerPage)}</span> results
+            <span className="font-medium">{props.totalNumberOfEntries}</span> results
           </p>
         </div>
         <div className="flex flex-1 justify-center">

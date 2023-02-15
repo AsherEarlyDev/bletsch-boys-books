@@ -2,7 +2,7 @@ import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
 import { SalesRec } from "../../../types/salesTypes";
 import {TrashIcon} from "@heroicons/react/20/solid";
-import ViewTableEnt from "../TableEntries/ViewTableEnt";
+import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 
@@ -30,7 +30,7 @@ export default function SalesRecTableRow(props:SalesRecTableRowProp) {
       }
   return (
       <tr>
-        <ViewTableEnt onView={handleView}>{props.salesRecInfo.id}</ViewTableEnt>
+        <ViewTableEntry onView={handleView}>{props.salesRecInfo.id}</ViewTableEntry>
         <TableEntry>{props.salesRecInfo.date}</TableEntry>
         <TableEntry>{props.salesRecInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.totalBooks}</TableEntry>

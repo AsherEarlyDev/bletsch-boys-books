@@ -2,7 +2,6 @@ import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
 import { PurchaseOrder } from "../../../types/purchaseTypes";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
-import ViewTableEnt from "../TableEntries/ViewTableEnt";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 
@@ -30,7 +29,7 @@ export default function PurchaseOrderTableRow(props:PurchaseOrderTableRowProp) {
       }
   return (
       <tr>
-        <ViewTableEnt onView={handleView}>{props.purchaseOrderInfo.id}</ViewTableEnt>
+        <ViewTableEntry onView={handleView}>{props.purchaseOrderInfo.id}</ViewTableEntry>
         <TableEntry>{props.purchaseOrderInfo.date}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.vendorName}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.uniqueBooks}</TableEntry>

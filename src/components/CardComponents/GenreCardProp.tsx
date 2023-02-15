@@ -6,7 +6,9 @@ export default function GenreCardProp(props:{saveFunction: Dispatch<SetStateActi
   return (
       <div className="sm:col-span-1">
         <dt className="text-md font-medium text-gray-500">Genre</dt>
-        <GenreSelect saveFunction = {props.saveFunction} defaultValue={props.defaultValue}></GenreSelect>
+        <div className="flex justify-center">
+          <GenreSelect saveFunction = {props.saveFunction} defaultValue={props.defaultValue}></GenreSelect>
+        </div>
       </div>
   )
 }

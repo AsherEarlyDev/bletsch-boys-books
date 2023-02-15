@@ -1,13 +1,12 @@
 import { Dialog, Transition } from '@headlessui/react'
-import {Fragment, useRef, useState} from 'react'
+import React, {Fragment, useRef, useState} from 'react'
 import { api } from '../utils/api';
+import {TrashIcon} from "@heroicons/react/20/solid";
 
 interface BookModalProp{
   itemIdentifier: string,
-  buttonText: string,
   submitText: string,
   genre?: boolean
-  disabled?: boolean
 }
 
 export default function DeleteBookModal(props: BookModalProp) {
@@ -29,11 +28,11 @@ export default function DeleteBookModal(props: BookModalProp) {
 
   return (
       <>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button disabled={props.disabled} onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
-            {props.buttonText}
+        <td className="relative whitespace-nowrap py-2 pl-7 text-left text-sm font-sm ">
+          <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
+            <TrashIcon className="h-4 w-4"/>
           </button>
-        </div>
+        </td>
         <Transition.Root show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10"  onClose={closeModal}>
             <Transition.Child
@@ -63,8 +62,11 @@ export default function DeleteBookModal(props: BookModalProp) {
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                          Are you sure you want to delete this item.
+                          Delete Genre...
                           </Dialog.Title>
+                          <Dialog.Description className="mt-1 max-w-2xl text-sm text-gray-500">
+                            Are you sure you want to delete this Genre from the database? This action cannot be undone.
+                          </Dialog.Description>
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

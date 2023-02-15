@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
-import {Fragment, useRef, useState} from 'react'
+import React, {Fragment, useRef, useState} from 'react'
 import { api } from '../utils/api';
+import {PencilSquareIcon} from "@heroicons/react/20/solid";
 
 interface EditGenreModalProp{
   itemIdentifier: string,
@@ -20,7 +21,7 @@ export default function EditGenreModal(props: EditGenreModalProp) {
     setIsOpen(true)
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const genre = formData.get("genre") as string
@@ -33,11 +34,11 @@ export default function EditGenreModal(props: EditGenreModalProp) {
 
   return (
       <>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <td className="py-2 pl-5 text-sm font-medium text-left">
           <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
-            {props.buttonText}
+            <PencilSquareIcon className="h-4 w-4"/>
           </button>
-        </div>
+        </td>
         <Transition.Root show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10"  onClose={closeModal}>
             <Transition.Child
@@ -68,8 +69,11 @@ export default function EditGenreModal(props: EditGenreModalProp) {
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Enter new Genre Name
+                            Edit Genre...
                           </Dialog.Title>
+                          <Dialog.Description className="mt-1 max-w-2xl text-sm text-gray-500">
+                            Please enter and confirm a new genre title.
+                          </Dialog.Description>
                         </div>
                         <div className="mt-5">
                         <textarea

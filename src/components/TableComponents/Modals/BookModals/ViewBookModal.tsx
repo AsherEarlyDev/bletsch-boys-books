@@ -5,6 +5,7 @@ import CardTitle from '../../../CardComponents/CardTitle';
 import ImmutableCardProp from '../../../CardComponents/ImmutableCardProp';
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import ImmutableDimensionsCardProp from "../../../CardComponents/ImmutableDimensionsCardProp";
 
 interface BookModalProp {
   bookInfo: Book & {
@@ -44,17 +45,12 @@ export default function ViewBookModal(props: BookModalProp) {
                                data={props.bookInfo.publisher}></ImmutableCardProp>
             <ImmutableCardProp heading="Inventory"
                                data={props.bookInfo.inventory}></ImmutableCardProp>
-            <ImmutableCardProp heading="genre" data={props.bookInfo.genre.name}></ImmutableCardProp>
+            <ImmutableCardProp heading="Genre" data={props.bookInfo.genre}></ImmutableCardProp>
             <ImmutableCardProp heading="Retail Price"
                                data={props.bookInfo.retailPrice}></ImmutableCardProp>
             <ImmutableCardProp heading="Page Count"
                                data={props.bookInfo.pageCount}></ImmutableCardProp>
-            <ImmutableCardProp heading="Width"
-                               data={props.bookInfo.dimensions[0] ?? 0}></ImmutableCardProp>
-            <ImmutableCardProp heading="Thickness"
-                               data={props.bookInfo.dimensions[1] ?? 0}></ImmutableCardProp>
-            <ImmutableCardProp heading="Height"
-                               data={props.bookInfo.dimensions[2] ?? 0}></ImmutableCardProp>
+            <ImmutableDimensionsCardProp length={props.bookInfo.dimensions[2] ?? 0} width={props.bookInfo.dimensions[0]} height={props.bookInfo.dimensions[1] ?? 0}></ImmutableDimensionsCardProp>
           </CardGrid>
           <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
             <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>

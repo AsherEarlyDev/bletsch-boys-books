@@ -2,7 +2,7 @@ import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
-import ViewTableEnt from "../TableEntries/ViewTableEnt";
+import ViewTableEntry from "../TableEntries/ViewTableEntry";
 
 
 interface VendorRowProps{
@@ -28,7 +28,7 @@ export function VendorTableRow(props: VendorRowProps){
     }
   return (
       <tr>
-        <ViewTableEnt onView={handleView}>{props.vendorInfo.id}</ViewTableEnt>
+        <ViewTableEntry onView={handleView}>{props.vendorInfo.id}</ViewTableEntry>
         <TableEntry>{props.vendorInfo.name}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import FilterableColumnHeading from "../FilterableColumnHeading";
+import FilterableColumnHeading from "../TableColumnHeadings/FilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
 import DeleteVendorModal from '../Modals/VendorModals/DeleteVendorModal';
@@ -9,14 +9,22 @@ import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
 import CreateEntries from "../../CreateEntries";
 import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
 import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
+import {Author, Book, Genre} from "@prisma/client";
+import BookTableRow from "../TableRows/BookTableRow";
+import Table from "./Table";
 
 
 export default function VendorTable() {
-    const blah = api.vendor.getVendors.useQuery()
-    console.log("vendors")
-    console.log(blah.error)
+    const VENDORS_PER_PAGE = 10
+    const FIRST_HEADER =  ["Vendor ID", "id"]
+    const SORTABLE_HEADERS = [["Vendor Name", "name"]]
+    const STATIC_HEADERS = ["Edit", "Delete"]
+    const [sortField, setSortField] = useState("id")
+    const [sortOrder, setSortOrder] = useState("asc")
+    const [pageNumber, setPageNumber] = useState(0)
     const vendors = api.vendor.getVendors.useQuery().data
     const newVendor = api.vendor.createVendor.useMutation()
+    //const numberOfPages = Math.ceil(api.vendor.getVendors.useQuery().data. / VENDORS_PER_PAGE)
     const [displayEditVendorView, setDisplayEditVendorView] = useState(false)
     const [displayDeleteVendorView, setDisplayDeleteVendorView] = useState(false)
     const [displayVendorView, setDisplayVendorView] = useState(false)
@@ -105,12 +113,27 @@ export default function VendorTable() {
       setDisplayVendorView(false)
     }
 
+  function renderVendorRow(items:any[]){
+    return(vendors ? vendors.map((vendor)=>(<VendorTableRow onView={openVendorView} onEdit={openEditVendorView} onDelete={openDeleteVendorView} vendorInfo={{id: vendor.id, name: vendor.name}} ></VendorTableRow>)): null)
+  }
+
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Vendors" tableDescription="A list of all the Vendors.">
           <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
         </TableDetails>
+        {/*<Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}*/}
+        {/*       setPage= {setPageNumber}*/}
+        {/*       firstHeader={FIRST_HEADER}*/}
+        {/*       sortableHeaders={SORTABLE_HEADERS}*/}
+        {/*       staticHeaders={STATIC_HEADERS}*/}
+        {/*       items= {vendors}*/}
+        {/*       headersNotFiltered={["price", "inventory"]}*/}
+        {/*       pageNumber={pageNumber}*/}
+        {/*       numberOfPages={numberOfPages}*/}
+        {/*       entriesPerPage={VENDORS_PER_PAGE}*/}
+        {/*       renderRow={renderVendorRow}></Table>*/}
         <div className="mt-8 flex flex-col">
           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">

@@ -13,6 +13,7 @@ interface TableProps{
     setFilters?:any
     headersNotFiltered?:Array<string>
     sortableHeaders:Array<Array<string>>
+    firstHeader:Array<Array<string>>
     staticHeaders?:Array<string>
     items: any[]
     filters?:any
@@ -30,6 +31,7 @@ return(
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-300 table-auto">
                         <TableHeader>
+                            {props.firstHeader && <SortedFilterableColumnHeading firstEntry={true} resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={props.firstHeader[0][0]} databaseLabel={props.firstHeader[0][1]}></SortedFilterableColumnHeading>}
                             {props.sortableHeaders.map((header => {
                             return <SortedFilterableColumnHeading resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
                             }))}

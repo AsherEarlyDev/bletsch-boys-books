@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { api } from '../utils/api';
+import { api } from '../../../../utils/api';
 
 interface GenreModalProp{
   buttonText: string;
@@ -19,7 +19,7 @@ export default function AddGenreModal(props: GenreModalProp) {
     setIsOpen(true)
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const genre = formData.get("genre") as string
@@ -69,10 +69,10 @@ export default function AddGenreModal(props: GenreModalProp) {
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Add Genre Name
+                            Add A Genre
                           </Dialog.Title>
                           <p className="font-small leading-6 text-gray-900">
-                            One genre at a time
+                            Please add one new Genre at a time.
                           </p>
                         </div>
                         <div className="mt-5">

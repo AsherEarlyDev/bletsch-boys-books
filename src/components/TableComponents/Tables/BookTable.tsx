@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
 import BookCard from '../../BookCard';
@@ -15,6 +17,8 @@ import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import Table from './Table';
+import { useContextualRouting } from 'next-use-contextual-routing';
+
 export default function BookTable() {
   const BOOKS_PER_PAGE = 20
   const HEADERS = [ ["Title", "title"], ["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "price"], ["Inventory", "inventory"]]
@@ -30,6 +34,8 @@ export default function BookTable() {
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const bookInfo = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
+  const { makeContextualHref, returnHref } = useContextualRouting();
+
   const handleNewBookSubmission = async (isbns:string[]) => {
     setCurrentIsbns(isbns)
     if (bookInfo) {
@@ -96,12 +102,21 @@ export default function BookTable() {
     }
   }
   function renderBookView() {
+    const router = useRouter()
+
+    
     return(
         <>
           {(displayBookView && bookInfo) ?
-              <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
-                <ViewBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
-              </CreateEntries> : null}
+            
+              
+        <Link 
+        as= {`/book/${bookInfo.internalBooks[0].isbn}`}
+        href={makeContextualHref({ id: bookInfo.internalBooks[0].isbn })}
+        shallow >
+        <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
+        <ViewBookModal bookInfo={bookInfo.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal></CreateEntries></Link>
+               : null}
         </>
     )
   }

@@ -12,6 +12,9 @@ import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
 
 
 export default function VendorTable() {
+    const blah = api.vendor.getVendors.useQuery()
+    console.log("vendors")
+    console.log(blah.error)
     const vendors = api.vendor.getVendors.useQuery().data
     const newVendor = api.vendor.createVendor.useMutation()
     const [displayEditVendorView, setDisplayEditVendorView] = useState(false)

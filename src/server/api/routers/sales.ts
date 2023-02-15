@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -12,7 +13,6 @@ export const salesRouter = createTRPCRouter({
         })
       )
       .mutation(async ({ ctx, input }) => {
-        try {
             const saleRec = await ctx.prisma.saleReconciliation.findFirst({
                 where:
                 {
@@ -46,15 +46,19 @@ export const salesRouter = createTRPCRouter({
                 })
               }
               else{
-                console.log("Book inventory can't be negative")
+                throw new TRPCError({
+                  code: 'CONFLICT',
+                  message: 'Inventory cannot go below 0.',
+                });
               }
             }
             else{
-                console.log("No sale reconciliation under that ID")
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'No sale reconciliation or book found',
+              });
             }
-        } catch (error) {
-          console.log(error);
-        }
+        
       }),
 
     modifySale: publicProcedure

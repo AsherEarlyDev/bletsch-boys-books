@@ -10,6 +10,8 @@ import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
 import CreateSaleEntries from '../../../CreateEntries';
 import PrimaryButton from '../../../BasicComponents/PrimaryButton';
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -33,10 +35,13 @@ export default function ViewSalesRecModal(props:SalesProp) {
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const modSale = api.sales.modifySale.useMutation()
   const addSale = api.sales.createSale.useMutation()
+  if (addSale.error != null){
+    toast.error("PLEASE WORK")
+  }
 
   function closeModal(){
     setOpen(false)
-    props.closeOut()
+    //props.closeOut()
   }
 
   function editSale(){
@@ -51,17 +56,17 @@ export default function ViewSalesRecModal(props:SalesProp) {
         })
       }
       else{
-        addSale.mutate({
-          saleReconciliationId: props.sale.saleReconciliationId,
-          isbn: isbn,
-          quantity: quantity.toString(),
-          price: price.toString()
-        })
+          addSale.mutate({
+            saleReconciliationId: props.sale.saleReconciliationId,
+            isbn: isbn,
+            quantity: quantity.toString(),
+            price: price.toString()
+          })
       }
       closeModal()
     }
     else{
-      alert("Error")
+      toast.error("Provided Sale is undefined")
     }
   }
 

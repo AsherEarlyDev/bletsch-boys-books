@@ -29,7 +29,7 @@ export default function BookTable() {
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
   const [sortOrder, setSortOrder] = useState("asc")
-  const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
+  const [filters, setFilters] = useState({isbn:"", title:"", authorNames:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const totalNumberOfEntries = api.books.getNumberOfBooks.useQuery({filters:filters}).data
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data

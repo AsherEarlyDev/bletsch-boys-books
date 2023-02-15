@@ -1,5 +1,5 @@
 import TableEntry from "../TableEntries/TableEntry";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {editableBook} from "../../../types/bookTypes";
 import {api} from "../../../utils/api";
 import MutableTableEntry from "../TableEntries/MutableTableEntry";
@@ -8,11 +8,13 @@ import MutableSelectGenreEntry from "../TableEntries/MutableSelectGenreEntry";
 import Checkbox from "../../BasicComponents/Checkbox";
 import {Label} from 'semantic-ui-react'
 import TableEntryWithTag from "../TableEntries/TableEntryWithTag";
+import {bookToBeSavedParams} from "../Tables/NewBookEntryTable";
 
 interface NewBookTableRowProp{
   bookInfo: editableBook | undefined
   isExisting: boolean
   save: boolean
+  addBook: (bookToBeSaved) => void
 }
 
 export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
@@ -28,36 +30,26 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   const [height, setHeight] = useState<number>(defaultDimensions[1])
   const [length, setLength] = useState<number>(defaultDimensions[2])
   const [includeBook, setIncludeBook] = useState(true)
-  const apiAction = (props.isExisting ? (api.books.editBook.useMutation()) : (api.books.saveBook.useMutation()))
 
   function handleButtonChange(){
     setIncludeBook(!includeBook)
   }
 
-  function saveBook(){
-    if(props.bookInfo && genre){
-      apiAction.mutate({
-        isbn: props.bookInfo.isbn,
-        title: props.bookInfo.title ?? "",
-        publisher: props.bookInfo.publisher ?? "",
-        publicationYear: props.bookInfo.publicationYear ?? -1,
-        author: props.bookInfo.author ?? [],
-        retailPrice: Number(retailPrice),
-        pageCount: Number(pageCount),
-        dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-        genre: genre.name
-      })
+  useEffect(){
+    const book: bookToBeSavedParams = {
+      bookInfo: props.bookInfo,
+      genre: genre.name,
+      retailPrice: retailPrice,
+      pageCount: pageCount,
+      width: width,
+      length: length,
+      height: height,
+      isIncluded: includeBook,
+      newEntry: !props.isExisting
     }
-    else{
-      alert("Need to choose a genre")
-    }
+    props.addBook(book)
   }
 
-  // function renderTitle(){
-  //   return(
-  //       {props.isExisting ? (<Label color='orange' horizontal>Existing</Label>) : (<Label color='green' horizontal>New</Label>)}
-  //   )
-  // }
 
   return (
       <tr>

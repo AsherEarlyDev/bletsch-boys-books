@@ -11,49 +11,68 @@ interface NewBookEntryTableProps{
   newBookEntries: {internalBooks: any[], externalBooks: editableBook[], absentBooks: string[]}
   closeOut: () => void
 }
+
+export type bookToBeSavedParams = {
+  bookInfo: editableBook
+  genre: string
+  retailPrice: number
+  pageCount: number
+  width: number
+  length: number
+  height: number
+  isIncluded: boolean
+  newEntry: boolean
+}
+
 export default function NewBookEntryTable(props: NewBookEntryTableProps) {
   const editBook = (api.books.editBook.useMutation())
   const saveBook = (api.books.saveBook.useMutation())
-  const [save, setSave] = useState(false)
+  const [booksToBeSaved, setBooksToBeSaved] = useState<bookToBeSavedParams[]>([])
   function handleSave(){
-    setSave(true)
     props.closeOut
   }
-  function saveBookRow(bookInfo: editableBook, genre, included: boolean, isExisting: boolean, retailPrice:number, pageCount:number, width: number, length: number, height: number){
-    if(included){
-        if(bookInfo && genre){
-          if(isExisting){
-            editBook.mutate({
-              isbn: bookInfo.isbn,
-              title: bookInfo.title ?? "",
-              publisher: bookInfo.publisher ?? "",
-              publicationYear: bookInfo.publicationYear ?? -1,
-              author: bookInfo.author ?? [],
-              retailPrice: Number(retailPrice),
-              pageCount: Number(pageCount),
-              dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-              genre: genre.name
+  function addBookToBeSaved(book: bookToBeSavedParams){
+    setBooksToBeSaved([...booksToBeSaved, book])
+  }
+  function saveBooks(){
+    for (const book of booksToBeSaved){
+      if(book.isIncluded){
+        if(book.bookInfo.genre){
+          if(book.newEntry){
+            saveBook.mutate({
+              isbn: book.bookInfo.isbn,
+              title: book.bookInfo.title ?? "",
+              publisher: book.bookInfo.publisher ?? "",
+              publicationYear: book.bookInfo.publicationYear ?? -1,
+              author: book.bookInfo.author ?? [],
+              retailPrice: Number(book.bookInfo.retailPrice),
+              pageCount: Number(book.bookInfo.pageCount),
+              dimensions: (book.bookInfo.dime && book.bookInfo.height && book.bookInfo.length)? [Number(book.bookInfo.width), Number(book.bookInfo.height), Number(book.bookInfo.length)] : [],
+              genre: book.bookInfo.genre.name
             })
+
           }
           else{
-            saveBook.mutate({
-              isbn: bookInfo.isbn,
-              title: bookInfo.title ?? "",
-              publisher: bookInfo.publisher ?? "",
-              publicationYear: bookInfo.publicationYear ?? -1,
-              author: bookInfo.author ?? [],
-              retailPrice: Number(retailPrice),
-              pageCount: Number(pageCount),
-              dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-              genre: genre.name
+            editBook.mutate({
+              isbn: book.bookInfo.isbn,
+              title: book.bookInfo.title ?? "",
+              publisher: book.bookInfo.publisher ?? "",
+              publicationYear: book.bookInfo.publicationYear ?? -1,
+              author: book.bookInfo.author ?? [],
+              retailPrice: Number(book.bookInfo.retailPrice),
+              pageCount: Number(book.bookInfo.pageCount),
+              dimensions: (book.bookInfo.width && book.bookInfo.height && book.bookInfo.length)? [Number(book.bookInfo.width), Number(book.bookInfo.height), Number(book.bookInfo.length)] : [],
+              genre: book.bookInfo.genre.name
             })
           }
         }
         else{
-          alert("Need to choose a genre")
+          alert("Please choose a genre for " + book.bookInfo.title)
         }
       }
+    }
   }
+
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
@@ -87,7 +106,7 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
             </div>
           </div>
         </div>
-        <SaveCardChanges saveModal={handleSave} closeModal={props.closeOut}></SaveCardChanges>
+        <SaveCardChanges saveModal={saveBooks} closeModal={props.closeOut}></SaveCardChanges>
       </div>
   )
 }

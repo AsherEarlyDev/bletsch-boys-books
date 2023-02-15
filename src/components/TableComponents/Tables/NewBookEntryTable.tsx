@@ -6,54 +6,21 @@ import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
 import SaveCardChanges from "../../CardComponents/SaveCardChanges";
 import {api} from "../../../utils/api";
+import SecondaryButton from "../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../BasicComponents/PrimaryButton";
 
 interface NewBookEntryTableProps{
   newBookEntries: {internalBooks: any[], externalBooks: editableBook[], absentBooks: string[]}
   closeOut: () => void
 }
+
 export default function NewBookEntryTable(props: NewBookEntryTableProps) {
-  const editBook = (api.books.editBook.useMutation())
-  const saveBook = (api.books.saveBook.useMutation())
-  const [save, setSave] = useState(false)
+
   function handleSave(){
-    setSave(true)
     props.closeOut
   }
-  function saveBookRow(bookInfo: editableBook, genre, included: boolean, isExisting: boolean, retailPrice:number, pageCount:number, width: number, length: number, height: number){
-    if(included){
-        if(bookInfo && genre){
-          if(isExisting){
-            editBook.mutate({
-              isbn: bookInfo.isbn,
-              title: bookInfo.title ?? "",
-              publisher: bookInfo.publisher ?? "",
-              publicationYear: bookInfo.publicationYear ?? -1,
-              author: bookInfo.author ?? [],
-              retailPrice: Number(retailPrice),
-              pageCount: Number(pageCount),
-              dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-              genre: genre.name
-            })
-          }
-          else{
-            saveBook.mutate({
-              isbn: bookInfo.isbn,
-              title: bookInfo.title ?? "",
-              publisher: bookInfo.publisher ?? "",
-              publicationYear: bookInfo.publicationYear ?? -1,
-              author: bookInfo.author ?? [],
-              retailPrice: Number(retailPrice),
-              pageCount: Number(pageCount),
-              dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-              genre: genre.name
-            })
-          }
-        }
-        else{
-          alert("Need to choose a genre")
-        }
-      }
-  }
+
+
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
@@ -75,11 +42,12 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
                       <ColumnHeading label="Retail Price"></ColumnHeading>
                       <ColumnHeading label="Page Count"></ColumnHeading>
                       <ColumnHeading label="L x W x H (cm)"></ColumnHeading>
-                      <ColumnHeading label="Include Book"></ColumnHeading>
+                      <ColumnHeading label="Add"></ColumnHeading>
+                      <ColumnHeading label="Discard"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.newBookEntries.externalBooks.map((book: editableBook) => (<NewBookEntryTableRow save={save} isExisting={false} bookInfo={book}></NewBookEntryTableRow>))}
-                    {props.newBookEntries.internalBooks.map((book: editableBook) => (<NewBookEntryTableRow save={save} isExisting={true} bookInfo={book}></NewBookEntryTableRow>))}
+                    {props.newBookEntries.externalBooks.map((book: editableBook) => (<NewBookEntryTableRow isExisting={false} bookInfo={book}></NewBookEntryTableRow>))}
+                    {props.newBookEntries.internalBooks.map((book: editableBook) => (<NewBookEntryTableRow isExisting={true} bookInfo={book}></NewBookEntryTableRow>))}
                     </tbody>
                   </table>
                 </div>
@@ -87,7 +55,9 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
             </div>
           </div>
         </div>
-        <SaveCardChanges saveModal={handleSave} closeModal={props.closeOut}></SaveCardChanges>
+        <div className="px-4 py-8 sm:px-6">
+          <PrimaryButton onClick={props.closeOut} buttonText="Exit"></PrimaryButton>
+        </div>
       </div>
   )
 }

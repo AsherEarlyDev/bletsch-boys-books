@@ -20,7 +20,8 @@ import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
 export default function BookTable() {
   const BOOKS_PER_PAGE = 20
-  const SORTABLE_HEADERS = [ ["Title", "title"], ["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "price"], ["Inventory", "inventory"]]
+  const FIRST_HEADER =  ["Title", "title"]
+  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "price"], ["Inventory", "inventory"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
@@ -171,6 +172,7 @@ export default function BookTable() {
           <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}
                  setPage= {setPageNumber}
                  setFilters= {setFilters}
+                 firstHeader={FIRST_HEADER}
                  sortableHeaders={SORTABLE_HEADERS}
                  staticHeaders={STATIC_HEADERS}
                  items= {books}
@@ -178,6 +180,7 @@ export default function BookTable() {
                  headersNotFiltered={["price", "inventory"]}
                  pageNumber={pageNumber}
                  numberOfPages={numberOfPages}
+                 entriesPerPage={BOOKS_PER_PAGE}
                  renderRow={renderBookRow}></Table>
           <div>
             {renderNewBookEntriesView()}

@@ -9,7 +9,7 @@ import TableDetails from '../TableDetails';
 export default function GenreTable() {
   const GENRES_PER_PAGE = 5
   const STATIC_HEADERS = ["Edit", "Delete"]
-  const FIRST_HEADER = [["Name", "name"]]
+  const FIRST_HEADER = ["Name", "name"]
   const SORTABLE_HEADERS = [["Inventory", "inventory"]]
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
@@ -42,6 +42,7 @@ export default function GenreTable() {
         items= {genres}
         pageNumber={genrePageNumber}
         numberOfPages={numberOfGenrePages}
+        entriesPerPage={GENRES_PER_PAGE}
         renderRow={renderGenreRow}></Table>   
       </div>
     </div>

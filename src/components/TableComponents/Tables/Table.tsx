@@ -1,6 +1,7 @@
 import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
+import PaginationBar from "../../../pages/PaginationBar";
 
 interface TableProps{
     sorting?:{
@@ -13,16 +14,18 @@ interface TableProps{
     setFilters?:any
     headersNotFiltered?:Array<string>
     sortableHeaders:Array<Array<string>>
-    firstHeader:Array<Array<string>>
+    firstHeader:Array<string>
     staticHeaders?:Array<string>
     items: any[]
     filters?:any
+    entriesPerPage?:number
     pageNumber:number
     numberOfPages:number
     renderRow:any
 }
 
 export default function Table(props:TableProps) {
+    const numberOfItems = (props.items ? props.items.length : 0)
 
 return(
     <div className="mt-8 flex flex-col">
@@ -31,7 +34,7 @@ return(
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-300 table-auto">
                         <TableHeader>
-                            {props.firstHeader && <SortedFilterableColumnHeading firstEntry={true} resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={props.firstHeader[0][0]} databaseLabel={props.firstHeader[0][1]}></SortedFilterableColumnHeading>}
+                            {props.firstHeader && <SortedFilterableColumnHeading firstEntry={true} resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={props.firstHeader[0]} databaseLabel={props.firstHeader[1]}></SortedFilterableColumnHeading>}
                             {props.sortableHeaders.map((header => {
                             return <SortedFilterableColumnHeading resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
                             }))}
@@ -58,12 +61,7 @@ return(
                         {props.renderRow(props.items)}
                         </tbody>
                     </table>
-                    <center><button style={{padding:"10px"}} onClick={()=>props.setPage(props.pageNumber-1)} disabled ={props.pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                    Previous
-                  </button>
-                    <button style={{padding:"10px"}} onClick={()=>props.setPage(props.pageNumber+1)} disabled={props.pageNumber===props.numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                      Next
-                    </button></center>
+                    <PaginationBar pageNumber={props.pageNumber} numberOfPages={props.numberOfPages} entriesPerPage={props.entriesPerPage} numberOfItems={numberOfItems} setPage={props.setPage}></PaginationBar>
                 </div>
             </div>
         </div>

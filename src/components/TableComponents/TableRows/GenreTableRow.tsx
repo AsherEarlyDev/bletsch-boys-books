@@ -10,8 +10,6 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 interface GenreTableRowProp{
   genre: Genre;
   setGenreFilter: any
-  onEdit: () => void
-  onDelete: () => void
 }
 
 

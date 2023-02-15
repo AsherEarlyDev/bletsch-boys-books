@@ -45,6 +45,19 @@ return(
                         </TableHeader>
                         {(props.filters && props.setFilters) ?
                         <TableHeader>
+                            {
+                                props.headersNotFiltered.includes(props.firstHeader[1]) ? <td></td> :
+                                (<td className="mt-5">
+                                    <textarea
+                                    rows={1}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    defaultValue=""
+                                    onChange={(value) => {
+                                    props.setFilters({...props.filters, [props.firstHeader[1]]:value.target.value})
+                                    props.setPage(0)}}
+                                    />
+                                </td>)
+                            }
                          {props.sortableHeaders.map((label) => {
                                 return props.headersNotFiltered.includes(label[1]) ? <td></td> : (<td className="mt-5">
                                 <textarea

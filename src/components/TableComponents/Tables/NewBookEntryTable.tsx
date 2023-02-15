@@ -6,72 +6,20 @@ import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
 import SaveCardChanges from "../../CardComponents/SaveCardChanges";
 import {api} from "../../../utils/api";
+import SecondaryButton from "../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../BasicComponents/PrimaryButton";
 
 interface NewBookEntryTableProps{
   newBookEntries: {internalBooks: any[], externalBooks: editableBook[], absentBooks: string[]}
   closeOut: () => void
 }
 
-export type bookToBeSavedParams = {
-  bookInfo: editableBook
-  genre: string
-  retailPrice: number
-  pageCount: number
-  width: number
-  length: number
-  height: number
-  isIncluded: boolean
-  newEntry: boolean
-}
-
 export default function NewBookEntryTable(props: NewBookEntryTableProps) {
-  const editBook = (api.books.editBook.useMutation())
-  const saveBook = (api.books.saveBook.useMutation())
-  const [booksToBeSaved, setBooksToBeSaved] = useState<bookToBeSavedParams[]>([])
+
   function handleSave(){
     props.closeOut
   }
-  function addBookToBeSaved(book: bookToBeSavedParams){
-    setBooksToBeSaved([...booksToBeSaved, book])
-  }
-  function saveBooks(){
-    for (const book of booksToBeSaved){
-      if(book.isIncluded){
-        if(book.bookInfo.genre){
-          if(book.newEntry){
-            saveBook.mutate({
-              isbn: book.bookInfo.isbn,
-              title: book.bookInfo.title ?? "",
-              publisher: book.bookInfo.publisher ?? "",
-              publicationYear: book.bookInfo.publicationYear ?? -1,
-              author: book.bookInfo.author ?? [],
-              retailPrice: Number(book.bookInfo.retailPrice),
-              pageCount: Number(book.bookInfo.pageCount),
-              dimensions: (book.bookInfo.dime && book.bookInfo.height && book.bookInfo.length)? [Number(book.bookInfo.width), Number(book.bookInfo.height), Number(book.bookInfo.length)] : [],
-              genre: book.bookInfo.genre.name
-            })
 
-          }
-          else{
-            editBook.mutate({
-              isbn: book.bookInfo.isbn,
-              title: book.bookInfo.title ?? "",
-              publisher: book.bookInfo.publisher ?? "",
-              publicationYear: book.bookInfo.publicationYear ?? -1,
-              author: book.bookInfo.author ?? [],
-              retailPrice: Number(book.bookInfo.retailPrice),
-              pageCount: Number(book.bookInfo.pageCount),
-              dimensions: (book.bookInfo.width && book.bookInfo.height && book.bookInfo.length)? [Number(book.bookInfo.width), Number(book.bookInfo.height), Number(book.bookInfo.length)] : [],
-              genre: book.bookInfo.genre.name
-            })
-          }
-        }
-        else{
-          alert("Please choose a genre for " + book.bookInfo.title)
-        }
-      }
-    }
-  }
 
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
@@ -94,11 +42,12 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
                       <ColumnHeading label="Retail Price"></ColumnHeading>
                       <ColumnHeading label="Page Count"></ColumnHeading>
                       <ColumnHeading label="L x W x H (cm)"></ColumnHeading>
-                      <ColumnHeading label="Include Book"></ColumnHeading>
+                      <ColumnHeading label="Add"></ColumnHeading>
+                      <ColumnHeading label="Discard"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.newBookEntries.externalBooks.map((book: editableBook) => (<NewBookEntryTableRow save={save} isExisting={false} bookInfo={book}></NewBookEntryTableRow>))}
-                    {props.newBookEntries.internalBooks.map((book: editableBook) => (<NewBookEntryTableRow save={save} isExisting={true} bookInfo={book}></NewBookEntryTableRow>))}
+                    {props.newBookEntries.externalBooks.map((book: editableBook) => (<NewBookEntryTableRow isExisting={false} bookInfo={book}></NewBookEntryTableRow>))}
+                    {props.newBookEntries.internalBooks.map((book: editableBook) => (<NewBookEntryTableRow isExisting={true} bookInfo={book}></NewBookEntryTableRow>))}
                     </tbody>
                   </table>
                 </div>
@@ -106,7 +55,9 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
             </div>
           </div>
         </div>
-        <SaveCardChanges saveModal={saveBooks} closeModal={props.closeOut}></SaveCardChanges>
+        <div className="px-4 py-8 sm:px-6">
+          <PrimaryButton onClick={props.closeOut} buttonText="Exit"></PrimaryButton>
+        </div>
       </div>
   )
 }

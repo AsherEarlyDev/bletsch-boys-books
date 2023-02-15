@@ -8,8 +8,8 @@ import CreateSaleEntries from '../../CreateEntries';
 import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
+import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
-import SortedFilterableColumnHeading from '../SortedFilterableColumnHeading';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 
 

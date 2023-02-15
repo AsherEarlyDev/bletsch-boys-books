@@ -3,13 +3,14 @@ import { api } from "../../../utils/api";
 import { Genre } from '@prisma/client';
 import GenreTableRow from '../TableRows/GenreTableRow';
 import Table from './Table';
-import AddGenreModal from '../../AddGenreModal';
+import AddGenreModal from '../Modals/GenreModals/AddGenreModal';
 import TableDetails from '../TableDetails';
 
 export default function GenreTable() {
   const GENRES_PER_PAGE = 5
-
-  const [genreHeaders, setGenreHeaders] = useState([ ["Name", "name"], ["Inventory", "name"]])
+  const STATIC_HEADERS = ["Edit", "Delete"]
+  const FIRST_HEADER = ["Name", "name"]
+  const SORTABLE_HEADERS = [["Inventory", "inventory"]]
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
@@ -34,11 +35,14 @@ export default function GenreTable() {
           <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>
         </TableDetails>
         <Table sorting = {{setOrder:setGenreSortOrder, setField:setGenreSortField, currentOrder:genreSortOrder, currentField:genreSortField}} 
-        setPage= {setGenrePageNumber} 
-        headers={genreHeaders}
+        setPage= {setGenrePageNumber}
+        firstHeader={FIRST_HEADER}
+        staticHeaders={STATIC_HEADERS}
+        sortableHeaders={SORTABLE_HEADERS}
         items= {genres}
         pageNumber={genrePageNumber}
         numberOfPages={numberOfGenrePages}
+        entriesPerPage={GENRES_PER_PAGE}
         renderRow={renderGenreRow}></Table>   
       </div>
     </div>

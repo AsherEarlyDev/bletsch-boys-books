@@ -12,6 +12,7 @@ const user = {
 const navigation = [
   {name: 'Dashboard', href: '/dashboard'},
   {name: 'Records', href: '/records'},
+  {name: 'Genres', href: '/genres'},
   {name: 'Vendors', href: '/vendors'},
   {name: 'Sales', href: '/sales'},
   {name: 'Purchases', href: '/purchases'},
@@ -32,7 +33,6 @@ export default function AppShell(props: any) {
 
     async function logOut(e) {
       const res = await signOut({callbackUrl: "/", redirect: false});
-      console.log(res)
     }
 
     return (

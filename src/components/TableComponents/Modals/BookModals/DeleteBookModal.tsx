@@ -23,7 +23,7 @@ export default function DeleteBookModal(props:DeleteBookProp) {
     props.closeOut()
   }
 
-  function handleDeleteVendor(){
+  function handleDeleteBook(){
     if(props.bookInfo.isbn){
       deleteBook.mutate(props.bookInfo.isbn)
       closeModal()
@@ -37,11 +37,11 @@ export default function DeleteBookModal(props:DeleteBookProp) {
       <>
         {open ? (
             <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-              <CardTitle heading="Delete Vendor..." subheading={message}></CardTitle>
+              <CardTitle heading="Delete Book..." subheading={message}></CardTitle>
               <div className="gap-5 flex flex-row justify-around px-4 py-4 sm:px-6">
                 <SecondaryButton onClick={props.closeOut} buttonText="Cancel"></SecondaryButton>
-                <PrimaryButton onClick={handleDeleteVendor}
-                               buttonText="Delete Vendor"></PrimaryButton>
+                <PrimaryButton onClick={handleDeleteBook}
+                               buttonText="Delete Book"></PrimaryButton>
               </div>
             </div>) : null}
       </>

@@ -56,7 +56,7 @@ export const salesRouter = createTRPCRouter({
             else{
               throw new TRPCError({
                 code: 'NOT_FOUND',
-                message: 'No sale reconciliation or book found',
+                message: 'No book found under that ISBN!',
               });
             }
         }
@@ -64,7 +64,7 @@ export const salesRouter = createTRPCRouter({
           console.log(error.code)
           throw new TRPCError({
             code: error.code,
-            message: error.message
+            message: "Sale Failed! "+error.message
           })
         }
             
@@ -93,6 +93,12 @@ export const salesRouter = createTRPCRouter({
           isbn: input.isbn
         }
       })
+      if (!book){
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'No book found under that ISBN!',
+        });
+      }
       const change: number = sale.quantity - parseInt(input.quantity)  
       if(book.inventory + change >= 0) {
         await ctx.prisma.book.update({
@@ -159,7 +165,10 @@ export const salesRouter = createTRPCRouter({
           }
         })
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
       }
     })
 });

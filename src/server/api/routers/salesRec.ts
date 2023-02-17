@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { SalesRec } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -19,7 +20,10 @@ export const salesRecRouter = createTRPCRouter({
         },
       });
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -29,7 +33,10 @@ export const salesRecRouter = createTRPCRouter({
       const recs = await ctx.prisma.saleReconciliation.findMany()
       return recs.length
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -50,7 +57,10 @@ export const salesRecRouter = createTRPCRouter({
       }
       return {salesRec: recs}
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -65,6 +75,10 @@ export const salesRecRouter = createTRPCRouter({
     try {
       const salesRecArray: SalesRec[] = []
       const salesRecs = await ctx.prisma.saleReconciliation.findMany()
+      if (!salesRecs) {throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No Sales Reconciliations Found!',
+      });}
       for (const salesRec of salesRecs){
 
         const salesRecId = salesRec.id
@@ -97,7 +111,10 @@ export const salesRecRouter = createTRPCRouter({
           })
         }
         else{
-          console.log("Error in finding sales or saleRec")
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Sale or Sales Reconciliation Not Found!',
+          });
         }
       }
       const sortedSaleRecs = await ctx.prisma.saleReconciliation.findMany({
@@ -128,7 +145,10 @@ export const salesRecRouter = createTRPCRouter({
       }
       return salesRecArray
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: error.code,
+        message: error.message,
+      });
     }
   }),
 
@@ -154,7 +174,10 @@ export const salesRecRouter = createTRPCRouter({
         },
       });
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -195,7 +218,10 @@ export const salesRecRouter = createTRPCRouter({
         }
       })
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   })
 });

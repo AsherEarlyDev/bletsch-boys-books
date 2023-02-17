@@ -14,6 +14,7 @@ export const purchaseOrderRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+            const date  = input.date.replace(/-/g, '\/')
             const vendor = await ctx.prisma.vendor.findFirst({
                 where:
                 {
@@ -23,7 +24,7 @@ export const purchaseOrderRouter = createTRPCRouter({
             if (vendor){
                 await ctx.prisma.purchaseOrder.create({
                     data: {
-                        date: new Date(input.date),
+                        date: new Date(date),
                         vendorId: input.vendorId,
                         vendorName: vendor.vendorName
                     },
@@ -114,7 +115,7 @@ export const purchaseOrderRouter = createTRPCRouter({
                 id: sorted.id,
                 vendorId: sorted.vendorId,
                 vendorName: vendor.name,
-                date: month+"/"+(sorted.date.getDate()+1)+"/"+sorted.date.getFullYear(),
+                date: month+"/"+(sorted.date.getDate())+"/"+sorted.date.getFullYear(),
                 purchases: purch,
                 totalBooks: sorted.totalBooks,
                 uniqueBooks: sorted.uniqueBooks,
@@ -139,13 +140,14 @@ export const purchaseOrderRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const date  = input.date.replace(/-/g, '\/')
         await ctx.prisma.purchaseOrder.update({
           where:
           {
             id: input.purchaseOrderId
         },
           data: {
-            date: new Date(input.date),
+            date: new Date(date),
             vendorId: input.vendorId
           },
         });

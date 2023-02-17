@@ -13,9 +13,6 @@ import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderMo
 
 
 
-
-
-
 export default function PurchaseTable() {
   const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
@@ -62,6 +59,8 @@ export default function PurchaseTable() {
       setDisplayEditPurchaseView(true)
     }
   }
+
+
   function renderEditPurchaseView() {
     return(
         <>
@@ -71,6 +70,7 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeEditPurchaseView(){
     setDisplayEditPurchaseView(false)
   }
@@ -89,6 +89,7 @@ export default function PurchaseTable() {
       setDisplayDeletePurchaseView(true)
     }
   }
+
   function renderDeletePurchaseView() {
     return(
         <>
@@ -99,20 +100,19 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeDeletePurchaseView(){
     setDisplayDeletePurchaseView(false)
   }
 
   async function openPurchaseView(id: string){
     if (purchaseOrder){
-      console.log(purchaseOrder)
       for (const order of purchaseOrder){
         if (order.id === id && order.purchases){
           setPurchases(order.purchases)
         }
       }
       setDisplayPurchaseView(true)
-      console.log(displayPurchaseView)
     }
   }
 

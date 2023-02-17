@@ -1,4 +1,5 @@
 import { z } from "zod";
+import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const salesRouter = createTRPCRouter({
@@ -13,6 +14,7 @@ export const salesRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+            const isbn = convertISBN10ToISBN13(input.isbn)
             const saleRec = await ctx.prisma.saleReconciliation.findFirst({
                 where:
                 {
@@ -21,7 +23,7 @@ export const salesRouter = createTRPCRouter({
               })
               const book = await ctx.prisma.book.findFirst({
                 where:{
-                  isbn: input.isbn
+                  isbn: isbn
                 }
               })
             if (saleRec && book){
@@ -30,7 +32,7 @@ export const salesRouter = createTRPCRouter({
                 await ctx.prisma.sale.create({
                     data: {
                        saleReconciliationId: input.saleReconciliationId,
-                       bookId: input.isbn,
+                       bookId: isbn,
                        quantity: parseInt(input.quantity),
                        price: parseFloat(input.price),
                        subtotal: parseInt(input.quantity) * parseFloat(input.price)
@@ -38,7 +40,7 @@ export const salesRouter = createTRPCRouter({
                 });
                 await ctx.prisma.book.update({
                   where: {
-                    isbn: input.isbn
+                    isbn: book.isbn
                   },
                   data:{
                     inventory: inventory
@@ -69,6 +71,7 @@ export const salesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const isbn = convertISBN10ToISBN13(input.isbn)
         const sale = await ctx.prisma.sale.findFirst({
           where:
         {
@@ -77,7 +80,7 @@ export const salesRouter = createTRPCRouter({
       });
       const book = await ctx.prisma.book.findFirst({
         where:{
-          isbn: input.isbn
+          isbn: isbn
         }
       })
       const change: number = sale.quantity - parseInt(input.quantity)  
@@ -98,7 +101,7 @@ export const salesRouter = createTRPCRouter({
       },
         data: {
           saleReconciliationId: input.saleReconciliationId,
-          bookId: input.isbn,
+          bookId: book.isbn,
           quantity: parseInt(input.quantity),
           price: parseFloat(input.price),
           subtotal: parseFloat(input.price) * parseInt(input.quantity)

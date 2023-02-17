@@ -115,18 +115,7 @@ export default function PurchaseTable() {
       console.log(displayPurchaseView)
     }
   }
-  function renderPurchaseView() {
-    return(
-        <>
-          {displayPurchaseView ? (purchases ? (
-              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-                  <ViewPurchaseModal closeOut={closePurchaseView} cardType={'edit'} purchase={purchase}></ViewPurchaseModal>))}</CreateEntries>) : null) : null}
-        </>
-    )
-  }
-  function closePurchaseView(){
-    setDisplayPurchaseView(false)
-  }
+
   function renderPurchaseView() {
     return(
         <>
@@ -184,10 +173,8 @@ export default function PurchaseTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id" 
-                    label="Purchase Order ID" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date" 
-                    label="Date Created"></SortedFilterableColumnHeading>
+                    label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="vendorName" 
                     label="Vendor Name"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks" 

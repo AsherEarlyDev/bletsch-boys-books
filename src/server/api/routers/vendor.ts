@@ -5,9 +5,31 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const vendorRouter = createTRPCRouter({
     getVendors: publicProcedure
+    .input(z.object({
+      pageNumber: z.number(),
+      entriesPerPage: z.number(),
+      sortBy: z.string(),
+      descOrAsc: z.string()
+    }))
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.vendor.findMany({
+          take: input.entriesPerPage,
+          skip: input.pageNumber*input.entriesPerPage,
+          orderBy: {
+            [input.sortBy]: input.descOrAsc
+          }
+      });
+      } catch (error) {
+        console.log("Unable to get list of vendors", error);
+      }
+    }),
+
+    getNumVendors: publicProcedure
     .query(async ({ ctx }) => {
       try {
-        return await ctx.prisma.vendor.findMany();
+        const vendors = await ctx.prisma.vendor.findMany();
+        return vendors.length;
       } catch (error) {
         console.log("Unable to get list of vendors", error);
       }

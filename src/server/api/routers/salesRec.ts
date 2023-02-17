@@ -12,6 +12,7 @@ export const salesRecRouter = createTRPCRouter({
   )
   .mutation(async ({ ctx, input }) => {
     try {
+      console.log(new Date(input.date))
       await ctx.prisma.saleReconciliation.create({
         data: {
           date: new Date(input.date),
@@ -113,9 +114,11 @@ export const salesRecRouter = createTRPCRouter({
             saleReconciliationId: sorted.id
           }
         })
+        let month = sorted.date.getMonth()+1
+        if (month < 10) month = "0"+month.toString()
         const rec = {
           id: sorted.id,
-          date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+          date: month+"/"+(sorted.date.getDate()+1)+"/"+sorted.date.getFullYear(),
           sales: sales,
           totalBooks: sorted.totalBooks,
           uniqueBooks: sorted.uniqueBooks,

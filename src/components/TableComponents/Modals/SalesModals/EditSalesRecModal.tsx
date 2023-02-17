@@ -64,7 +64,7 @@ export default function EditSalesRecModal(props:SalesRecProp) {
         <CardTitle heading="Sale Reconciliation" subheading="Confirm and validate Sales Reconciliation information below..."></CardTitle>
         <CardGrid>
           <ImmutableCardProp heading="Sale Reconciliation ID" data={props.salesRecId}></ImmutableCardProp>
-          <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="string" 
+          <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="date" 
           defaultValue={props.date}></MutableCardProp>
         </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>

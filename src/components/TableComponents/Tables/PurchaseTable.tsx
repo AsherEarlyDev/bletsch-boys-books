@@ -17,7 +17,7 @@ import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderMo
 
 
 export default function PurchaseTable() {
-  const ENTRIES_PER_PAGE = 3
+  const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
@@ -127,19 +127,7 @@ export default function PurchaseTable() {
   function closePurchaseView(){
     setDisplayPurchaseView(false)
   }
-  function renderPurchaseView() {
-    return(
-        <>
-          {displayPurchaseView ? (purchases ? (
-              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-                  <ViewPurchaseModal closeOut={closePurchaseView} cardType={'edit'} purchase={purchase}></ViewPurchaseModal>))}</CreateEntries>) : null) : null}
-        </>
-    )
-  }
-  function closePurchaseView(){
-    setDisplayPurchaseView(false)
-  }
-
+  
 
 
   const handleAdd = async (id:string) => {

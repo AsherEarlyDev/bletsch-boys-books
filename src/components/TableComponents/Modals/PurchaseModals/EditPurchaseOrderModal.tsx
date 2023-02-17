@@ -82,7 +82,7 @@ export default function EditPurchaseOrderModal(props:EditPurchaseOrderModalProp)
         <CardGrid>
           <ImmutableCardProp heading="Purchase Order ID" data={props.purchaseOrderId}></ImmutableCardProp>
           <VendorSelect saveFunction={setVendorName} defaultValue={props.vendorName}></VendorSelect>
-          <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="string" 
+          <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="date" 
           defaultValue={props.date}></MutableCardProp>
         </CardGrid>
         <SaveCardChanges closeModal={closeModal} saveModal={editPurchaseOrder}></SaveCardChanges>

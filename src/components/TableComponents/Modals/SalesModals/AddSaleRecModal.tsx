@@ -23,6 +23,7 @@ export default function AddSaleRecModal(props: SaleRecModalProp) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string
+    console.log(date)
     closeModal()
     props.showSaleRecEdit(date)
   }
@@ -72,9 +73,10 @@ export default function AddSaleRecModal(props: SaleRecModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
+                        <input
                             name="date"
                             id="date"
+                            type="date"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
                         />

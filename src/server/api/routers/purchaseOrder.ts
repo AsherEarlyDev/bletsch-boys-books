@@ -108,11 +108,13 @@ export const purchaseOrderRouter = createTRPCRouter({
                   purchaseOrderId: sorted.id
                 }
               })
+              let month = sorted.date.getMonth()+1
+              if (month < 10) month = "0"+month.toString()
               const order = {
                 id: sorted.id,
                 vendorId: sorted.vendorId,
                 vendorName: vendor.name,
-                date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+                date: month+"/"+(sorted.date.getDate()+1)+"/"+sorted.date.getFullYear(),
                 purchases: purch,
                 totalBooks: sorted.totalBooks,
                 uniqueBooks: sorted.uniqueBooks,
@@ -181,7 +183,7 @@ export const purchaseOrderRouter = createTRPCRouter({
 
             await ctx.prisma.book.update({
               where:{
-                isbn: purch.bookId
+                isbn: book.isbn
               },
               data:{
                 inventory: inventory

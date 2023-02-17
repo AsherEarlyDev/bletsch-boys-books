@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -9,7 +10,7 @@ export const vendorRouter = createTRPCRouter({
       try {
         return await ctx.prisma.vendor.findMany();
       } catch (error) {
-        console.log("Unable to get list of vendors", error);
+        throw new TRPCError({code: "NOT_FOUND", message: "No Vendors Found"})
       }
     }),
 

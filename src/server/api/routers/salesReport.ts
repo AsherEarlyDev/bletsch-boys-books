@@ -215,7 +215,7 @@ export const salesReportRouter = createTRPCRouter({
           results.push(res)
         })
 
-        results = results.sort((a: any, b: any) => (a.numBooks > b.numBooks) ? 1 : -1)
+        results = results.sort((a: any, b: any) => (a.numBooks < b.numBooks) ? 1 : -1)
         return results.slice(0,10)
        } catch (error) {
          console.log(error);

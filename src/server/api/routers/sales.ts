@@ -13,7 +13,8 @@ export const salesRouter = createTRPCRouter({
         })
       )
       .mutation(async ({ ctx, input }) => {
-            const saleRec = await ctx.prisma.saleReconciliation.findFirst({
+        try{
+              const saleRec = await ctx.prisma.saleReconciliation.findFirst({
                 where:
                 {
                   id: input.saleReconciliationId
@@ -29,11 +30,11 @@ export const salesRouter = createTRPCRouter({
               if(inventory >= 0){
                 await ctx.prisma.sale.create({
                     data: {
-                       saleReconciliationId: input.saleReconciliationId,
-                       bookId: input.isbn,
-                       quantity: parseInt(input.quantity),
-                       price: parseFloat(input.price),
-                       subtotal: parseInt(input.quantity) * parseFloat(input.price)
+                      saleReconciliationId: input.saleReconciliationId,
+                      bookId: input.isbn,
+                      quantity: parseInt(input.quantity),
+                      price: parseFloat(input.price),
+                      subtotal: parseInt(input.quantity) * parseFloat(input.price)
                     },
                 });
                 await ctx.prisma.book.update({
@@ -48,16 +49,25 @@ export const salesRouter = createTRPCRouter({
               else{
                 throw new TRPCError({
                   code: 'CONFLICT',
-                  message: 'Inventory cannot go below 0.',
+                  message: 'Inventory cannot go below 0!',
                 });
               }
             }
             else{
               throw new TRPCError({
-                code: 'CONFLICT',
+                code: 'NOT_FOUND',
                 message: 'No sale reconciliation or book found',
               });
             }
+        }
+        catch(error){
+          console.log(error.code)
+          throw new TRPCError({
+            code: error.code,
+            message: error.message
+          })
+        }
+            
         
       }),
 
@@ -72,7 +82,6 @@ export const salesRouter = createTRPCRouter({
         })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
         const sale = await ctx.prisma.sale.findFirst({
           where:
         {
@@ -110,12 +119,12 @@ export const salesRouter = createTRPCRouter({
         });
       }
       else{
-        console.log("This change would make the inventory negative")
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Inventory cannot go below 0.',
+        });
       }
         
-      } catch (error) {
-        console.log(error);
-      }
     }),
 
     deleteSale: publicProcedure

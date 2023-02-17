@@ -19,6 +19,7 @@ interface SalesProp{
   sale:  Sale
   cardType: string
   closeOut?: () => void
+
 }
 
 export default function ViewSalesRecModal(props:SalesProp) {
@@ -34,10 +35,14 @@ export default function ViewSalesRecModal(props:SalesProp) {
   const [displayDeleteSaleView, setDeleteSaleView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const modSale = api.sales.modifySale.useMutation()
-  const addSale = api.sales.createSale.useMutation()
-  if (addSale.error != null){
-    toast.error("PLEASE WORK")
+  const addSale = api.sales.createSale.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully added sale!")
   }
+})
 
   function closeModal(){
     setOpen(false)
@@ -52,7 +57,8 @@ export default function ViewSalesRecModal(props:SalesProp) {
           saleReconciliationId: props.sale.saleReconciliationId,
           isbn: isbn,
           quantity: quantity.toString(),
-          price: price.toString()
+          price: price.toString(),
+          
         })
       }
       else{
@@ -62,11 +68,9 @@ export default function ViewSalesRecModal(props:SalesProp) {
             quantity: quantity.toString(),
             price: price.toString()
           })
+          
       }
       closeModal()
-    }
-    else{
-      toast.error("Provided Sale is undefined")
     }
   }
 

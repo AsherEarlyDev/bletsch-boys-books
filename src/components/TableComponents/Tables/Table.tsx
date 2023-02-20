@@ -4,7 +4,7 @@ import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import PaginationBar from "../../../pages/PaginationBar";
 
 interface TableProps{
-    sorting?:{
+    sorting:{
         setOrder:any
         setField:any
         currentOrder:string
@@ -18,7 +18,7 @@ interface TableProps{
     staticHeaders?:Array<string>
     items: any[]
     filters?:any
-    entriesPerPage?:number
+    entriesPerPage:number
     pageNumber:number
     numberOfPages:number
     numberOfEntries:number

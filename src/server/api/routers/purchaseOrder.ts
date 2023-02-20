@@ -1,3 +1,4 @@
+import { PurchaseOrder } from "@prisma/client";
 import { createWSClient } from "@trpc/client";
 import { Input } from "postcss";
 import { z } from "zod";
@@ -43,6 +44,43 @@ export const purchaseOrderRouter = createTRPCRouter({
        console.log(error);
      }
    }),
+
+   getPurchaseOrders: publicProcedure
+   .input(z.object({
+    pageNumber: z.number(),
+    entriesPerPage: z.number(),
+    sortBy: z.string(),
+    descOrAsc: z.string()
+  }))
+  .query(async ({ctx, input}) => {
+    if(input){
+      const rawData = await ctx.prisma.purchaseOrder.findMany({
+        take: input.entriesPerPage,
+        skip: input.pageNumber*input.entriesPerPage,
+        include:{
+          vendor: true
+        },
+        orderBy: input.sortBy==="vendorName" ? {
+          vendor:{
+            name: input.descOrAsc
+          }
+        } :  
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+        
+      
+      })
+      return transformData(rawData)
+    }
+    else{
+      return await ctx.prisma.purchaseOrder.findMany({
+        include:{
+          vendor: true
+        }
+      })
+    }
+  }),
 
    getPurchaseOrderDetails: publicProcedure
       .input(z.object({
@@ -201,6 +239,19 @@ export const purchaseOrderRouter = createTRPCRouter({
       } catch (error) {
         console.log(error);
       }
+    }),
+    getNumberOfPurchaseOrders: publicProcedure
+    .query(async ({ctx, input})=>{
+      return await ctx.prisma.purchaseOrder.count()
     })
 
   });
+
+  const transformData = (purchaseOrder:PurchaseOrder[]) => {
+    return purchaseOrder.map((order) => {
+      return({
+        ...order,
+        date:(order.date.getMonth()+1)+"-"+(order.date.getDate())+"-"+order.date.getFullYear(),
+      })
+    })
+  }

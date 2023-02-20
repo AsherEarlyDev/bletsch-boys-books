@@ -10,11 +10,12 @@ export default function GenreTable() {
   const GENRES_PER_PAGE = 5
   const STATIC_HEADERS = ["Edit", "Delete"]
   const FIRST_HEADER = ["Name", "name"]
-  const SORTABLE_HEADERS = [["Inventory", "inventory"]]
+  const SORTABLE_HEADERS = [["Inventory", "name"]]
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")
   const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
+  const totalNumberOfEntries = api.genre.getNumberOfGenres.useQuery().data
   const genres = api.genre.getGenres.useQuery({genrePageNumber:genrePageNumber, genresPerPage:GENRES_PER_PAGE, genreSortBy:genreSortField, genreDescOrAsc:genreSortOrder}).data
 
   function setGenreFilter(genre: string){
@@ -43,6 +44,7 @@ export default function GenreTable() {
         pageNumber={genrePageNumber}
         numberOfPages={numberOfGenrePages}
         entriesPerPage={GENRES_PER_PAGE}
+        numberOfEntries = {totalNumberOfEntries}
         renderRow={renderGenreRow}></Table>   
       </div>
     </div>

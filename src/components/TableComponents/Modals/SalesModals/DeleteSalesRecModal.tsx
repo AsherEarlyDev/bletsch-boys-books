@@ -4,6 +4,8 @@ import { api } from '../../../../utils/api';
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {useState} from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 interface DeleteSalesRecProp{
@@ -14,8 +16,14 @@ interface DeleteSalesRecProp{
 
 export default function DeleteSalesRecModal(props:DeleteSalesRecProp) {
   const [open, setOpen] = useState(true)
-  const deleteSaleRec = api.salesRec.deleteSaleRec.useMutation()
-  const message = ("Are you sure you want to delete this sales rec from the database? This action cannot be undone.")
+  const deleteSaleRec = api.salesRec.deleteSaleRec.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully deleted Sale Reconciliation!")
+  }})
+  const message = ("Are you sure you want to delete this Sales Reconciliation? This action cannot be undone. All associated sales will be deleted.")
 
   function closeModal(){
     setOpen(false)

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { SalesRec } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -12,13 +13,23 @@ export const salesRecRouter = createTRPCRouter({
   )
   .mutation(async ({ ctx, input }) => {
     try {
+      const date  = input.date.replace(/-/g, '\/')
+      if (date === '' || !date){
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'No date given!',
+        });
+      }
       await ctx.prisma.saleReconciliation.create({
         data: {
-          date: new Date(input.date),
+          date: new Date(date),
         },
       });
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -28,7 +39,10 @@ export const salesRecRouter = createTRPCRouter({
       const recs = await ctx.prisma.saleReconciliation.findMany()
       return recs.length
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -49,7 +63,10 @@ export const salesRecRouter = createTRPCRouter({
       }
       return {salesRec: recs}
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -64,6 +81,10 @@ export const salesRecRouter = createTRPCRouter({
     try {
       const salesRecArray: SalesRec[] = []
       const salesRecs = await ctx.prisma.saleReconciliation.findMany()
+      if (!salesRecs) {throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No Sales Reconciliations Found!',
+      });}
       for (const salesRec of salesRecs){
 
         const salesRecId = salesRec.id
@@ -96,7 +117,10 @@ export const salesRecRouter = createTRPCRouter({
           })
         }
         else{
-          console.log("Error in finding sales or saleRec")
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Sale or Sales Reconciliation Not Found!',
+          });
         }
       }
       const sortedSaleRecs = await ctx.prisma.saleReconciliation.findMany({
@@ -113,9 +137,11 @@ export const salesRecRouter = createTRPCRouter({
             saleReconciliationId: sorted.id
           }
         })
+        let month = sorted.date.getMonth()+1
+        if (month < 10) month = "0"+month.toString()
         const rec = {
           id: sorted.id,
-          date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+          date: month+"/"+(sorted.date.getDate())+"/"+sorted.date.getFullYear(),
           sales: sales,
           totalBooks: sorted.totalBooks,
           uniqueBooks: sorted.uniqueBooks,
@@ -125,7 +151,10 @@ export const salesRecRouter = createTRPCRouter({
       }
       return salesRecArray
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: error.code,
+        message: error.message,
+      });
     }
   }),
 
@@ -140,17 +169,27 @@ export const salesRecRouter = createTRPCRouter({
   )
   .mutation(async ({ ctx, input }) => {
     try {
+      const date  = input.date.replace(/-/g, '\/')
+      if (date === '' || !date){
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'No date given!',
+        });
+      }
       await ctx.prisma.saleReconciliation.update({
         where:
             {
               id: input.saleRecId
             },
         data: {
-          date: new Date(input.date),
+          date: new Date(date),
         },
       });
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   }),
 
@@ -191,7 +230,10 @@ export const salesRecRouter = createTRPCRouter({
         }
       })
     } catch (error) {
-      console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
     }
   })
 });

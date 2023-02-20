@@ -11,15 +11,18 @@ import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
 export default function SalesTable() {
+  const date = new Date()
   const ENTRIES_PER_PAGE = 5
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  const [startDate, setStartDate] = useState(date.toString())
+  const [endDate, setEndDate] = useState(date.toString())
   const [currentSalesRec, setCurrentSalesRec] = useState({
     id: '',
     date: '',
@@ -162,7 +165,8 @@ export default function SalesTable() {
     return <>
       {(displayAddSaleView && saleRecId)?
           <CreateSaleEntries closeStateFunction={setDisplayAddSaleView} submitText="Add Sale">
-            <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries> : null}
+            <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries>
+             : null}
     </>;
   }
 
@@ -188,10 +192,8 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id"
-                                                   label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date"
-                                                   label="Date Created"></SortedFilterableColumnHeading>
+                                                   label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks"
                                                    label="Unique Books"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks"
@@ -221,6 +223,7 @@ export default function SalesTable() {
           {renderDeleteSalesRecView()}
           {renderSalesRecView()}
           {renderAdd()}
+          <ToastContainer/>
         </div>
       </div>
 

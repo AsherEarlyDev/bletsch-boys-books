@@ -138,7 +138,7 @@ export const BooksRouter = createTRPCRouter({
       isbn: z.string(),
       publisher: z.string(),
       genre: z.string(),
-      author: z.string()
+      authorNames: z.string()
     })
   }))
   .query(async ({ctx, input}) => {
@@ -165,7 +165,7 @@ export const BooksRouter = createTRPCRouter({
             mode: 'insensitive'
           },
           authorNames:{
-            contains: input.filters.author,
+            contains: input.filters.authorNames,
             mode: 'insensitive'
           },
           
@@ -205,7 +205,7 @@ export const BooksRouter = createTRPCRouter({
       isbn: z.string(),
       publisher: z.string(),
       genre: z.string(),
-      author: z.string()
+      authorNames: z.string()
     })
   }))
   .query(async ({ctx, input}) => {
@@ -216,7 +216,7 @@ export const BooksRouter = createTRPCRouter({
           mode: 'insensitive'
         },
         authorNames:{
-          contains: input.filters.author,
+          contains: input.filters.authorNames,
           mode: 'insensitive'
         },
         

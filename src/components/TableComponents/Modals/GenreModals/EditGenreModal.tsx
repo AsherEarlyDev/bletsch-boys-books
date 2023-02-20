@@ -41,7 +41,7 @@ export default function EditGenreModal(props: EditGenreModalProp) {
 
   return (
       <>
-        <td className="py-2 pl-5 text-sm font-medium text-left">
+        <td className="py-2 pl-5 text-sm font-medium text-right">
           <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
             <PencilSquareIcon className="h-4 w-4"/>
           </button>

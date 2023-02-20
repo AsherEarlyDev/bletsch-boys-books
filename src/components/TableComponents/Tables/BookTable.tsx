@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
-import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
-import { Dialog } from '@headlessui/react'
-import HeadingPanel from '../../BasicComponents/HeadingPanel';
-import { editableBook } from '../../../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
 import CreateEntries from "../../CreateEntries";
@@ -16,6 +11,7 @@ import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
+
 export default function BookTable() {
   const BOOKS_PER_PAGE = 20
   const FIRST_HEADER =  ["Title", "title"]
@@ -29,7 +25,7 @@ export default function BookTable() {
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
   const [sortOrder, setSortOrder] = useState("asc")
-  const [filters, setFilters] = useState({isbn:"", title:"", author:"", publisher:"", genre:""})
+  const [filters, setFilters] = useState({isbn:"", title:"", authorNames:"", publisher:"", genre:""})
   const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
   const totalNumberOfEntries = api.books.getNumberOfBooks.useQuery({filters:filters}).data
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
@@ -41,6 +37,7 @@ export default function BookTable() {
       setDisplayNewBookEntriesView(true);
     }
   }
+
   function renderNewBookEntriesView(){
     return(
         <>
@@ -51,6 +48,7 @@ export default function BookTable() {
         </>
     )
   }
+
   function closeNewBookEntriesView(){
     setDisplayNewBookEntriesView(false)
   }
@@ -70,7 +68,7 @@ export default function BookTable() {
         <>
           {(displayEditBookView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
-                <EditBookModal cardType="edit" bookInfo={entryBookData.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
+                <EditBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
               </CreateEntries> : null}
         </>
     )

@@ -39,7 +39,7 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
                       <ColumnHeading label="Publishing Year"></ColumnHeading>
                       <ColumnHeading label="Inventory"></ColumnHeading>
                       <ColumnHeading label="Genre"></ColumnHeading>
-                      <ColumnHeading label="Retail Price"></ColumnHeading>
+                      <ColumnHeading label="Retail Price ($)"></ColumnHeading>
                       <ColumnHeading label="Page Count"></ColumnHeading>
                       <ColumnHeading label="L x W x H (cm)"></ColumnHeading>
                       <ColumnHeading label="Add"></ColumnHeading>

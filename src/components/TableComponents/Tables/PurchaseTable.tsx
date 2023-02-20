@@ -65,8 +65,6 @@ export default function PurchaseTable() {
       setDisplayEditPurchaseView(true)
     }
   }
-
-
   function renderEditPurchaseView() {
     return(
         <>
@@ -76,7 +74,6 @@ export default function PurchaseTable() {
         </>
     )
   }
-
   function closeEditPurchaseView(){
     setDisplayEditPurchaseView(false)
   }
@@ -95,7 +92,6 @@ export default function PurchaseTable() {
       setDisplayDeletePurchaseView(true)
     }
   }
-
   function renderDeletePurchaseView() {
     return(
         <>
@@ -106,7 +102,6 @@ export default function PurchaseTable() {
         </>
     )
   }
-
   function closeDeletePurchaseView(){
     setDisplayDeletePurchaseView(false)
   }
@@ -206,7 +201,6 @@ export default function PurchaseTable() {
           </div>
         </div>
         <div>
-          {/* {renderEntries()} */}
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}

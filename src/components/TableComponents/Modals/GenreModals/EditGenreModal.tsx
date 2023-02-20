@@ -1,17 +1,24 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
-import { api } from '../utils/api';
-import {TrashIcon} from "@heroicons/react/20/solid";
+import { api } from '../../../../utils/api';
+import {PencilSquareIcon} from "@heroicons/react/20/solid";
+import CardTitle from "../../../CardComponents/CardTitle";
+import CardGrid from "../../../CardComponents/CardGrid";
+import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
+import GenreCardProp from "../../../CardComponents/GenreCardProp";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 
-interface BookModalProp{
+interface EditGenreModalProp{
   itemIdentifier: string,
+  buttonText: string,
   submitText: string,
-  genre?: boolean
 }
 
-export default function DeleteBookModal(props: BookModalProp) {
+export default function EditGenreModal(props: EditGenreModalProp) {
   const [isOpen, setIsOpen] = useState(false);
-  const deleteItem = props.genre ? api.genre.deleteGenreByName.useMutation() : api.books.deleteBookByISBN.useMutation();
+  const changeGenre = api.genre.changeGenreName.useMutation()
 
   function closeModal() {
     setIsOpen(false)
@@ -21,16 +28,22 @@ export default function DeleteBookModal(props: BookModalProp) {
     setIsOpen(true)
   }
 
-  async function handleDelete(){
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const genre = formData.get("genre") as string
+    changeGenre.mutate({
+      originalName:props.itemIdentifier,
+      newName: genre
+    })
     closeModal()
-    deleteItem.mutate(props.itemIdentifier)
   }
 
   return (
       <>
-        <td className="relative whitespace-nowrap py-2 pl-7 text-left text-sm font-sm ">
+        <td className="py-2 pl-5 text-sm font-medium text-right">
           <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
-            <TrashIcon className="h-4 w-4"/>
+            <PencilSquareIcon className="h-4 w-4"/>
           </button>
         </td>
         <Transition.Root show={isOpen} as={Fragment}>
@@ -59,19 +72,29 @@ export default function DeleteBookModal(props: BookModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                    <form method="post" onSubmit={handleSubmit}>
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                          Delete Genre...
+                            Edit Genre...
                           </Dialog.Title>
                           <Dialog.Description className="mt-1 max-w-2xl text-sm text-gray-500">
-                            Are you sure you want to delete this Genre from the database? This action cannot be undone.
+                            Please enter and confirm a new genre title.
                           </Dialog.Description>
+                        </div>
+                        <div className="mt-5">
+                        <textarea
+                            rows={1}
+                            name="genre"
+                            id="genre"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            defaultValue=""
+                        />
                         </div>
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                        <button 
-                            onClick = {() => handleDelete()}
+                        <button
+                            type="submit"
                             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                         >
                           {props.submitText}
@@ -84,6 +107,7 @@ export default function DeleteBookModal(props: BookModalProp) {
                           Cancel
                         </button>
                       </div>
+                    </form>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -93,3 +117,4 @@ export default function DeleteBookModal(props: BookModalProp) {
       </>
   )
 }
+

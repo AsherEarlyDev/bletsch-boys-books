@@ -5,6 +5,7 @@ import {api} from "../../../utils/api";
 import MutableTableEntry from "../TableEntries/MutableTableEntry";
 import MutableDimensionsTableEntry from "../TableEntries/MutableDimensionsTableEntry";
 import MutableSelectGenreEntry from "../TableEntries/MutableSelectGenreEntry";
+import MutableCurrencyTableEntry from "../TableEntries/MutableCurrencyTableEntry";
 import TableEntryWithTag from "../TableEntries/TableEntryWithTag";
 import {PlusIcon, XMarkIcon} from "@heroicons/react/20/solid";
 
@@ -68,7 +69,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
             <TableEntry>{props.bookInfo.publicationYear}</TableEntry>
             <TableEntry>{props.bookInfo.inventory}</TableEntry>
             <MutableSelectGenreEntry saveFunction={setGenre} defaultValue={props.bookInfo.genre}></MutableSelectGenreEntry>
-            <MutableTableEntry saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableTableEntry>
+            <MutableCurrencyTableEntry saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCurrencyTableEntry>
             <MutableTableEntry saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableTableEntry>
             <MutableDimensionsTableEntry defaultLength={length} defaultWidth={width} defaultHeight={height} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsTableEntry>
             <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">

@@ -9,7 +9,10 @@ import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
 import CreateEntries from "../../CreateEntries";
 import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
 import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
+
 
 
 export default function VendorTable() {
@@ -162,6 +165,7 @@ export default function VendorTable() {
           {renderEditVendorView()}
           {renderDeleteVendorView()}
           {renderVendorView()}
+          <ToastContainer/>
         </div>
       </div>
 

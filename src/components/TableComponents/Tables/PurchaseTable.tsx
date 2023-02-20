@@ -10,11 +10,16 @@ import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 
 
 
 export default function PurchaseTable() {
-  const ENTRIES_PER_PAGE = 3
+  const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
@@ -48,6 +53,7 @@ export default function PurchaseTable() {
   async function openEditPurchaseView(id: string){
     if (purchaseOrder){
       for (const order of purchaseOrder){
+        console.log("Vendor Name: "+order.vendorName)
         if (order.id === id){
           setCurrentOrder({
             id: order.id,
@@ -115,7 +121,6 @@ export default function PurchaseTable() {
       setDisplayPurchaseView(true)
     }
   }
-
   function renderPurchaseView() {
     return(
         <>
@@ -128,7 +133,7 @@ export default function PurchaseTable() {
   function closePurchaseView(){
     setDisplayPurchaseView(false)
   }
-
+  
 
 
   const handleAdd = async (id:string) => {
@@ -206,6 +211,7 @@ export default function PurchaseTable() {
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
           {renderAdd()}
+          <ToastContainer/>
         </div>
       </div>
 

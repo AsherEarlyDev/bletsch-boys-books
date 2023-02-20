@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -48,15 +49,27 @@ export const salesRouter = createTRPCRouter({
                 })
               }
               else{
-                console.log("Book inventory can't be negative")
+                throw new TRPCError({
+                  code: 'CONFLICT',
+                  message: 'Inventory cannot go below 0!',
+                });
               }
             }
             else{
-                console.log("No sale reconciliation under that ID")
+              throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'No book found under that ISBN!',
+              });
             }
-        } catch (error) {
-          console.log(error);
         }
+        catch(error){
+          throw new TRPCError({
+            code: error.code,
+            message: "Add Sale Failed! "+error.message
+          })
+        }
+            
+        
       }),
 
     modifySale: publicProcedure
@@ -70,51 +83,65 @@ export const salesRouter = createTRPCRouter({
         })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const isbn = convertISBN10ToISBN13(input.isbn)
-        const sale = await ctx.prisma.sale.findFirst({
-          where:
-        {
-          id: input.id
-        }
-      });
-      const book = await ctx.prisma.book.findFirst({
-        where:{
-          isbn: isbn
-        }
-      })
-      const change: number = sale.quantity - parseInt(input.quantity)  
-      if(book.inventory + change >= 0) {
-        await ctx.prisma.book.update({
-          where:{
-            isbn: book.isbn
-          },
-          data:{
-            inventory: book.inventory + change
+      try{
+            const isbn = convertISBN10ToISBN13(input.isbn)
+            const sale = await ctx.prisma.sale.findFirst({
+              where:
+            {
+              id: input.id
+            }
+          });
+          const book = await ctx.prisma.book.findFirst({
+            where:{
+              isbn: isbn
+            }
+          })
+          if (!book){
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'No book found under that ISBN!',
+            });
           }
-        })
+          const change: number = sale.quantity - parseInt(input.quantity)  
+          if(book.inventory + change >= 0) {
+            await ctx.prisma.book.update({
+              where:{
+                isbn: book.isbn
+              },
+              data:{
+                inventory: book.inventory + change
+              }
+            })
 
-        await ctx.prisma.sale.update({
-          where:
-        {
-          id: input.id
-      },
-        data: {
-          saleReconciliationId: input.saleReconciliationId,
-          bookId: book.isbn,
-          quantity: parseInt(input.quantity),
-          price: parseFloat(input.price),
-          subtotal: parseFloat(input.price) * parseInt(input.quantity)
-        },
-        });
+            await ctx.prisma.sale.update({
+              where:
+            {
+              id: input.id
+          },
+            data: {
+              saleReconciliationId: input.saleReconciliationId,
+              bookId: book.isbn,
+              quantity: parseInt(input.quantity),
+              price: parseFloat(input.price),
+              subtotal: parseFloat(input.price) * parseInt(input.quantity)
+            },
+            });
+          }
+          else{
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'Inventory cannot go below 0.',
+            });
+          }
       }
-      else{
-        console.log("This change would make the inventory negative")
+      catch(error){
+        throw new TRPCError({
+          code: error.code,
+          message: "Modify Sale Failed! "+error.message
+        })
       }
         
-      } catch (error) {
-        console.log(error);
-      }
+        
     }),
 
     deleteSale: publicProcedure
@@ -149,7 +176,10 @@ export const salesRouter = createTRPCRouter({
           }
         })
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
       }
     })
 });

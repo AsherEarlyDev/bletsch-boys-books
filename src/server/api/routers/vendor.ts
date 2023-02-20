@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -31,7 +32,7 @@ export const vendorRouter = createTRPCRouter({
         const vendors = await ctx.prisma.vendor.findMany();
         return vendors.length;
       } catch (error) {
-        console.log("Unable to get list of vendors", error);
+        throw new TRPCError({code: "NOT_FOUND", message: "No Vendors Found!"})
       }
     }),
 
@@ -49,7 +50,7 @@ export const vendorRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to create vendor!"});
       }
     }),
 
@@ -72,7 +73,7 @@ export const vendorRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to modify vendor!"})
       }
     }),
 
@@ -93,7 +94,7 @@ export const vendorRouter = createTRPCRouter({
           }
         );
         if (purchaseOrders){
-          console.log("Cannot delete vendor")
+          throw new TRPCError({code: "CONFLICT", message: "Cannot delete vendor! This vendor has Purchase Orders associated with it."})
         }
         else{
           await ctx.prisma.vendor.delete({
@@ -103,7 +104,7 @@ export const vendorRouter = createTRPCRouter({
           })
         }
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({code: error.code, message: error.message})
       }
     })
 });

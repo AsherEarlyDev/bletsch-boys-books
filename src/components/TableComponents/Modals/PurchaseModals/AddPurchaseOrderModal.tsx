@@ -23,7 +23,6 @@ export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
   }
 
   function handleChange(e: any){
-        console.log(e.target.value)
         setId(e.target.value)
   }
 
@@ -80,9 +79,10 @@ export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
+                        <input
                             name="date"
                             id="date"
+                            type="date"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
                         />

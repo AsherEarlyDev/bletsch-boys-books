@@ -16,6 +16,7 @@ interface SalesRecTableRowProp{
 
 
 export default function SalesRecTableRow(props:SalesRecTableRowProp) {
+
     function handleEdit(){
         props.onEdit(props.salesRecInfo.id)
       }

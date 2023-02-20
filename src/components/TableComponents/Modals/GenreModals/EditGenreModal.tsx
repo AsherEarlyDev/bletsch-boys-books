@@ -1,7 +1,14 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
-import { api } from '../utils/api';
+import { api } from '../../../../utils/api';
 import {PencilSquareIcon} from "@heroicons/react/20/solid";
+import CardTitle from "../../../CardComponents/CardTitle";
+import CardGrid from "../../../CardComponents/CardGrid";
+import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
+import GenreCardProp from "../../../CardComponents/GenreCardProp";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 
 interface EditGenreModalProp{
   itemIdentifier: string,
@@ -110,3 +117,4 @@ export default function EditGenreModal(props: EditGenreModalProp) {
       </>
   )
 }
+

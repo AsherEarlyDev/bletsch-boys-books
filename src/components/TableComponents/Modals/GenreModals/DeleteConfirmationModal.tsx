@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
-import { api } from '../utils/api';
+import { api } from '../../../../utils/api';
 import {TrashIcon} from "@heroicons/react/20/solid";
 
 interface BookModalProp{

@@ -13,7 +13,6 @@ import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensions
 
 interface BookCardProp{
   bookInfo:  editableBook | undefined
-  cardType: string
   closeOut: () => void
 }
 

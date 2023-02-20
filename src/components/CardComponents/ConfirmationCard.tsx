@@ -11,7 +11,7 @@ import SecondaryButton from "../BasicComponents/SecondaryButton";
 
 
 interface ConfirmCardProp{
-    onConfirm: (confirm: boolean) => void
+    onConfirm: () => void
     confirmMessage: string
     confirmHeading: string
     onClose: () => void
@@ -23,7 +23,7 @@ export default function ConfirmCard(props:ConfirmCardProp) {
 
 
   function handleClick(){
-    props.onConfirm(true)
+    props.onConfirm()
     closeModal()
   }
 

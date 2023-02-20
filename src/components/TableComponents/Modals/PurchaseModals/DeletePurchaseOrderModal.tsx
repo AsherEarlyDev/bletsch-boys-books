@@ -17,7 +17,7 @@ interface DeletePurchaseOrderModalProp{
 
 export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalProp) {
   const [open, setOpen] = useState(true)
-  const deletePurchase = api.purchase.deletePurchase.useMutation()
+  const deletePurchase = api.purchaseOrder.deletePurchaseOrder.useMutation()
   const message = ("Are you sure you want to delete this purchase order from the database? This action cannot be undone.")
 
   function closeModal(){
@@ -28,7 +28,7 @@ export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalP
   function handleDeletePurchaseOrder(){
     if(props.purchaseId){
       deletePurchase.mutate({
-        id: props.purchaseId
+        purchaseOrderId: props.purchaseId
       })
       closeModal()
     }

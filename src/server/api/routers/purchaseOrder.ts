@@ -1,4 +1,5 @@
 import { createWSClient } from "@trpc/client";
+import { TRPCError } from "@trpc/server";
 import { Input } from "postcss";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -14,6 +15,13 @@ export const purchaseOrderRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+            const date  = input.date.replace(/-/g, '\/')
+            if (date === '' || !date){
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'No date given!',
+              });
+            }
             const vendor = await ctx.prisma.vendor.findFirst({
                 where:
                 {
@@ -23,14 +31,17 @@ export const purchaseOrderRouter = createTRPCRouter({
             if (vendor){
                 await ctx.prisma.purchaseOrder.create({
                     data: {
-                        date: new Date(input.date),
+                        date: new Date(date),
                         vendorId: input.vendorId,
                         vendorName: vendor.vendorName
                     },
                 });
             }
         } catch (error) {
-          console.log(error);
+          throw new TRPCError({
+            code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+            message: error.message,
+          });
         }
       }),
     getNumPurchaseOrder: publicProcedure
@@ -40,7 +51,10 @@ export const purchaseOrderRouter = createTRPCRouter({
          const orders = await ctx.prisma.purchaseOrder.findMany()
          return orders.length
      } catch (error) {
-       console.log(error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
      }
    }),
 
@@ -55,6 +69,10 @@ export const purchaseOrderRouter = createTRPCRouter({
        try {
            const purchaseOrderArray = [];
            const purchaseOrders = await ctx.prisma.purchaseOrder.findMany()
+           if (!purchaseOrders) {throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'No Purchase Orders Found!',
+          });}
            for (const pur of purchaseOrders){
               const purchaseOrderId = pur.id
               const purchases = await ctx.prisma.purchase.findMany({
@@ -86,7 +104,10 @@ export const purchaseOrderRouter = createTRPCRouter({
 
               }
               else{
-                console.log("Error in finding purchases or purchaseOrder")
+                throw new TRPCError({
+                  code: 'NOT_FOUND',
+                  message: 'Purchases or Purchase Orders Not Found!',
+                });
               }
             }
             const sortedPurchaseOrders = await ctx.prisma.purchaseOrder.findMany({
@@ -108,11 +129,13 @@ export const purchaseOrderRouter = createTRPCRouter({
                   purchaseOrderId: sorted.id
                 }
               })
+              let month = sorted.date.getMonth()+1
+              if (month < 10) month = "0"+month.toString()
               const order = {
                 id: sorted.id,
                 vendorId: sorted.vendorId,
                 vendorName: vendor.name,
-                date: (sorted.date.getMonth()+1)+"-"+(sorted.date.getDate())+"-"+sorted.date.getFullYear(),
+                date: month+"/"+(sorted.date.getDate())+"/"+sorted.date.getFullYear(),
                 purchases: purch,
                 totalBooks: sorted.totalBooks,
                 uniqueBooks: sorted.uniqueBooks,
@@ -123,7 +146,10 @@ export const purchaseOrderRouter = createTRPCRouter({
             
             return purchaseOrderArray
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: error.code,
+          message: error.message,
+        });
        }
      }),
 
@@ -137,18 +163,28 @@ export const purchaseOrderRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const date  = input.date.replace(/-/g, '\/')
+        if (date === '' || !date){
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'No date given!',
+          });
+        }
         await ctx.prisma.purchaseOrder.update({
           where:
           {
             id: input.purchaseOrderId
         },
           data: {
-            date: new Date(input.date),
+            date: new Date(date),
             vendorId: input.vendorId
           },
         });
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({
+          code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
       }
     }),
 
@@ -181,7 +217,7 @@ export const purchaseOrderRouter = createTRPCRouter({
 
             await ctx.prisma.book.update({
               where:{
-                isbn: purch.bookId
+                isbn: book.isbn
               },
               data:{
                 inventory: inventory
@@ -189,9 +225,12 @@ export const purchaseOrderRouter = createTRPCRouter({
             })
           }
           else{
-            let errorString: string = 'Cannot delete Purchase Order, "'+ book.title +'" would have a negative inventory'
-            throw new Error(errorString)
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'Cannot delete Purchase Order, "'+ book.title +'" would have a negative inventory',
+            });
           }
+
         }
         await ctx.prisma.purchaseOrder.delete({
           where: {
@@ -199,7 +238,10 @@ export const purchaseOrderRouter = createTRPCRouter({
           }
         })
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
       }
     })
 

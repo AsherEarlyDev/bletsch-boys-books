@@ -74,9 +74,10 @@ export default function GenSalesReportModal(props: SaleReportModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
+                        <input
                             name="startdate"
                             id="startdate"
+                            type="date"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             // defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
                             onChange={(e)=>{props.startDate(e.currentTarget.value)}}
@@ -90,9 +91,10 @@ export default function GenSalesReportModal(props: SaleReportModalProp) {
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">
-                        <textarea
+                        <input
                             name="enddate"
                             id="enddate"
+                            type="date"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             // defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
                             onChange={(e)=>{props.endDate(e.currentTarget.value)}}

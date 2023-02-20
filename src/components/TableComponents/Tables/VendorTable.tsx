@@ -9,9 +9,9 @@ import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
 import CreateEntries from "../../CreateEntries";
 import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
 import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
-import {Author, Book, Genre} from "@prisma/client";
-import BookTableRow from "../TableRows/BookTableRow";
-import Table from "./Table";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 export default function VendorTable() {
@@ -157,6 +157,7 @@ export default function VendorTable() {
           {renderEditVendorView()}
           {renderDeleteVendorView()}
           {renderVendorView()}
+          <ToastContainer/>
         </div>
       </div>
 

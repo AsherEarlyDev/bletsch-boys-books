@@ -9,6 +9,8 @@ import CreateEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import CreateSaleEntries from "../../../CreateEntries";
 import VendorSelect from "../../../CardComponents/VendorSelect";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -22,10 +24,17 @@ interface EditPurchaseOrderModalProp{
 
 export default function EditPurchaseOrderModal(props:EditPurchaseOrderModalProp) {
   const [open, setOpen] = useState(true)
-  const [vendorName, setVendorName] = useState(props.vendorName)
+  const [vendorInfo, setVendorInfo] = useState({id: '', name: props.vendorName})
   const [date, setDate] = useState(props.date)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
-  const modifySalesRec = api.purchaseOrder.modifyPurchaseOrder.useMutation()
+  const modifyPurchaseOrder = api.purchaseOrder.modifyPurchaseOrder.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully modified Purchase Order!")
+  }
+})
   const vendors = api.vendor.getVendors.useQuery().data
 
   function closeModal(){
@@ -37,24 +46,22 @@ export default function EditPurchaseOrderModal(props:EditPurchaseOrderModalProp)
       if(props.vendorName && props.date && props.purchaseOrderId){
         let vendorId
         for (const vendor of vendors){
-          if (vendor.name === vendorName){
+          if (vendor.name === vendorInfo.name){
+            
             vendorId = vendor.id
           }
         }
         if (vendorId){
-          modifySalesRec.mutate({
+          modifyPurchaseOrder.mutate({
             date: date,
             purchaseOrderId: props.purchaseOrderId,
             vendorId: vendorId
           })
         }
         else{
-          alert("No vendor under that name")
+          toast.error("No vendor under that name")
         }
         closeModal()
-      }
-      else{
-        alert("error")
       }
     
     
@@ -81,7 +88,7 @@ export default function EditPurchaseOrderModal(props:EditPurchaseOrderModalProp)
         <CardTitle heading="Purchase Order Info" subheading="Confirm and validate purchase order information below..."></CardTitle>
         <CardGrid>
           <ImmutableCardProp heading="Purchase Order ID" data={props.purchaseOrderId}></ImmutableCardProp>
-          <VendorSelect saveFunction={setVendorName} defaultValue={props.vendorName}></VendorSelect>
+          <VendorSelect saveFunction={setVendorInfo} defaultValue={props.vendorName}></VendorSelect>
           <MutableCardProp saveValue={setDate} heading="Date" required="True" dataType="date" 
           defaultValue={props.date}></MutableCardProp>
         </CardGrid>

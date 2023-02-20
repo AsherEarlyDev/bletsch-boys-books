@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { Input } from "postcss";
 import { z } from "zod";
 import { Cost, Revenue, topSellers } from "../../../types/salesTypes";
@@ -61,7 +62,10 @@ export const salesReportRouter = createTRPCRouter({
             .sort((a: [Date, Revenue], b: [Date, Revenue]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 
@@ -119,7 +123,10 @@ export const salesReportRouter = createTRPCRouter({
             .sort((a: [Date, Cost], b: [Date, Cost]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 
@@ -186,7 +193,6 @@ export const salesReportRouter = createTRPCRouter({
                 purchaseOrderId: order.id
             }
             })
-            console.log(purchases)
             for (const purchase of purchases){
               
                 let booksObj = books.get(purchase.bookId)
@@ -201,7 +207,7 @@ export const salesReportRouter = createTRPCRouter({
             }
         }
         let results = []
-        console.log(books)
+
         books.forEach( (value,key)=> {
           
           const res = {
@@ -218,7 +224,10 @@ export const salesReportRouter = createTRPCRouter({
         results = results.sort((a: any, b: any) => (a.numBooks < b.numBooks) ? 1 : -1)
         return results.slice(0,10)
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 

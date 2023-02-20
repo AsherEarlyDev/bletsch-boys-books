@@ -61,10 +61,9 @@ export const salesRouter = createTRPCRouter({
             }
         }
         catch(error){
-          console.log(error.code)
           throw new TRPCError({
             code: error.code,
-            message: "Sale Failed! "+error.message
+            message: "Add Sale Failed! "+error.message
           })
         }
             
@@ -82,54 +81,63 @@ export const salesRouter = createTRPCRouter({
         })
     )
     .mutation(async ({ ctx, input }) => {
-        const sale = await ctx.prisma.sale.findFirst({
-          where:
-        {
-          id: input.id
-        }
-      });
-      const book = await ctx.prisma.book.findFirst({
-        where:{
-          isbn: input.isbn
-        }
-      })
-      if (!book){
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'No book found under that ISBN!',
-        });
-      }
-      const change: number = sale.quantity - parseInt(input.quantity)  
-      if(book.inventory + change >= 0) {
-        await ctx.prisma.book.update({
-          where:{
-            isbn: book.isbn
-          },
-          data:{
-            inventory: book.inventory + change
+      try{
+            const sale = await ctx.prisma.sale.findFirst({
+              where:
+            {
+              id: input.id
+            }
+          });
+          const book = await ctx.prisma.book.findFirst({
+            where:{
+              isbn: input.isbn
+            }
+          })
+          if (!book){
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'No book found under that ISBN!',
+            });
           }
-        })
+          const change: number = sale.quantity - parseInt(input.quantity)  
+          if(book.inventory + change >= 0) {
+            await ctx.prisma.book.update({
+              where:{
+                isbn: book.isbn
+              },
+              data:{
+                inventory: book.inventory + change
+              }
+            })
 
-        await ctx.prisma.sale.update({
-          where:
-        {
-          id: input.id
-      },
-        data: {
-          saleReconciliationId: input.saleReconciliationId,
-          bookId: input.isbn,
-          quantity: parseInt(input.quantity),
-          price: parseFloat(input.price),
-          subtotal: parseFloat(input.price) * parseInt(input.quantity)
-        },
-        });
+            await ctx.prisma.sale.update({
+              where:
+            {
+              id: input.id
+          },
+            data: {
+              saleReconciliationId: input.saleReconciliationId,
+              bookId: input.isbn,
+              quantity: parseInt(input.quantity),
+              price: parseFloat(input.price),
+              subtotal: parseFloat(input.price) * parseInt(input.quantity)
+            },
+            });
+          }
+          else{
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'Inventory cannot go below 0.',
+            });
+          }
       }
-      else{
+      catch(error){
         throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'Inventory cannot go below 0.',
-        });
+          code: error.code,
+          message: "Modify Sale Failed! "+error.message
+        })
       }
+        
         
     }),
 

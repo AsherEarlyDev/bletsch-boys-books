@@ -8,6 +8,8 @@ import { api } from '../../../../utils/api';
 import { SalesRec } from "../../../../types/salesTypes";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import CreateSaleEntries from '../../../CreateEntries';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 interface SalesRecProp{
@@ -21,7 +23,14 @@ export default function EditSalesRecModal(props:SalesRecProp) {
   const [open, setOpen] = useState(true)
   const [date, setDate] = useState(props.date)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
-  const modifySaleRec = api.salesRec.modifySaleRec.useMutation()
+  const modifySaleRec = api.salesRec.modifySaleRec.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully modified sale!")
+  }
+})
 
   function closeModal(){
     setOpen(false)
@@ -38,7 +47,7 @@ export default function EditSalesRecModal(props:SalesRecProp) {
       closeModal()
     }
     else{
-      alert("error")
+      toast.error("Input Details Undefined!")
     }
   }
 

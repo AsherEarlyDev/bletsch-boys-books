@@ -10,6 +10,8 @@ import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -51,6 +53,7 @@ export default function PurchaseTable() {
   async function openEditPurchaseView(id: string){
     if (purchaseOrder){
       for (const order of purchaseOrder){
+        console.log("Vendor Name: "+order.vendorName)
         if (order.id === id){
           setCurrentOrder({
             id: order.id,
@@ -207,6 +210,7 @@ export default function PurchaseTable() {
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
           {renderAdd()}
+          <ToastContainer/>
         </div>
       </div>
 

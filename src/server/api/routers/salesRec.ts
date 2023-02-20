@@ -14,6 +14,12 @@ export const salesRecRouter = createTRPCRouter({
   .mutation(async ({ ctx, input }) => {
     try {
       const date  = input.date.replace(/-/g, '\/')
+      if (date === '' || !date){
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'No date given!',
+        });
+      }
       await ctx.prisma.saleReconciliation.create({
         data: {
           date: new Date(date),
@@ -21,7 +27,7 @@ export const salesRecRouter = createTRPCRouter({
       });
     } catch (error) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
+        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
         message: error.message,
       });
     }
@@ -164,6 +170,12 @@ export const salesRecRouter = createTRPCRouter({
   .mutation(async ({ ctx, input }) => {
     try {
       const date  = input.date.replace(/-/g, '\/')
+      if (date === '' || !date){
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'No date given!',
+        });
+      }
       await ctx.prisma.saleReconciliation.update({
         where:
             {
@@ -175,7 +187,7 @@ export const salesRecRouter = createTRPCRouter({
       });
     } catch (error) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
+        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
         message: error.message,
       });
     }

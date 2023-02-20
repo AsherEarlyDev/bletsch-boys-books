@@ -34,7 +34,14 @@ export default function ViewSalesRecModal(props:SalesProp) {
   const [price, setPrice] = useState(props.sale.price)
   const [displayDeleteSaleView, setDeleteSaleView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
-  const modSale = api.sales.modifySale.useMutation()
+  const modSale = api.sales.modifySale.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully modified sale!")
+  }
+})
   const addSale = api.sales.createSale.useMutation({
     onError: (error)=>{
     toast.error(error.message)

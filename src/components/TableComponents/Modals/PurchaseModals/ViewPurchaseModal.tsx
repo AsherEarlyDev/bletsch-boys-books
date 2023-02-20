@@ -39,7 +39,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
 
   function closeModal(){
     setOpen(false)
-    props.closeOut()
+    // props.closeOut()
   }
 
   function editPurchase(){
@@ -124,9 +124,6 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
     <CardTitle heading="Purchase" subheading="Add purchase information below..."></CardTitle>
     </div>
     <CardGrid>
-      <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
-      <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
-      <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
       <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
       defaultValue={props.purchase.bookId}></MutableCardProp>
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 

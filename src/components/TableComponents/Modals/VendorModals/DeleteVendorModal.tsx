@@ -4,6 +4,7 @@ import { api } from '../../../../utils/api';
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {useState} from "react";
+import { toast } from "react-toastify";
 
 
 interface DeleteVendorProp{
@@ -14,9 +15,16 @@ interface DeleteVendorProp{
 
 
 export default function DeleteVendorModal(props:DeleteVendorProp) {
-  const deleteVendor = api.vendor.deleteVendor.useMutation();
+  const deleteVendor = api.vendor.deleteVendor.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully deleted vendor!")
+  }
+});
   const [open, setOpen] = useState(true)
-  const message = ("Are you sure you want to delete " + props.vendorName + " from the vendor database? This action cannot be undone.")
+  const message = ("Are you sure you want to delete this vendor? This action cannot be undone.")
 
   function closeModal(){
     setOpen(false)
@@ -31,7 +39,7 @@ export default function DeleteVendorModal(props:DeleteVendorProp) {
       closeModal()
     }
     else{
-        alert("error")
+        toast.error("No vendor ID given!")
       }
   }
 

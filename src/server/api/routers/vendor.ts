@@ -32,7 +32,26 @@ export const vendorRouter = createTRPCRouter({
         const vendors = await ctx.prisma.vendor.findMany();
         return vendors.length;
       } catch (error) {
-        throw new TRPCError({code: "NOT_FOUND", message: "No Vendors Found!"})
+        throw new TRPCError({code: error.code, message: error.message})
+      }
+    }),
+
+    getVendorsWithBuyback: publicProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const vendors = await ctx.prisma.vendor.findMany({
+          where: {
+            NOT:{
+              bookBuybackPercentage: null
+            }
+          }
+        });
+        if (vendors.length === 0){
+          console.log("No vendors with buyback policy!")
+        }
+        return vendors
+      } catch (error) {
+        throw new TRPCError({code: error.code, message: error.message})
       }
     }),
 

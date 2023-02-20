@@ -23,6 +23,7 @@ model Book {
   genre           Genre      @relation(fields: [genreID], references: [id])
   purchases       Purchase[]
   sales           Sale[]
+  buybacks        Buyback[]
   author          Author[]   @relation("AuthorToBook")
 }
 
@@ -52,7 +53,7 @@ model Purchase {
   price           Float
   bookId          String
   purchaseOrderId String
-  subtotal        Int           @default(0)
+  subtotal        Float           @default(0)
   book            Book          @relation(fields: [bookId], references: [isbn])
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
@@ -61,7 +62,7 @@ model PurchaseOrder {
   id          String     @id @default(cuid())
   vendorId    String
   date        DateTime
-  cost        Int        @default(0)
+  cost        Float        @default(0)
   totalBooks  Int        @default(0)
   uniqueBooks Int        @default(0)
   vendorName  String     @default("")
@@ -98,7 +99,7 @@ model Sale {
   price                Float
   bookId               String
   saleReconciliationId String
-  subtotal             Int                @default(0)
+  subtotal             Float                @default(0)
   book                 Book               @relation(fields: [bookId], references: [isbn])
   saleReconciliation   saleReconciliation @relation(fields: [saleReconciliationId], references: [id])
 }
@@ -108,7 +109,7 @@ model saleReconciliation {
   date        DateTime
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
-  revenue     Int      @default(0)
+  revenue     Float      @default(0)
   sales       Sale[]
 }
 

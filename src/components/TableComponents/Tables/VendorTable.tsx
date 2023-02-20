@@ -30,6 +30,7 @@ export default function VendorTable() {
     const [displayVendorView, setDisplayVendorView] = useState(false)
     const [currentVendor, setCurrentVendor] = useState({id: '', name: ''})
 
+
     const handleNewVendorSubmission = async (name: string) => {
         if (newVendor){
             newVendor.mutate({

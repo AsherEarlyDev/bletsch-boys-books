@@ -192,10 +192,8 @@ export default function SalesTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id"
-                                                   label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date"
-                                                   label="Date Created"></SortedFilterableColumnHeading>
+                                                   label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks"
                                                    label="Unique Books"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks"

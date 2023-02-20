@@ -28,8 +28,7 @@ export function VendorTableRow(props: VendorRowProps){
     }
   return (
       <tr>
-        <ViewTableEntry onView={handleView}>{props.vendorInfo.id}</ViewTableEntry>
-        <TableEntry>{props.vendorInfo.name}</TableEntry>
+        <ViewTableEntry onView={handleView}>{props.vendorInfo.name}</ViewTableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

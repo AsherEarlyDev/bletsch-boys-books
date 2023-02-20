@@ -65,6 +65,8 @@ export default function PurchaseTable() {
       setDisplayEditPurchaseView(true)
     }
   }
+
+
   function renderEditPurchaseView() {
     return(
         <>
@@ -74,6 +76,7 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeEditPurchaseView(){
     setDisplayEditPurchaseView(false)
   }
@@ -92,6 +95,7 @@ export default function PurchaseTable() {
       setDisplayDeletePurchaseView(true)
     }
   }
+
   function renderDeletePurchaseView() {
     return(
         <>
@@ -102,20 +106,19 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeDeletePurchaseView(){
     setDisplayDeletePurchaseView(false)
   }
 
   async function openPurchaseView(id: string){
     if (purchaseOrder){
-      console.log(purchaseOrder)
       for (const order of purchaseOrder){
         if (order.id === id && order.purchases){
           setPurchases(order.purchases)
         }
       }
       setDisplayPurchaseView(true)
-      console.log(displayPurchaseView)
     }
   }
   function renderPurchaseView() {
@@ -175,10 +178,8 @@ export default function PurchaseTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id" 
-                    label="Purchase Order ID" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date" 
-                    label="Date Created"></SortedFilterableColumnHeading>
+                    label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="vendorName" 
                     label="Vendor Name"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks" 

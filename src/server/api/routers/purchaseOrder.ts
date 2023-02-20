@@ -58,7 +58,8 @@ export const purchaseOrderRouter = createTRPCRouter({
         take: input.entriesPerPage,
         skip: input.pageNumber*input.entriesPerPage,
         include:{
-          vendor: true
+          vendor: true,
+          purchases: true
         },
         orderBy: input.sortBy==="vendorName" ? {
           vendor:{
@@ -74,11 +75,11 @@ export const purchaseOrderRouter = createTRPCRouter({
       return transformData(rawData)
     }
     else{
-      return await ctx.prisma.purchaseOrder.findMany({
+      return transformData(await ctx.prisma.purchaseOrder.findMany({
         include:{
           vendor: true
         }
-      })
+      }))
     }
   }),
 

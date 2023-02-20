@@ -20,7 +20,7 @@ import Table from './Table';
 export default function PurchaseTable() {
   const FIRST_HEADER =  ["Id", "id"]
   const SORTABLE_HEADERS = [["Date Created", "date"], ["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
-  const STATIC_HEADERS = ["Add", "Edit", "Delete"]
+  const STATIC_HEADERS = ["Add Purchase", "Edit", "Delete"]
   
   const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
@@ -190,12 +190,7 @@ export default function PurchaseTable() {
         numberOfPages={numberOfPages}
         numberOfEntries={numberOfEntries}
         renderRow={renderOrderRow}
-        sorting={{
-          setOrder:  setSortOrder ,
-          setField:  setSortField ,
-          currentOrder: sortOrder,
-          currentField: sortField
-        }} 
+        sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
         entriesPerPage={ENTRIES_PER_PAGE}></Table>
 
         <div>

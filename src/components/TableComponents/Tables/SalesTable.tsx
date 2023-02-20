@@ -11,11 +11,15 @@ import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
+import Table from './Table';
 
 
 
 export default function SalesTable() {
   const ENTRIES_PER_PAGE = 5
+  const FIRST_HEADER =  ["Sales Reconciliation Id", "id"]
+  const SORTABLE_HEADERS = [["Date Created", "date"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
+  const STATIC_HEADERS = ["Add Sale", "Edit", "Delete"]
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -33,11 +37,14 @@ export default function SalesTable() {
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
-  const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
+
+  //const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
+  const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
   const costReport = api.salesReport.generateCostReport.useQuery({startDate: startDate, endDate: endDate}).data
   const topSellers = api.salesReport.getTopSelling.useQuery({startDate: startDate, endDate: endDate}).data
+  const numberOfEntries = api.salesRec.getNumberOfSalesRecs.useQuery().data
 
   const handleSaleRecSubmission = async (date: string) => {
     if (createSalesRec){
@@ -61,6 +68,13 @@ export default function SalesTable() {
       setDisplayEditSalesRecView(true)
     }
   }
+
+  function renderSalesRow(items:any[]){
+    return(salesRecs ? salesRecs.map((rec) => (
+      <SalesRecTableRow onAdd={handleAdd} onView={openSalesRecView} onDelete={openDeleteSalesRecView} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
+  )) : null)
+  }
+
   function renderEditSalesRecView() {
     return(
         <>
@@ -181,40 +195,18 @@ export default function SalesTable() {
           <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>
         </TableDetails>
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div
-                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-auto">
-                  <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id"
-                                                   label="Sale Reconciliation ID" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date"
-                                                   label="Date Created"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks"
-                                                   label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks"
-                                                   label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="revenue"
-                                                   label="Total Revenue"></SortedFilterableColumnHeading>
-                  </TableHeader>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                  {salesRecs ? salesRecs.map((rec) => (
-                      <SalesRecTableRow onAdd={handleAdd} onView={openSalesRecView} onDelete={openDeleteSalesRecView} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
-                  )) : null}
-                  </tbody>
-                </table>
-                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                  Previous
-                </button>
-                  <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                    Next
-                  </button></center>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Table 
+        setPage={setPageNumber}
+        sortableHeaders={SORTABLE_HEADERS}
+        firstHeader={FIRST_HEADER}
+        staticHeaders={STATIC_HEADERS}
+        items={salesRecs}
+        pageNumber={pageNumber}
+        numberOfPages={numberOfPages}
+        numberOfEntries={numberOfEntries}
+        renderRow={renderSalesRow}
+        sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
+        entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
           {/* {renderEntries()} */}
           {renderEditSalesRecView()}

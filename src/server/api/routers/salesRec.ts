@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { SalesRec } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { saleReconciliation } from "@prisma/client";
 
 export const salesRecRouter = createTRPCRouter({
 
@@ -69,6 +70,34 @@ export const salesRecRouter = createTRPCRouter({
       });
     }
   }),
+
+  getSalesRecs:publicProcedure
+  .input(z.object({
+    pageNumber: z.number(),
+    entriesPerPage: z.number(),
+    sortBy: z.string(),
+    descOrAsc: z.string()
+  }))
+  .query(async ({ ctx, input }) => {
+    if(input){
+      const rawData = await ctx.prisma.saleReconciliation.findMany({
+        take: input.entriesPerPage,
+        skip: input.pageNumber*input.entriesPerPage,
+        include:{
+          sales: true
+        },
+        orderBy: 
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+      })
+      return transformData(rawData)
+    }
+  }),
+  getNumberOfSalesRecs: publicProcedure
+    .query(async ({ctx, input})=>{
+      return await ctx.prisma.saleReconciliation.count()
+    }),
 
   getSaleRecDetails: publicProcedure
   .input(z.object({
@@ -237,3 +266,12 @@ export const salesRecRouter = createTRPCRouter({
     }
   })
 });
+
+const transformData = (salesRec: saleReconciliation[]) => {
+  return salesRec.map((rec) => {
+    return({
+      ...rec,
+      date:(rec.date.getMonth()+1)+"-"+(rec.date.getDate())+"-"+rec.date.getFullYear(),
+    })
+  })
+}

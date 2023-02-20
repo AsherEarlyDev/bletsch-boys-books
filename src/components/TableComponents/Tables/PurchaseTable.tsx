@@ -10,6 +10,7 @@ import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
+import Table from './Table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,9 +18,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-
 export default function PurchaseTable() {
-  const ENTRIES_PER_PAGE = 5
+  const FIRST_HEADER =  ["Date Created", "date"]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
+  const STATIC_HEADERS = ["Add Purchase", "Edit", "Delete"]
+  const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
@@ -31,15 +34,17 @@ export default function PurchaseTable() {
   const [sortField, setSortField] = useState("date")
 //   const [displayEntries, setDisplayEntries] = useState(false)
   const [sortOrder, setSortOrder] = useState("asc")
-  const purchaseOrder: any[] = api.purchaseOrder.getPurchaseOrderDetails
-  .useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data;
-  const numberOfPages = Math.ceil(api.purchaseOrder.getNumPurchaseOrder.useQuery().data / ENTRIES_PER_PAGE)
+  //const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrderDetails
+  //.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data;
+  const purchaseOrder2:any[] = api.purchaseOrder.getPurchaseOrders.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
+  const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
   const vendors = api.vendor.getVendors.useQuery().data
+  const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string){
     if (createPurchaseOrder){
@@ -50,10 +55,15 @@ export default function PurchaseTable() {
     }
   }
 
+  function renderOrderRow(items:any[]){
+    return(items ? items.map((order) => (
+      <PurchaseOrderTableRow onAdd={handleAdd} onView={openPurchaseView} onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView} purchaseOrderInfo={order}></PurchaseOrderTableRow>
+  )) : null)
+  }
+
   async function openEditPurchaseView(id: string){
-    if (purchaseOrder){
-      for (const order of purchaseOrder){
-        console.log("Vendor Name: "+order.vendorName)
+    if (purchaseOrder2){
+      for (const order of purchaseOrder2){
         if (order.id === id){
           setCurrentOrder({
             id: order.id,
@@ -79,8 +89,8 @@ export default function PurchaseTable() {
   }
 
   async function openDeletePurchaseView(id: string){
-    if (purchaseOrder){
-      for (const order of purchaseOrder){
+    if (purchaseOrder2){
+      for (const order of purchaseOrder2){
         if (order.id === id){
           setCurrentOrder({
             id: order.id,
@@ -107,8 +117,9 @@ export default function PurchaseTable() {
   }
 
   async function openPurchaseView(id: string){
-    if (purchaseOrder){
-      for (const order of purchaseOrder){
+    if (purchaseOrder2){
+      console.log(purchaseOrder2)
+      for (const order of purchaseOrder2){
         if (order.id === id && order.purchases){
           setPurchases(order.purchases)
         }
@@ -128,12 +139,10 @@ export default function PurchaseTable() {
   function closePurchaseView(){
     setDisplayPurchaseView(false)
   }
-  
-
 
   const handleAdd = async (id:string) => {
-    if (purchaseOrder){
-      for (const order of purchaseOrder){
+    if (purchaseOrder2){
+      for (const order of purchaseOrder2){
         if (order.id === id){
           setId(order.id)
         }
@@ -154,7 +163,9 @@ export default function PurchaseTable() {
     return <>
       {(displayAddPurchaseView && purchaseOrderId)?
           <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
-            <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}></ViewPurchaseModal></CreateEntries> : null}
+            <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase} closeOut={function (): void {
+            throw new Error('Function not implemented.');
+          } }></ViewPurchaseModal></CreateEntries> : null}
   </>;
   }
 
@@ -166,40 +177,18 @@ export default function PurchaseTable() {
           <AddPurchaseOrderModal showPurchaseOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order"
                         submitText="Create Purchase Order" vendorList={vendors}></AddPurchaseOrderModal>
         </TableDetails>
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div
-                  className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300 table-auto">
-                  <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date" 
-                    label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="vendorName" 
-                    label="Vendor Name"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks" 
-                    label="Unique Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="totalBooks" 
-                    label="Total Books"></SortedFilterableColumnHeading>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="cost" 
-                    label="Total Cost"></SortedFilterableColumnHeading>
-                  </TableHeader>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                  {purchaseOrder ? purchaseOrder.map((order) => (
-                      <PurchaseOrderTableRow onAdd={handleAdd} onView={openPurchaseView} onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView} purchaseOrderInfo={order}></PurchaseOrderTableRow>
-                  )) : null}
-                  </tbody>
-                </table>
-                <center><button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber-1)} disabled ={pageNumber===0} className="text-indigo-600 hover:text-indigo-900">
-                  Previous     
-                </button>
-                <button style={{padding:"10px"}} onClick={()=>setPageNumber(pageNumber+1)} disabled={pageNumber===numberOfPages-1} className="text-indigo-600 hover:text-indigo-900">
-                  Next
-                </button></center>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Table 
+        setPage={setPageNumber}
+        sortableHeaders={SORTABLE_HEADERS}
+        firstHeader={FIRST_HEADER}
+        staticHeaders={STATIC_HEADERS}
+        items={purchaseOrder2}
+        pageNumber={pageNumber}
+        numberOfPages={numberOfPages}
+        numberOfEntries={numberOfEntries}
+        renderRow={renderOrderRow}
+        sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
+        entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}

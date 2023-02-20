@@ -12,7 +12,7 @@ export default function GenreTable() {
   const totalNumberOfEntries = api.genre.getNumberOfGenres.useQuery().data
   const STATIC_HEADERS = ["Edit", "Delete"]
   const FIRST_HEADER = ["Name", "name"]
-  const SORTABLE_HEADERS = [["Inventory", "inventory"]]
+  const SORTABLE_HEADERS = [["Inventory", "name"]]
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
   const [genrePageNumber, setGenrePageNumber] = useState(0)
   const [genreSortField, setGenreSortField] = useState("name")

@@ -53,7 +53,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
 
   function closeModal(){
     setOpen(false)
-    //props.closeOut()
+    // props.closeOut()
   }
 
   function editSale(){
@@ -141,14 +141,11 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <CardTitle heading="Sale" subheading="Add sale information below..."></CardTitle>
             </div>
             <CardGrid>
-              <ImmutableCardProp heading="Sale ID" data={props.sale.id}></ImmutableCardProp>
-              <ImmutableCardProp heading="Subtotal" data={props.sale.subtotal}></ImmutableCardProp>
-              <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
               <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string"
                                defaultValue={props.sale.bookId}></MutableCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
-              <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
+              <MutableCardProp saveValue={setPrice} heading="Price (Defaults to book retail price)" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
             <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>

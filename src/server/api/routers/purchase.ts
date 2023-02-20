@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const purchaseRouter = createTRPCRouter({
@@ -15,6 +16,7 @@ export const purchaseRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+            const isbn = convertISBN10ToISBN13(input.isbn)
             const purchaseOrder = await ctx.prisma.purchaseOrder.findFirst({
                 where:
                 {
@@ -25,7 +27,7 @@ export const purchaseRouter = createTRPCRouter({
                 await ctx.prisma.purchase.create({
                     data: {
                        purchaseOrderId: input.purchaseOrderId,
-                       bookId: input.isbn,
+                       bookId: isbn,
                        quantity: parseInt(input.quantity),
                        price: parseFloat(input.price),
                        subtotal: parseInt(input.quantity)*parseFloat(input.price)
@@ -33,7 +35,7 @@ export const purchaseRouter = createTRPCRouter({
                 });
                 await ctx.prisma.book.update({
                   where: {
-                    isbn: input.isbn
+                    isbn: isbn
                   },
                   data:{
                     inventory: {
@@ -68,6 +70,7 @@ export const purchaseRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+          const isbn = convertISBN10ToISBN13(input.isbn)
           const purchase = await ctx.prisma.purchase.findFirst({
               where:
             {
@@ -76,7 +79,7 @@ export const purchaseRouter = createTRPCRouter({
           });
           const book = await ctx.prisma.book.findFirst({
             where:{
-              isbn: input.isbn
+              isbn: isbn
             }
           })
           if (!book){
@@ -103,7 +106,7 @@ export const purchaseRouter = createTRPCRouter({
           },
             data: {
               purchaseOrderId: input.purchaseOrderId,
-              bookId: input.isbn,
+              bookId: isbn,
               quantity: parseInt(input.quantity),
               price: parseFloat(input.price),
               subtotal: parseInt(input.quantity)*parseFloat(input.price)

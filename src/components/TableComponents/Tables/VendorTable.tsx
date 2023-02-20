@@ -44,6 +44,7 @@ export default function VendorTable() {
     }
   }
 
+
   async function openEditVendorView(id: string) {
     if (vendors) {
       for (const ven of vendors) {

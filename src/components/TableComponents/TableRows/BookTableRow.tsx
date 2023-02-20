@@ -33,7 +33,7 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry>{props.bookInfo.isbn}</TableEntry>
         <TableEntry>{props.bookInfo.author.map((author) => author.name).join(", ")}</TableEntry>
         <TableEntry>{props.bookInfo.genre.name}</TableEntry>
-        <TableEntry>{props.bookInfo.retailPrice}</TableEntry>
+        <TableEntry>${props.bookInfo.retailPrice.toFixed(2)}</TableEntry>
         <TableEntry>{props.bookInfo.inventory}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}

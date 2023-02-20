@@ -6,6 +6,7 @@ import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEnt from "../TableEntries/ViewTableEnt";
+import Link from 'next/link'
 
 interface BookTableRowProp{
   bookInfo: Book  & {
@@ -26,15 +27,19 @@ export default function BookTableRow(props:BookTableRowProp) {
     props.onDelete(props.bookInfo.isbn)
   }
   function handleView(){
-    props.onView(props.bookInfo.isbn)
+    //props.onView(props.bookInfo.isbn)
   }
 
   return (
       <tr>
-        <ViewTableEnt onView={handleView}>{props.bookInfo.title}</ViewTableEnt>
+        <Link 
+  href= {"/books/[isbn]"}
+  as={`/books/${props.bookInfo.isbn }`}
+  shallow ><ViewTableEnt onView={handleView}>{props.bookInfo.title}</ViewTableEnt></Link>
         {/*<TableEntry firstEntry={true}>*/}
         {/*    <ViewTableEntry openEdit={handleEdit} bookInfo={props.bookInfo} buttonText={props.bookInfo.title} submitText="Edit Book"></ViewTableEntry>*/}
         {/*</TableEntry>*/}
+        <TableEntry>{props.bookInfo.isbn}</TableEntry>
         <TableEntry>{props.bookInfo.isbn}</TableEntry>
         <TableEntry>{props.bookInfo.author.map((author) => author.name).join(", ")}</TableEntry>
         <TableEntry>{props.bookInfo.genre.name}</TableEntry>

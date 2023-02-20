@@ -11,17 +11,17 @@ import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterab
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
 import Table from './Table';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
 
 
 export default function PurchaseTable() {
-  const FIRST_HEADER =  ["Id", "id"]
-  const SORTABLE_HEADERS = [["Date Created", "date"], ["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
+  const FIRST_HEADER =  ["Date Created", "date"]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
   const STATIC_HEADERS = ["Add Purchase", "Edit", "Delete"]
-  
   const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
@@ -125,7 +125,6 @@ export default function PurchaseTable() {
         }
       }
       setDisplayPurchaseView(true)
-      console.log(displayPurchaseView)
     }
   }
   function renderPurchaseView() {
@@ -140,8 +139,6 @@ export default function PurchaseTable() {
   function closePurchaseView(){
     setDisplayPurchaseView(false)
   }
-
-
 
   const handleAdd = async (id:string) => {
     if (purchaseOrder2){
@@ -192,13 +189,12 @@ export default function PurchaseTable() {
         renderRow={renderOrderRow}
         sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
         entriesPerPage={ENTRIES_PER_PAGE}></Table>
-
         <div>
-          {/* {renderEntries()} */}
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
           {renderAdd()}
+          <ToastContainer/>
         </div>
       </div>
 

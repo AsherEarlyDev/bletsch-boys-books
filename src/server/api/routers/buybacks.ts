@@ -1,52 +1,45 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
-export const salesRouter = createTRPCRouter({
-    createSale: publicProcedure
+export const buybackRouter = createTRPCRouter({
+    createBuyback: publicProcedure
     .input(
         z.object({
-          saleReconciliationId: z.string(),
+          buybackOrderId: z.string(),
           isbn: z.string(),
           quantity: z.string(),
           price: z.string()
         })
       )
       .mutation(async ({ ctx, input }) => {
-        try {
-            let price = parseFloat(input.price)
-            const isbn = convertISBN10ToISBN13(input.isbn)
-            const saleRec = await ctx.prisma.saleReconciliation.findFirst({
+        try{
+              const buybackOrder = await ctx.prisma.bookBuybackOrder.findFirst({
                 where:
                 {
-                  id: input.saleReconciliationId
+                  id: input.buybackOrderId
                 },
               })
-            const book = await ctx.prisma.book.findFirst({
+              const book = await ctx.prisma.book.findFirst({
                 where:{
-                  isbn: isbn
+                  isbn: input.isbn
                 }
               })
-            if (parseFloat(input.price) === 0){
-              console.log("Finding Default")
-              price = book.retailPrice
-            }
-            if (saleRec && book){
+            if (buybackOrder && book){
               const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
-                await ctx.prisma.sale.create({
+                await ctx.prisma.buyback.create({
                     data: {
-                       saleReconciliationId: input.saleReconciliationId,
-                       bookId: isbn,
-                       quantity: parseInt(input.quantity),
-                       price: price,
-                       subtotal: parseInt(input.quantity) * price
+                      buybackOrderId: input.buybackOrderId,
+                      bookId: input.isbn,
+                      quantity: parseInt(input.quantity),
+                      price: parseFloat(input.price),
+                      subtotal: parseInt(input.quantity) * parseFloat(input.price)
                     },
                 });
                 await ctx.prisma.book.update({
                   where: {
-                    isbn: book.isbn
+                    isbn: input.isbn
                   },
                   data:{
                     inventory: inventory
@@ -56,7 +49,7 @@ export const salesRouter = createTRPCRouter({
               else{
                 throw new TRPCError({
                   code: 'CONFLICT',
-                  message: 'Inventory cannot go below 0!',
+                  message: 'Book Inventory cannot go below 0!',
                 });
               }
             }
@@ -70,18 +63,18 @@ export const salesRouter = createTRPCRouter({
         catch(error){
           throw new TRPCError({
             code: error.code,
-            message: "Add Sale Failed! "+error.message
+            message: "Add Buyback Failed! "+error.message
           })
         }
             
         
       }),
 
-    modifySale: publicProcedure
+    modifyBuyback: publicProcedure
     .input(
       z.object({
           id: z.string(),
-          saleReconciliationId: z.string(),
+          buybackOrderId: z.string(),
           isbn: z.string(),
           quantity: z.string(),
           price: z.string()
@@ -89,8 +82,7 @@ export const salesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try{
-            const isbn = convertISBN10ToISBN13(input.isbn)
-            const sale = await ctx.prisma.sale.findFirst({
+            const buyback = await ctx.prisma.buyback.findFirst({
               where:
             {
               id: input.id
@@ -98,7 +90,7 @@ export const salesRouter = createTRPCRouter({
           });
           const book = await ctx.prisma.book.findFirst({
             where:{
-              isbn: isbn
+              isbn: input.isbn
             }
           })
           if (!book){
@@ -107,7 +99,7 @@ export const salesRouter = createTRPCRouter({
               message: 'No book found under that ISBN!',
             });
           }
-          const change: number = sale.quantity - parseInt(input.quantity)  
+          const change: number = buyback.quantity - parseInt(input.quantity)  
           if(book.inventory + change >= 0) {
             await ctx.prisma.book.update({
               where:{
@@ -118,14 +110,14 @@ export const salesRouter = createTRPCRouter({
               }
             })
 
-            await ctx.prisma.sale.update({
+            await ctx.prisma.buyback.update({
               where:
             {
               id: input.id
           },
             data: {
-              saleReconciliationId: input.saleReconciliationId,
-              bookId: book.isbn,
+              buybackOrderId: input.buybackOrderId,
+              bookId: input.isbn,
               quantity: parseInt(input.quantity),
               price: parseFloat(input.price),
               subtotal: parseFloat(input.price) * parseInt(input.quantity)
@@ -135,21 +127,21 @@ export const salesRouter = createTRPCRouter({
           else{
             throw new TRPCError({
               code: 'CONFLICT',
-              message: 'Inventory cannot go below 0.',
+              message: 'Book Inventory cannot go below 0.',
             });
           }
       }
       catch(error){
         throw new TRPCError({
           code: error.code,
-          message: "Modify Sale Failed! "+error.message
+          message: "Modify Buyback Failed! "+error.message
         })
       }
         
         
     }),
 
-    deleteSale: publicProcedure
+    deleteBuyback: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -157,25 +149,25 @@ export const salesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const sale = await ctx.prisma.sale.findFirst({
+        const buyback = await ctx.prisma.buyback.findFirst({
           where:{
             id: input.id
           }
         })
-        if(sale){
+        if(buyback){
           await ctx.prisma.book.update({
             where: {
-              isbn: sale.bookId
+              isbn: buyback.bookId
             },
             data:{
               inventory: {
-                increment: sale.quantity
+                increment: buyback.quantity
               }
             }
           })
         }
         
-        await ctx.prisma.sale.delete({
+        await ctx.prisma.buyback.delete({
           where: {
             id: input.id
           }
@@ -187,4 +179,4 @@ export const salesRouter = createTRPCRouter({
         });
       }
     })
-});
+})

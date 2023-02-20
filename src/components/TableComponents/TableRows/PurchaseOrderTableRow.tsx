@@ -29,8 +29,7 @@ export default function PurchaseOrderTableRow(props:PurchaseOrderTableRowProp) {
       }
   return (
       <tr>
-        <ViewTableEntry onView={handleView}>{props.purchaseOrderInfo.id}</ViewTableEntry>
-        <TableEntry>{props.purchaseOrderInfo.date}</TableEntry>
+        <ViewTableEntry onView={handleView}>{props.purchaseOrderInfo.date}</ViewTableEntry>
         <TableEntry>{props.purchaseOrderInfo.vendor.name}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.totalBooks}</TableEntry>

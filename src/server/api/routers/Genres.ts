@@ -37,6 +37,7 @@ export const GenreRouter = createTRPCRouter({
         })
 
     }),
+
     addGenre:publicProcedure
     .input(z.string())
     .mutation(async ({ctx, input}) => {
@@ -46,6 +47,7 @@ export const GenreRouter = createTRPCRouter({
             }
         })
     }),
+
     getNumberOfGenres:publicProcedure
     .query(async ({ctx, input}) => {
         return await ctx.prisma.genre.count()

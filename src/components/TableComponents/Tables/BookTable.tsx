@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
-import BookCard from '../../BookCard';
 import TableDetails from "../TableDetails";
-import CreateBookEntries from "../../CreateBookEntries";
 import BookTableRow from "../TableRows/BookTableRow";
-import { Dialog } from '@headlessui/react'
-import HeadingPanel from '../../BasicComponents/HeadingPanel';
-import { editableBook } from '../../../types/bookTypes';
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
 import CreateEntries from "../../CreateEntries";
@@ -16,6 +11,7 @@ import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
+
 export default function BookTable() {
   const BOOKS_PER_PAGE = 20
   const FIRST_HEADER =  ["Title", "title"]
@@ -41,6 +37,7 @@ export default function BookTable() {
       setDisplayNewBookEntriesView(true);
     }
   }
+
   function renderNewBookEntriesView(){
     return(
         <>
@@ -51,6 +48,7 @@ export default function BookTable() {
         </>
     )
   }
+
   function closeNewBookEntriesView(){
     setDisplayNewBookEntriesView(false)
   }
@@ -70,7 +68,7 @@ export default function BookTable() {
         <>
           {(displayEditBookView && entryBookData) ?
               <CreateEntries closeStateFunction={setDisplayEditBookView} submitText="Edit Book">
-                <EditBookModal cardType="edit" bookInfo={entryBookData.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
+                <EditBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeEditBookView}></EditBookModal>
               </CreateEntries> : null}
         </>
     )
@@ -131,32 +129,6 @@ export default function BookTable() {
     return(books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
       <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
   )) : null)
-  }
-
-  function renderBookEntries() {
-    return <>
-      <div>
-        {displayNewBookEntriesView ? (entryBookData ? (
-          <CreateBookEntries submitText="Save book" closeStateFunction={setDisplayNewBookEntriesView}>
-            {entryBookData.externalBooks.length > 0 ?
-            <div><HeadingPanel displayText="New Books"></HeadingPanel>
-             {entryBookData.externalBooks.map((book: editableBook) => (
-              <BookCard cardType="entry" bookInfo={book}></BookCard>))}</div>: null}
-            {entryBookData.internalBooks.length > 0 ?
-            <div><HeadingPanel displayText="Existing Books"></HeadingPanel>
-             {entryBookData.internalBooks.map((book: editableBook) => (
-              <BookCard cardType="edit" bookInfo={book}></BookCard>))}</div>: null}
-            {(entryBookData.absentBooks.length > 0 ?
-            <center><Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-              <div className="text-center">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  The following books could not be found: {entryBookData.absentBooks.join(", ")}
-                </Dialog.Title>
-              </div>
-            </Dialog.Panel></center> : null)}
-          </CreateBookEntries>) : null ): null}
-      </div>
-    </>;
   }
 
 

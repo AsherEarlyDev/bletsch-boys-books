@@ -10,6 +10,8 @@ import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
 import CreateSaleEntries from '../../../CreateEntries';
 import PrimaryButton from '../../../BasicComponents/PrimaryButton';
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -17,6 +19,7 @@ interface SalesProp{
   sale:  Sale
   cardType: string
   closeOut?: () => void
+
 }
 
 export default function ViewSalesRecModal(props:SalesProp) {
@@ -31,12 +34,26 @@ export default function ViewSalesRecModal(props:SalesProp) {
   const [price, setPrice] = useState(props.sale.price)
   const [displayDeleteSaleView, setDeleteSaleView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
-  const modSale = api.sales.modifySale.useMutation()
-  const addSale = api.sales.createSale.useMutation()
+  const modSale = api.sales.modifySale.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully modified sale!")
+  }
+})
+  const addSale = api.sales.createSale.useMutation({
+    onError: (error)=>{
+    toast.error(error.message)
+  },
+  onSuccess: ()=>{
+    toast.success("Successfully added sale!")
+  }
+})
 
   function closeModal(){
     setOpen(false)
-    props.closeOut()
+    // props.closeOut()
   }
 
   function editSale(){
@@ -47,21 +64,20 @@ export default function ViewSalesRecModal(props:SalesProp) {
           saleReconciliationId: props.sale.saleReconciliationId,
           isbn: isbn,
           quantity: quantity.toString(),
-          price: price.toString()
+          price: price.toString(),
+          
         })
       }
       else{
-        addSale.mutate({
-          saleReconciliationId: props.sale.saleReconciliationId,
-          isbn: isbn,
-          quantity: quantity.toString(),
-          price: price.toString()
-        })
+          addSale.mutate({
+            saleReconciliationId: props.sale.saleReconciliationId,
+            isbn: isbn,
+            quantity: quantity.toString(),
+            price: price.toString()
+          })
+          
       }
       closeModal()
-    }
-    else{
-      alert("Error")
     }
   }
 
@@ -125,14 +141,11 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <CardTitle heading="Sale" subheading="Add sale information below..."></CardTitle>
             </div>
             <CardGrid>
-              <ImmutableCardProp heading="Sale ID" data={props.sale.id}></ImmutableCardProp>
-              <ImmutableCardProp heading="Subtotal" data={props.sale.subtotal}></ImmutableCardProp>
-              <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
               <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string"
                                defaultValue={props.sale.bookId}></MutableCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
-              <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
+              <MutableCardProp saveValue={setPrice} heading="Price (Defaults to book retail price)" required="True" dataType="string"
                                defaultValue={props.sale.price}></MutableCardProp>
             </CardGrid>
             <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>

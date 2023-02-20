@@ -15,6 +15,7 @@ export const salesRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try {
+            let price = parseFloat(input.price)
             const isbn = convertISBN10ToISBN13(input.isbn)
             const saleRec = await ctx.prisma.saleReconciliation.findFirst({
                 where:
@@ -22,11 +23,15 @@ export const salesRouter = createTRPCRouter({
                   id: input.saleReconciliationId
                 },
               })
-              const book = await ctx.prisma.book.findFirst({
+            const book = await ctx.prisma.book.findFirst({
                 where:{
                   isbn: isbn
                 }
               })
+            if (parseFloat(input.price) === 0){
+              console.log("Finding Default")
+              price = book.retailPrice
+            }
             if (saleRec && book){
               const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
@@ -35,8 +40,8 @@ export const salesRouter = createTRPCRouter({
                        saleReconciliationId: input.saleReconciliationId,
                        bookId: isbn,
                        quantity: parseInt(input.quantity),
-                       price: parseFloat(input.price),
-                       subtotal: parseInt(input.quantity) * parseFloat(input.price)
+                       price: price,
+                       subtotal: parseInt(input.quantity) * price
                     },
                 });
                 await ctx.prisma.book.update({

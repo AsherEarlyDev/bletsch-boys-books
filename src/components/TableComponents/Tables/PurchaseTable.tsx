@@ -10,6 +10,8 @@ import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import SortedFilterableColumnHeading from '../TableColumnHeadings/SortedFilterableColumnHeading';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -17,7 +19,7 @@ import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderMo
 
 
 export default function PurchaseTable() {
-  const ENTRIES_PER_PAGE = 3
+  const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
@@ -51,6 +53,7 @@ export default function PurchaseTable() {
   async function openEditPurchaseView(id: string){
     if (purchaseOrder){
       for (const order of purchaseOrder){
+        console.log("Vendor Name: "+order.vendorName)
         if (order.id === id){
           setCurrentOrder({
             id: order.id,
@@ -62,6 +65,8 @@ export default function PurchaseTable() {
       setDisplayEditPurchaseView(true)
     }
   }
+
+
   function renderEditPurchaseView() {
     return(
         <>
@@ -71,6 +76,7 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeEditPurchaseView(){
     setDisplayEditPurchaseView(false)
   }
@@ -89,6 +95,7 @@ export default function PurchaseTable() {
       setDisplayDeletePurchaseView(true)
     }
   }
+
   function renderDeletePurchaseView() {
     return(
         <>
@@ -99,20 +106,19 @@ export default function PurchaseTable() {
         </>
     )
   }
+
   function closeDeletePurchaseView(){
     setDisplayDeletePurchaseView(false)
   }
 
   async function openPurchaseView(id: string){
     if (purchaseOrder){
-      console.log(purchaseOrder)
       for (const order of purchaseOrder){
         if (order.id === id && order.purchases){
           setPurchases(order.purchases)
         }
       }
       setDisplayPurchaseView(true)
-      console.log(displayPurchaseView)
     }
   }
   function renderPurchaseView() {
@@ -127,19 +133,7 @@ export default function PurchaseTable() {
   function closePurchaseView(){
     setDisplayPurchaseView(false)
   }
-  function renderPurchaseView() {
-    return(
-        <>
-          {displayPurchaseView ? (purchases ? (
-              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-                  <ViewPurchaseModal closeOut={closePurchaseView} cardType={'edit'} purchase={purchase}></ViewPurchaseModal>))}</CreateEntries>) : null) : null}
-        </>
-    )
-  }
-  function closePurchaseView(){
-    setDisplayPurchaseView(false)
-  }
-
+  
 
 
   const handleAdd = async (id:string) => {
@@ -184,10 +178,8 @@ export default function PurchaseTable() {
                   className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300 table-auto">
                   <TableHeader>
-                    <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="id" 
-                    label="Purchase Order ID" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="date" 
-                    label="Date Created"></SortedFilterableColumnHeading>
+                    label="Date Created" firstEntry={true}></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="vendorName" 
                     label="Vendor Name"></SortedFilterableColumnHeading>
                     <SortedFilterableColumnHeading resetPage={setPageNumber} setOrder={setSortOrder} currentOrder={sortOrder} currentField={sortField} sortFields={setSortField} databaseLabel="uniqueBooks" 
@@ -219,6 +211,7 @@ export default function PurchaseTable() {
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
           {renderAdd()}
+          <ToastContainer/>
         </div>
       </div>
 

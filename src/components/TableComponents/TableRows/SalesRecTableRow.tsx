@@ -16,6 +16,7 @@ interface SalesRecTableRowProp{
 
 
 export default function SalesRecTableRow(props:SalesRecTableRowProp) {
+
     function handleEdit(){
         props.onEdit(props.salesRecInfo.id)
       }
@@ -30,8 +31,7 @@ export default function SalesRecTableRow(props:SalesRecTableRowProp) {
       }
   return (
       <tr>
-        <ViewTableEntry onView={handleView}>{props.salesRecInfo.id}</ViewTableEntry>
-        <TableEntry>{props.salesRecInfo.date}</TableEntry>
+        <ViewTableEntry onView={handleView}>{props.salesRecInfo.date}</ViewTableEntry>
         <TableEntry>{props.salesRecInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.totalBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.revenue}</TableEntry>

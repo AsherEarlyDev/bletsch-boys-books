@@ -1,27 +1,28 @@
-import TableDetails from "../TableDetails";
-import { editableBook } from '../../../types/bookTypes';
-import NewBookEntryTableRow from "../TableRows/NewBookEntryTableRow";
-import TableHeader from "../TableHeader";
-import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
+import TableDetails from "../../TableDetails";
+import { editableBook } from '../../../../types/bookTypes';
+import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
+import TableHeader from "../../TableHeader";
+import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import SaveCardChanges from "../../CardComponents/SaveCardChanges";
-import {api} from "../../../utils/api";
-import SecondaryButton from "../../BasicComponents/SecondaryButton";
-import PrimaryButton from "../../BasicComponents/PrimaryButton";
-import {Sale} from "../../../types/salesTypes";
-import ViewSalesRecModal from "../Modals/SalesModals/ViewSalesRecModal";
-import SaleTableRow from "../TableRows/SaleTableRow";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import {api} from "../../../../utils/api";
+import SecondaryButton from "../../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import {Sale} from "../../../../types/salesTypes";
+import ViewSalesRecModal from "./ViewSalesRecModal";
+import SaleTableRow from "../../TableRows/SaleTableRow";
 
-interface SalesViewTableProps{
+interface EditSalesTableModalProps{
   salesRecId: string
   salesRecDate: string
   sales: Sale[]
   closeOut: () => void
 }
 
-export default function SalesViewTable(props: SalesViewTableProps) {
+export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   const header = props.salesRecDate + " Sales Reconciliation"
   const hasSales = (props.sales.length != 0)
+
 
   function handleSave(){
     props.closeOut

@@ -1,20 +1,18 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import TableHeader from "../TableHeader";
 import SalesRecTableRow from "../TableRows/SalesRecTableRow";
 import EditSalesRecModal from "../Modals/SalesModals/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
 import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
-import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 import Table from './Table';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SalesViewTable from "./SalesViewTable";
+import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 
 
 export default function SalesTable() {
@@ -22,7 +20,7 @@ export default function SalesTable() {
   const ENTRIES_PER_PAGE = 5
   const FIRST_HEADER =  ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
-  const STATIC_HEADERS = ["Add Sale", "Edit", "Delete"]
+  const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [startDate, setStartDate] = useState(date.toString())
@@ -56,7 +54,6 @@ export default function SalesTable() {
       })
     }
   }
-
 
   async function openEditSalesRecView(id: string){
     if (salesRecs){
@@ -138,7 +135,7 @@ export default function SalesTable() {
         <>
           {(displaySalesRecView && currentSalesRec) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
-                <SalesViewTable salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeSalesRecView}></SalesViewTable>
+                <ViewSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeSalesRecView}></ViewSalesTableModal>
               </CreateSaleEntries>)
               : null}
         </>

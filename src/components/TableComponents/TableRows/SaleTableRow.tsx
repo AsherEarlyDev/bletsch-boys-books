@@ -49,9 +49,9 @@ export default function SaleTableRow(props:SaleTableRowProp) {
       (visible &&
           <tr>
             <TableEntry firstEntry={true}>{(book) ? book.title : "" }</TableEntry>
-            <TableEntry>{props.sale.price}</TableEntry>
+            <TableEntry>${props.sale.price.toFixed(2)}</TableEntry>
             <TableEntry>{props.sale.quantity}</TableEntry>
-            <TableEntry>{props.sale.subtotal}</TableEntry>
+            <TableEntry>${props.sale.subtotal.toFixed(2)}</TableEntry>
           </tr>
       )
   )

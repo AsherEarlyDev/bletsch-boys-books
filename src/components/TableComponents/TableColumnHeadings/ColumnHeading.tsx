@@ -9,7 +9,7 @@ interface ColumnHeadingInterface  {
 export default function ColumnHeading(props: ColumnHeadingInterface) {
   if (props.firstEntry == true) {
     return (
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">
+        <th scope="col" className="py-3.5 px-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
           {props.label}
         </th>
     )

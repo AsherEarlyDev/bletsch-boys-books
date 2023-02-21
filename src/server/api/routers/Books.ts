@@ -128,7 +128,7 @@ export const BooksRouter = createTRPCRouter({
     }),
 
   getAllInternalBooks: publicProcedure
-  .input(z.object({
+  .input(z.optional(z.object({
     pageNumber: z.number(),
     booksPerPage: z.number(),
     sortBy: z.string(),
@@ -140,7 +140,7 @@ export const BooksRouter = createTRPCRouter({
       genre: z.string(),
       authorNames: z.string()
     })
-  }))
+  })))
   .query(async ({ctx, input}) => {
     if(input){
       return await ctx.prisma.book.findMany({

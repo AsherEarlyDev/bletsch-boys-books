@@ -3,7 +3,7 @@ import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CardTitle from "../../../CardComponents/CardTitle";
 import CardGrid from "../../../CardComponents/CardGrid";
 import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { api } from '../../../../utils/api';
 import CreateSaleEntries from '../../../CreateEntries';
 import PrimaryButton from '../../../BasicComponents/PrimaryButton';
@@ -12,6 +12,7 @@ import DeletePurchaseOrderModal from "./DeletePurchaseOrderModal";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import CreateEntries from "../../../CreateEntries";
 import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
+import BookCardProp from "../../../CardComponents/BookCardProp";
 
 
 
@@ -106,8 +107,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
         <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
         <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
         <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
-        <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
-        defaultValue={props.purchase.bookId}></MutableCardProp>
+        <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
         defaultValue={props.purchase.quantity}></MutableCardProp>
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
@@ -124,8 +124,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
     <CardTitle heading="Purchase" subheading="Add purchase information below..."></CardTitle>
     </div>
     <CardGrid>
-      <MutableCardProp saveValue={setIsbn} heading="Book ISBN" required="True" dataType="string" 
-      defaultValue={props.purchase.bookId}></MutableCardProp>
+      <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
       defaultValue={props.purchase.quantity}></MutableCardProp>
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 

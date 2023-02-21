@@ -14,6 +14,7 @@ import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 import Table from './Table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SalesViewTable from "./SalesViewTable";
 
 
 export default function SalesTable() {
@@ -136,15 +137,15 @@ export default function SalesTable() {
     return(
         <>
           {(displaySalesRecView && currentSalesRec) ?
-              (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details"> {currentSales.map((sale) => (
-                      <ViewSalesRecModal closeOut={closeSalesRecView} cardType={'edit'} sale={sale}></ViewSalesRecModal>))}
+              (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
+                <SalesViewTable salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeSalesRecView}></SalesViewTable>
               </CreateSaleEntries>)
               : null}
         </>
     )
   }
   function closeSalesRecView(){
-    setDisplayDeleteSalesRecView(false)
+    setDisplaySalesRecView(false)
   }
 
   const handleAdd = async (id:string) => {

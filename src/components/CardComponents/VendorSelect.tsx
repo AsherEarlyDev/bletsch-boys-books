@@ -8,7 +8,7 @@ import { api } from '../../utils/api'
 export default function VendorSelect(props:{saveFunction: any, defaultValue:string}) {
   const [selected, setSelected] = useState('')
   const [query, setQuery] = useState('')
-  const vendors = api.vendor.getVendors.useQuery().data
+  const vendors = api.vendor.getAllVendors.useQuery().data
   props.saveFunction(selected)
   
   const filteredPeople =

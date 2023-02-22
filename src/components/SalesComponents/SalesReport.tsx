@@ -68,7 +68,6 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
         })
   
         topSellers.map((top)=>{
-          console.log(top)
           let topTemp = [top.isbn, top.title, top.numBooks, top.recentCost, top.revenue, top.profit]
           topSellersRow.push(topTemp)
         })

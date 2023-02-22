@@ -24,6 +24,13 @@ export const purchaseRouter = createTRPCRouter({
                 }
               })
             if (purchaseOrder){
+                const uniqueBooks = await ctx.prisma.purchase.findMany({
+                  where: {
+                    purchaseOrderId: input.purchaseOrderId,
+                    bookId: isbn
+                  }
+                });
+                let unique = uniqueBooks.length === 0 ? 1 : 0
                 await ctx.prisma.purchase.create({
                     data: {
                        purchaseOrderId: input.purchaseOrderId,
@@ -40,6 +47,22 @@ export const purchaseRouter = createTRPCRouter({
                   data:{
                     inventory: {
                       increment: parseInt(input.quantity)
+                    }
+                  }
+                })
+                await ctx.prisma.purchaseOrder.update({
+                  where: {
+                    id: input.purchaseOrderId
+                  },
+                  data:{
+                    totalBooks: {
+                      increment: parseInt(input.quantity)
+                    },
+                    cost: {
+                      increment: parseInt(input.quantity)*parseFloat(input.price)
+                    },
+                    uniqueBooks: {
+                      increment: unique
                     }
                   }
                 })
@@ -90,7 +113,13 @@ export const purchaseRouter = createTRPCRouter({
           }
           const change: number = parseInt(input.quantity) - purchase.quantity 
           if (book.inventory + change >= 0){
-            console.log()
+            const uniqueBooks = await ctx.prisma.purchase.findMany({
+              where: {
+                purchaseOrderId: input.purchaseOrderId,
+                bookId: isbn
+              }
+            });
+            let unique = uniqueBooks.length === 0 ? 1 : 0
             await ctx.prisma.book.update({
               where:{
                 isbn: book.isbn
@@ -103,7 +132,7 @@ export const purchaseRouter = createTRPCRouter({
               where:
             {
               id: input.id
-          },
+            },
             data: {
               purchaseOrderId: input.purchaseOrderId,
               bookId: isbn,
@@ -112,6 +141,23 @@ export const purchaseRouter = createTRPCRouter({
               subtotal: parseInt(input.quantity)*parseFloat(input.price)
             },
             });
+
+            await ctx.prisma.purchaseOrder.update({
+              where: {
+                id: input.purchaseOrderId
+              },
+              data:{
+                totalBooks: {
+                  increment:   parseInt(input.quantity) - purchase.quantity
+                },
+                cost: {
+                  increment: parseInt(input.quantity)*parseFloat(input.price) - purchase.subtotal
+                },
+                uniqueBooks: {
+                  increment: unique
+                }
+              }
+            })
           }
           else{
             throw new TRPCError({
@@ -148,18 +194,40 @@ export const purchaseRouter = createTRPCRouter({
             })
             const inventory: number = parseInt(book.inventory) - parseInt(purchase.quantity)
             if (inventory >= 0){
-              console.log("Inventory: "+inventory)
-              await ctx.prisma.purchase.delete({
+              const uniqueBooks = await ctx.prisma.purchase.findMany({
                 where: {
-                  id: input.id
+                  purchaseOrderId: purchase.purchaseOrderId,
+                  bookId: purchase.bookId
                 }
-              })
+              });
+              let unique = uniqueBooks.length === 1 ? 1 : 0
               await ctx.prisma.book.update({
                 where:{
                   isbn: purchase.bookId
                 },
                 data:{
                   inventory: inventory
+                }
+              })
+              await ctx.prisma.purchaseOrder.update({
+                where: {
+                  id: purchase.purchaseOrderId
+                },
+                data:{
+                  totalBooks: {
+                    decrement:  purchase.quantity
+                  },
+                  cost: {
+                    decrement: purchase.subtotal
+                  },
+                  uniqueBooks: {
+                    decrement: unique
+                  }
+                }
+              })
+              await ctx.prisma.purchase.delete({
+                where: {
+                  id: input.id
                 }
               })
             }

@@ -13,6 +13,7 @@ import Table from './Table';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
+import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
 
 
 export default function SalesTable() {
@@ -38,8 +39,6 @@ export default function SalesTable() {
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
-
-  //const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
@@ -53,6 +52,19 @@ export default function SalesTable() {
         date: date
       })
     }
+    // How do I get salesRecId for the sales rec I just created?
+    // setCurrentSalesRec({
+    //   id: rec.id,
+    //   date: rec.date,
+    // })
+    // setDisplayEditSalesRecView(true)
+  }
+
+
+  function renderSalesRow(items:any[]){
+    return(salesRecs ? salesRecs.map((rec) => (
+      <SalesRecTableRow onAdd={handleAdd} onView={openSalesRecView} onDelete={openDeleteSalesRecView} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
+  )) : null)
   }
 
   async function openEditSalesRecView(id: string){
@@ -63,24 +75,19 @@ export default function SalesTable() {
             id: rec.id,
             date: rec.date,
           })
+          setCurrentSales(rec.sales)
         }
       }
       setDisplayEditSalesRecView(true)
     }
   }
-
-  function renderSalesRow(items:any[]){
-    return(salesRecs ? salesRecs.map((rec) => (
-      <SalesRecTableRow onAdd={handleAdd} onView={openSalesRecView} onDelete={openDeleteSalesRecView} onEdit={openEditSalesRecView} salesRecInfo={rec}></SalesRecTableRow>
-  )) : null)
-  }
-
   function renderEditSalesRecView() {
     return(
         <>
           {(displayEditSalesRecView && currentSalesRec) ?
-              <CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sale Rec">
-                <EditSalesRecModal closeOut={closeEditSalesRecView} date={currentSalesRec.date} salesRecId={currentSalesRec.id}></EditSalesRecModal></CreateSaleEntries>
+              (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
+                <EditSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeEditSalesRecView}></EditSalesTableModal>
+              </CreateSaleEntries>)
               : null}
         </>
     )
@@ -156,8 +163,6 @@ export default function SalesTable() {
     }
   }
 
-
-
   function generateReport (){
     const reportObj = createSalesReportArray(revenueReport, costReport, startDate, endDate)
     generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
@@ -181,12 +186,6 @@ export default function SalesTable() {
     </>;
   }
 
-  // function renderSalesReport(){
-  //   return <>
-  //     {displaySalesReport ? <SalesReport start={startDate} end={endDate}></SalesReport>: null}
-  //   </>;
-  // }
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Sales Reconciliations"
@@ -209,7 +208,6 @@ export default function SalesTable() {
         sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
         entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
-          {/* {renderEntries()} */}
           {renderEditSalesRecView()}
           {renderDeleteSalesRecView()}
           {renderSalesRecView()}

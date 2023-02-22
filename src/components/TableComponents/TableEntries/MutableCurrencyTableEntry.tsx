@@ -10,7 +10,7 @@ export default function MutableCurrencyTableEntry(props:any) {
       <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">
         <div className="text-left">
           <input
-              placeholder={"$" + props.defaultValue.toFixed(2)}
+              placeholder={`$${Number(props.defaultValue).toFixed(2)}`}
               type={props.dataType}
               name={props.heading}
               step="0.01"

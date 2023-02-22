@@ -46,7 +46,7 @@ export default function ViewSalesTableModal(props: ViewSalesTableModalProps) {
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.sales.map((sale) => (<SaleTableRow sale={sale}></SaleTableRow>))}
+                    {props.sales.map((sale) => (<SaleTableRow isView={true} isAdding={false} sale={sale}></SaleTableRow>))}
                     </tbody>
                   </table>
                 </div>

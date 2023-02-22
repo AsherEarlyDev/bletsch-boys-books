@@ -75,7 +75,6 @@ export default function ViewSalesRecModal(props:SalesProp) {
             quantity: quantity.toString(),
             price: price.toString()
           })
-          
       }
       closeModal()
     }
@@ -102,7 +101,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
   function renderDeleteSaleView() {
     return <>
       {displayDeleteSaleView ? <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
-        <SaleDeleteCard onClose={closeDeleteSaleView} salesId={props.sale.id}></SaleDeleteCard>
+        <SaleDeleteCard closeOut={closeDeleteSaleView} salesId={props.sale.id}></SaleDeleteCard>
       </CreateSaleEntries>: null}
     </>;
   }

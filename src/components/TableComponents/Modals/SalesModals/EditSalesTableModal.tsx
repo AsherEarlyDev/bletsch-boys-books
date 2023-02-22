@@ -22,17 +22,15 @@ import GenSalesReportModal from "../../../SalesComponents/SalesReportModal";
 interface EditSalesTableModalProps{
   salesRecId: string
   salesRecDate: string
-  sales: Sale[]
   closeOut: () => void
+  sales: Sale[]
 }
 
 export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   const [date, setDate] = useState(props.salesRecDate)
-  const [sales, setSales] = useState<Sale[]>(props.sales)
   const [addSaleRowView, setAddSaleRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Sales Reconciliation"
-  const hasSales = (props.sales.length != 0)
   const modifySaleRec = api.salesRec.modifySaleRec.useMutation({
     onError: (error)=>{
       toast.error(error.message)
@@ -49,9 +47,10 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       toast.success("Successfully added sale!")
     }
   })
-
-  //want to get "sales" variable from
-  //const sales: Sale[] = api.salesRec.getAllSales.query(props.salesRecId).data()
+  //Replace below once this is working...
+  // const getSales = api.sales.getSalesByRecId.useMutation()
+  // const sales: Sale[] = getSales.mutate({salesRecId: props.salesRecId})
+  const sales = props.sales
 
 
   function openConfirmationView(){

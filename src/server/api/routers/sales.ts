@@ -194,7 +194,7 @@ export const salesRouter = createTRPCRouter({
         saleRecId: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         return await ctx.prisma.sale.findMany({
           where:{

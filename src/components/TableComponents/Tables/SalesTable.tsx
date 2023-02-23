@@ -86,7 +86,7 @@ export default function SalesTable() {
         <>
           {(displayEditSalesRecView && currentSalesRec) ?
               (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
-                <EditSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeEditSalesRecView}></EditSalesTableModal>
+                <EditSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
               </CreateSaleEntries>)
               : null}
         </>

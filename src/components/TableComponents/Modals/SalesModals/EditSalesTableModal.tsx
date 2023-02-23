@@ -23,7 +23,6 @@ interface EditSalesTableModalProps{
   salesRecId: string
   salesRecDate: string
   closeOut: () => void
-  sales: Sale[]
 }
 
 export default function EditSalesTableModal(props: EditSalesTableModalProps) {
@@ -48,9 +47,8 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     }
   })
   //Replace below once this is working...
-  // const getSales = api.sales.getSalesByRecId.useMutation()
-  // const sales: Sale[] = getSales.mutate({salesRecId: props.salesRecId})
-  const sales = props.sales
+  const sales: Sale[] =api.sales.getSalesByRecId.useQuery({saleRecId: props.salesRecId}).data
+  //const sales = props.sales
 
 
   function openConfirmationView(){
@@ -135,7 +133,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
                       <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {sales.map((sale) => (<SaleTableRow isView={false} isAdding={false} sale={sale}></SaleTableRow>))}
+                    {sales?.map((sale) => (<SaleTableRow isView={false} isAdding={false} sale={sale}></SaleTableRow>))}
                     {renderAddSaleRow()}
                     </tbody>
                   </table>

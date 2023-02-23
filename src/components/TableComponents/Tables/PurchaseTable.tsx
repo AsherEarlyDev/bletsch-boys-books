@@ -13,6 +13,7 @@ import EditPurchaseOrderModal from "../Modals/PurchaseModals/EditPurchaseOrderMo
 import Table from './Table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
 
 
 
@@ -118,9 +119,13 @@ export default function PurchaseTable() {
 
   async function openPurchaseView(id: string){
     if (purchaseOrder2){
-      console.log(purchaseOrder2)
       for (const order of purchaseOrder2){
         if (order.id === id && order.purchases){
+          setCurrentOrder({
+            id: order.id,
+            date: order.date,
+            vendorName: order.vendorName
+          })
           setPurchases(order.purchases)
         }
       }
@@ -132,7 +137,7 @@ export default function PurchaseTable() {
         <>
           {displayPurchaseView ? (purchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-                  <ViewPurchaseModal closeOut={closePurchaseView} cardType={'edit'} purchase={purchase}></ViewPurchaseModal>))}</CreateEntries>) : null) : null}
+                  <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases} purchaseOrderId={currentOrder.id} purchaseDate={currentOrder.date} purchaseVendorName={currentOrder.vendorName}></ViewPurchaseTableModal>))}</CreateEntries>) : null) : null}
         </>
     )
   }

@@ -1,7 +1,9 @@
 import SortedFilterableColumnHeading from "../TableColumnHeadings/SortedFilterableColumnHeading";
 import TableHeader from "../TableHeader";
 import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
+import FilterableColumnHeading from "../TableColumnHeadings/FilterableColumnHeading";
 import PaginationBar from "../../../pages/PaginationBar";
+import { useRouter } from 'next/router'
 
 interface TableProps{
     sorting:{
@@ -14,7 +16,7 @@ interface TableProps{
     setFilters?:any
     headersNotFiltered?:Array<string>
     sortableHeaders?:Array<Array<string>>
-    makeFirstStatic?: boolean
+    withoutSorting?: boolean
     firstHeader:Array<string>
     staticHeaders?:Array<string>
     items: any[]
@@ -28,6 +30,8 @@ interface TableProps{
 
 export default function Table(props:TableProps) {
     const numberOfItems = (props.items ? props.items.length : 0)
+    const router = useRouter()
+    const query = router.query
 
 return(
     <div className="mt-8 flex flex-col">
@@ -36,15 +40,15 @@ return(
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-300 table-auto">
                         <TableHeader>
-                            {props.makeFirstStatic ? <ColumnHeading firstEntry={true} label={props.firstHeader[0]}></ColumnHeading> : <SortedFilterableColumnHeading firstEntry={true} resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={props.firstHeader[0]} databaseLabel={props.firstHeader[1]}></SortedFilterableColumnHeading>}
+                            {props.withoutSorting ? <FilterableColumnHeading firstEntry={true} label={props.firstHeader[0]}></FilterableColumnHeading> : <SortedFilterableColumnHeading firstEntry={true} resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={props.firstHeader[0]} databaseLabel={props.firstHeader[1]}></SortedFilterableColumnHeading>}
                             {props.sortableHeaders && props.sortableHeaders.map((header => {
-                            return <SortedFilterableColumnHeading resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
+                            return props.withoutSorting ? <FilterableColumnHeading label={header[0]}></FilterableColumnHeading> : <SortedFilterableColumnHeading resetPage={props.setPage} setOrder={props.sorting.setOrder} currentOrder={props.sorting.currentOrder} currentField={props.sorting.currentField} sortFields={props.sorting.setField} label={header[0]} databaseLabel={header[1]}></SortedFilterableColumnHeading>
                             }))}
                             {(props.staticHeaders && props.staticHeaders.map((label => {
                                 return <ColumnHeading label={label}></ColumnHeading>
                             })))}
                         </TableHeader>
-                        {(props.filters && props.setFilters) ?
+                        {(props.headersNotFiltered) ?
                         <TableHeader>
                             {
                                 props.headersNotFiltered.includes(props.firstHeader[1]) ? <td></td> :
@@ -52,9 +56,14 @@ return(
                                     <textarea
                                     rows={1}
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    defaultValue=""
+                                    defaultValue={query[props.firstHeader[1]] || ""}
                                     onChange={(value) => {
-                                    props.setFilters({...props.filters, [props.firstHeader[1]]:value.target.value})
+                                        router.push({
+                                            pathname: '/records',
+                                            query: Object.assign({}, 
+                                                query,
+                                                {[props.firstHeader[1]]:value.target.value}
+                                             )})
                                     props.setPage(0)}}
                                     />
                                 </td>)
@@ -64,9 +73,14 @@ return(
                                 <textarea
                                     rows={1}
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    defaultValue=""
+                                    defaultValue={query[label[1]] || ""}
                                     onChange={(value) => {
-                                    props.setFilters({...props.filters, [label[1]]:value.target.value})
+                                        router.push({
+                                            pathname: '/records',
+                                            query: Object.assign({}, 
+                                                query,
+                                                {[label[1]]:value.target.value}
+                                             )})
                                     props.setPage(0)}}
                                 />
                                 </td>)

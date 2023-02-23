@@ -43,7 +43,7 @@ export default function PurchaseTable() {
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
-  const vendors = api.vendor.getVendors.useQuery().data
+  const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string){
@@ -118,7 +118,6 @@ export default function PurchaseTable() {
 
   async function openPurchaseView(id: string){
     if (purchaseOrder2){
-      console.log(purchaseOrder2)
       for (const order of purchaseOrder2){
         if (order.id === id && order.purchases){
           setPurchases(order.purchases)

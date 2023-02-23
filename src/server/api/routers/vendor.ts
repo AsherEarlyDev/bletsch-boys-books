@@ -25,6 +25,14 @@ export const vendorRouter = createTRPCRouter({
         console.log("Unable to get list of vendors", error);
       }
     }),
+    getAllVendors: publicProcedure
+    .query(async ({ ctx }) => {
+      try {
+        return await ctx.prisma.vendor.findMany();
+      } catch (error) {
+        throw new TRPCError({code: error.code, message: error.message})
+      }
+    }),
 
     getNumVendors: publicProcedure
     .query(async ({ ctx }) => {

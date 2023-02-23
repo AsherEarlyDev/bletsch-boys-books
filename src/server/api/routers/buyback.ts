@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 
 export const buybackRouter = createTRPCRouter({
     createBuyback: publicProcedure
@@ -14,20 +15,60 @@ export const buybackRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         try{
+              let price = parseFloat(input.price)
+              let costMostRecent: number = 0
+              const isbn = convertISBN10ToISBN13(input.isbn)
               const buybackOrder = await ctx.prisma.bookBuybackOrder.findFirst({
                 where:
                 {
                   id: input.buybackOrderId
                 },
               })
+              const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
+                where:{
+                  vendorName: buybackOrder.vendorName
+                },
+                orderBy:{
+                  date: 'desc'
+                }
+              })
+              let i = 0
+              while (costMostRecent === 0){
+                const purchase = await ctx.prisma.purchase.findFirst({
+                  where: {
+                    purchaseOrderId: purchaseOrders[i].id,
+                    bookId: isbn
+                  }
+                })
+                if (purchase){
+                  costMostRecent = purchase.price
+                }
+                i += 1
+              }
+              const vendor = await ctx.prisma.vendor.findFirst({
+                where:{
+                  name: buybackOrder.vendorName
+                }
+              })
+              
               const book = await ctx.prisma.book.findFirst({
                 where:{
                   isbn: input.isbn
                 }
               })
+              if (price === 0){
+                price = costMostRecent * vendor.bookBuybackPercentage 
+              }
             if (buybackOrder && book){
               const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
+                const uniqueBooks = await ctx.prisma.buyback.findMany({
+                  where: {
+                    buybackOrderId: input.buybackOrderId,
+                    bookId: isbn
+                  }
+                });
+                let unique = uniqueBooks.length === 0 ? 1 : 0
                 await ctx.prisma.buyback.create({
                     data: {
                       buybackOrderId: input.buybackOrderId,
@@ -43,6 +84,22 @@ export const buybackRouter = createTRPCRouter({
                   },
                   data:{
                     inventory: inventory
+                  }
+                })
+                await ctx.prisma.bookBuybackOrder.update({
+                  where: {
+                    id: input.buybackOrderId
+                  },
+                  data:{
+                    totalBooks: {
+                      increment: parseInt(input.quantity)
+                    },
+                    revenue: {
+                      increment: parseInt(input.quantity)*parseFloat(input.price)
+                    },
+                    uniqueBooks: {
+                      increment: unique
+                    }
                   }
                 })
               }
@@ -82,6 +139,7 @@ export const buybackRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try{
+            const isbn = convertISBN10ToISBN13(input.isbn)
             const buyback = await ctx.prisma.buyback.findFirst({
               where:
             {
@@ -101,6 +159,13 @@ export const buybackRouter = createTRPCRouter({
           }
           const change: number = buyback.quantity - parseInt(input.quantity)  
           if(book.inventory + change >= 0) {
+            const uniqueBooks = await ctx.prisma.buyback.findMany({
+              where: {
+                buybackOrderId: input.buybackOrderId,
+                bookId: isbn
+              }
+            });
+            let unique = uniqueBooks.length === 0 ? 1 : 0
             await ctx.prisma.book.update({
               where:{
                 isbn: book.isbn
@@ -123,6 +188,22 @@ export const buybackRouter = createTRPCRouter({
               subtotal: parseFloat(input.price) * parseInt(input.quantity)
             },
             });
+            await ctx.prisma.bookBuybackOrder.update({
+              where: {
+                id: input.buybackOrderId
+              },
+              data:{
+                totalBooks: {
+                  increment:   parseInt(input.quantity) - buyback.quantity
+                },
+                revenue: {
+                  increment: parseInt(input.quantity)*parseFloat(input.price) - buyback.subtotal
+                },
+                uniqueBooks: {
+                  increment: unique
+                }
+              }
+            })
           }
           else{
             throw new TRPCError({
@@ -166,6 +247,31 @@ export const buybackRouter = createTRPCRouter({
             }
           })
         }
+
+        const uniqueBooks = await ctx.prisma.buyback.findMany({
+          where: {
+            buybackOrderId: buyback.buybackOrderId,
+            bookId: buyback.bookId
+          }
+        });
+        let unique = uniqueBooks.length === 1 ? 1 : 0
+
+        await ctx.prisma.bookBuybackOrder.update({
+          where: {
+            id: buyback.buybackOrderId
+          },
+          data:{
+            totalBooks: {
+              decrement:  buyback.quantity
+            },
+            revenue: {
+              decrement: buyback.subtotal
+            },
+            uniqueBooks: {
+              decrement: unique
+            }
+          }
+        })
         
         await ctx.prisma.buyback.delete({
           where: {

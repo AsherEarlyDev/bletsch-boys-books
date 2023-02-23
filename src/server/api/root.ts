@@ -9,6 +9,8 @@ import { salesRecRouter } from "./routers/salesRec";
 import { purchaseOrderRouter } from "./routers/purchaseOrder";
 import { purchaseRouter } from "./routers/purchase";
 import { salesReportRouter } from "./routers/salesReport";
+import { buybackRouter } from "./routers/buyback";
+import { buybackOrderRouter } from "./routers/bookBuybackOrder";
 
 
 /**
@@ -25,7 +27,9 @@ export const appRouter = createTRPCRouter({
   salesRec: salesRecRouter,
   purchaseOrder: purchaseOrderRouter,
   purchase: purchaseRouter,
-  salesReport: salesReportRouter
+  salesReport: salesReportRouter,
+  buyback: buybackRouter,
+  buybackOrder: buybackOrderRouter
 });
 
 // export type definition of API

@@ -28,13 +28,20 @@ export const salesRouter = createTRPCRouter({
                   isbn: isbn
                 }
               })
-            if (parseFloat(input.price) === 0){
-              console.log("Finding Default")
+            if (price === 0){
               price = book.retailPrice
             }
             if (saleRec && book){
+              
               const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
+                const uniqueBooks = await ctx.prisma.sale.findMany({
+                  where: {
+                    saleReconciliationId: input.saleReconciliationId,
+                    bookId: isbn
+                  }
+                });
+                let unique = uniqueBooks.length === 0 ? 1 : 0
                 await ctx.prisma.sale.create({
                     data: {
                        saleReconciliationId: input.saleReconciliationId,
@@ -50,6 +57,22 @@ export const salesRouter = createTRPCRouter({
                   },
                   data:{
                     inventory: inventory
+                  }
+                })
+                await ctx.prisma.saleReconciliation.update({
+                  where: {
+                    id: input.saleReconciliationId
+                  },
+                  data:{
+                    totalBooks: {
+                      increment: parseInt(input.quantity)
+                    },
+                    revenue: {
+                      increment: parseInt(input.quantity)*parseFloat(input.price)
+                    },
+                    uniqueBooks: {
+                      increment: unique
+                    }
                   }
                 })
               }
@@ -109,6 +132,13 @@ export const salesRouter = createTRPCRouter({
           }
           const change: number = sale.quantity - parseInt(input.quantity)  
           if(book.inventory + change >= 0) {
+            const uniqueBooks = await ctx.prisma.sale.findMany({
+              where: {
+                saleReconciliationId: input.saleReconciliationId,
+                bookId: isbn
+              }
+            });
+            let unique = uniqueBooks.length === 0 ? 1 : 0
             await ctx.prisma.book.update({
               where:{
                 isbn: book.isbn
@@ -131,6 +161,22 @@ export const salesRouter = createTRPCRouter({
               subtotal: parseFloat(input.price) * parseInt(input.quantity)
             },
             });
+            await ctx.prisma.saleReconciliation.update({
+              where: {
+                id: input.saleReconciliationId
+              },
+              data:{
+                totalBooks: {
+                  increment:   parseInt(input.quantity) - sale.quantity
+                },
+                revenue: {
+                  increment: parseInt(input.quantity)*parseFloat(input.price) - sale.subtotal
+                },
+                uniqueBooks: {
+                  increment: unique
+                }
+              }
+            })
           }
           else{
             throw new TRPCError({
@@ -174,6 +220,30 @@ export const salesRouter = createTRPCRouter({
             }
           })
         }
+        const uniqueBooks = await ctx.prisma.sale.findMany({
+          where: {
+            saleReconciliationId: sale.saleReconciliationId,
+            bookId: sale.bookId
+          }
+        });
+        let unique = uniqueBooks.length === 1 ? 1 : 0
+
+        await ctx.prisma.saleReconciliation.update({
+          where: {
+            id: sale.saleReconciliationId
+          },
+          data:{
+            totalBooks: {
+              decrement:  sale.quantity
+            },
+            revenue: {
+              decrement: sale.subtotal
+            },
+            uniqueBooks: {
+              decrement: unique
+            }
+          }
+        })
         
         await ctx.prisma.sale.delete({
           where: {

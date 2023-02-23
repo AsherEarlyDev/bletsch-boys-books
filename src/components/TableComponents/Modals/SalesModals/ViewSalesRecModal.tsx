@@ -69,6 +69,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
         })
       }
       else{
+          console.log(isbn)
           addSale.mutate({
             saleReconciliationId: props.sale.saleReconciliationId,
             isbn: isbn,

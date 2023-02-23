@@ -39,6 +39,8 @@ export default function SalesTable() {
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation()
+  const booksByVendor = api.books.getBooksByVendorId.useQuery({vendorId: 'cle2z9pms000gmy082gf8by35'}).data
+  console.log(booksByVendor)
 
   //const salesRecs: any[] = api.salesRec.getSaleRecDetails.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data

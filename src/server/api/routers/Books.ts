@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth/core/types";
+import { TRPCError } from "@trpc/server";
 
 type context = {
   session: Session | null;
@@ -307,7 +308,40 @@ export const BooksRouter = createTRPCRouter({
     catch(error){
       throw("Cannot delete book")
     }
-  })
+  }),
+
+  getBooksByVendorId: publicProcedure
+  .input(z.object({
+      vendorId: z.string()
+    })
+  )
+  .query(async ({ctx, input}) => {
+      try{
+        const books = []
+        const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
+          where:{
+            vendorId: input.vendorId
+          }
+        })
+        for (const purchaseOrder of purchaseOrders){
+            const purchases = await ctx.prisma.purchase.findMany({
+              where:{
+                purchaseOrderId: purchaseOrder.id
+              }
+            })
+            purchases.map(async (purchase) => {
+              books.push(purchase.bookId)
+            })
+        }
+        return Array.from(new Set(books))
+      }
+      catch(error){
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: error.message
+          })
+      }
+    })
 
 })
 

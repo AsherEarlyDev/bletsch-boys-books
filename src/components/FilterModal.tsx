@@ -40,7 +40,7 @@ export default function FilterModal(props: FilterProp) {
         formData.get("title") as string === "" ? null : {title: formData.get("title") as string},
         formData.get("author") as string === "" ? null : {authorNames: formData.get("author") as string},
         formData.get("publisher") as string === "" ? null : {publisher: formData.get("publisher") as string},
-        genre.name==="" || genre.name.name==="" || genre.name==undefined ? null : {genre:genre.name})})
+        genre.name===""  || genre.name==undefined ? null : {genre:genre.name})})
     // props.filterBooks({
     //   isbn: formData.get("isbn") as string,
     //   title: formData.get("title") as string,

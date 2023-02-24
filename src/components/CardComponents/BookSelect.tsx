@@ -1,18 +1,19 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { api } from '../../utils/api'
 
 
 
-export default function BookSelect(props:{saveFunction: any, defaultValue?:string}) {
+export default function BookSelect(props:{saveFunction: any, defaultValue?:string, displayTitleOrISBN:"title" | "isbn"}) {
   const books = api.books.getAllInternalBooks.useQuery().data
-  const initialBook = props.defaultValue
-  const [selected, setSelected] = useState(initialBook)
-  console.log(selected)
-  const [query, setQuery] = useState('')
-  props.saveFunction(selected)
   
+
+  const [query, setQuery] = useState(props.defaultValue)
+
+  useEffect(() => {
+    props.saveFunction(props.defaultValue)
+  },[])
   const filteredBooks =
       books ? (query === ''
           ?  books
@@ -29,12 +30,13 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:strin
 
   return (
       <div className="w-44 mt-1">
-        <Combobox value={selected} onChange={setSelected}>
+        <Combobox defaultValue={props.defaultValue} onChange={props.saveFunction}>
           <div className="relative mt-1">
             <div className="relative w-full cursor-default overflow-hidden border border-gray-300 rounded-md bg-white text-left shadow-sd focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-500 sm:text-sm">
               <Combobox.Input
                   className="w-full border-none py-1 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                  displayValue={(book) => (book.isbn)}
+                  displayValue={(value) => (value)}
+                  defaultValue={props.defaultValue}
                   onChange={(event) => setQuery(event.target.value)}
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -64,7 +66,7 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:strin
                                     active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                                 }`
                             }
-                            value={book}
+                            value={props.displayTitleOrISBN=="isbn" ? book.isbn : book.title}
                         >
                           {({ selected, active }) => (
                               <>

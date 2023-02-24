@@ -148,12 +148,6 @@ export default function BookTable() {
   )) : null)
   }
 
-  function downloadBooks(){
-
-  }
-
-
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -166,7 +160,7 @@ export default function BookTable() {
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
             <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
             <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <CSVLink fiename="BletschBoysBooks.csv"  data={csvBooks} headers={CSV_HEADERS} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+            <CSVLink fiename={"BletschBoysBooks.csv"}  data={csvBooks} headers={CSV_HEADERS} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
             Download Book List</CSVLink></div>
           </TableDetails>
           <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}

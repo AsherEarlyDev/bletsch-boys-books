@@ -27,13 +27,14 @@ export const buybackOrderRouter = createTRPCRouter({
                 }
               })
             if (vendor){
-                await ctx.prisma.bookBuybackOrder.create({
+                const newBuyback = await ctx.prisma.bookBuybackOrder.create({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
                         vendorName: vendor.vendorName
                     },
                 });
+                return {id: newBuyback.id, date: date}
             }
         } catch (error) {
           throw new TRPCError({

@@ -25,6 +25,7 @@ export const vendorRouter = createTRPCRouter({
         console.log("Unable to get list of vendors", error);
       }
     }),
+    
     getAllVendors: publicProcedure
     .query(async ({ ctx }) => {
       try {

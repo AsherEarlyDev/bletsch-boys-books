@@ -14,17 +14,18 @@ import {toast} from "react-toastify";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {Purchase} from "../../../../types/purchaseTypes";
 import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
+import VendorSelect from "../../../CardComponents/VendorSelect";
 
-interface EditSalesTableModalProps{
+interface EditPurchaseTableModalProps{
   purchaseOrderId: string
   purchaseDate: string
   purchaseVendorName: string
   closeOut: () => void
 }
 
-export default function EditPurchaseTableModal(props: EditSalesTableModalProps) {
+export default function EditPurchaseTableModal(props: EditPurchaseTableModalProps) {
   const [date, setDate] = useState(props.purchaseDate)
-  const [vendor, setVendor] = useState(props.purchaseVendorName)
+  const [vendorInfo, setVendorInfo] = useState({id: '', name: props.purchaseVendorName})
   const [addPurchaseRowView, setAddPurchaseRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Purchase Order"
@@ -64,10 +65,11 @@ export default function EditPurchaseTableModal(props: EditSalesTableModalProps) 
   function handleEditSubmission(){
     //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
-    if(props.purchaseOrderId && props.purchaseDate && props.purchaseVendorName){
+    if(props.purchaseOrderId && date && vendorInfo){
       modifyPurchaseOrder.mutate({
         date: date,
-        purchaseOrderId: props.purchaseOrderId
+        purchaseOrderId: props.purchaseOrderId,
+        vendorId: vendorInfo.id
       })
       props.closeOut()
     }
@@ -113,8 +115,11 @@ export default function EditPurchaseTableModal(props: EditSalesTableModalProps) 
         <div className="mb-8">
           <TableDetails tableName={header} tableDescription={"Viewing purchase order with ID: " + props.purchaseOrderId}>
           </TableDetails>
-          <div className="pt-4">
+          <div className="flex flex-row gap-10 pt-4 justify-center">
             <MutableCardProp saveValue={setDate} heading="Change Date" required="True" dataType="date" defaultValue={date}></MutableCardProp>
+            <div className="mt-1">
+              <VendorSelect saveFunction={setVendorInfo} defaultValue={vendorInfo.name}></VendorSelect>
+            </div>
           </div>
           <div className="mt-8 flex flex-col">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

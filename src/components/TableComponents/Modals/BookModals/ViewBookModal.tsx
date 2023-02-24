@@ -38,7 +38,7 @@ export default function ViewBookModal(props: BookModalProp) {
             <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>
             <ImmutableCardProp heading="Book ISBN" data={props.bookInfo.isbn}></ImmutableCardProp>
             <ImmutableCardProp heading="Author(s)"
-                               data={props.bookInfo.author ? props.bookInfo.author.map((auth) => auth.name).join(", ") : ""}></ImmutableCardProp>
+                               data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
             <ImmutableCardProp heading="Publication Year"
                                data={props.bookInfo.publicationYear}></ImmutableCardProp>
             <ImmutableCardProp heading="Publisher"

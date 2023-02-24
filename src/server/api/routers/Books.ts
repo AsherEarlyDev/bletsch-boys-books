@@ -199,6 +199,71 @@ export const BooksRouter = createTRPCRouter({
     }
   }),
 
+  getAllInternalBooksNoPagination: publicProcedure
+  .input(z.optional(z.object({
+    sortBy: z.string(),
+    descOrAsc: z.string(),
+    filters: z.object({
+      title: z.string(),
+      isbn: z.string(),
+      publisher: z.string(),
+      genre: z.string(),
+      authorNames: z.string()
+    })
+  })))
+  .query(async ({ctx, input}) => {
+    if(input){
+      return await ctx.prisma.book.findMany({
+        include:{
+          author:true,
+          genre:true
+        },
+        orderBy: input.sortBy==="genre" ? {
+          genre:{
+            name: input.descOrAsc
+          }
+        } :  [
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+        ],
+        where:{
+          title:{
+            contains: input.filters.title,
+            mode: 'insensitive'
+          },
+          authorNames:{
+            contains: input.filters.authorNames,
+            mode: 'insensitive'
+          },
+          
+          publisher:{
+            contains: input.filters.publisher,
+            mode: 'insensitive'
+          },
+          genre:{
+            name:{
+              contains: input.filters.genre,
+              mode: 'insensitive'
+            }
+          },
+          isbn:{
+            contains: input.filters.isbn,
+            mode: 'insensitive'
+          }
+        }
+      })
+    }
+    else{
+      return await ctx.prisma.book.findMany({
+        include:{
+          author:true,
+          genre:true
+        }
+      })
+    }
+  }),
+
   getNumberOfBooks:publicProcedure
   .input(z.object({
     filters: z.object({

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { api } from "../../../utils/api";
 import AddBookModal from "../Modals/BookModals/AddBookModal";
 import TableDetails from "../TableDetails";
@@ -11,11 +11,15 @@ import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
+import { useRouter } from 'next/router'
+import { CSVLink } from "react-csv";
 
 export default function BookTable() {
+  const {query} = useRouter()
   const BOOKS_PER_PAGE = 20
   const FIRST_HEADER =  ["Title", "title"]
   const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"]]
+  const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"retail_price", key:"retailPrice"}]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
@@ -26,11 +30,23 @@ export default function BookTable() {
   const [sortField, setSortField] = useState("title")
   const [sortOrder, setSortOrder] = useState("asc")
   const [filters, setFilters] = useState({isbn:"", title:"", authorNames:"", publisher:"", genre:""})
-  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters}).data / BOOKS_PER_PAGE)
-  const totalNumberOfEntries = api.books.getNumberOfBooks.useQuery({filters:filters}).data
+  const filters2 ={
+    isbn: query.isbn ? query.isbn.toString() : '',
+    title: query.title ? query.title.toString() : '',
+    authorNames: query.authorNames ? query.authorNames.toString() : '',
+    publisher: query.publisher ? query.publisher.toString() : '',
+    genre: query.genre ? query.genre.toString() : '',}
+  const numberOfPages = Math.ceil(api.books.getNumberOfBooks.useQuery({filters:filters2}).data / BOOKS_PER_PAGE)
+  const totalNumberOfEntries = api.books.getNumberOfBooks.useQuery({filters:filters2}).data
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
-  const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters}).data
+  const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
+  const allBooks = api.books.getAllInternalBooksNoPagination.useQuery({sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
+  const csvBooks = allBooks ? allBooks.map((book: Book & { genre: Genre; author: Author[]; })=>({...book, authorNames:book.authorNames.replaceAll(",", "|"), genre:book.genre.name})) : []
+  const router = useRouter()
 
+  function forceDataRender (){
+    setPageNumber(pageNumber)
+  }
   async function openNewBookSubmissionsView(isbns:string[]){
     setCurrentIsbns(isbns)
     if (entryBookData) {
@@ -75,6 +91,7 @@ export default function BookTable() {
   }
   function closeEditBookView(){
     setDisplayEditBookView(false)
+    forceDataRender()
   }
 
   async function openDeleteBookView(isbn: string){
@@ -131,24 +148,28 @@ export default function BookTable() {
   )) : null)
   }
 
-
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <TableDetails tableName="Inventory" tableDescription="A list of all the books in inventory.">
+          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <button type="button"
+                onClick={() => router.push({pathname: '/records',})}
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+            >Clear Filters</button></div>
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
             <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
+            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <CSVLink filename={"BletschBoysBookList.csv"}  data={csvBooks} headers={CSV_HEADERS} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+            Download Book List</CSVLink></div>
           </TableDetails>
           <Table sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}
                  setPage= {setPageNumber}
-                 setFilters= {setFilters}
                  firstHeader={FIRST_HEADER}
                  sortableHeaders={SORTABLE_HEADERS}
                  staticHeaders={STATIC_HEADERS}
                  items= {books}
-                 filters={filters}
-                 headersNotFiltered={["price", "inventory"]}
+                 headersNotFiltered={["retailPrice", "inventory"]}
                  pageNumber={pageNumber}
                  numberOfPages={numberOfPages}
                  entriesPerPage={BOOKS_PER_PAGE}

@@ -113,6 +113,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
 
 
   return (
+    book ?
       ((open && props.sale) ? (props.cardType==='edit' ?
           <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
             <div className="flex-row ">
@@ -123,7 +124,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <ImmutableCardProp heading="Sale ID" data={props.sale.id}></ImmutableCardProp>
               <ImmutableCardProp heading="Subtotal" data={props.sale.subtotal}></ImmutableCardProp>
               <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
-              <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
+              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
@@ -140,7 +141,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <CardTitle heading="Sale" subheading="Add sale information below..."></CardTitle>
             </div>
             <CardGrid>
-              <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
+              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
               <MutableCardProp saveValue={setPrice} heading="Price (Defaults to book retail price)" required="True" dataType="string"
@@ -150,6 +151,6 @@ export default function ViewSalesRecModal(props:SalesProp) {
             <div>
               {renderConfirmationView()}
             </div>
-          </div>) : null)
+          </div>) : null): null
   )
 }

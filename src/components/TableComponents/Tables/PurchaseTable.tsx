@@ -43,7 +43,11 @@ export default function PurchaseTable() {
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
-  const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
+  const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
+    onSuccess: ()=>{
+      setDisplayEditPurchaseView(true)
+    }
+  })
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
@@ -82,13 +86,15 @@ export default function PurchaseTable() {
   function renderEditPurchaseView() {
     return (
         <>
-          {(displayEditPurchaseView && currentOrder) ?
+          {(displayEditPurchaseView && createPurchaseOrder.data) ?
               <CreateEntries closeStateFunction={setDisplayEditPurchaseView}
                              submitText="Edit Purchase Order">
                 <EditPurchaseTableModal closeOut={closeEditPurchaseView}
-                                        purchaseDate={currentOrder.date}
-                                        purchaseOrderId={currentOrder.id}
-                                        purchaseVendorName={currentOrder.vendorName}></EditPurchaseTableModal></CreateEntries> : null}
+                                        purchaseDate={createPurchaseOrder.data.date}
+                                        purchaseOrderId={createPurchaseOrder.data.id}
+                                        purchaseVendorName={createPurchaseOrder.data.vendorName}></EditPurchaseTableModal></CreateEntries> : ()=>{
+                                          toast.warning("LOADING...")
+                                        }}
         </>
     )
   }

@@ -284,5 +284,26 @@ export const buybackRouter = createTRPCRouter({
           message: error.message,
         });
       }
-    })
+    }),
+
+    getBuybacksByOrderId: publicProcedure
+    .input(
+      z.object({
+        buybackOrderId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.purchase.findMany({
+          where:{
+            buybackOrderId: input.buybackOrderId
+          }
+        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
 })

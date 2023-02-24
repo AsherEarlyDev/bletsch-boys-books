@@ -30,15 +30,10 @@ export default function PurchaseOrderTableRow(props:PurchaseOrderTableRowProp) {
   return (
       <tr>
         <ViewTableEntry onView={handleView}>{props.purchaseOrderInfo.date}</ViewTableEntry>
-        <TableEntry>{props.purchaseOrderInfo.vendor.name}</TableEntry>
+        <TableEntry>{props.purchaseOrderInfo.vendorName}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.totalBooks}</TableEntry>
-        <TableEntry>{props.purchaseOrderInfo.cost}</TableEntry>
-        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-          <button onClick={handleAdd} className="text-indigo-600 hover:text-indigo-900">
-            Add Purchase<span className="sr-only">, {props.purchaseOrderInfo.id}</span>
-          </button>
-        </td>
+        <TableEntry>${props.purchaseOrderInfo.cost.toFixed(2)}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

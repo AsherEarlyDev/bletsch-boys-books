@@ -23,7 +23,6 @@ export default function AddSaleRecModal(props: SaleRecModalProp) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string
-    console.log(date)
     closeModal()
     props.showSaleRecEdit(date)
   }
@@ -69,7 +68,7 @@ export default function AddSaleRecModal(props: SaleRecModalProp) {
                       <div>
                         <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Enter Date (mm/dd/yyyy)
+                            Enter Sales Reconciliation Date (mm/dd/yyyy)
                           </Dialog.Title>
                         </div>
                         <div className="mt-5">

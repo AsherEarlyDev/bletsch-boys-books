@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { BookBuybackOrder } from "@prisma/client";
 
 export const buybackOrderRouter = createTRPCRouter({
     createBuybackOrder: publicProcedure
@@ -41,6 +42,31 @@ export const buybackOrderRouter = createTRPCRouter({
           });
         }
       }),
+
+      getBuybackOrders:publicProcedure
+      .input(z.object({
+        pageNumber: z.number(),
+        entriesPerPage: z.number(),
+        sortBy: z.string(),
+        descOrAsc: z.string()
+      }))
+      .query(async ({ ctx, input }) => {
+        if(input){
+          const rawData = await ctx.prisma.bookBuybackOrder.findMany({
+            take: input.entriesPerPage,
+            skip: input.pageNumber*input.entriesPerPage,
+            include:{
+              sales: true
+            },
+            orderBy: 
+              {
+                [input.sortBy]: input.descOrAsc,
+              }
+          })
+          return transformData(rawData)
+        }
+      }),
+
     getNumBuybackOrder: publicProcedure
     
    .query(async ({ ctx, input }) => {
@@ -185,7 +211,7 @@ export const buybackOrderRouter = createTRPCRouter({
       }
     }),
 
-    deleteBuybackIrder: publicProcedure
+    deleteBuybackOrder: publicProcedure
     .input(
         z.object({
           buybackOrderId: z.string(),
@@ -229,3 +255,12 @@ export const buybackOrderRouter = createTRPCRouter({
       }
     })
   });
+
+  const transformData = (buybackOrder: BookBuybackOrder[]) => {
+    return buybackOrder.map((rec) => {
+      return({
+        ...rec,
+        date:(rec.date.getMonth()+1)+"-"+(rec.date.getDate())+"-"+rec.date.getFullYear(),
+      })
+    })
+  }

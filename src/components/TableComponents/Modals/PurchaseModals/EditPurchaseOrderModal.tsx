@@ -35,7 +35,7 @@ export default function EditPurchaseOrderModal(props:EditPurchaseOrderModalProp)
     toast.success("Successfully modified Purchase Order!")
   }
 })
-  const vendors = api.vendor.getVendors.useQuery().data
+  const vendors = api.vendor.getAllVendors.useQuery().data
 
   function closeModal(){
     setOpen(false)

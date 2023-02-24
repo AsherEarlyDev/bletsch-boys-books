@@ -97,6 +97,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
 
 
   return (
+    book ?
     ((open && props.purchase) ? (props.cardType === 'edit' ?
     <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
       <div className="flex-row ">
@@ -107,7 +108,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
         <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
         <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
         <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
-        <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
+        <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
         defaultValue={props.purchase.quantity}></MutableCardProp>
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
@@ -124,7 +125,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
     <CardTitle heading="Purchase" subheading="Add purchase information below..."></CardTitle>
     </div>
     <CardGrid>
-      <BookCardProp saveFunction={setIsbn} defaultValue={""}></BookCardProp>
+      <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn } displayTitleOrISBN={"isbn"}></BookCardProp>
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
       defaultValue={props.purchase.quantity}></MutableCardProp>
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
@@ -136,6 +137,6 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
       </div>
     <div>
     </div>
-  </div>) : null)
+  </div>) : null):null
 )
 }

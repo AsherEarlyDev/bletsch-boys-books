@@ -40,7 +40,6 @@ const AuthShowcase: React.FC = () => {
   const [password, setPassword] = useState('')
   const router = useRouter();
   const sessionData = useSession();
-  console.log(sessionData)
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e)=>{
       e.preventDefault()

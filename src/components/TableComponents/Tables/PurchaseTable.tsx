@@ -45,8 +45,7 @@ export default function PurchaseTable() {
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
-  const vendors = api.vendor.getVendors.useQuery().data
-  console.log(vendors)
+  const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string){
@@ -83,7 +82,7 @@ export default function PurchaseTable() {
         <>
           {(displayEditPurchaseView && currentOrder) ?
               <CreateEntries closeStateFunction={setDisplayEditPurchaseView} submitText="Edit Purchase Order">
-                <EditPurchaseTableModal closeOut={closeEditPurchaseView} date={currentOrder.date} purchaseOrderId={currentOrder.id} vendorName={currentOrder.vendorName}></EditPurchaseTableModal></CreateEntries> : null}
+                <EditPurchaseTableModal closeOut={closeEditPurchaseView} purchaseDate={currentOrder.date} purchaseOrderId={currentOrder.id} vendorName={currentOrder.vendorName}></EditPurchaseTableModal></CreateEntries> : null}
         </>
     )
   }

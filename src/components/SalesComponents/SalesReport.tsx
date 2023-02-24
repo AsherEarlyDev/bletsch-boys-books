@@ -1,13 +1,7 @@
-import TableDetails from "../TableComponents/TableDetails";
-import FilterableColumnHeading from "../TableComponents/TableColumnHeadings/FilterableColumnHeading";
-import TableHeader from "../TableComponents/TableHeader";
-import {SalesReportTableRow, SalesReportTotalTableRow, TopSellingTableRow} from "../TableComponents/TableRows/SalesReportTableRow";
-import { api } from '../../utils/api';
 import { Cost, Revenue, Sale } from "../../types/salesTypes";
-import { jsPDF,HTMLOptionImage } from "jspdf";
+import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
-import { resourceLimits } from "worker_threads";
-import { report } from "process";
+
 
 
 
@@ -39,12 +33,15 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
             profit: value.revenue - value.cost
           })
         })
-        resultsArray = resultsArray.sort((a: any, b: any) => (a.date > b.date) ? 1 : -1)
+        resultsArray = resultsArray.sort((a: any, b: any) => (new Date(a.date) > new Date(b.date)) ? 1 : -1)
         return {resultsArray: resultsArray, totalRev: rev?.totalRevenue, totalCost: cost?.totalCost}
     }
 
     function generateDatesArray(start: string, end: string){
-      for(var arr=[],dt=new Date(start); dt<=new Date(end); dt.setDate(dt.getDate()+1)){
+      let endDate = end.split("-")
+      let date = parseInt(endDate[2])+1
+      endDate[2] = date.toString()
+      for(var arr=[],dt=new Date(start); dt<=new Date(endDate.join("-")); dt.setDate(dt.getDate()+1)){
         arr.push(new Date(dt));
     }
     return arr;
@@ -68,7 +65,6 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
         })
   
         topSellers.map((top)=>{
-          console.log(top)
           let topTemp = [top.isbn, top.title, top.numBooks, top.recentCost, top.revenue, top.profit]
           topSellersRow.push(topTemp)
         })

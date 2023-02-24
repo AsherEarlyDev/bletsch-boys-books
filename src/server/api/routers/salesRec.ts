@@ -94,6 +94,7 @@ export const salesRecRouter = createTRPCRouter({
       return transformData(rawData)
     }
   }),
+  
   getNumberOfSalesRecs: publicProcedure
     .query(async ({ctx, input})=>{
       return await ctx.prisma.saleReconciliation.count()

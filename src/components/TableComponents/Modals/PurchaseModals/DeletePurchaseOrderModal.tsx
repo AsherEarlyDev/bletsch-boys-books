@@ -34,7 +34,7 @@ export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalP
 
   function handleDeletePurchaseOrder(){
     if(props.purchaseId){
-      deletePurchase.mutate({
+      deletePurchaseOrder.mutate({
         purchaseOrderId: props.purchaseId
       })
       closeModal()

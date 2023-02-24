@@ -1,5 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
+import { useRouter } from 'next/router'
+import GenreCardProp from './CardComponents/GenreCardProp';
 
 interface FilterProp{
   buttonText: string;
@@ -11,23 +13,16 @@ interface FilterProp{
 export default function FilterModal(props: FilterProp) {
   const [isOpen, setIsOpen] = useState(false)
   const [genre, setGenre] = useState({name:""})
-  const labels = [["ISBN", "isbn"], ["Title", "title"], ["Author", "author"], ["Publisher", "publisher"], ["Genre", "genre"]]
-  const [testDisp, setTestDisp] = useState("")
+  const labels = [["ISBN", "isbn"], ["Title", "title"], ["Author", "author"], ["Publisher", "publisher"]]
+  const router = useRouter()
 
   function closeModal() {
     setIsOpen(false)
   }
   function clearFilters(){
     closeModal()
-    props.filterBooks({
-      isbn: "",
-      title: "",
-      author: "",
-      publisher: "",
-      genre: ""
-    })
     props.resetPageNumber(0)
-
+    router.push({pathname: '/records',})
   }
 
   function openModal() {
@@ -37,13 +32,22 @@ export default function FilterModal(props: FilterProp) {
   async function handleSubmit(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    props.filterBooks({
-      isbn: formData.get("isbn") as string,
-      title: formData.get("title") as string,
-      author: formData.get("author") as string,
-      publisher: formData.get("publisher") as string,
-      genre: genre.name ?? ""
-    })
+    console.log(genre)
+    router.push({
+      pathname: '/records',
+      query: Object.assign({}, 
+        formData.get("isbn") as string === "" ? null : {isbn: formData.get("isbn") as string},
+        formData.get("title") as string === "" ? null : {title: formData.get("title") as string},
+        formData.get("author") as string === "" ? null : {authorNames: formData.get("author") as string},
+        formData.get("publisher") as string === "" ? null : {publisher: formData.get("publisher") as string},
+        genre.name===""  || genre.name==undefined ? null : {genre:genre.name})})
+    // props.filterBooks({
+    //   isbn: formData.get("isbn") as string,
+    //   title: formData.get("title") as string,
+    //   author: formData.get("author") as string,
+    //   publisher: formData.get("publisher") as string,
+    //   genre: genre.name ?? ""
+    // })
     props.resetPageNumber(0)
     closeModal()
   }
@@ -104,10 +108,10 @@ export default function FilterModal(props: FilterProp) {
                               id={label[1]}
                               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               defaultValue=""
-                              onChange={(value) => setTestDisp(value.target.value)}
                           />
                           </div>)
                         })}
+                        <GenreCardProp saveFunction={setGenre} defaultValue=""></GenreCardProp>
                         
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

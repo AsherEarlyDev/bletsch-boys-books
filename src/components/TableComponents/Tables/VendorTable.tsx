@@ -16,7 +16,7 @@ import Table from "./Table";
 export default function VendorTable() {
   const VENDORS_PER_PAGE = 5
   const FIRST_HEADER = ["Vendor Name", "name"]
-  const SORTABLE_HEADERS = []
+  const SORTABLE_HEADERS = [["Buyback Rate", "bookBuybackPercentage"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [sortField, setSortField] = useState("name")
   const [sortOrder, setSortOrder] = useState("asc")
@@ -134,7 +134,7 @@ export default function VendorTable() {
     return (vendors ? vendors.map((vendor) => (
         <VendorTableRow onView={openVendorView} onEdit={openEditVendorView}
                         onDelete={openDeleteVendorView}
-                        vendorInfo={{id: vendor.id, name: vendor.name}}></VendorTableRow>)) : null)
+                        vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (

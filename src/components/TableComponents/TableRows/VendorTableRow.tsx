@@ -9,6 +9,7 @@ interface VendorRowProps{
     vendorInfo: {
         id: string
         name: string
+        buybackRate: number
     },
     onEdit: (id:string) => void,
     onDelete: (id: string) => void
@@ -29,6 +30,7 @@ export function VendorTableRow(props: VendorRowProps){
   return (
       <tr>
         <ViewTableEntry onView={handleView}>{props.vendorInfo.name}</ViewTableEntry>
+        <TableEntry>{props.vendorInfo.buybackRate === null ? "" : props.vendorInfo.buybackRate * 100}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

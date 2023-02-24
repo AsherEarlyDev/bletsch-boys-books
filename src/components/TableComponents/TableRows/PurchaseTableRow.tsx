@@ -115,10 +115,10 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
                               <MutableCurrencyTableEntry saveValue={setPurchasePrice}
-                                                         heading="Retail Price" required="True"
+                                                         heading="Purchase Price" required="True"
                                                          dataType="number"
                                                          defaultValue={purchasePrice}></MutableCurrencyTableEntry>
-                              <MutableTableEntry saveValue={setQuantityPurchased} heading="Quantity Sold"
+                              <MutableTableEntry saveValue={setQuantityPurchased} heading="Quantity Bought"
                                                  required="True" dataType="number"
                                                  defaultValue={quantityPurchased}></MutableTableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>

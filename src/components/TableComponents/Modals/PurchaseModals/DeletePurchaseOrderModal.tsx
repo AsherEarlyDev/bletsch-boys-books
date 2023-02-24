@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { api } from '../../../../utils/api';
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import {toast} from "react-toastify";
 
 
 interface DeletePurchaseOrderModalProp{
@@ -17,8 +18,14 @@ interface DeletePurchaseOrderModalProp{
 
 export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalProp) {
   const [open, setOpen] = useState(true)
-  const deletePurchase = api.purchaseOrder.deletePurchaseOrder.useMutation()
-  const message = ("Are you sure you want to delete this purchase order from the database? This action cannot be undone.")
+  const deletePurchase = api.purchaseOrder.deletePurchaseOrder.useMutation({
+    onError: (error)=>{
+      toast.error(error.message)
+    },
+    onSuccess: ()=>{
+      toast.success("Successfully deleted Purchase Order!")
+    }})
+  const message = ("Are you sure you want to delete this purchase order from the database? This action cannot be undone. All associated purchases will be deleted")
 
   function closeModal(){
     setOpen(false)

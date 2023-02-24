@@ -14,6 +14,7 @@ import Table from './Table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
+import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
 
 
 
@@ -22,7 +23,7 @@ import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableMo
 export default function PurchaseTable() {
   const FIRST_HEADER =  ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
-  const STATIC_HEADERS = ["Add Purchase", "Edit", "Delete"]
+  const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 3
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
@@ -45,6 +46,7 @@ export default function PurchaseTable() {
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
   const vendors = api.vendor.getVendors.useQuery().data
+  console.log(vendors)
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string){
@@ -81,7 +83,7 @@ export default function PurchaseTable() {
         <>
           {(displayEditPurchaseView && currentOrder) ?
               <CreateEntries closeStateFunction={setDisplayEditPurchaseView} submitText="Edit Purchase Order">
-                <EditPurchaseOrderModal closeOut={closeEditPurchaseView} date={currentOrder.date} purchaseOrderId={currentOrder.id} vendorName={currentOrder.vendorName}></EditPurchaseOrderModal></CreateEntries> : null}
+                <EditPurchaseTableModal closeOut={closeEditPurchaseView} date={currentOrder.date} purchaseOrderId={currentOrder.id} vendorName={currentOrder.vendorName}></EditPurchaseTableModal></CreateEntries> : null}
         </>
     )
   }
@@ -136,8 +138,9 @@ export default function PurchaseTable() {
     return(
         <>
           {displayPurchaseView ? (purchases ? (
-              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details"> {purchases.map((purchase) => (
-                  <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases} purchaseOrderId={currentOrder.id} purchaseDate={currentOrder.date} purchaseVendorName={currentOrder.vendorName}></ViewPurchaseTableModal>))}</CreateEntries>) : null) : null}
+              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details">
+                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases} purchaseOrderId={currentOrder.id} purchaseDate={currentOrder.date} purchaseVendorName={currentOrder.vendorName}></ViewPurchaseTableModal>
+              </CreateEntries>) : null) : null}
         </>
     )
   }

@@ -1,22 +1,17 @@
 import TableDetails from "../../TableDetails";
-import { editableBook } from '../../../../types/bookTypes';
-import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
 import TableHeader from "../../TableHeader";
 import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
-import {api} from "../../../../utils/api";
-import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
-import {Sale} from "../../../../types/salesTypes";
-import ViewSalesRecModal from "./ViewSalesRecModal";
 import SaleTableRow from "../../TableRows/SaleTableRow";
+import {Purchase} from "../../../../types/purchaseTypes";
+import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
 
 interface ViewPurchaseTableModalProps{
   purchaseOrderId: string
   purchaseDate: string
   purchaseVendorName: string
-  purchases: any[]
+  purchases: Purchase[]
   closeOut: () => void
 }
 
@@ -32,7 +27,7 @@ export default function ViewPurchaseTableModal(props: ViewPurchaseTableModalProp
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
-          <TableDetails tableName={header} tableDescription={"Viewing purchase order with ID: " + props.purchaseOrderId}>
+          <TableDetails tableName={header} tableDescription={"Viewing purchase order from vendor: " + props.purchaseVendorName + ", with ID: " + props.purchaseOrderId}>
           </TableDetails>
           {hasPurchase ? (
           <div className="mt-8 flex flex-col">
@@ -42,12 +37,12 @@ export default function ViewPurchaseTableModal(props: ViewPurchaseTableModalProp
                   <table className="min-w-full divide-y divide-gray-300 table-auto">
                     <TableHeader>
                       <ColumnHeading firstEntry={true} label="Title"></ColumnHeading>
-                      <ColumnHeading label="Sale Price"></ColumnHeading>
-                      <ColumnHeading label="Quantity Sold"></ColumnHeading>
+                      <ColumnHeading label="Purchase Price"></ColumnHeading>
+                      <ColumnHeading label="Quantity Bought"></ColumnHeading>
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.purchases.map((purchase) => (<SaleTableRow isView={true} isAdding={false} purchase={purchase}></SaleTableRow>))}
+                    {props.purchases.map((purchase) => (<PurchaseTableRow isView={true} isAdding={false} purchase={purchase}></PurchaseTableRow>))}
                     </tbody>
                   </table>
                 </div>

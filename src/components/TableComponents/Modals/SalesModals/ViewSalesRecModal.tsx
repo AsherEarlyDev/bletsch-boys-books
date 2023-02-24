@@ -19,7 +19,6 @@ interface SalesProp{
   sale:  Sale
   cardType: string
   closeOut?: () => void
-
 }
 
 export default function ViewSalesRecModal(props:SalesProp) {

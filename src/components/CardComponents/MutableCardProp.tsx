@@ -1,8 +1,5 @@
 
 export default function MutableCardProp(props:any) {
-  console.log(props.heading)
-  console.log(props.dataType)
-  console.log(props.max)
   const handleChange = (event: { target: { value: any; }; }) => {
     props.saveValue(event.target.value)
   };

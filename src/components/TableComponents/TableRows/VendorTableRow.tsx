@@ -30,7 +30,8 @@ export function VendorTableRow(props: VendorRowProps){
   return (
       <tr>
         <ViewTableEntry onView={handleView}>{props.vendorInfo.name}</ViewTableEntry>
-        <TableEntry>{props.vendorInfo.buybackRate === null ? "" : props.vendorInfo.buybackRate * 100}</TableEntry>
+        <TableEntry>{(props.vendorInfo.buybackRate === null) || (props.vendorInfo.buybackRate === 0)? "" : 
+        (props.vendorInfo.buybackRate * 100)+"%"}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

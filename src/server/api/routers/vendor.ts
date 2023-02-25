@@ -25,6 +25,7 @@ export const vendorRouter = createTRPCRouter({
         console.log("Unable to get list of vendors", error);
       }
     }),
+
     getAllVendors: publicProcedure
     .query(async ({ ctx }) => {
       try {
@@ -50,7 +51,7 @@ export const vendorRouter = createTRPCRouter({
         const vendors = await ctx.prisma.vendor.findMany({
           where: {
             NOT:{
-              bookBuybackPercentage: null
+              bookBuybackPercentage: 0
             }
           }
         });
@@ -67,17 +68,22 @@ export const vendorRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
+        buybackRate: z.number()
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        if (input.buybackRate < 0 || input.buybackRate > 1){
+          throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Buyback Rate must be between 0 and 1!"})
+        }
         await ctx.prisma.vendor.create({
           data: {
-            name: input.name
+            name: input.name,
+            bookBuybackPercentage: input.buybackRate
           },
         });
       } catch (error) {
-        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to create vendor!"});
+        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to create vendor! " + error.message});
       }
     }),
 
@@ -85,11 +91,15 @@ export const vendorRouter = createTRPCRouter({
     .input(
       z.object({
         vendorId: z.string(),
-        newName: z.string()
+        newName: z.string(),
+        buybackRate: z.number()
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        if (input.buybackRate < 0 || input.buybackRate > 1){
+          throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Buyback rate must be between 0 and 1!"})
+        }
         await ctx.prisma.vendor.update({
           where:
           {
@@ -97,10 +107,11 @@ export const vendorRouter = createTRPCRouter({
         },
           data: {
             name: input.newName,
+            bookBuybackPercentage: input.buybackRate
           },
         });
       } catch (error) {
-        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to modify vendor!"})
+        throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Unable to modify vendor! "+error.message})
       }
     }),
 

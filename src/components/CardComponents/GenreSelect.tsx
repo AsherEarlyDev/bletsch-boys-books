@@ -7,7 +7,7 @@ import { api } from '../../utils/api'
 
 export default function GenreSelect(props:{saveFunction: any, defaultValue:string}) {
   const genres = api.genre.getGenres.useQuery().data
-  const [query, setQuery] = useState(props.defaultValue.name)
+  const [query, setQuery] = useState(props.defaultValue)
   useEffect(() => {
     props.saveFunction({name: props.defaultValue})
   },[])

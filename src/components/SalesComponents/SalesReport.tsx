@@ -37,7 +37,7 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
         return {resultsArray: resultsArray, totalRev: rev?.totalRevenue, totalCost: cost?.totalCost}
     }
 
-    function generateDatesArray(start: string, end: string){
+    export function generateDatesArray(start: string, end: string){
       let endDate = end.split("-")
       let date = parseInt(endDate[2])+1
       endDate[2] = date.toString()

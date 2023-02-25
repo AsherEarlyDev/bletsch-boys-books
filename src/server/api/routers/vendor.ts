@@ -131,8 +131,19 @@ export const vendorRouter = createTRPCRouter({
             }
           }
         );
+        const buybacks = await ctx.prisma.buybackOrder.findFirst(
+          {
+            where:
+            {
+              vendorId: input.vendorId
+            }
+          }
+        );
         if (purchaseOrders){
           throw new TRPCError({code: "CONFLICT", message: "Cannot delete vendor! This vendor has Purchase Orders associated with it."})
+        }
+        else if (buybacks){
+          throw new TRPCError({code: "CONFLICT", message: "Cannot delete vendor! This vendor has Book Buybacks associated with it."})
         }
         else{
           await ctx.prisma.vendor.delete({

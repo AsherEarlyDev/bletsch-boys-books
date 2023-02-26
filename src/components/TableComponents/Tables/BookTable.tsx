@@ -18,7 +18,7 @@ export default function BookTable() {
   const {query} = useRouter()
   const BOOKS_PER_PAGE = 20
   const FIRST_HEADER =  ["Title", "title"]
-  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"]]
+  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"], ["Last Month Sales", "lastMonthSales"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"retail_price", key:"retailPrice"}]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
@@ -143,7 +143,7 @@ export default function BookTable() {
   }
 
   function renderBookRow(items:any[]){
-    return(books ? books.map((book: Book & { genre: Genre; author: Author[]; }) => (
+    return(books ? books.map((book) => (
       <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
   )) : null)
   }

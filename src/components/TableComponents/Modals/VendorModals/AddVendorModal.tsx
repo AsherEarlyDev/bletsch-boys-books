@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
 
 interface VendorModalProp{
-  showVendorEdit(name: string): Promise<void>,
+  showVendorEdit(name: string, buyback: number): Promise<void>,
   buttonText: string;
   submitText: string;
 }
@@ -22,8 +22,10 @@ export default function AddVendorModal(props: VendorModalProp) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const vendorName = formData.get("vendorName") as string
+    const buybackString = formData.get("buyback") as string
+    let buyback = parseFloat(buybackString)
     closeModal()
-    props.showVendorEdit(vendorName)
+    props.showVendorEdit(vendorName, buyback)
   }
 
   return (
@@ -75,6 +77,24 @@ export default function AddVendorModal(props: VendorModalProp) {
                               name="vendorName"
                               id="vendorName"
                               required={true}
+                              className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:border focus:ring-indigo-500 sm:text-sm py-1"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-center">
+                          <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                            Add Buyback Policy
+                          </Dialog.Title>
+                        </div>
+                        <div className="mt-5">
+                          <input
+                              name="buyback"
+                              id="buyback"
+                              type="number"
+                              min={0.0}
+                              max={1.0}
+                              step={0.01}
                               className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:border focus:ring-indigo-500 sm:text-sm py-1"
                           />
                         </div>

@@ -30,6 +30,7 @@ export default function SalesTable() {
     id: '',
     date: '',
   })
+  const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("id")
   const [displayEditSalesRecView, setDisplayEditSalesRecView] = useState(false)
@@ -67,6 +68,7 @@ export default function SalesTable() {
   }
 
   async function openEditSalesRecView(id: string){
+    
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
@@ -77,15 +79,17 @@ export default function SalesTable() {
           setCurrentSales(rec.sales)
         }
       }
+      setOnlyEdit(true)
       setDisplayEditSalesRecView(true)
     }
   }
   function renderEditSalesRecView() {
+    const value = onlyEdit ? currentSalesRec : createSalesRec.data
     return(
         <>
-          {(displayEditSalesRecView && createSalesRec.data) ?
+          {(displayEditSalesRecView && value) ?
               (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
-                <EditSalesTableModal salesRecId={createSalesRec.data.id} salesRecDate={createSalesRec.data.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
+                <EditSalesTableModal salesRecId={value.id} salesRecDate={value.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
               </CreateSaleEntries>)
               : ()=>{
                 toast.warning("LOADING...")

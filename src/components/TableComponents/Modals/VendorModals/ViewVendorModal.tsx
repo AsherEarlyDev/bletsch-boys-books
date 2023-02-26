@@ -15,6 +15,7 @@ import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 interface ViewVendorModalProp{
   vendorId:  string
   vendorName: string
+  buybackRate: number
   closeOut: () => void
   openEdit: (id: string) => void
 }
@@ -40,6 +41,8 @@ export default function ViewVendorModal(props:ViewVendorModalProp) {
             <CardGrid>
               <ImmutableCardProp heading="Vendor ID" data={props.vendorId}></ImmutableCardProp>
               <ImmutableCardProp heading="Vendor Name" data={props.vendorName}></ImmutableCardProp>
+              <ImmutableCardProp heading="Buyback Rate" data={(props.buybackRate === null) || (props.buybackRate === 0)? "" : 
+        (props.buybackRate * 100)+"%"}></ImmutableCardProp>
             </CardGrid>
             <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
               <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>

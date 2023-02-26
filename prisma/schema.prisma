@@ -22,9 +22,9 @@ model Book {
   authorNames     String
   genre           Genre      @relation(fields: [genreID], references: [id])
   imageLink       String?
+  buybacks        Buyback[]
   purchases       Purchase[]
   sales           Sale[]
-  buybacks        Buyback[]
   author          Author[]   @relation("AuthorToBook")
 }
 
@@ -35,11 +35,11 @@ model Genre {
 }
 
 model Vendor {
-  id                     String          @id @default(cuid())
-  name                   String
-  bookBuybackPercentage  Float?
-  purchaseOrder          PurchaseOrder[]
-  bookBuybackOrder       BookBuybackOrder[]
+  id                    String             @id @default(cuid())
+  name                  String
+  bookBuybackPercentage Float?             @default(0)
+  bookBuybackOrder      BookBuybackOrder[]
+  purchaseOrder         PurchaseOrder[]
 }
 
 model Author {
@@ -72,26 +72,26 @@ model PurchaseOrder {
 }
 
 model Buyback {
-  id                 String        @id @default(cuid())
-  quantity           Int
-  buybackPrice       Float
-  bookId             String
-  buybackOrderId     String
-  subtotal           Float           @default(0)
-  book               Book          @relation(fields: [bookId], references: [isbn])
-  bookBuybackOrder   BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
+  id               String           @id @default(cuid())
+  quantity         Int
+  buybackPrice     Float
+  bookId           String
+  buybackOrderId   String
+  subtotal         Float            @default(0)
+  book             Book             @relation(fields: [bookId], references: [isbn])
+  bookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
 }
 
 model BookBuybackOrder {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   vendorId    String
   date        DateTime
-  revenue     Float        @default(0)
-  totalBooks  Int        @default(0)
-  uniqueBooks Int        @default(0)
-  vendorName  String     @default("")
+  revenue     Float     @default(0)
+  totalBooks  Int       @default(0)
+  uniqueBooks Int       @default(0)
+  vendorName  String    @default("")
+  vendor      Vendor    @relation(fields: [vendorId], references: [id])
   buybacks    Buyback[]
-  vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }
 
 model Sale {

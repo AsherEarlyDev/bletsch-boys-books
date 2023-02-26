@@ -17,7 +17,7 @@ export default function VendorTable() {
   const VENDORS_PER_PAGE = 5
   const FIRST_HEADER = ["Vendor Name", "name"]
   const SORTABLE_HEADERS = []
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const STATIC_HEADERS = ["Buyback Rate","Edit", "Delete"]
   const [sortField, setSortField] = useState("name")
   const [sortOrder, setSortOrder] = useState("asc")
   const [pageNumber, setPageNumber] = useState(0)
@@ -34,12 +34,14 @@ export default function VendorTable() {
   const [displayEditVendorView, setDisplayEditVendorView] = useState(false)
   const [displayDeleteVendorView, setDisplayDeleteVendorView] = useState(false)
   const [displayVendorView, setDisplayVendorView] = useState(false)
-  const [currentVendor, setCurrentVendor] = useState({id: '', name: ''})
+  const [currentVendor, setCurrentVendor] = useState({id: '', name: '', buybackRate: null})
 
-  const handleNewVendorSubmission = async (name: string) => {
+  const handleNewVendorSubmission = async (name: string, buyback: number) => {
+    let buybackRate = buyback ? buyback : 0
     if (newVendor) {
       newVendor.mutate({
-        name: name
+        name: name,
+        buybackRate: buybackRate
       })
     }
   }
@@ -52,6 +54,7 @@ export default function VendorTable() {
           setCurrentVendor({
             id: ven.id,
             name: ven.name,
+            buybackRate: ven.bookBuybackPercentage
           })
         }
       }
@@ -65,7 +68,7 @@ export default function VendorTable() {
           {(displayEditVendorView && currentVendor) ?
               <CreateEntries closeStateFunction={setDisplayEditVendorView} submitText="Edit Vendor">
                 <EditVendorModal closeOut={closeEditVendorView} vendorId={currentVendor.id}
-                                 vendorName={currentVendor.name}></EditVendorModal>
+                                 vendorName={currentVendor.name} buyback={currentVendor.buybackRate}></EditVendorModal>
               </CreateEntries> : null}
         </>
     )
@@ -82,6 +85,7 @@ export default function VendorTable() {
           setCurrentVendor({
             id: ven.id,
             name: ven.name,
+            buybackRate: ven.bookBuybackPercentage
           })
         }
       }
@@ -109,6 +113,7 @@ export default function VendorTable() {
           setCurrentVendor({
             id: ven.id,
             name: ven.name,
+            buybackRate: ven.bookBuybackPercentage
           })
         }
       }
@@ -122,6 +127,7 @@ export default function VendorTable() {
           <CreateEntries closeStateFunction={setDisplayVendorView} submitText="Edit Vendor">
             <ViewVendorModal closeOut={closeVendorView} vendorId={currentVendor.id}
                              vendorName={currentVendor.name}
+                             buybackRate={currentVendor.buybackRate}
                              openEdit={openEditVendorView}></ViewVendorModal></CreateEntries> : null}
     </>;
   }
@@ -134,7 +140,7 @@ export default function VendorTable() {
     return (vendors ? vendors.map((vendor) => (
         <VendorTableRow onView={openVendorView} onEdit={openEditVendorView}
                         onDelete={openDeleteVendorView}
-                        vendorInfo={{id: vendor.id, name: vendor.name}}></VendorTableRow>)) : null)
+                        vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (

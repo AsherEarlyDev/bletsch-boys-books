@@ -7,7 +7,7 @@ import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModa
 import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import Table from './Table';
-import {ToastContainer} from 'react-toastify';
+import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
@@ -25,6 +25,7 @@ export default function PurchaseTable() {
     date: '',
     vendorName: ''
   })
+  const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
 //   const [displayEntries, setDisplayEntries] = useState(false)
@@ -43,7 +44,11 @@ export default function PurchaseTable() {
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
   const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
-  const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation()
+  const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
+    onSuccess: ()=>{
+      setDisplayEditPurchaseView(true)
+    }
+  })
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
@@ -75,26 +80,33 @@ export default function PurchaseTable() {
           })
         }
       }
+      setOnlyEdit(true)
       setDisplayEditPurchaseView(true)
     }
   }
 
   function renderEditPurchaseView() {
+    const value = onlyEdit ? currentOrder : createPurchaseOrder.data
     return (
         <>
-          {(displayEditPurchaseView && currentOrder) ?
+          {(displayEditPurchaseView && value) ?
               <CreateEntries closeStateFunction={setDisplayEditPurchaseView}
                              submitText="Edit Purchase Order">
                 <EditPurchaseTableModal closeOut={closeEditPurchaseView}
-                                        purchaseDate={currentOrder.date}
-                                        purchaseOrderId={currentOrder.id}
-                                        purchaseVendorName={currentOrder.vendorName}></EditPurchaseTableModal></CreateEntries> : null}
+                                        purchaseDate={value.date}
+                                        purchaseOrderId={value.id}
+                                        purchaseVendorName={value.vendorName}></EditPurchaseTableModal></CreateEntries> : ()=>{
+                                          toast.warning("LOADING...")
+                                        }}
         </>
     )
   }
-
+  
+  
+  
   function closeEditPurchaseView() {
     setDisplayEditPurchaseView(false)
+    setOnlyEdit(false)
   }
 
   async function openDeletePurchaseView(id: string) {
@@ -222,6 +234,7 @@ export default function PurchaseTable() {
             }}
             entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
+          {renderEditPurchaseView()}
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}

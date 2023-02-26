@@ -10,7 +10,7 @@ import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
 import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 import Table from './Table';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
@@ -30,6 +30,7 @@ export default function SalesTable() {
     id: '',
     date: '',
   })
+  const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("id")
   const [displayEditSalesRecView, setDisplayEditSalesRecView] = useState(false)
@@ -38,7 +39,11 @@ export default function SalesTable() {
   const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
-  const createSalesRec = api.salesRec.createSaleRec.useMutation()
+  const createSalesRec = api.salesRec.createSaleRec.useMutation({
+    onSuccess: ()=>{
+      setDisplayEditSalesRecView(true)
+    }
+  })
   const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
@@ -48,16 +53,11 @@ export default function SalesTable() {
 
   const handleSaleRecSubmission = async (date: string) => {
     if (createSalesRec){
-      createSalesRec.mutate({
+     const id = await createSalesRec.mutate({
         date: date
       })
     }
-    // How do I get salesRecId for the sales rec I just created?
-    // setCurrentSalesRec({
-    //   id: rec.id,
-    //   date: rec.date,
-    // })
-    // setDisplayEditSalesRecView(true)
+
   }
 
 
@@ -68,6 +68,7 @@ export default function SalesTable() {
   }
 
   async function openEditSalesRecView(id: string){
+    
     if (salesRecs){
       for (const rec of salesRecs){
         if (rec.id === id){
@@ -78,17 +79,21 @@ export default function SalesTable() {
           setCurrentSales(rec.sales)
         }
       }
+      setOnlyEdit(true)
       setDisplayEditSalesRecView(true)
     }
   }
   function renderEditSalesRecView() {
+    const value = onlyEdit ? currentSalesRec : createSalesRec.data
     return(
         <>
-          {(displayEditSalesRecView && currentSalesRec) ?
+          {(displayEditSalesRecView && value) ?
               (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
-                <EditSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
+                <EditSalesTableModal salesRecId={value.id} salesRecDate={value.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
               </CreateSaleEntries>)
-              : null}
+              : ()=>{
+                toast.warning("LOADING...")
+              }}
         </>
     )
   }

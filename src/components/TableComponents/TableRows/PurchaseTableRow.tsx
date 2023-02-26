@@ -11,6 +11,7 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import SaleDeleteCard from "../../SalesComponents/SaleDeleteCard";
 import {Purchase} from "../../../types/purchaseTypes";
+import BookCardProp from "../../CardComponents/BookCardProp";
 
 interface PurchaseTableRowProp {
   purchase: Purchase
@@ -96,9 +97,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                 :
                 (props.isAdding ?
                         <tr>
-                          <MutableTableEntry firstEntry={true} saveValue={setIsbn} heading="book"
-                                             datatype="string"
-                                             defaultValue={""}></MutableTableEntry>
+                          <BookCardProp saveFunction={setIsbn} defaultValue={{}} ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPurchasePrice} heading="Purchase Price"
                                                      required="True" dataType="number"
                                                      defaultValue=""></MutableCurrencyTableEntry>
@@ -113,7 +112,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                         (isEditing ?
                             <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
-                              <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
+                              <BookCardProp saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BookCardProp>
                               <MutableCurrencyTableEntry saveValue={setPurchasePrice}
                                                          heading="Purchase Price" required="True"
                                                          dataType="number"

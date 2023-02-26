@@ -15,17 +15,17 @@ interface ViewModalProp{
 }
 
 export default function ViewTableEntry(props: ViewModalProp) {
-  const imageSrc = ("https://res.cloudinary.com/dyyevpzdz/image/upload/v1677264732/" + props.imageUrl)
   return (
       <>
         <td className="whitespace-nowrap py-4 pl-4 text-sm pr-2 font-medium text-gray-900 sm:pl-6 w-[28rem]">
           <button onClick={props.onView} className="italic text-indigo-600 hover:text-indigo-900 inline-flex group w-[26rem] items-center">
-            {props.hasThumbnail ?
+            {(props.hasThumbnail && props.imageUrl) ?
                 <CldImage
                     className="rounded-lg mr-4"
+                    crop="thumb"
                     width="50"
                     height="50"
-                    src="https://res.cloudinary.com/dyyevpzdz/image/upload/v1677264732/book-covers/lisphiz2ltw9oew0urvp.png"
+                    src={props.imageUrl}
                     alt={"Image"}>
                 </CldImage>: null}
             <div className="text-left overflow-hidden truncate max-w-xs">

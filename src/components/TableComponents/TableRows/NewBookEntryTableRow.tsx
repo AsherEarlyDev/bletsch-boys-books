@@ -20,6 +20,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   const defaultDimensions = (props.bookInfo?.dimensions ? props.bookInfo?.dimensions : undefined)
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
+  const [image, setImage] = useState(props.bookInfo?.imageLink)
   const [displayRow, setDisplayRow] = useState(true)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
@@ -45,7 +46,8 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
-        genre: genre.name
+        genre: genre.name,
+        imageLink: image
       })
       alert(((props.isExisting) ? "Edited book: " : "Added book: ") + props.bookInfo.title)
       closeModal()
@@ -60,7 +62,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   return (
       (visible &&
           <tr>
-            <TableEntryWithTag isExisting={props.isExisting} firstEntry={true}>
+            <TableEntryWithTag setImage={setImage} imageUrl={image} hasThumbnail={props.isExisting} isExisting={props.isExisting} firstEntry={true}>
               {props.bookInfo.title}
             </TableEntryWithTag>
             <TableEntry>{props.bookInfo.isbn}</TableEntry>

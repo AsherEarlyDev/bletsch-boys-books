@@ -24,6 +24,8 @@ export default function EditBookModal(props:BookCardProp) {
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
+  console.log(props.bookInfo)
+  const [image, setImage] = useState(props.bookInfo?.imageLink)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
@@ -47,7 +49,8 @@ export default function EditBookModal(props:BookCardProp) {
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
-        genre: genre.name
+        genre: genre.name,
+        imageLink: image
       })
       closeModal()
     }
@@ -60,28 +63,37 @@ export default function EditBookModal(props:BookCardProp) {
       (open ? (props.bookInfo ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
         <CardTitle heading="Book Description" subheading="Confirm and validate book information below..."></CardTitle>
-        <div className="flex flex-row gap-10 items-center border-t border-gray-200">
-          <CldUploadButton
-              className="drop-shadow-md"
-              uploadPreset="book-image-preset"
-              options={{
-                multiple: false,
-                publicId: "book",
-                clientAllowedFormats: ["image"],
-                sources: ["local", "url"]
-
-              }}
-              onUpload={(result, widget) => {
-                console.log(result.info.public_id)
-              }}>
+        <div className="flex flex-row gap-5 items-center border-t border-gray-200">
+          <div className="flex flex-col ml-5 mr-4">
+            {image ?
             <CldImage
-              className="rounded-lg mx-10 hover:bg-black hover:opacity-50 group"
-              width="250"
-              height="250"
-              src="https://res.cloudinary.com/dyyevpzdz/image/upload/v1677264732/book-covers/lisphiz2ltw9oew0urvp.png"
-              alt={"Image"}>
+                className="rounded-lg"
+                crop="fill"
+                height="280"
+                width="220"
+                src={image}
+                alt={"Image"}>
             </CldImage>
-          </CldUploadButton>
+                :
+                <h3 className="m-5 text-md">Book has no cover image...</h3>
+            }
+            <CldUploadButton
+                uploadPreset="book-image-preset"
+                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
+                onUpload={(result, widget) => {
+                  console.log(result)
+                  if (result.event == "success") {
+                    setImage(result?.info.secure_url)
+                    widget.close()
+                  }
+                }}
+                options={{
+                  multiple: false,
+                  sources: ["local", "url"],
+                  clientAllowedFormats: ["image"]
+                }}
+            />
+          </div>
           <CardGrid>
             <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>
             <ImmutableCardProp heading="Book ISBN" data={props.bookInfo.isbn}></ImmutableCardProp>

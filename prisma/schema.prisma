@@ -21,7 +21,7 @@ model Book {
   inventory       Int        @default(0)
   authorNames     String
   genre           Genre      @relation(fields: [genreID], references: [id])
-  imageLink       String
+  imageLink       String?
   purchases       Purchase[]
   sales           Sale[]
   buybacks        Buyback[]

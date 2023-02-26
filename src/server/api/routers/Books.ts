@@ -21,7 +21,8 @@ const zBook = z.object({
   dimensions: z.array(z.number()),
   pageCount: z.optional(z.number()),
   genre: z.string(),
-  retailPrice: z.number()
+  retailPrice: z.number(),
+  imageLink: z.optional(z.string())
 })
 
 const fetchBookFromExternal = async (isbn: string) => {
@@ -65,7 +66,8 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     genre:book.genre.name,
     retailPrice: book.retailPrice,
     inventory: book.inventory,
-    authorNames: book.authorNames
+    authorNames: book.authorNames,
+    imageLink: book.imageLink
   }
   return bookInfo
 }

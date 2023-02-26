@@ -36,13 +36,16 @@ export default function ViewBookModal(props: BookModalProp) {
           <CardTitle heading="Book Description"
                      subheading="Confirm and validate book information below..."></CardTitle>
           <div className="flex flex-row gap-10 items-center border-t border-gray-200">
+            {props.bookInfo?.imageLink &&
             <CldImage
                 className="rounded-lg mx-10"
-                width="250"
-                height="250"
-                src="https://res.cloudinary.com/dyyevpzdz/image/upload/v1677264732/book-covers/lisphiz2ltw9oew0urvp.png"
+                crop="fill"
+                height="280"
+                width="220"
+                src={props.bookInfo?.imageLink}
                 alt={"Image"}>
             </CldImage>
+            }
             <CardGrid>
               <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>
               <ImmutableCardProp heading="Book ISBN" data={props.bookInfo.isbn}></ImmutableCardProp>

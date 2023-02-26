@@ -42,6 +42,7 @@ export type editableBook = {
     retailPrice?: number,
     inventory: number,
     authorNames: string
+    imageLink?: string
 }
 
 export type completeBook = {

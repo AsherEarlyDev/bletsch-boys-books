@@ -30,7 +30,7 @@ export default function BookTableRow(props:BookTableRowProp) {
 
   return (
       <tr>
-        <ViewTableEntry hasThumbnail={true} onView={handleView}>
+        <ViewTableEntry imageUrl={props.bookInfo?.imageLink} hasThumbnail={true} onView={handleView}>
           {props.bookInfo.title}
         </ViewTableEntry>
         <TableEntry>{props.bookInfo.isbn}</TableEntry>

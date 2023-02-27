@@ -5,7 +5,6 @@ interface TableEntryWithTagsInterface  {
   children: React.ReactNode
   firstEntry?: boolean
   isExisting: boolean
-  hasThumbnail?: boolean
   imageUrl?: string
   setImage?: (image: string)=> void
 }
@@ -15,7 +14,7 @@ export default function TableEntryWithTag(props: TableEntryWithTagsInterface) {
     return (
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
           <div className="inline-flex group w-[26rem] items-center">
-          {(props.hasThumbnail && props.imageUrl) ?
+          {(props.imageUrl) ?
               <CldUploadButton
                   uploadPreset="book-image-preset"
                   className="inline-flex justify-center mr-4 hover:opacity-50"

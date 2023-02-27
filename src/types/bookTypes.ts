@@ -77,6 +77,7 @@ export type databaseBook = {
     pageCount?: number,
     genreID: string,
     retailPrice: number
+    imageLink?: string
 }
 
 

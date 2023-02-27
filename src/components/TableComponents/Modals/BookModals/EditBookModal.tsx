@@ -24,7 +24,6 @@ export default function EditBookModal(props:BookCardProp) {
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
-  console.log(props.bookInfo)
   const [image, setImage] = useState(props.bookInfo?.imageLink)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)

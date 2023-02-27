@@ -8,6 +8,7 @@ import MutableSelectGenreEntry from "../TableEntries/MutableSelectGenreEntry";
 import MutableCurrencyTableEntry from "../TableEntries/MutableCurrencyTableEntry";
 import TableEntryWithTag from "../TableEntries/TableEntryWithTag";
 import {PlusIcon, XMarkIcon} from "@heroicons/react/20/solid";
+import {toast} from "react-toastify";
 
 interface NewBookTableRowProp{
   bookInfo: editableBook | undefined
@@ -19,16 +20,29 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   const defaultPageCount = props.bookInfo?.pageCount
   const defaultDimensions = (props.bookInfo?.dimensions ? props.bookInfo?.dimensions : undefined)
   const [genre, setGenre] = useState<{name:string}>()
-  const [open, setOpen] = useState(true)
   const [image, setImage] = useState(props.bookInfo?.imageLink)
-  const [displayRow, setDisplayRow] = useState(true)
+  console.log(image)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimensions[0])
   const [height, setHeight] = useState<number>(defaultDimensions[1])
   const [length, setLength] = useState<number>(defaultDimensions[2])
   const [visible, setVisible] =useState(true)
-  const action = (props.isExisting) ? (api.books.editBook.useMutation()) : (api.books.saveBook.useMutation())
+  const action = (props.isExisting) ? (api.books.editBook.useMutation({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Successfully edited book!")
+    }
+  })) : (api.books.saveBook.useMutation({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Successfully saved book!")
+    }
+  }))
 
   function closeModal(){
     setVisible(false)
@@ -62,7 +76,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   return (
       (visible &&
           <tr>
-            <TableEntryWithTag setImage={setImage} imageUrl={image} hasThumbnail={props.isExisting} isExisting={props.isExisting} firstEntry={true}>
+            <TableEntryWithTag setImage={setImage} imageUrl={image} isExisting={props.isExisting} firstEntry={true}>
               {props.bookInfo.title}
             </TableEntryWithTag>
             <TableEntry>{props.bookInfo.isbn}</TableEntry>

@@ -4,6 +4,7 @@ import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, complete
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth/core/types";
 import { TRPCError } from "@trpc/server";
+import cloudinary from "cloudinary"
 
 type context = {
   session: Session | null;
@@ -21,7 +22,8 @@ const zBook = z.object({
   dimensions: z.array(z.number()),
   pageCount: z.optional(z.number()),
   genre: z.string(),
-  retailPrice: z.number()
+  retailPrice: z.number(),
+  imageLink: z.optional(z.string())
 })
 
 const fetchBookFromExternal = async (isbn: string) => {
@@ -37,20 +39,43 @@ const fetchBookFromExternal = async (isbn: string) => {
 }
 
 const transformRawBook = (input:googleBookInfo, isbn:string) =>{
-  const bookInfo: editableBook = {
-    isbn: isbn,
-    title: input.title,
-    publisher: input.publisher,
-    author: input.authors,
-    publicationYear: (new Date(input.publishedDate)).getFullYear(),
-    dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
-    pageCount: input.pageCount,
-    genre:input. mainCategory,
-    retailPrice: input.saleInfo?.retailPrice.amount,
-    inventory: 0,
-    authorNames:input.authors.join(", "),
-    imageLink: input.imageLinks.thumbnail ?? input.imageLinks.smallThumbnail ?? input.imageLinks.small ?? input.imageLinks.medium ?? input.imageLinks.large ?? input.imageLinks.extraLarge ?? ""
-  }
+  const googleImageUrl = input.imageLinks.thumbnail
+  const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
+    console.log(result)
+    if (result) {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: result.secure_url
+      }
+      return bookInfo
+    } else {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: ""
+      }
+      return bookInfo
+    }
+  }))
   return bookInfo
 } 
 
@@ -66,7 +91,8 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     genre:book.genre.name,
     retailPrice: book.retailPrice,
     inventory: book.inventory,
-    authorNames: book.authorNames
+    authorNames: book.authorNames,
+    imageLink: book.imageLink
   }
   return bookInfo
 }
@@ -327,6 +353,7 @@ export const BooksRouter = createTRPCRouter({
             publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,
             dimensions: data.dimensions,
             pageCount: data.pageCount,
+            imageLink: data.imageLink,
             retailPrice: data.retailPrice,
             authorNames: data.author.join(", "),
             author:{
@@ -415,7 +442,6 @@ export const BooksRouter = createTRPCRouter({
           })
       }
     })
-
 })
 
 const deleteBook = async (ctx: context, isbn:string) =>{
@@ -470,6 +496,7 @@ const getAuthorIDs = async (ctx: context, authors:string[]) => {
   }
   return authorIDs
 }
+
 
 
 const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{

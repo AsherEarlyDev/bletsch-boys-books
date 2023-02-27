@@ -38,7 +38,7 @@ export default function DeleteSalesRecModal(props:DeleteSalesRecProp) {
       closeModal()
     }
     else{
-      alert("Error")
+      toast.error("No Sale Reconciliation found!")
     }
   }
 

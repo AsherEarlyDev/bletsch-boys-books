@@ -6,6 +6,7 @@ import ImmutableCardProp from '../../../CardComponents/ImmutableCardProp';
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import ImmutableDimensionsCardProp from "../../../CardComponents/ImmutableDimensionsCardProp";
+import {CldImage} from "next-cloudinary";
 
 interface BookModalProp {
   bookInfo: Book & {
@@ -37,6 +38,17 @@ export default function ViewBookModal(props: BookModalProp) {
         <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
           <CardTitle heading="Book Description"
                      subheading="Confirm and validate book information below..."></CardTitle>
+          <div className="flex flex-row gap-10 items-center border-t border-gray-200">
+            {props.bookInfo?.imageLink &&
+            <CldImage
+                className="rounded-lg mx-10"
+                crop="fill"
+                height="280"
+                width="220"
+                src={props.bookInfo?.imageLink}
+                alt={"Image"}>
+            </CldImage>
+            }
           <CardGrid>
             <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>
             <ImmutableCardProp heading="Book ISBN" data={props.bookInfo.isbn}></ImmutableCardProp>
@@ -64,6 +76,7 @@ export default function ViewBookModal(props: BookModalProp) {
 
             <ImmutableDimensionsCardProp length={props.bookInfo.dimensions[2] ?? 0} width={props.bookInfo.dimensions[0]} height={props.bookInfo.dimensions[1] ?? 0}></ImmutableDimensionsCardProp>
           </CardGrid>
+          </div>
           <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
             <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>
             <PrimaryButton onClick={openEdit} buttonText="Edit Book"></PrimaryButton>

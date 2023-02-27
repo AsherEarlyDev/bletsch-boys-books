@@ -4,6 +4,7 @@ import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, complete
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth/core/types";
 import { TRPCError } from "@trpc/server";
+import cloudinary from "cloudinary"
 
 type context = {
   session: Session | null;
@@ -24,6 +25,7 @@ const zBook = z.object({
   retailPrice: z.number(),
   shelfSpace: z.number(),
   inventory: z.number(),
+  imageLink: z.optional(z.string())
 })
 
 const fetchBookFromExternal = async (isbn: string) => {
@@ -39,25 +41,51 @@ const fetchBookFromExternal = async (isbn: string) => {
 }
 
 const transformRawBook = (input:googleBookInfo, isbn:string) =>{
-  const bookInfo: editableBook = {
-    isbn: isbn,
-    title: input.title,
-    publisher: input.publisher,
-    author: input.authors,
-    publicationYear: (new Date(input.publishedDate)).getFullYear(),
-    dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
-    pageCount: input.pageCount,
-    genre:input. mainCategory,
-    retailPrice: input.saleInfo?.retailPrice.amount,
-    inventory: 0,
-    authorNames:input.authors.join(", "),
-    imageLink: input.imageLinks.thumbnail ?? input.imageLinks.smallThumbnail ?? input.imageLinks.small ?? input.imageLinks.medium ?? input.imageLinks.large ?? input.imageLinks.extraLarge ?? "",
-    lastMonthSales:0,
-    shelfSpace:0,
-    daysOfSupply:Infinity,
-    bestBuybackPrice:0
-
-  }
+  const googleImageUrl = input.imageLinks.thumbnail
+  const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
+    console.log(result)
+    if (result) {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: result.secure_url,
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
+      }
+      return bookInfo
+    } else {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: ""
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
+      }
+      return bookInfo
+    }
+  }))
   return bookInfo
 } 
 
@@ -79,6 +107,7 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
     shelfSpace: book.shelfSpace,
     daysOfSupply:lastMonthSales==0 ? Infinity : book.inventory/(await getLastMonthSales(book.isbn, ctx))*30,
     bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx)
+    imageLink: book.imageLink
 
   }
   return bookInfo
@@ -336,6 +365,7 @@ export const BooksRouter = createTRPCRouter({
             publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,
             dimensions: data.dimensions,
             pageCount: data.pageCount,
+            imageLink: data.imageLink,
             retailPrice: data.retailPrice,
             authorNames: data.author.join(", "),
             shelfSpace: data.inventory * (data.dimensions[1] ?? .08),
@@ -426,7 +456,6 @@ export const BooksRouter = createTRPCRouter({
           })
       }
     })
-
 })
 
 const deleteBook = async (ctx: context, isbn:string) =>{
@@ -481,6 +510,7 @@ const getAuthorIDs = async (ctx: context, authors:string[]) => {
   }
   return authorIDs
 }
+
 
 
 const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{

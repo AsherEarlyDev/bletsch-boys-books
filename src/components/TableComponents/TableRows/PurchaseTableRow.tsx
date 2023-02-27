@@ -9,9 +9,10 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
-import SaleDeleteCard from "../../SalesComponents/SaleDeleteCard";
+import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
+import DeletePurchaseModal from "../Modals/PurchaseModals/DeletePurchaseModal";
 
 interface PurchaseTableRowProp {
   purchase: Purchase
@@ -67,10 +68,10 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   function renderDeletePurchaseView() {
     return <>
       {deletePurchaseView ?
-          <CreateSaleEntries closeStateFunction={setDeletePurchaseView} submitText='Delete Sale'>
-            <SaleDeleteCard price={purchasePrice} quantity={quantityPurchased}
+          <CreateSaleEntries closeStateFunction={setDeletePurchaseView} submitText='Delete Purchase'>
+            <DeletePurchaseModal price={purchasePrice} quantity={quantityPurchased}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeletePurchaseView} salesId={props.purchase.id}></SaleDeleteCard>
+                            closeOut={closeDeletePurchaseView} purchaseId={props.purchase.id}></DeletePurchaseModal>
           </CreateSaleEntries> : null}
     </>;
   }

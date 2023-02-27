@@ -80,9 +80,12 @@ export type databaseBook = {
     dimensions: Array<number>,
     pageCount?: number,
     genreID: string,
+
     retailPrice: number,
     inventory: number,
     shelfSpace: number,
+    imageLink?: string
+
 }
 
 

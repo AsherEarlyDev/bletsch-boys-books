@@ -17,7 +17,7 @@ export default function PurchaseTable() {
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
-  const ENTRIES_PER_PAGE = 3
+  const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
@@ -38,7 +38,6 @@ export default function PurchaseTable() {
     sortBy: sortField,
     descOrAsc: sortOrder
   }).data
-  console.log(purchaseOrder2)
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
@@ -148,7 +147,7 @@ export default function PurchaseTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorName: order.vendorName
+            vendorName: order.vendor.name
           })
           setPurchases(order.purchases)
         }

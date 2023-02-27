@@ -1,14 +1,14 @@
-import ImmutableCardProp from "../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../CardComponents/MutableCardProp";
-import CardTitle from "../CardComponents/CardTitle";
-import CardGrid from "../CardComponents/CardGrid";
-import SaveCardChanges from "../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import CardTitle from "../../../CardComponents/CardTitle";
+import CardGrid from "../../../CardComponents/CardGrid";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import {Dispatch, SetStateAction, useState} from 'react';
-import { api } from '../../utils/api';
-import { SalesRec } from "../../types/salesTypes";
+import { api } from '../../../../utils/api';
+import { SalesRec } from "../../../../types/salesTypes";
 import {toast} from "react-toastify";
-import SecondaryButton from "../BasicComponents/SecondaryButton";
-import PrimaryButton from "../BasicComponents/PrimaryButton";
+import SecondaryButton from "../../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 
 
 interface SaleDeleteProp{
@@ -21,7 +21,7 @@ interface SaleDeleteProp{
 }
 
 
-export default function SaleDeleteCard(props:SaleDeleteProp) {
+export default function DeleteSaleModal(props:SaleDeleteProp) {
   const [open, setOpen] = useState(true)
   const message = ("Are you sure you want to delete the record associated with selling " + props.quantity + " copies of " + props.bookTitle + " at $" + props.price.toFixed(2) + " a copy? This action cannot be undone.")
   const deleteSale = api.sales.deleteSale.useMutation({
@@ -41,7 +41,7 @@ export default function SaleDeleteCard(props:SaleDeleteProp) {
       props.onDelete(false)
     }
     else{
-      alert("Error")
+      toast.error("Unable to find sale!")
     }
   }
 

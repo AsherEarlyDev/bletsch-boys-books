@@ -18,6 +18,7 @@ interface PurchaseTableRowProp {
   purchase: Purchase
   isAdding: boolean
   isView: boolean
+  isCSV?: boolean
   closeAdd?: () => void
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
@@ -30,7 +31,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   const [isEditing, setIsEditing] = useState(false)
   const [purchasePrice, setPurchasePrice] = useState<number>(defaultPrice)
   const [quantityPurchased, setQuantityPurchased] = useState(props.purchase.quantity)
-  const [subtotal, setSubtotal] = useState(props.purchase.subtotal)
+  const [subtotal, setSubtotal] = useState(props.purchase.subtotal ?? props.purchase.quantity * props.purchase.price)
   const modPurchase = api.purchase.modifyPurchase.useMutation({
     onError: (error) => {
       toast.error(error.message)
@@ -98,13 +99,13 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                 :
                 (props.isAdding ?
                         <tr>
-                          <BookCardProp saveFunction={setIsbn} defaultValue={{}} ></BookCardProp>
+                          <BookCardProp saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPurchasePrice} heading="Purchase Price"
                                                      required="True" dataType="number"
-                                                     defaultValue=""></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? purchasePrice : ""}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantityPurchased} heading="Quantity Purchased"
                                              required="True" dataType="number"
-                                             defaultValue=""></MutableTableEntry>
+                                             defaultValue={props.isCSV ? quantityPurchased : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNewPurchase}></SaveRowEntry>
                           <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>

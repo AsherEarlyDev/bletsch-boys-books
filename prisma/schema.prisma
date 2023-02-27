@@ -20,8 +20,9 @@ model Book {
   retailPrice     Float
   inventory       Int        @default(0)
   authorNames     String
-  genre           Genre      @relation(fields: [genreID], references: [id])
   imageLink       String?
+  shelfSpace      Float?     @default(0)
+  genre           Genre      @relation(fields: [genreID], references: [id])
   buybacks        Buyback[]
   purchases       Purchase[]
   sales           Sale[]

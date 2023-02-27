@@ -145,7 +145,7 @@ export const BooksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      return await ctx.prisma.book.findMany({
+      const books = await ctx.prisma.book.findMany({
         take: input.booksPerPage,
         skip: input.pageNumber*input.booksPerPage,
         include:{
@@ -185,10 +185,17 @@ export const BooksRouter = createTRPCRouter({
             contains: input.filters.isbn,
             mode: 'insensitive'
           }
-
         }
       
       })
+      const editedBooks = await Promise.all( books.map(async (book) =>({
+        ...book,
+        lastMonthSales: await getLastMonthSales(book.isbn, ctx)
+      }))
+      )
+      
+
+      return editedBooks
     }
     else{
       return await ctx.prisma.book.findMany({
@@ -486,3 +493,41 @@ const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   }
 }
 
+const getLastMonthSales = async (isbn: string, ctx: context) => {
+  const currentDate = new Date()
+  var lastMonth = new Date()
+  lastMonth.setDate(lastMonth.getDate() - 30)
+  const salesRecs = await ctx.prisma.sale.findMany({
+    where:{
+      saleReconciliation: {
+        date: {
+          gte: currentDate,
+          lte: lastMonth
+        }        
+      },
+      bookId:{
+        contains:isbn
+      }
+    },
+    select: {
+      quantity: true,
+    }
+  })
+  var sum = 0
+  for(const sale of salesRecs){
+    sum = sum + sale.quantity
+  }
+  return lastMonth
+}
+
+function generateLastMonthDatesArray(){
+  var dateArray=[]
+  const lastMonth = new Date()
+  lastMonth.setDate(lastMonth.getDate() - 30)
+  for(var i=0; i<31; i++){
+    var date = new Date()
+    date.setDate(lastMonth.getDate()+i)
+    dateArray.push(date)
+  }
+  return dateArray
+}

@@ -516,7 +516,7 @@ const getLastMonthSales = async (isbn: string, ctx: context) => {
   for(const sale of salesRecs){
     sum = sum + sale.quantity
   }
-  return lastMonth
+  return sum
 }
 
 function generateLastMonthDatesArray(){

@@ -50,7 +50,7 @@ export default function EditBookModal(props:BookCardProp) {
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
         genre: genre.name,
         shelfSpace: props.bookInfo.shelfSpace ?? 0,
-        inventory: props.bookInfo.inventory
+        inventory: props.bookInfo.inventory,
         imageLink: image
 
       })

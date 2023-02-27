@@ -3,7 +3,7 @@ import { editableBook } from '../../../../types/bookTypes';
 import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
 import TableHeader from "../../TableHeader";
 import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import {api} from "../../../../utils/api";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
@@ -17,18 +17,19 @@ import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import BuybackVendorSelect from "../../../CardComponents/BuybackVendorSelect";
 
 interface EditBuybackTableModalProps{
-  buybackOrderId: string
-  buybackDate: string
-  buybackVendorId: string
+  data: {
+    id: string
+    vendorId: string
+    date: string
+  }
   closeOut: () => void
 }
 
 export default function EditBuybackTableModal(props: EditBuybackTableModalProps) {
-  console.log(props.buybackOrderId)
-  const [date, setDate] = useState(props.buybackDate)
-  // const vendor = api.vendor.getVendorById.useQuery({vendorId: props.buybackVendorId}).data
-  // console.log(vendor)
-  const [vendorInfo, setVendorInfo] = useState({id: props.buybackVendorId, name: ""})
+  console.log(props.data)
+  const [date, setDate] = useState(props.data.date)
+  const [vendorInfo, setVendorInfo] = useState({id: props.data.vendorId, name: ""})
+  const [id, setId] = useState(props.data.id)
   const [addBuybackRowView, setAddBuybackRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Buyback"
@@ -48,7 +49,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       toast.success("Successfully added buyback!")
     }
   })
-  const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.buybackOrderId}).data
+  const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.data.id}).data
 
   function openConfirmationView(){
     setDisplayConfirmationView(true)
@@ -68,10 +69,10 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   function handleEditSubmission(){
     //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
-    if(props.buybackOrderId && date && vendorInfo){
+    if(props.data.id && date && vendorInfo){
       modifyBuybackOrder.mutate({
         date: date,
-        buybackOrderId: props.buybackOrderId,
+        buybackOrderId: props.data.id,
         vendorId: vendorInfo.id
       })
       props.closeOut()
@@ -84,10 +85,11 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   function openAddBuybackRow(){
     setAddBuybackRowView(true)
   }
+
   function renderAddBuybackRow(){
     const dummyBuyback = {
       id: '',
-      buybackOrderId: props.buybackOrderId,
+      buybackOrderId: props.data.id,
       price: 0,
       quantity: 0,
       bookId: '',
@@ -95,13 +97,15 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     }
     return (addBuybackRowView && (<BuybackTableRow isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
   }
+
   function closeAddBuybackRow(){
     setAddBuybackRowView(false)
   }
+
   function handleAddBuyback(isbn: string, quantity: number, price: number){
-    if(isbn && quantity && price){
+    if(isbn && quantity && price && props.data.id){
       addBuyback.mutate({
-        buybackOrderId: props.buybackOrderId,
+        buybackOrderId: props.data.id,
         isbn: isbn,
         quantity: quantity.toString(),
         price: price.toString()
@@ -116,7 +120,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
-          <TableDetails tableName={header} tableDescription={"Viewing buyback with ID: " + props.buybackOrderId}>
+          <TableDetails tableName={header} tableDescription={"Viewing buyback with ID: " + props.data.id}>
           </TableDetails>
           <div className="flex flex-row gap-10 pt-4 justify-center">
             <MutableCardProp saveValue={setDate} heading="Change Date" required="True" dataType="date" defaultValue={date}></MutableCardProp>

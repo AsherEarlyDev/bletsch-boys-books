@@ -40,7 +40,7 @@ export default function DeleteBuybackOrderModal(props:DeleteBuybackOrderModalPro
       closeModal()
     }
     else{
-      alert("Error")
+      toast.error("No buyback found!")
     }
   }
 

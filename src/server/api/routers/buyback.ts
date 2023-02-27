@@ -24,7 +24,6 @@ export const buybackRouter = createTRPCRouter({
                   id: input.buybackOrderId
                 },
               })
-              console.log(buybackOrder)
               const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
                 where:{
                   vendorId: buybackOrder.vendorId
@@ -33,19 +32,29 @@ export const buybackRouter = createTRPCRouter({
                   date: 'desc'
                 }
               })
-              let i = 0
-              while (costMostRecent === 0){
-                const purchase = await ctx.prisma.purchase.findFirst({
-                  where: {
-                    purchaseOrderId: purchaseOrders[i].id,
-                    bookId: isbn
+              if (purchaseOrders.length != 0){
+                console.log(purchaseOrders[0])
+                let i = 0
+                while (costMostRecent === 0 && i < purchaseOrders.length){
+                  const purchase = await ctx.prisma.purchase.findFirst({
+                    where: {
+                      purchaseOrderId: purchaseOrders[i].id,
+                      bookId: isbn
+                    }
+                  })
+                  if (purchase){
+                    costMostRecent = purchase.price
                   }
-                })
-                if (purchase){
-                  costMostRecent = purchase.price
+                  i += 1
                 }
-                i += 1
               }
+              else{
+                throw new TRPCError({
+                  code: "NOT_FOUND",
+                  message: "No purchase orders found under this vendor!"
+                })
+              }
+              
               const vendor = await ctx.prisma.vendor.findFirst({
                 where:{
                   id: buybackOrder.vendorId

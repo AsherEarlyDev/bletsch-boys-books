@@ -9,7 +9,7 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
-import SaleDeleteCard from "../../SalesComponents/SaleDeleteCard";
+import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
 
 interface SaleTableRowProp {
@@ -67,9 +67,9 @@ export default function SaleTableRow(props: SaleTableRowProp) {
     return <>
       {deleteSaleView ?
           <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
-            <SaleDeleteCard price={salePrice} quantity={quantitySold}
+            <DeleteSaleModal price={salePrice} quantity={quantitySold}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeleteSaleView} salesId={props.sale.id}></SaleDeleteCard>
+                            closeOut={closeDeleteSaleView} salesId={props.sale.id}></DeleteSaleModal>
           </CreateSaleEntries> : null}
     </>;
   }

@@ -34,7 +34,7 @@ export const buybackOrderRouter = createTRPCRouter({
                         vendorName: vendor.vendorName
                     },
                 });
-                return {id: newBuyback.id, date: date, vendorName: vendor.name}
+                return {id: newBuyback.id, date: date, vendorId: input.vendorId}
             }
         } catch (error) {
           throw new TRPCError({
@@ -88,6 +88,20 @@ export const buybackOrderRouter = createTRPCRouter({
      try {
          const orders = await ctx.prisma.bookBuybackOrder.findMany()
          return orders.length
+     } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error.message,
+      });
+     }
+   }),
+
+   getTotalBuybackOrder: publicProcedure
+    
+   .query(async ({ ctx, input }) => {
+     try {
+         const orders = await ctx.prisma.bookBuybackOrder.findMany()
+         return orders
      } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',

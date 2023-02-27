@@ -23,7 +23,8 @@ export default function BuybackTable() {
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
-    vendorId: ''
+    vendorId: '',
+    vendorName: ''
   })
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
@@ -40,14 +41,19 @@ export default function BuybackTable() {
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
   const [displayBuybackView, setDisplayBuybackView] = useState(false)
   const [displayAddBuybackView, setDisplayAddBuybackView] = useState(false)
+  const [createData, setCreateData] = useState({
+    date: '',
+    vendorId: '',
+    id: ''
+  })
+  
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
-    onSuccess: ()=>{
-      setDisplayEditBuybackView(true)
+    onSuccess: (data)=>{
+      setCreateData(data)
     }
   })
   const vendors = api.vendor.getVendorsWithBuyback.useQuery().data
-  const [createDate, setCreateDate] = useState('')
-  const [createVendor, setCreateVendor] = useState('')
+  
 
 
   
@@ -59,8 +65,7 @@ export default function BuybackTable() {
         vendorId: vendorId
       })
     }
-    setCreateDate(date)
-    setCreateVendor(vendorId)
+    setDisplayEditBuybackView(true)
   }
 
   function renderOrderRow(items: any[]) {
@@ -78,7 +83,8 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendorId
+            vendorId: order.vendorId,
+            vendorName: order.vendor.name
           })
         }
       }
@@ -87,18 +93,15 @@ export default function BuybackTable() {
   }
 
   function renderEditBuybackViewOnCreate() {
+    console.log(createData)
 
     return (
         <>
-          {(displayEditBuybackView && createBuybackOrder && createBuybackOrder.data) ?
+          {(displayEditBuybackView) ?
               <CreateEntries closeStateFunction={setDisplayEditBuybackView}
                              submitText="Edit Buyback">
                 <EditBuybackTableModal closeOut={closeEditBuybackView}
-                                        buybackDate={createDate}
-                                        buybackOrderId={createBuybackOrder.data.id}
-                                        buybackVendorId={createVendor}></EditBuybackTableModal></CreateEntries> : ()=>{
-                                          toast.warning("LOADING...")
-                                        }}
+                                        data={createData}></EditBuybackTableModal></CreateEntries> : null}
         </>
     )
   }
@@ -110,9 +113,7 @@ export default function BuybackTable() {
               <CreateEntries closeStateFunction={setDisplayEditBuybackView}
                              submitText="Edit Purchase Order">
                 <EditBuybackTableModal closeOut={closeEditBuybackView}
-                                        buybackDate={currentOrder.date}
-                                        buybackOrderId={currentOrder.id}
-                                        buybackVendorId={currentOrder.vendorId}></EditBuybackTableModal></CreateEntries> : null}
+                                        data={currentOrder}></EditBuybackTableModal></CreateEntries> : null}
         </>
     )
   }
@@ -129,7 +130,8 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendorId
+            vendorId: order.vendorId,
+            vendorName: order.vendor.name
           })
         }
       }
@@ -161,7 +163,8 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendor.id
+            vendorId: order.vendor.id,
+            vendorName: order.vendor.name
           })
           setBuybacks(order.buybacks)
         }
@@ -180,7 +183,7 @@ export default function BuybackTable() {
                                         buybacks={buybacks}
                                         buybackOrderId={currentOrder.id}
                                         buybackDate={currentOrder.date}
-                                        buybackVendorId={currentOrder.vendorId}></ViewBuybackTableModal>
+                                        buybackVendorName={currentOrder.vendorName}></ViewBuybackTableModal>
               </CreateEntries>) : null) : null}
         </>
     )
@@ -205,7 +208,7 @@ export default function BuybackTable() {
     const dummyBuyback = {
       id: '',
       buybackOrderId: buybackOrderId,
-      price: 0,
+      buybackPrice: 0,
       quantity: 0,
       bookId: '',
       subtotal: 0

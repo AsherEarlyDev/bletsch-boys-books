@@ -9,9 +9,10 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
-import SaleDeleteCard from "../../SalesComponents/SaleDeleteCard";
+import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
 import { Buyback } from "../../../types/buybackTypes";
+import DeleteBuybackModal from "../Modals/BuybackModals/DeleteBuybackModal";
 
 interface BuybackTableRowProp {
   buyback: Buyback
@@ -24,7 +25,7 @@ interface BuybackTableRowProp {
 export default function BuybackTableRow(props: BuybackTableRowProp) {
   const [isbn, setIsbn] = useState(props.buyback.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.buyback?.price
+  const defaultPrice = props.buyback?.buybackPrice
   const [deleteBuybackView, setDeleteBuybackView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [buybackPrice, setBuybackPrice] = useState<number>(defaultPrice)
@@ -68,9 +69,9 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
     return <>
       {deleteBuybackView ?
           <CreateSaleEntries closeStateFunction={setDeleteBuybackView} submitText='Delete Sale'>
-            <SaleDeleteCard price={buybackPrice} quantity={quantityBuyback}
+            <DeleteBuybackModal price={buybackPrice} quantity={quantityBuyback}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeleteBuybackView} salesId={props.buyback.id}></SaleDeleteCard>
+                            closeOut={closeDeleteBuybackView} buybackId={props.buyback.id}></DeleteBuybackModal>
           </CreateSaleEntries> : null}
     </>;
   }

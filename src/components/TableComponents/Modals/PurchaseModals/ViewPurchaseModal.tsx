@@ -11,7 +11,7 @@ import { Purchase } from "../../../../types/purchaseTypes";
 import DeletePurchaseOrderModal from "./DeletePurchaseOrderModal";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import CreateEntries from "../../../CreateEntries";
-import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
+import DeleteSaleModal from "../SalesModals/DeleteSaleModal";
 import BookCardProp from "../../../CardComponents/BookCardProp";
 
 
@@ -84,9 +84,9 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
   function openDeletePurchaseView() {
     setDisplayDeletePurchaseView(true)
   }
-  function renderDeleteSaleView() {
+  function renderDeletePurchaseView() {
     return <>
-      {displayDeletePurchaseView ? <CreateEntries closeStateFunction={setDisplayDeletePurchaseView} submitText='Delete Sale'>
+      {displayDeletePurchaseView ? <CreateEntries closeStateFunction={setDisplayDeletePurchaseView} submitText='Delete Purchase'>
         <DeletePurchaseOrderModal closeOut={closeDeletePurchaseView} purchaseId={props.purchase.id}></DeletePurchaseOrderModal>
       </CreateEntries>: null}
     </>;
@@ -116,7 +116,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
       </CardGrid>
       <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>
       <div>
-        {renderDeleteSaleView()}
+        {renderDeletePurchaseView()}
         {renderConfirmationView()}
       </div>
     </div>

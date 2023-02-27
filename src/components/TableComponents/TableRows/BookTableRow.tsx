@@ -6,9 +6,7 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
 
 interface BookTableRowProp{
-  bookInfo: Book  & {
-    genre: Genre;
-    author: Author[];}
+  bookInfo: any
   onEdit: (isbn:string) => void
   onDelete: (isbn:string)=> void
   onView: (isbn:string)=> void
@@ -35,6 +33,7 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry>{props.bookInfo.genre.name}</TableEntry>
         <TableEntry>${props.bookInfo.retailPrice.toFixed(2)}</TableEntry>
         <TableEntry>{props.bookInfo.inventory}</TableEntry>
+        <TableEntry>{props.bookInfo.lastMonthSales}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
       </tr>

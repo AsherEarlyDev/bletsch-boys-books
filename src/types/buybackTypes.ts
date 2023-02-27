@@ -13,6 +13,6 @@ export type Buyback = {
     bookId: string,
     buybackOrderId: string,
     quantity: number,
-    price: number,
+    buybackPrice: number,
     subtotal: number
 }

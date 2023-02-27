@@ -10,7 +10,7 @@ import {api} from "../../../../utils/api";
 interface ViewBuybackTableModalProps{
   buybackOrderId: string
   buybackDate: string
-  buybackVendorId: string
+  buybackVendorName: string
   buybacks: Buyback[]
   closeOut: () => void
 }
@@ -18,7 +18,6 @@ interface ViewBuybackTableModalProps{
 export default function ViewBuybackTableModal(props: ViewBuybackTableModalProps) {
   const header = props.buybackDate + " Buyback"
   const hasBuyback = (props.buybacks.length != 0)
-  const vendor = api.vendor.getVendorById.useQuery().data
 
   function handleSave(){
     props.closeOut
@@ -28,7 +27,7 @@ export default function ViewBuybackTableModal(props: ViewBuybackTableModalProps)
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
-          <TableDetails tableName={header} tableDescription={"Vendor: " + vendor.name + ",  OrderID: " + props.buybackOrderId}>
+          <TableDetails tableName={header} tableDescription={"Vendor: " + props.buybackVendorName + ",  OrderID: " + props.buybackOrderId}>
           </TableDetails>
           {hasBuyback ? (
           <div className="mt-8 flex flex-col">

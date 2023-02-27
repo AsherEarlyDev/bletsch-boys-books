@@ -77,7 +77,7 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
         retailPrice: input.saleInfo?.retailPrice.amount,
         inventory: 0,
         authorNames: input.authors.join(", "),
-        imageLink: ""
+        imageLink: "",
         lastMonthSales:0,
         shelfSpace:0,
         daysOfSupply:Infinity,
@@ -106,7 +106,7 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
     lastMonthSales: lastMonthSales,
     shelfSpace: book.shelfSpace,
     daysOfSupply:lastMonthSales==0 ? Infinity : book.inventory/(await getLastMonthSales(book.isbn, ctx))*30,
-    bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx)
+    bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
     imageLink: book.imageLink
 
   }

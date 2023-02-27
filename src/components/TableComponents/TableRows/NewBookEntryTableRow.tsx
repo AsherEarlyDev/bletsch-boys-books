@@ -62,8 +62,8 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         dimensions: (width && height && length)? [Number(width), Number(height), Number(length)] : [],
         genre: genre.name,
         shelfSpace: props.bookInfo.shelfSpace ?? 0,
-        inventory: props.bookInfo.inventory
-        imageLink: image
+        inventory: props.bookInfo.inventory,
+        imageLink: image,
 
       })
       alert(((props.isExisting) ? "Edited book: " : "Added book: ") + props.bookInfo.title)

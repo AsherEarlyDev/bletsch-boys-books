@@ -94,7 +94,6 @@ export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
                         </div>
                         <div className="mt-5">
                         <select name="vendorId" id="vendorId" onChange={handleChange}>
-                            <option></option>
                             {props.vendorList?.map((vendor)=>
                                 <option value={vendor.id}>{vendor.name}</option>
                             )}

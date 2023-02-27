@@ -21,11 +21,12 @@ export const salesRecRouter = createTRPCRouter({
           message: 'No date given!',
         });
       }
-      await ctx.prisma.saleReconciliation.create({
+      const newSaleRec = await ctx.prisma.saleReconciliation.create({
         data: {
           date: new Date(date),
         },
       });
+      return {id: newSaleRec.id, date: date}
     } catch (error) {
       throw new TRPCError({
         code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',

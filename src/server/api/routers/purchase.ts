@@ -246,6 +246,27 @@ export const purchaseRouter = createTRPCRouter({
             message: "Delete Purchase Failed! "+error.message
           })
         }
+      }),
+
+      getPurchasesByOrderId: publicProcedure
+    .input(
+      z.object({
+        purchaseOrderId: z.string(),
       })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.purchase.findMany({
+          where:{
+            purchaseOrderId: input.purchaseOrderId
+          }
+        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
 
   });

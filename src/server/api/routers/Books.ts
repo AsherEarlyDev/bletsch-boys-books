@@ -48,7 +48,8 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
     genre:input. mainCategory,
     retailPrice: input.saleInfo?.retailPrice.amount,
     inventory: 0,
-    authorNames:input.authors.join(", ")
+    authorNames:input.authors.join(", "),
+    imageLink: input.imageLinks.thumbnail ?? input.imageLinks.smallThumbnail ?? input.imageLinks.small ?? input.imageLinks.medium ?? input.imageLinks.large ?? input.imageLinks.extraLarge ?? ""
   }
   return bookInfo
 } 

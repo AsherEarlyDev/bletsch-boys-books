@@ -16,9 +16,9 @@ import { CSVLink } from "react-csv";
 
 export default function BookTable() {
   const {query} = useRouter()
-  const BOOKS_PER_PAGE = 20
+  const BOOKS_PER_PAGE = 15
   const FIRST_HEADER =  ["Title", "title"]
-  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"], ["Last Month Sales", "lastMonthSales"]]
+  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"], ["Last Month Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best Buyback Price", "bestBuybackPrice"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"retail_price", key:"retailPrice"}]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
@@ -41,7 +41,7 @@ export default function BookTable() {
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
   const allBooks = api.books.getAllInternalBooksNoPagination.useQuery({sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
-  const csvBooks = allBooks ? allBooks.map((book: Book & { genre: Genre; author: Author[]; })=>({...book, authorNames:book.authorNames.replaceAll(",", "|"), genre:book.genre.name})) : []
+  const csvBooks = allBooks ? allBooks.map((book)=>({...book, authorNames:book.authorNames.replaceAll(",", " |"), genre:book.genre.name})) : []
   const router = useRouter()
 
   function forceDataRender (){
@@ -167,7 +167,7 @@ export default function BookTable() {
                  sortableHeaders={SORTABLE_HEADERS}
                  staticHeaders={STATIC_HEADERS}
                  items= {books}
-                 headersNotFiltered={["retailPrice", "inventory"]}
+                 headersNotFiltered={["retailPrice", "inventory", "lastMonthSales", "shelfSpace", "daysOfSupply", "bestBuybackPrice"]}
                  pageNumber={pageNumber}
                  numberOfPages={numberOfPages}
                  entriesPerPage={BOOKS_PER_PAGE}

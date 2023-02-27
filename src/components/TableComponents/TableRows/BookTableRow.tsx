@@ -34,6 +34,9 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry>${props.bookInfo.retailPrice.toFixed(2)}</TableEntry>
         <TableEntry>{props.bookInfo.inventory}</TableEntry>
         <TableEntry>{props.bookInfo.lastMonthSales}</TableEntry>
+        <TableEntry>{props.bookInfo.dimensions[1] || props.bookInfo.shelfSpace==0 ? props.bookInfo.shelfSpace : props.bookInfo.shelfSpace+" (est)"}</TableEntry>
+        <TableEntry>{props.bookInfo.daysOfSupply}</TableEntry>
+        <TableEntry>{props.bookInfo.bestBuybackPrice==0 ? "-" : props.bookInfo.bestBuybackPrice}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
       </tr>

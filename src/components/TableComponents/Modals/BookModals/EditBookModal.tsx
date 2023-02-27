@@ -46,7 +46,9 @@ export default function EditBookModal(props:BookCardProp) {
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
-        genre: genre.name
+        genre: genre.name,
+        shelfSpace: props.bookInfo.shelfSpace ?? 0,
+        inventory: props.bookInfo.inventory
       })
       closeModal()
     }

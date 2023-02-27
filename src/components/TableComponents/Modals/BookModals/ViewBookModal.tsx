@@ -11,6 +11,9 @@ interface BookModalProp {
   bookInfo: Book & {
     genre: Genre;
     author: Author[];
+    lastMonthSales: number;
+    daysOfSupply:number;
+    bestBuybackPrice: number;
   },
   closeOut: () => void
   openEdit: (isbn: string) => void
@@ -50,6 +53,15 @@ export default function ViewBookModal(props: BookModalProp) {
                                data={props.bookInfo.retailPrice}></ImmutableCardProp>
             <ImmutableCardProp heading="Page Count"
                                data={props.bookInfo.pageCount}></ImmutableCardProp>
+            <ImmutableCardProp heading="Last Month Sales"
+                               data={props.bookInfo.lastMonthSales}></ImmutableCardProp>
+            <ImmutableCardProp heading="Shelf Space"
+                               data={props.bookInfo.dimensions[1] || props.bookInfo.shelfSpace==0  ? props.bookInfo.shelfSpace : props.bookInfo.shelfSpace+" (est)"}></ImmutableCardProp>
+            <ImmutableCardProp heading="Days of Supply"
+                               data={props.bookInfo.daysOfSupply}></ImmutableCardProp>
+            <ImmutableCardProp heading="Best Buyback Price"
+                               data={props.bookInfo.bestBuybackPrice==0 ? "-" : props.bookInfo.bestBuybackPrice}></ImmutableCardProp>
+
             <ImmutableDimensionsCardProp length={props.bookInfo.dimensions[2] ?? 0} width={props.bookInfo.dimensions[0]} height={props.bookInfo.dimensions[1] ?? 0}></ImmutableDimensionsCardProp>
           </CardGrid>
           <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">

@@ -15,6 +15,7 @@ import {PlusIcon} from "@heroicons/react/24/solid";
 import {Purchase} from "../../../../types/purchaseTypes";
 import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
 import VendorSelect from "../../../CardComponents/VendorSelect";
+import Papa from "papaparse";
 
 interface EditPurchaseTableModalProps{
   purchaseOrderId: string
@@ -28,6 +29,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   const [vendorInfo, setVendorInfo] = useState({id: '', name: props.purchaseVendorName})
   const [addPurchaseRowView, setAddPurchaseRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
+  const [purchaseCSV, setPurchaseCSV] = useState<any[]>()
   const header = date + " Purchase Order"
   const modifyPurchaseOrder = api.purchaseOrder.modifyPurchaseOrder.useMutation({
     onError: (error)=>{
@@ -76,6 +78,34 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     else{
       toast.error("Input Details Undefined!")
     }
+  }
+  async function handleCSV(e: React.FormEvent<HTMLInputElement>){
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const csvVal = (formData.get("purchaseCSV"))
+    console.log(csvVal)
+    Papa.parse(csvVal, {
+      header:true,
+      complete: function(results) {
+        console.log(results)
+        const csv = results.data.map((result) => transformCSV(result))
+        setPurchaseCSV(csv);
+      }
+  })}
+
+  function transformCSV(csv){
+    const quant = parseInt(csv.quantity)
+    const price = parseFloat(csv.unit_wholesale_price)
+    return ({
+      bookId:csv.isbn,
+      quantity:quant,
+      price: price,
+      subtotal: quant* price,
+    })
+  }
+
+  function renderCSVRows(){
+    return setPurchaseCSV ? purchaseCSV?.map((purchase) => (<PurchaseTableRow saveAdd={handleAddPurchase} isView={false} isAdding={true} isCSV={true} purchase={purchase}></PurchaseTableRow>)) : null
   }
 
   function openAddPurchaseRow(){
@@ -135,8 +165,10 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
                       <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {purchases?.map((purchase) => (<PurchaseTableRow isView={false} isAdding={false} purchase={purchase}></PurchaseTableRow>))}
+                    {purchases?.map((purchase) => (<PurchaseTableRow isView={false} isAdding={true} purchase={purchase}></PurchaseTableRow>))}
+                    {renderCSVRows()}
                     {renderAddPurchaseRow()}
+                    
                     </tbody>
                   </table>
                 </div>
@@ -152,6 +184,19 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
             </div>
           </div>
         </div>
+        <form method="post" onSubmit={handleCSV}>
+          <div>
+            <label>Import with a CSV: </label>
+            <input type="file" id="purchaseCSV" name="purchaseCSV" accept=".csv"></input>
+            <div>
+              <button
+              type="submit"
+              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
+                Upload CSV
+              </button>
+            </div>
+          </div>
+        </form>
         <div className="px-4 py-2 sm:px-6">
           <SaveCardChanges saveModal={openConfirmationView} closeModal={props.closeOut}></SaveCardChanges>
         </div>

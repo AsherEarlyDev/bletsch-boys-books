@@ -1,23 +1,18 @@
-export type PurchaseOrder = {
+export type BuybackOrder = {
     id: string,
     date: string,
     vendor: {id: string, name: string, bookBuybackPercentage: number}
-    purchases: any[],
+    buybacks: any[],
     totalBooks: number,
     uniqueBooks: number,
-    cost: number
+    revenue: number
 }
 
-export type Vendor = {
-    id: string, 
-    name: string
-}
-
-export type Purchase = {
+export type Buyback = {
     id: string,
     bookId: string,
-    purchaseOrderId: string,
+    buybackOrderId: string,
     quantity: number,
-    price: number,
+    buybackPrice: number,
     subtotal: number
 }

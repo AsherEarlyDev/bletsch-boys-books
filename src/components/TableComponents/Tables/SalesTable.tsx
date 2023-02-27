@@ -216,7 +216,7 @@ export default function SalesTable() {
           {renderEditSalesRecView()}
           {renderDeleteSalesRecView()}
           {renderSalesRecView()}
-          {renderAdd()}
+          {/* {renderAdd()} */}
           <ToastContainer/>
         </div>
       </div>

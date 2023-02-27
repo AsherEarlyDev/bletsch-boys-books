@@ -11,30 +11,32 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
+import { Buyback } from "../../../types/buybackTypes";
+import DeleteBuybackModal from "../Modals/BuybackModals/DeleteBuybackModal";
 
-interface SaleTableRowProp {
-  sale: Sale
+interface BuybackTableRowProp {
+  buyback: Buyback
   isAdding: boolean
   isView: boolean
   closeAdd?: () => void
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
-export default function SaleTableRow(props: SaleTableRowProp) {
-  const [isbn, setIsbn] = useState(props.sale.bookId)
+export default function BuybackTableRow(props: BuybackTableRowProp) {
+  const [isbn, setIsbn] = useState(props.buyback.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.sale?.price
-  const [deleteSaleView, setDeleteSaleView] = useState(false)
+  const defaultPrice = props.buyback?.buybackPrice
+  const [deleteBuybackView, setDeleteBuybackView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [salePrice, setSalePrice] = useState<number>(defaultPrice)
-  const [quantitySold, setQuantitySold] = useState(props.sale.quantity)
-  const [subtotal, setSubtotal] = useState(props.sale.subtotal)
-  const modSale = api.sales.modifySale.useMutation({
+  const [buybackPrice, setBuybackPrice] = useState<number>(defaultPrice)
+  const [quantityBuyback, setQuantityBuyback] = useState(props.buyback.quantity)
+  const [subtotal, setSubtotal] = useState(props.buyback.subtotal)
+  const modBuyback = api.buyback.modifyBuyback.useMutation({
     onError: (error) => {
       toast.error(error.message)
     },
     onSuccess: () => {
-      toast.success("Successfully modified sale!")
+      toast.success("Successfully modified buyback!")
     }
   })
   const [visible, setVisible] = useState(true)
@@ -43,45 +45,43 @@ export default function SaleTableRow(props: SaleTableRowProp) {
     setIsEditing(true)
   }
 
-  function editSale() {
-    if (props.sale) {
-      modSale.mutate({
-        id: props.sale.id,
-        saleReconciliationId: props.sale.saleReconciliationId,
+  function editBuyback() {
+    if (props.buyback) {
+      modBuyback.mutate({
+        id: props.buyback.id,
+        buybackOrderId: props.buyback.buybackOrderId,
         isbn: isbn,
-        quantity: quantitySold.toString(),
-        price: salePrice.toString(),
+        quantity: quantityBuyback.toString(),
+        price: buybackPrice.toString(),
       })
     } else {
-      toast.error("Cannot edit sale.")
+      toast.error("Cannot edit buyback.")
     }
-    setSubtotal(salePrice * quantitySold)
+    setSubtotal(buybackPrice * quantityBuyback)
     setIsEditing(false)
   }
 
-  function openDeleteSaleView() {
-    setDeleteSaleView(true)
+  function openDeleteBuybackView() {
+    setDeleteBuybackView(true)
   }
 
-  function renderDeleteSaleView() {
+  function renderDeleteBuybackView() {
     return <>
-      {deleteSaleView ?
-          <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
-            <DeleteSaleModal price={salePrice} quantity={quantitySold}
+      {deleteBuybackView ?
+          <CreateSaleEntries closeStateFunction={setDeleteBuybackView} submitText='Delete Sale'>
+            <DeleteBuybackModal price={buybackPrice} quantity={quantityBuyback}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeleteSaleView} salesId={props.sale.id}></DeleteSaleModal>
+                            closeOut={closeDeleteBuybackView} buybackId={props.buyback.id}></DeleteBuybackModal>
           </CreateSaleEntries> : null}
     </>;
   }
 
-  function closeDeleteSaleView() {
-    setDeleteSaleView(false)
-
+  function closeDeleteBuybackView() {
+    setDeleteBuybackView(false)
   }
 
-  function saveNewSale() {
-    alert("ready: " + isbn)
-    props.saveAdd(isbn, quantitySold, salePrice)
+  function saveNewBuyback() {
+    props.saveAdd(isbn, quantityBuyback, buybackPrice)
   }
 
   return (
@@ -90,22 +90,22 @@ export default function SaleTableRow(props: SaleTableRowProp) {
         (props.isView ?
                 <tr>
                   <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
-                  <TableEntry>${Number(salePrice).toFixed(2)}</TableEntry>
-                  <TableEntry>{quantitySold}</TableEntry>
+                  <TableEntry>${Number(buybackPrice).toFixed(2)}</TableEntry>
+                  <TableEntry>{quantityBuyback}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
                 (props.isAdding ?
                         <tr>
-                          <BookCardProp saveFunction={setIsbn} defaultValue={{}}></BookCardProp>
-                          <MutableCurrencyTableEntry saveValue={setSalePrice} heading="Retail Price"
+                          <BookCardProp saveFunction={setIsbn} defaultValue={{}} ></BookCardProp>
+                          <MutableCurrencyTableEntry saveValue={setBuybackPrice} heading="Buyback Price"
                                                      required="True" dataType="number"
                                                      defaultValue=""></MutableCurrencyTableEntry>
-                          <MutableTableEntry saveValue={setQuantitySold} heading="Quantity Sold"
+                          <MutableTableEntry saveValue={setQuantityBuyback} heading="Quantity Bought"
                                              required="True" dataType="number"
                                              defaultValue=""></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
-                          <SaveRowEntry onSave={saveNewSale}></SaveRowEntry>
+                          <SaveRowEntry onSave={saveNewBuyback}></SaveRowEntry>
                           <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>
                         </tr>
                         :
@@ -113,30 +113,30 @@ export default function SaleTableRow(props: SaleTableRowProp) {
                             <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
                               <BookCardProp saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BookCardProp>
-                              <MutableCurrencyTableEntry saveValue={setSalePrice}
-                                                         heading="Retail Price" required="True"
+                              <MutableCurrencyTableEntry saveValue={setBuybackPrice}
+                                                         heading="Buyback Price" required="True"
                                                          dataType="number"
-                                                         defaultValue={salePrice}></MutableCurrencyTableEntry>
-                              <MutableTableEntry saveValue={setQuantitySold} heading="Quantity Sold"
+                                                         defaultValue={buybackPrice}></MutableCurrencyTableEntry>
+                              <MutableTableEntry saveValue={setQuantityBuyback} heading="Quantity Bought"
                                                  required="True" dataType="number"
-                                                 defaultValue={quantitySold}></MutableTableEntry>
+                                                 defaultValue={quantityBuyback}></MutableTableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
-                              <SaveRowEntry onSave={editSale}></SaveRowEntry>
-                              <DeleteRowEntry onDelete={openDeleteSaleView}></DeleteRowEntry>
+                              <SaveRowEntry onSave={editBuyback}></SaveRowEntry>
+                              <DeleteRowEntry onDelete={openDeleteBuybackView}></DeleteRowEntry>
                             </tr>
                             :
                             <tr>
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
-                              <TableEntry>${Number(salePrice).toFixed(2)}</TableEntry>
-                              <TableEntry>{quantitySold}</TableEntry>
+                              <TableEntry>${Number(buybackPrice).toFixed(2)}</TableEntry>
+                              <TableEntry>{quantityBuyback}</TableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                               <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>
-                              <DeleteRowEntry onDelete={openDeleteSaleView}></DeleteRowEntry>
+                              <DeleteRowEntry onDelete={openDeleteBuybackView}></DeleteRowEntry>
                             </tr>)
                 )
         )
         }
-        {renderDeleteSaleView()}
+        {renderDeleteBuybackView()}
       </>
   )
 }

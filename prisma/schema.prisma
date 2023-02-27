@@ -23,6 +23,7 @@ model Book {
   imageLink       String?
   shelfSpace      Float?     @default(0)
   genre           Genre      @relation(fields: [genreID], references: [id])
+  imageLink       String?
   buybacks        Buyback[]
   purchases       Purchase[]
   sales           Sale[]

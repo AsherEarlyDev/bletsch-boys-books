@@ -6,13 +6,14 @@ import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
 import { api } from '../../../../utils/api';
 import { Sale} from "../../../../types/salesTypes";
-import SaleDeleteCard from "../../../SalesComponents/SaleDeleteCard";
+import DeleteSaleModal from "./DeleteSaleModal";
 import CreateSaleEntries from '../../../CreateEntries';
 import PrimaryButton from '../../../BasicComponents/PrimaryButton';
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BookCardProp from "../../../CardComponents/BookCardProp";
+import DeleteSalesRecModal from "./DeleteSalesRecModal";
 
 
 interface SalesProp{
@@ -22,6 +23,7 @@ interface SalesProp{
 }
 
 export default function ViewSalesRecModal(props:SalesProp) {
+  console.log("SALE REC MODAL")
   const [open, setOpen] = useState(true)
   const [isbn, setIsbn] = useState(props.sale.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: props.sale.bookId}).data
@@ -101,7 +103,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
   function renderDeleteSaleView() {
     return <>
       {displayDeleteSaleView ? <CreateSaleEntries closeStateFunction={setDeleteSaleView} submitText='Delete Sale'>
-        <SaleDeleteCard closeOut={closeDeleteSaleView} salesId={props.sale.id}></SaleDeleteCard>
+        <DeleteSalesRecModal closeOut={closeDeleteSaleView} salesRecId={props.sale.id}></DeleteSalesRecModal>
       </CreateSaleEntries>: null}
     </>;
   }

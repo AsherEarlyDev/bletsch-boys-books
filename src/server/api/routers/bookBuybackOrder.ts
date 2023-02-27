@@ -34,7 +34,7 @@ export const buybackOrderRouter = createTRPCRouter({
                         vendorName: vendor.vendorName
                     },
                 });
-                return {id: newBuyback.id, date: date}
+                return {id: newBuyback.id, date: date, vendorName: vendor.name}
             }
         } catch (error) {
           throw new TRPCError({
@@ -44,29 +44,43 @@ export const buybackOrderRouter = createTRPCRouter({
         }
       }),
 
-      getBuybackOrders:publicProcedure
+      getBuybackOrders: publicProcedure
       .input(z.object({
-        pageNumber: z.number(),
-        entriesPerPage: z.number(),
-        sortBy: z.string(),
-        descOrAsc: z.string()
-      }))
-      .query(async ({ ctx, input }) => {
-        if(input){
-          const rawData = await ctx.prisma.bookBuybackOrder.findMany({
-            take: input.entriesPerPage,
-            skip: input.pageNumber*input.entriesPerPage,
-            include:{
-              sales: true
-            },
-            orderBy: 
-              {
-                [input.sortBy]: input.descOrAsc,
-              }
-          })
-          return transformData(rawData)
-        }
-      }),
+       pageNumber: z.number(),
+       entriesPerPage: z.number(),
+       sortBy: z.string(),
+       descOrAsc: z.string()
+     }))
+     .query(async ({ctx, input}) => {
+       if(input){
+         const rawData = await ctx.prisma.bookBuybackOrder.findMany({
+           take: input.entriesPerPage,
+           skip: input.pageNumber*input.entriesPerPage,
+           include:{
+             vendor: true,
+             buybacks: true
+           },
+           orderBy: input.sortBy==="vendorName" ? {
+             vendor:{
+               name: input.descOrAsc
+             }
+           } :  
+             {
+               [input.sortBy]: input.descOrAsc,
+             }
+           
+         
+         })
+         return transformData(rawData)
+       }
+       else{
+         return transformData(await ctx.prisma.bookBuybackOrder.findMany({
+           include:{
+             vendor: true
+           }
+         }))
+       }
+     }),
 
     getNumBuybackOrder: publicProcedure
     

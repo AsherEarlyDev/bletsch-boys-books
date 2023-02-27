@@ -24,9 +24,10 @@ export const buybackRouter = createTRPCRouter({
                   id: input.buybackOrderId
                 },
               })
+              console.log(buybackOrder)
               const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
                 where:{
-                  vendorName: buybackOrder.vendorName
+                  vendorId: buybackOrder.vendorId
                 },
                 orderBy:{
                   date: 'desc'
@@ -47,7 +48,7 @@ export const buybackRouter = createTRPCRouter({
               }
               const vendor = await ctx.prisma.vendor.findFirst({
                 where:{
-                  name: buybackOrder.vendorName
+                  id: buybackOrder.vendorId
                 }
               })
               
@@ -74,7 +75,7 @@ export const buybackRouter = createTRPCRouter({
                       buybackOrderId: input.buybackOrderId,
                       bookId: input.isbn,
                       quantity: parseInt(input.quantity),
-                      price: parseFloat(input.price),
+                      buybackPrice: parseFloat(input.price),
                       subtotal: parseInt(input.quantity) * parseFloat(input.price)
                     },
                 });
@@ -292,9 +293,9 @@ export const buybackRouter = createTRPCRouter({
         buybackOrderId: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.purchase.findMany({
+        return await ctx.prisma.buyback.findMany({
           where:{
             buybackOrderId: input.buybackOrderId
           }

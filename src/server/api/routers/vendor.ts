@@ -155,5 +155,24 @@ export const vendorRouter = createTRPCRouter({
       } catch (error) {
         throw new TRPCError({code: error.code, message: error.message})
       }
-    })
+    }),
+
+    getVendorById: publicProcedure
+    .input(z.object({
+      vendorId: z.string()
+    }))
+    .query(async ({ ctx, input }) => {
+
+      try {
+        console.log("IM HERE")      
+        console.log(input.vendorId)
+        return await ctx.prisma.vendor.findFirst({
+          where:{
+            id: input.vendorId
+          }
+        });
+      } catch (error) {
+        throw new TRPCError({code: "NOT_FOUND", message: "Unable to find vendor!"}) 
+      }
+    }),
 });

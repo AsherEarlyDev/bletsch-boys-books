@@ -53,7 +53,6 @@ export default function BookTable() {
       setDisplayNewBookEntriesView(true);
     }
   }
-
   function renderNewBookEntriesView(){
     return(
         <>
@@ -64,7 +63,6 @@ export default function BookTable() {
         </>
     )
   }
-
   function closeNewBookEntriesView(){
     setDisplayNewBookEntriesView(false)
   }

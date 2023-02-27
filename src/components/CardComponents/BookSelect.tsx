@@ -5,14 +5,15 @@ import { api } from '../../utils/api'
 
 
 
-export default function BookSelect(props:{saveFunction: any, defaultValue?:string, displayTitleOrISBN:"title" | "isbn"}) {
+export default function BookSelect(props:{saveFunction: any, defaultValue?:any}) {
+  // Saves the ISBN of the book selected no matter what option is chosen
   const books = api.books.getAllInternalBooks.useQuery().data
   
 
-  const [query, setQuery] = useState(props.defaultValue)
+  const [query, setQuery] = useState(props.defaultValue.title ?? "")
 
   useEffect(() => {
-    props.saveFunction(props.defaultValue)
+    props.saveFunction(props.defaultValue.isbn)
   },[])
   const filteredBooks =
       books ? (query === ''
@@ -30,12 +31,12 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:strin
 
   return (
       <div className="w-44 mt-1">
-        <Combobox defaultValue={props.defaultValue} onChange={props.saveFunction}>
+        <Combobox defaultValue={props.defaultValue} onChange={(value) => props.saveFunction(value.isbn)}>
           <div className="relative mt-1">
             <div className="relative w-full cursor-default overflow-hidden border border-gray-300 rounded-md bg-white text-left shadow-sd focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-500 sm:text-sm">
               <Combobox.Input
                   className="w-full border-none py-1 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                  displayValue={(value) => (value)}
+                  displayValue={(value) => (value.title)}
                   defaultValue={props.defaultValue}
                   onChange={(event) => setQuery(event.target.value)}
               />
@@ -66,7 +67,7 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:strin
                                     active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                                 }`
                             }
-                            value={props.displayTitleOrISBN=="isbn" ? book.isbn : book.title}
+                            value={book}
                         >
                           {({ selected, active }) => (
                               <>

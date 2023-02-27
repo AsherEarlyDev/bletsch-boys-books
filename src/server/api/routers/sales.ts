@@ -264,5 +264,26 @@ export const salesRouter = createTRPCRouter({
           message: error.message,
         });
       }
-    })
+    }),
+
+    getSalesByRecId: publicProcedure
+    .input(
+      z.object({
+        saleRecId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.sale.findMany({
+          where:{
+            saleReconciliationId: input.saleRecId
+          }
+        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+    }),
 });

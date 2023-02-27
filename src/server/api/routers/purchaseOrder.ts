@@ -30,14 +30,15 @@ export const purchaseOrderRouter = createTRPCRouter({
                 }
               })
             if (vendor){
-                await ctx.prisma.purchaseOrder.create({
+                const newPurchaseOrder = await ctx.prisma.purchaseOrder.create({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
                         vendorName: vendor.vendorName
                     },
                 });
-            }
+                return {id: newPurchaseOrder.id, date: date, vendorName: vendor.vendorName}
+            }   
         } catch (error) {
           throw new TRPCError({
             code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',

@@ -34,12 +34,7 @@ export default function SalesRecTableRow(props:SalesRecTableRowProp) {
         <ViewTableEntry onView={handleView}>{props.salesRecInfo.date}</ViewTableEntry>
         <TableEntry>{props.salesRecInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.totalBooks}</TableEntry>
-        <TableEntry>{props.salesRecInfo.revenue}</TableEntry>
-        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-          <button onClick={handleAdd} className="text-indigo-600 hover:text-indigo-900">
-            Add Sale<span className="sr-only">, {props.salesRecInfo.id}</span>
-          </button>
-        </td>
+        <TableEntry>${props.salesRecInfo.revenue.toFixed(2)}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

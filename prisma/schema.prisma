@@ -38,7 +38,7 @@ model Genre {
 model Vendor {
   id                    String             @id @default(cuid())
   name                  String
-  bookBuybackPercentage Float?
+  bookBuybackPercentage Float?             @default(0)
   bookBuybackOrder      BookBuybackOrder[]
   purchaseOrder         PurchaseOrder[]
 }

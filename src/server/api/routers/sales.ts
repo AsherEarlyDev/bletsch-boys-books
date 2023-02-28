@@ -56,7 +56,8 @@ export const salesRouter = createTRPCRouter({
                     isbn: book.isbn
                   },
                   data:{
-                    inventory: inventory
+                    inventory: inventory,
+                    shelfSpace: inventory*(book.dimensions[1] ?? .8)
                   }
                 })
                 await ctx.prisma.saleReconciliation.update({
@@ -144,7 +145,8 @@ export const salesRouter = createTRPCRouter({
                 isbn: book.isbn
               },
               data:{
-                inventory: book.inventory + change
+                inventory: book.inventory + change,
+                shelfSpace: (book.inventory + change)*(book.dimensions[1] ?? .8)
               }
             })
 
@@ -208,6 +210,11 @@ export const salesRouter = createTRPCRouter({
             id: input.id
           }
         })
+        const book = await ctx.prisma.book.findUnique({
+          where:{
+            isbn: sale.bookId
+          }
+        })
         if(sale){
           await ctx.prisma.book.update({
             where: {
@@ -216,7 +223,8 @@ export const salesRouter = createTRPCRouter({
             data:{
               inventory: {
                 increment: sale.quantity
-              }
+              },
+              shelfSpace: (book.inventory+sale.quantity)*(book.dimensions[1] ?? .8)
             }
           })
         }

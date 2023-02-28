@@ -23,6 +23,8 @@ const zBook = z.object({
   pageCount: z.optional(z.number()),
   genre: z.string(),
   retailPrice: z.number(),
+  shelfSpace: z.number(),
+  inventory: z.number(),
   imageLink: z.optional(z.string())
 })
 
@@ -55,7 +57,11 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
         retailPrice: input.saleInfo?.retailPrice.amount,
         inventory: 0,
         authorNames: input.authors.join(", "),
-        imageLink: result.secure_url
+        imageLink: result.secure_url,
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
       }
       return bookInfo
     } else {
@@ -71,7 +77,11 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
         retailPrice: input.saleInfo?.retailPrice.amount,
         inventory: 0,
         authorNames: input.authors.join(", "),
-        imageLink: ""
+        imageLink: "",
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
       }
       return bookInfo
     }
@@ -79,7 +89,8 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
   return bookInfo
 } 
 
-const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; }) =>{
+const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Genre; }, ctx:context) =>{
+  const lastMonthSales = await getLastMonthSales(book.isbn, ctx)
   const bookInfo: editableBook = {
     isbn: book.isbn,
     title: book.title,
@@ -92,7 +103,12 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     retailPrice: book.retailPrice,
     inventory: book.inventory,
     authorNames: book.authorNames,
+    lastMonthSales: lastMonthSales,
+    shelfSpace: book.shelfSpace,
+    daysOfSupply:lastMonthSales==0 ? Infinity : book.inventory/(await getLastMonthSales(book.isbn, ctx))*30,
+    bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
     imageLink: book.imageLink
+
   }
   return bookInfo
 }
@@ -124,7 +140,7 @@ export const BooksRouter = createTRPCRouter({
     for(const isbn of input){
       try{
         var book = await getBookIfExists(ctx, isbn)
-        if(book) internalBooks.push(transformDatabaseBook(book))
+        if(book) internalBooks.push(await transformDatabaseBook(book, ctx))
         else{
           const externalBook = await fetchBookFromExternal(isbn)
           if(externalBook) externalBooks.push(externalBook)
@@ -148,7 +164,7 @@ export const BooksRouter = createTRPCRouter({
     ).query(async ({ctx, input}) => {
         try{
           let book = await getBookIfExists(ctx, input.isbn)
-          if(book) return transformDatabaseBook(book)
+          if(book) return await transformDatabaseBook(book, ctx)
         }
         catch{
           console.log("error")
@@ -214,13 +230,7 @@ export const BooksRouter = createTRPCRouter({
         }
       
       })
-      const editedBooks = await Promise.all( books.map(async (book) =>({
-        ...book,
-        lastMonthSales: await getLastMonthSales(book.isbn, ctx)
-      }))
-      )
-      
-
+      const editedBooks = await addExtraBookFields(books, ctx)
       return editedBooks
     }
     else{
@@ -247,7 +257,7 @@ export const BooksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      return await ctx.prisma.book.findMany({
+      const books = await ctx.prisma.book.findMany({
         include:{
           author:true,
           genre:true
@@ -287,6 +297,8 @@ export const BooksRouter = createTRPCRouter({
           }
         }
       })
+      const editedBooks = await addExtraBookFields(books, ctx)
+      return editedBooks
     }
     else{
       return await ctx.prisma.book.findMany({
@@ -356,6 +368,7 @@ export const BooksRouter = createTRPCRouter({
             imageLink: data.imageLink,
             retailPrice: data.retailPrice,
             authorNames: data.author.join(", "),
+            shelfSpace: data.inventory * (data.dimensions[1] ?? .08),
             author:{
               connect:authorIDs
             },
@@ -383,6 +396,7 @@ export const BooksRouter = createTRPCRouter({
           },
           data:{
             ...data,
+            shelfSpace: data.inventory * (data.dimensions[1] ?? .8),
             author:{
               set:authorIDs
             },
@@ -534,8 +548,8 @@ const getLastMonthSales = async (isbn: string, ctx: context) => {
     where:{
       saleReconciliation: {
         date: {
-          gte: currentDate,
-          lte: lastMonth
+          lte: currentDate,
+          gte: lastMonth
         }        
       },
       bookId:{
@@ -544,6 +558,8 @@ const getLastMonthSales = async (isbn: string, ctx: context) => {
     },
     select: {
       quantity: true,
+      id: true
+
     }
   })
   var sum = 0
@@ -552,6 +568,50 @@ const getLastMonthSales = async (isbn: string, ctx: context) => {
   }
   return sum
 }
+
+async function getBestBuybackRate (isbn:string, ctx:context){
+  const purchases = await ctx.prisma.purchase.findMany({
+    where:{
+      bookId:isbn,
+      purchaseOrder:{
+        vendor:{
+          bookBuybackPercentage:{
+            gte:0
+          }
+        }
+      }
+    },
+    include:{
+      purchaseOrder:{
+        include:{
+          vendor:true
+        }
+      }
+    }
+  })
+  var highestBuyBack = 0
+  for(const purchase of purchases){
+    const price = purchase.price * (purchase.purchaseOrder.vendor.bookBuybackPercentage)
+    if(price > highestBuyBack) highestBuyBack = price
+  }
+  return highestBuyBack
+} 
+
+async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
+  return await Promise.all(books.map(async (book) => {
+    const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
+    return (
+      {
+        ...book,
+        lastMonthSales: lastMonthSales,
+        daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
+        bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx)
+      });
+  })
+  );
+}
+
+
 
 function generateLastMonthDatesArray(){
   var dateArray=[]

@@ -54,6 +54,9 @@ export type editableBook = {
     authorNames: string
     lastMonthSales?: number
     imageLink?: string
+    shelfSpace: number
+    daysOfSupply:number,
+    bestBuybackPrice:number
 }
 
 export type completeBook = {
@@ -77,8 +80,12 @@ export type databaseBook = {
     dimensions: Array<number>,
     pageCount?: number,
     genreID: string,
-    retailPrice: number
+
+    retailPrice: number,
+    inventory: number,
+    shelfSpace: number,
     imageLink?: string
+
 }
 
 

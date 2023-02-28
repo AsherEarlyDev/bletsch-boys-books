@@ -37,7 +37,7 @@ export const purchaseOrderRouter = createTRPCRouter({
                         vendorName: vendor.vendorName
                     },
                 });
-                return {id: newPurchaseOrder.id, date: date, vendorName: vendor.vendorName}
+                return {id: newPurchaseOrder.id, date: date, vendor: vendor}
             }   
         } catch (error) {
           throw new TRPCError({

@@ -41,6 +41,7 @@ export default function BuybackTable() {
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
   const [displayBuybackView, setDisplayBuybackView] = useState(false)
   const [displayAddBuybackView, setDisplayAddBuybackView] = useState(false)
+  const [onlyEdit, setOnlyEdit] = useState(false)
   const [createData, setCreateData] = useState({
     date: '',
     vendorId: '',
@@ -48,8 +49,8 @@ export default function BuybackTable() {
   })
   
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
-    onSuccess: (data)=>{
-      setCreateData(data)
+    onSuccess: ()=>{
+      setDisplayEditBuybackView(true)
     }
   })
   const vendors = api.vendor.getVendorsWithBuyback.useQuery().data
@@ -65,7 +66,7 @@ export default function BuybackTable() {
         vendorId: vendorId
       })
     }
-    setDisplayEditBuybackView(true)
+    
   }
 
   function renderOrderRow(items: any[]) {
@@ -88,32 +89,21 @@ export default function BuybackTable() {
           })
         }
       }
+      setOnlyEdit(true)
       setDisplayEditBuybackView(true)
     }
   }
 
-  function renderEditBuybackViewOnCreate() {
-    console.log(createData)
 
+  function renderEditBuybackView() {
+    const value = onlyEdit ? currentOrder : createBuybackOrder.data
     return (
         <>
-          {(displayEditBuybackView) ?
+          {(displayEditBuybackView && value) ?
               <CreateEntries closeStateFunction={setDisplayEditBuybackView}
-                             submitText="Edit Buyback">
+                             submitText="Edit Buybacl">
                 <EditBuybackTableModal closeOut={closeEditBuybackView}
-                                        data={createData}></EditBuybackTableModal></CreateEntries> : null}
-        </>
-    )
-  }
-
-  function renderEditPurchaseView() {
-    return (
-        <>
-          {(displayEditBuybackView && currentOrder) ?
-              <CreateEntries closeStateFunction={setDisplayEditBuybackView}
-                             submitText="Edit Purchase Order">
-                <EditBuybackTableModal closeOut={closeEditBuybackView}
-                                        data={currentOrder}></EditBuybackTableModal></CreateEntries> : null}
+                                        data={value}></EditBuybackTableModal></CreateEntries> : null}
         </>
     )
   }
@@ -251,11 +241,10 @@ export default function BuybackTable() {
             }}
             entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
-          {renderEditBuybackViewOnCreate()}
           {renderDeleteBuybackView()}
           {renderBuybackView()}
           {renderAdd()}
-          {renderEditPurchaseView()}
+          {renderEditBuybackView()}
           <ToastContainer/>
         </div>
       </div>

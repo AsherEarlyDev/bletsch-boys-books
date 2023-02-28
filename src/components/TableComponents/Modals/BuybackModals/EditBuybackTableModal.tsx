@@ -26,7 +26,6 @@ interface EditBuybackTableModalProps{
 }
 
 export default function EditBuybackTableModal(props: EditBuybackTableModalProps) {
-  console.log(props.data)
   const [date, setDate] = useState(props.data.date)
   const [vendorInfo, setVendorInfo] = useState({id: props.data.vendorId, name: ""})
   const [id, setId] = useState(props.data.id)
@@ -90,12 +89,12 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     const dummyBuyback = {
       id: '',
       buybackOrderId: props.data.id,
-      price: 0,
+      buybackPrice: 0,
       quantity: 0,
       bookId: '',
       subtotal: 0
     }
-    return (addBuybackRowView && (<BuybackTableRow isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
+    return (addBuybackRowView && (<BuybackTableRow vendorId={props.data.vendorId} isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
   }
 
   function closeAddBuybackRow(){
@@ -103,12 +102,19 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   }
 
   function handleAddBuyback(isbn: string, quantity: number, price: number){
-    if(isbn && quantity && price && props.data.id){
+    if(isbn && quantity && props.data.id){
+      let buybackPrice
+      if (price === undefined){
+        buybackPrice = 0
+      }
+      else{
+        buybackPrice = price
+      }
       addBuyback.mutate({
         buybackOrderId: props.data.id,
         isbn: isbn,
         quantity: quantity.toString(),
-        price: price.toString()
+        price: buybackPrice.toString()
       })
       closeAddBuybackRow()
     }
@@ -142,7 +148,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
                       <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {buybacks?.map((buyback) => (<BuybackTableRow isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                    {buybacks?.map((buyback) => (<BuybackTableRow vendorId={props.data.vendorId} isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
                     {renderAddBuybackRow()}
                     </tbody>
                   </table>

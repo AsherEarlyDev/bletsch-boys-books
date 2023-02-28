@@ -33,7 +33,6 @@ export const buybackRouter = createTRPCRouter({
                 }
               })
               if (purchaseOrders.length != 0){
-                console.log(purchaseOrders[0])
                 let i = 0
                 while (costMostRecent === 0 && i < purchaseOrders.length){
                   const purchase = await ctx.prisma.purchase.findFirst({
@@ -66,9 +65,17 @@ export const buybackRouter = createTRPCRouter({
                   isbn: input.isbn
                 }
               })
-              if (price === 0){
+
+              if (price === 0 && costMostRecent > 0){
                 price = costMostRecent * vendor.bookBuybackPercentage 
               }
+              else{
+                throw new TRPCError({
+                  code: 'NOT_FOUND',
+                  message: "There are no recorded purchases for " + book.title + " under " + vendor.name +"!"
+                })
+              }
+
             if (buybackOrder && book){
               const inventory: number = book.inventory - parseInt(input.quantity)
               if(inventory >= 0){
@@ -84,8 +91,8 @@ export const buybackRouter = createTRPCRouter({
                       buybackOrderId: input.buybackOrderId,
                       bookId: input.isbn,
                       quantity: parseInt(input.quantity),
-                      buybackPrice: parseFloat(input.price),
-                      subtotal: parseInt(input.quantity) * parseFloat(input.price)
+                      buybackPrice: price,
+                      subtotal: parseInt(input.quantity) * price
                     },
                 });
                 await ctx.prisma.book.update({

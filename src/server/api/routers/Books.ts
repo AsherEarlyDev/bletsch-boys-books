@@ -429,11 +429,17 @@ export const BooksRouter = createTRPCRouter({
                 purchaseOrderId: purchaseOrder.id
               }
             })
-            purchases.map(async (purchase) => {
-              books.push(purchase.bookId)
-            })
+            for (const purch of purchases){
+              const book = await ctx.prisma.book.findFirst({
+                where:{
+                  isbn: purch.bookId
+                }
+              })
+              books.push(book)
+            }
         }
-        return Array.from(new Set(books))
+        console.log(books)
+        return books
       }
       catch(error){
           throw new TRPCError({

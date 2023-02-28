@@ -83,7 +83,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const csvVal = (formData.get("purchaseCSV"))
-    console.log(csvVal)
     Papa.parse(csvVal, {
       header:true,
       complete: function(results) {

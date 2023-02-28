@@ -34,7 +34,7 @@ export const buybackOrderRouter = createTRPCRouter({
                         vendorName: vendor.vendorName
                     },
                 });
-                return {id: newBuyback.id, date: date, vendorId: input.vendorId}
+                return {id: newBuyback.id, date: date, vendor: vendor}
             }
         } catch (error) {
           throw new TRPCError({

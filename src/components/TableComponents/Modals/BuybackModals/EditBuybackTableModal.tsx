@@ -15,11 +15,12 @@ import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Buyback } from "../../../../types/buybackTypes";
 import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import BuybackVendorSelect from "../../../CardComponents/BuybackVendorSelect";
+import { Vendor } from "../../../../types/vendorTypes";
 
 interface EditBuybackTableModalProps{
   data: {
     id: string
-    vendorId: string
+    vendor: Vendor
     date: string
   }
   closeOut: () => void
@@ -27,8 +28,9 @@ interface EditBuybackTableModalProps{
 
 export default function EditBuybackTableModal(props: EditBuybackTableModalProps) {
   const [date, setDate] = useState(props.data.date)
-  const [vendorInfo, setVendorInfo] = useState({id: props.data.vendorId, name: ""})
-  const [id, setId] = useState(props.data.id)
+  const [vendorName, setVendorName] = useState(props.data.vendor.name)
+  const [vendorId, setVendorId] = useState(props.data.vendor.id)
+  const [vendorBuyback, setVendorBuyback] = useState(props.data.vendor.bookBuybackPercentage)
   const [addBuybackRowView, setAddBuybackRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Buyback"
@@ -65,14 +67,21 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     setDisplayConfirmationView(false)
   }
 
+  function saveVendorInfo(vendor: Vendor){
+    setVendorBuyback(vendor.bookBuybackPercentage)
+    setVendorId(vendor.id)
+    setVendorName(vendor.name)
+  }
+
   function handleEditSubmission(){
     //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
-    if(props.data.id && date && vendorInfo){
+    const newVendorId = vendorId ? vendorId : props.data.vendor.id
+    if(props.data.id && date && newVendorId){
       modifyBuybackOrder.mutate({
         date: date,
         buybackOrderId: props.data.id,
-        vendorId: vendorInfo.id
+        vendorId: newVendorId
       })
       props.closeOut()
     }
@@ -94,7 +103,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       bookId: '',
       subtotal: 0
     }
-    return (addBuybackRowView && (<BuybackTableRow vendorId={props.data.vendorId} isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
+    return (addBuybackRowView && (<BuybackTableRow vendorId={props.data.vendor.id} isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
   }
 
   function closeAddBuybackRow(){
@@ -131,7 +140,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
           <div className="flex flex-row gap-10 pt-4 justify-center">
             <MutableCardProp saveValue={setDate} heading="Change Date" required="True" dataType="date" defaultValue={date}></MutableCardProp>
             <div className="mt-1">
-              <BuybackVendorSelect saveFunction={setVendorInfo} defaultValue={vendorInfo.name}></BuybackVendorSelect>
+              <BuybackVendorSelect saveFunction={saveVendorInfo} defaultValue={props.data.vendor?.name}></BuybackVendorSelect>
             </div>
           </div>
           <div className="mt-8 flex flex-col">
@@ -148,7 +157,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
                       <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {buybacks?.map((buyback) => (<BuybackTableRow vendorId={props.data.vendorId} isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                    {buybacks?.map((buyback) => (<BuybackTableRow vendorId={props.data.vendor.id} isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
                     {renderAddBuybackRow()}
                     </tbody>
                   </table>

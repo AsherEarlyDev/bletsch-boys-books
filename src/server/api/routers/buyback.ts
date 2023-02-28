@@ -41,6 +41,7 @@ export const buybackRouter = createTRPCRouter({
                       bookId: isbn
                     }
                   })
+                  console.log(purchase)
                   if (purchase){
                     costMostRecent = purchase.price
                   }
@@ -65,11 +66,12 @@ export const buybackRouter = createTRPCRouter({
                   isbn: input.isbn
                 }
               })
-
+              console.log("Price: "+price)
+              console.log("Cost: "+costMostRecent)
               if (price === 0 && costMostRecent > 0){
                 price = costMostRecent * vendor.bookBuybackPercentage 
               }
-              else{
+              else if (price === 0 && costMostRecent === 0){
                 throw new TRPCError({
                   code: 'NOT_FOUND',
                   message: "There are no recorded purchases for " + book.title + " under " + vendor.name +"!"
@@ -112,7 +114,7 @@ export const buybackRouter = createTRPCRouter({
                       increment: parseInt(input.quantity)
                     },
                     revenue: {
-                      increment: parseInt(input.quantity)*parseFloat(input.price)
+                      increment: parseInt(input.quantity)*price
                     },
                     uniqueBooks: {
                       increment: unique

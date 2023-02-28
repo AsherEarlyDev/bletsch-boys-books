@@ -25,7 +25,6 @@ interface EditPurchaseTableModalProps{
 }
 
 export default function EditPurchaseTableModal(props: EditPurchaseTableModalProps) {
-  console.log(props.purchaseVendor.name)
   const [date, setDate] = useState(props.purchaseDate)
   const [vendorName, setVendorName] = useState(props.purchaseVendor.name)
   const [vendorId, setVendorId] = useState(props.purchaseVendor.id)
@@ -76,7 +75,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
     const newVendorId = vendorId ? vendorId : props.purchaseVendor.id
-    console.log(newVendorId)
     if(props.purchaseOrderId && date && newVendorId){
       modifyPurchaseOrder.mutate({
         date: date,

@@ -15,7 +15,7 @@ import ViewBuybackModal from '../Modals/BuybackModals/ViewBuybackModal';
 
 export default function BuybackTable() {
   const FIRST_HEADER = ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [buybacks, setBuybacks] = useState<any[]>([])
@@ -23,8 +23,7 @@ export default function BuybackTable() {
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
-    vendorId: '',
-    vendorName: ''
+    vendor: {id: '', name: '', bookBuybackPercentage: 0}
   })
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
@@ -84,8 +83,7 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendorId,
-            vendorName: order.vendor.name
+            vendor: order.vendor,
           })
         }
       }
@@ -120,8 +118,7 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendorId,
-            vendorName: order.vendor.name
+            vendor: order.vendor,
           })
         }
       }
@@ -153,8 +150,7 @@ export default function BuybackTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorId: order.vendor.id,
-            vendorName: order.vendor.name
+            vendor: order.vendor,
           })
           setBuybacks(order.buybacks)
         }
@@ -173,7 +169,7 @@ export default function BuybackTable() {
                                         buybacks={buybacks}
                                         buybackOrderId={currentOrder.id}
                                         buybackDate={currentOrder.date}
-                                        buybackVendorName={currentOrder.vendorName}></ViewBuybackTableModal>
+                                        buybackVendorName={currentOrder.vendor.name}></ViewBuybackTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

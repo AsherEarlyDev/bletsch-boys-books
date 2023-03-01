@@ -41,7 +41,6 @@ export const buybackRouter = createTRPCRouter({
                       bookId: isbn
                     }
                   })
-                  console.log(purchase)
                   if (purchase){
                     costMostRecent = purchase.price
                   }
@@ -66,8 +65,6 @@ export const buybackRouter = createTRPCRouter({
                   isbn: input.isbn
                 }
               })
-              console.log("Price: "+price)
-              console.log("Cost: "+costMostRecent)
               if (price === 0 && costMostRecent > 0){
                 price = costMostRecent * vendor.bookBuybackPercentage 
               }

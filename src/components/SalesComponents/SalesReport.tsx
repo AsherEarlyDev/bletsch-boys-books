@@ -1,4 +1,4 @@
-import { Cost, Revenue, Sale } from "../../types/salesTypes";
+import { BuybackRevenue, Cost, Revenue, Sale } from "../../types/salesTypes";
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
 
@@ -6,23 +6,33 @@ import autoTable from 'jspdf-autotable'
 
 
 export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: Map<Date,Revenue>}, 
+  buyback: {totalRevenue: number, resultsMap: Map<Date,BuybackRevenue>}, 
   cost: {totalCost: number, resultsMap: Map<Date,Cost>}, start: string, end: string) {
         let resultsArray = []
         const revMap = rev?.resultsMap
         const costMap = cost?.resultsMap
-        const totalMap = new Map<string, {cost: number, revenue: number}>()
+        const buybackMap = buyback?.resultsMap
+        const totalMap = new Map<string, {cost: number, revenue: number, buybackRevenue: number}>()
         const dates = generateDatesArray(start, end);
-        dates.map((date)=>totalMap.set((date.getMonth()+1)+"/"+(date.getDate())+"/"+date.getFullYear(), {cost: 0, revenue: 0}))
-        if (revMap && costMap){
+        dates.map((date)=>totalMap.set((date.getMonth()+1)+"/"+(date.getDate())+"/"+date.getFullYear(), {cost: 0, revenue: 0, buybackRevenue: 0}))
+        if (revMap && costMap && buybackMap){
           revMap.forEach((value,key)=>{
-            totalMap.set((key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear(), {cost: 0, revenue: value.revenue})
+            totalMap.set((key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear(), {cost: 0, revenue: value.revenue, buybackRevenue: 0})
           })
           costMap.forEach((value,key)=>{
             const date = (key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear()
             const mapObj = totalMap.get(date)
-            totalMap.set(date, {cost: value.cost, revenue: mapObj.revenue})
+            totalMap.set(date, {cost: value.cost, revenue: mapObj.revenue, buybackRevenue: 0})
+          })
+          console.log(buybackMap)
+          buybackMap.forEach((value,key)=>{
+            const date = (key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear()
+            const mapObj = totalMap.get(date)
+            console.log(value.revenue)
+            totalMap.set(date, {cost: mapObj.cost, revenue: mapObj.revenue, buybackRevenue: value.revenue})
           })
         }
+        console.log(totalMap)
 
         totalMap.forEach((value,key)=>{
           let date = new Date(key)
@@ -30,11 +40,12 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
             date: (date.getMonth()+1)+"/"+(date.getDate())+"/"+date.getFullYear(),
             cost: value.cost,
             revenue: value.revenue,
-            profit: value.revenue - value.cost
+            profit: value.revenue + value.buybackRevenue - value.cost,
+            buybackRevenue: value.buybackRevenue
           })
         })
         resultsArray = resultsArray.sort((a: any, b: any) => (new Date(a.date) > new Date(b.date)) ? 1 : -1)
-        return {resultsArray: resultsArray, totalRev: rev?.totalRevenue, totalCost: cost?.totalCost}
+        return {resultsArray: resultsArray, totalRev: rev?.totalRevenue + buyback?.totalRevenue, totalCost: cost?.totalCost}
     }
 
     export function generateDatesArray(start: string, end: string){
@@ -47,20 +58,20 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
     return arr;
     }
 
-    export function generateSalesReportPDF(results: {date: string, cost: number, revenue: number, profit: number}[],
+    export function generateSalesReportPDF(results: {date: string, cost: number, revenue: number, profit: number, buybackRevenue: number}[],
       topSellers: {recentCost: number, revenue: number, profit: number, isbn: string, title: string, numBooks: number}[],
       totalCost: number, totalRevenue: number){
       const report = new jsPDF();
       const totalProfit = totalRevenue-totalCost
       const totalTableCol = ["Total Cost", "Total Revenue", "Total Profit"]
-      const tableCol = ["Date","Cost", "Revenue", "Profit"]
+      const tableCol = ["Date","Daily Cost", "Daily Sale Revenue", "Daily Profit", "Daily Buyback Revenue"]
       const topSellersColumn = ["Book ISBN","Book Title","Quantity Sold","Total Cost Most-Recent", "Total Revenue", "Total Profit"]
       let totalRow = [totalCost, totalRevenue, totalProfit]
       let dailyRow = []
       let topSellersRow = []
       if (results && topSellers){
         results.map((result)=>{
-          let dailyTemp = [result.date, result.cost, result.revenue, result.profit]
+          let dailyTemp = [result.date, result.cost, result.revenue, result.profit, result.buybackRevenue]
           dailyRow.push(dailyTemp)
         })
   

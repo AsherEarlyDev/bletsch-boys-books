@@ -95,23 +95,25 @@ export default function FilterModal(props: FilterProp) {
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                             Filter Search
                           </Dialog.Title>
-
                         </div>
-                        {labels.map((label) => {
-                          return(<div className="mt-5">
-                          <p className="font-small leading-6 text-gray-900">
-                          {label[0]}:
-                          </p>
-                          <textarea
-                              rows={1}
-                              name={label[1]}
-                              id={label[1]}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              defaultValue=""
-                          />
-                          </div>)
-                        })}
-                        <GenreCardProp saveFunction={setGenre} defaultValue=""></GenreCardProp>
+                        <div className="p-5">
+                          <GenreCardProp saveFunction={setGenre} defaultValue=""></GenreCardProp>
+                          {labels.map((label) => {
+                            return(<div className="mt-5">
+                              <p className="font-small leading-6 text-gray-900">
+                                {label[0]}:
+                              </p>
+                              <textarea
+                                  rows={1}
+                                  name={label[1]}
+                                  id={label[1]}
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  defaultValue=""
+                              />
+                            </div>)
+                          })}
+                        </div>
+
                         
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -128,13 +130,13 @@ export default function FilterModal(props: FilterProp) {
                         >
                           Cancel
                         </button>
-                        <button
-                            type="button"
-                            onClick={() => clearFilters()}
-                            className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                        >
-                          Clear Filters
-                        </button>
+                        {/*<button*/}
+                        {/*    type="button"*/}
+                        {/*    onClick={() => clearFilters()}*/}
+                        {/*    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"*/}
+                        {/*>*/}
+                        {/*  Clear Filters*/}
+                        {/*</button>*/}
                       </div>
                     </form>
                   </Dialog.Panel>

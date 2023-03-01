@@ -14,7 +14,6 @@ export default function BookCardTabs(props: BookCardTabsProps) {
   const transactionDetails = api.books.getBookTransactionDetails.useQuery(props.isbn).data
   console.log(transactionDetails)
   let [categories] = useState(transactionDetails)
-  console.log(categories)
 
   return (
       <Tab.Group>
@@ -47,18 +46,18 @@ export default function BookCardTabs(props: BookCardTabsProps) {
               >
                 {transactions.length ?
                 <div
-                    className="flex flex-row justify-between mx-6 border-b border-solid border-indigo-400 p-2">
-                  <h3 className="text-sm font-medium leading-5">
+                    className="flex flex-row justify-between mx-2 border-b border-solid border-indigo-400 p-2 text-left">
+                  <h3 className="text-sm font-medium leading-5 w-32">
                     {(idx == 1 ? "Date Bought" : (idx == 2 ? "Date Bought Back" : "Date Sold"))}
                   </h3>
-                  {idx == 1 &&
-                  <h3 className="text-sm font-medium leading-5">
+                  {(idx == 1 || idx==2) &&
+                  <h3 className="text-sm font-medium leading-5 w-32">
                     Vendor
                   </h3>}
-                  <h3 className="text-sm font-medium leading-5">
-                    {(idx == 1 ? "Quantity Bought" : (idx == 2 ? "Quantity Bought Back" : "Quantity Sold"))}
+                  <h3 className="text-sm font-medium leading-5 w-32">
+                    {(idx == 1 ? "Quantity Bought" : (idx == 2 ? "Quantity Returned" : "Quantity Sold"))}
                   </h3>
-                  <h3 className="text-sm font-medium leading-5">
+                  <h3 className="text-sm font-medium leading-5 w-32">
                     {(idx == 1 ? "Purchase Price" : (idx == 2 ? "Buyback Price" : "Sale Price"))}
                   </h3>
                 </div>:
@@ -68,19 +67,19 @@ export default function BookCardTabs(props: BookCardTabsProps) {
                   {transactions.map((transaction) => (
                       <li
                           key={transaction.id}
-                          className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between"
+                          className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
                       >
                         <h3 className="text-sm font-medium leading-5 w-32">
-                          Find way to get date for SR/BB/PO
+                          {transaction.purchaseOrder?.date.toLocaleDateString("en-US") || transaction.bookBuybackOrder?.date.toLocaleDateString("en-US")  || transaction.saleReconciliation?.date.toLocaleDateString("en-US")}
                         </h3>
-                        {idx==1 &&
-                        <h3 className="text-sm font-medium leading-5 w-8">
-                          Get vendor name for SR/PO/BB
+                        {(idx==1 || idx==2) &&
+                        <h3 className="text-sm font-medium leading-5 w-32">
+                          {transaction.purchaseOrder?.vendor.name || transaction.bookBuybackOrder?.vendor.name}
                         </h3>}
-                        <h3 className="text-sm font-medium leading-5 w-8">
+                        <h3 className="text-sm font-medium leading-5 w-32">
                           {transaction.quantity}
                         </h3>
-                        <h3 className="text-sm font-medium leading-5 w-16">
+                        <h3 className="text-sm font-medium leading-5 w-32">
                           ${transaction.price?.toFixed(2)}
                         </h3>
                       </li>

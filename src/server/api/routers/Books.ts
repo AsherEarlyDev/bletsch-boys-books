@@ -612,28 +612,59 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
   })
   );
 }
+
 async function getPurchases (ctx: context, isbn:string){
   const purchases = await ctx.prisma.purchase.findMany({
     where:{
       bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      purchaseOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
     }
   })
   return purchases
 }
-
 async function getSales (ctx: context, isbn:string){
   const sales = await ctx.prisma.sale.findMany({
     where:{
       bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      saleReconciliation: {
+        select:{
+          date:true
+        }
+      }
     }
   })
   return sales
 }
-
 async function getBookBuyback (ctx: context, isbn:string){
   const bookBuybacks = await ctx.prisma.buyback.findMany({
     where:{
       bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      buybackPrice: true,
+      bookBuybackOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
     }
   })
   return bookBuybacks

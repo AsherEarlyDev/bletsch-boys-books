@@ -23,7 +23,7 @@ export default function PurchaseTable() {
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
-    vendorName: ''
+    vendor: {id: '', name: '', bookBuybackPercentage: 0}
   })
   const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
@@ -71,11 +71,12 @@ export default function PurchaseTable() {
   async function openEditPurchaseView(id: string) {
     if (purchaseOrder2) {
       for (const order of purchaseOrder2) {
+        console.log(order)
         if (order.id === id) {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorName: order.vendorName
+            vendor: order.vendor
           })
         }
       }
@@ -94,7 +95,7 @@ export default function PurchaseTable() {
                 <EditPurchaseTableModal closeOut={closeEditPurchaseView}
                                         purchaseDate={value.date}
                                         purchaseOrderId={value.id}
-                                        purchaseVendorName={value.vendorName}></EditPurchaseTableModal></CreateEntries> : ()=>{
+                                        purchaseVendor={value.vendor}></EditPurchaseTableModal></CreateEntries> : ()=>{
                                           toast.warning("LOADING...")
                                         }}
         </>
@@ -115,7 +116,7 @@ export default function PurchaseTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorName: order.vendorName
+            vendor: order.vendor
           })
         }
       }
@@ -147,7 +148,7 @@ export default function PurchaseTable() {
           setCurrentOrder({
             id: order.id,
             date: order.date,
-            vendorName: order.vendor.name
+            vendor: order.vendor
           })
           setPurchases(order.purchases)
         }
@@ -165,7 +166,7 @@ export default function PurchaseTable() {
                 <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases}
                                         purchaseOrderId={currentOrder.id}
                                         purchaseDate={currentOrder.date}
-                                        purchaseVendorName={currentOrder.vendorName}></ViewPurchaseTableModal>
+                                        purchaseVendorName={currentOrder.vendor.name}></ViewPurchaseTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

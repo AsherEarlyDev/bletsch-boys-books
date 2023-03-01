@@ -15,18 +15,21 @@ import {PlusIcon} from "@heroicons/react/24/solid";
 import {Purchase} from "../../../../types/purchaseTypes";
 import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
 import VendorSelect from "../../../CardComponents/VendorSelect";
+import { Vendor } from "../../../../types/vendorTypes";
 import Papa from "papaparse";
 
 interface EditPurchaseTableModalProps{
   purchaseOrderId: string
   purchaseDate: string
-  purchaseVendorName: string
+  purchaseVendor: Vendor
   closeOut: () => void
 }
 
 export default function EditPurchaseTableModal(props: EditPurchaseTableModalProps) {
   const [date, setDate] = useState(props.purchaseDate)
-  const [vendorInfo, setVendorInfo] = useState({id: '', name: props.purchaseVendorName})
+  const [vendorName, setVendorName] = useState(props.purchaseVendor.name)
+  const [vendorId, setVendorId] = useState(props.purchaseVendor.id)
+  const [vendorBuyback, setVendorBuyback] = useState(props.purchaseVendor.bookBuybackPercentage)
   const [addPurchaseRowView, setAddPurchaseRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const [purchaseCSV, setPurchaseCSV] = useState<any[]>()
@@ -47,7 +50,13 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
       toast.success("Successfully added purchase!")
     }
   })
-  const purchases: Purchase[] =api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: props.purchaseOrderId}).data
+  const purchases: Purchase[] = api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: props.purchaseOrderId}).data
+
+  function saveVendorInfo(vendor: Vendor){
+    setVendorBuyback(vendor.bookBuybackPercentage)
+    setVendorId(vendor.id)
+    setVendorName(vendor.name)
+  }
 
   function openConfirmationView(){
     setDisplayConfirmationView(true)
@@ -67,11 +76,12 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   function handleEditSubmission(){
     //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
-    if(props.purchaseOrderId && date && vendorInfo){
+    const newVendorId = vendorId ? vendorId : props.purchaseVendor.id
+    if(props.purchaseOrderId && date && newVendorId){
       modifyPurchaseOrder.mutate({
         date: date,
         purchaseOrderId: props.purchaseOrderId,
-        vendorId: vendorInfo.id
+        vendorId: newVendorId
       })
       props.closeOut()
     }
@@ -147,7 +157,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
           <div className="flex flex-row gap-10 pt-4 justify-center">
             <MutableCardProp saveValue={setDate} heading="Change Date" required="True" dataType="date" defaultValue={date}></MutableCardProp>
             <div className="mt-1">
-              <VendorSelect saveFunction={setVendorInfo} defaultValue={vendorInfo.name}></VendorSelect>
+              <VendorSelect saveFunction={saveVendorInfo} defaultValue={props.purchaseVendor?.name}></VendorSelect>
             </div>
           </div>
           <div className="mt-8 flex flex-col">

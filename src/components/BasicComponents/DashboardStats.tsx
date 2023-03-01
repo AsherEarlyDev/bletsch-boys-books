@@ -1,12 +1,6 @@
 import {api} from "../../utils/api";
 import {z} from "zod";
 
-const stats = [
-  { name: 'Total Subscribers', stat: '71,897' },
-  { name: 'Avg. Open Rate', stat: '58.16%' },
-  { name: 'Avg. Click Rate', stat: '24.57%' },
-]
-
 export default function DashboardStats() {
   const numberOfBooks = api.books.getNumberOfBooks.useQuery({filters:{
       title: "",
@@ -18,10 +12,10 @@ export default function DashboardStats() {
   const totalRevenue = api.salesReport.generateRevenueReport.useQuery({startDate: "01-01-0001", endDate: "01-01-2100"}).data
   const totalCost = api.salesReport.generateCostReport.useQuery({startDate: "01-01-0001", endDate: "01-01-2100"}).data
   const stats = [
-    { name: 'Total UniqueBooks', stat: numberOfBooks },
     { name: 'Total Costs', stat: "$" + totalCost?.totalCost.toFixed(2) },
     { name: 'Total Revenue', stat: "$" + totalRevenue?.totalRevenue.toFixed(2) },
     { name: 'Total Profit', stat: "$" + (totalRevenue?.totalRevenue - totalCost?.totalCost).toFixed(2) },
+    { name: 'Quantity of Unique Books', stat: numberOfBooks },
   ]
   return (
       <div  className="p-10">

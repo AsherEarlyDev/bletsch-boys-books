@@ -26,9 +26,7 @@ interface BuybackTableRowProp {
 }
 
 export default function BuybackTableRow(props: BuybackTableRowProp) {
-  console.log(props.buyback)
   const [isbn, setIsbn] = useState(props.buyback.bookId)
-  console.log("ISBN: "+isbn)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = props.buyback?.buybackPrice
   const [deleteBuybackView, setDeleteBuybackView] = useState(false)

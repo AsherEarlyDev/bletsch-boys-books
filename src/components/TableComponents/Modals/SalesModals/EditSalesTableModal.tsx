@@ -108,12 +108,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   }
   
   function removeCSVRow(isbn:string){
-    console.log("here")
-    console.log(saleCSV)
-    console.log(saleCSV.filter((value) => value.bookId !== isbn))
     setSaleCSV(saleCSV.filter((value) => value.bookId !== isbn))
-    console.log(isbn)
-    console.log(saleCSV)
   }
 
   function openAddSaleRow(){

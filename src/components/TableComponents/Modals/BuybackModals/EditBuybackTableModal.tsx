@@ -95,18 +95,13 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   }
 
   function renderCSVRows(){
-    console.log("render")
-    console.log(buybackCSV)
-    return buybackCSV ? buybackCSV?.map((buyback) => (<BuybackTableRow saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} buyback={buyback}></BuybackTableRow>)) : null
+
+    return buybackCSV ? buybackCSV?.map((buyback) => (<BuybackTableRow saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} buyback={buyback} vendorId={props.data.vendor.id}></BuybackTableRow>)) : null
   }
   
   function removeCSVRow(isbn:string){
-    console.log("here")
-    console.log(buybackCSV)
-    console.log(buybackCSV.filter((value) => value.bookId !== isbn))
     setBuybackCSV(buybackCSV.filter((value) => value.bookId !== isbn))
-    console.log(isbn)
-    console.log(buybackCSV)
+  }
 
   function saveVendorInfo(vendor: Vendor){
     setVendorBuyback(vendor.bookBuybackPercentage)

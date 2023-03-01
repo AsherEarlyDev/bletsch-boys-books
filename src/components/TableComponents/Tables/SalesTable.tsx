@@ -118,7 +118,7 @@ export default function SalesTable() {
     return(
         <>
           {(displayDeleteSalesRecView && currentSalesRec) ?
-              <CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sale Rec">
+              <CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Delete Sale Rec">
                 <DeleteSalesRecModal closeOut={closeDeleteSalesRecView} salesRecId={currentSalesRec.id}></DeleteSalesRecModal></CreateSaleEntries>
               : null}
         </>

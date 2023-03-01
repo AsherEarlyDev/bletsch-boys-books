@@ -8,10 +8,6 @@ export type PurchaseOrder = {
     cost: number
 }
 
-export type Vendor = {
-    id: string, 
-    name: string
-}
 
 export type Purchase = {
     id: string,

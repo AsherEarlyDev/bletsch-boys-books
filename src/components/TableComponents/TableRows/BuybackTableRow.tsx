@@ -13,9 +13,11 @@ import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
 import { Buyback } from "../../../types/buybackTypes";
 import DeleteBuybackModal from "../Modals/BuybackModals/DeleteBuybackModal";
+import BuybackCardProp from "../../CardComponents/BuybackCardProp";
 
 interface BuybackTableRowProp {
   buyback: Buyback
+  vendorId: string
   isAdding: boolean
   isView: boolean
   isCSV?: boolean
@@ -24,7 +26,9 @@ interface BuybackTableRowProp {
 }
 
 export default function BuybackTableRow(props: BuybackTableRowProp) {
+  console.log(props.buyback)
   const [isbn, setIsbn] = useState(props.buyback.bookId)
+  console.log("ISBN: "+isbn)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = props.buyback?.buybackPrice
   const [deleteBuybackView, setDeleteBuybackView] = useState(false)
@@ -98,7 +102,8 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
                 :
                 (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BookCardProp saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
+
+                          <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BuybackCardProp>
                           <MutableCurrencyTableEntry saveValue={setBuybackPrice} heading="Buyback Price"
                                                      required="True" dataType="number"
                                                      defaultValue={props.isCSV ? buybackPrice : ""}></MutableCurrencyTableEntry>
@@ -113,7 +118,7 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
                         (isEditing ?
                             <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
-                              <BookCardProp saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BookCardProp>
+                              <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp>
                               <MutableCurrencyTableEntry saveValue={setBuybackPrice}
                                                          heading="Buyback Price" required="True"
                                                          dataType="number"

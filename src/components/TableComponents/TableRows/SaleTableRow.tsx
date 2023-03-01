@@ -1,5 +1,5 @@
 import TableEntry from "../TableEntries/TableEntry";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {api} from "../../../utils/api";
 import {Sale} from "../../../types/salesTypes";
 import MutableCurrencyTableEntry from "../TableEntries/MutableCurrencyTableEntry";
@@ -16,13 +16,14 @@ interface SaleTableRowProp {
   sale: Sale
   isAdding: boolean
   isView: boolean
-  closeAdd?: () => void
+  isCSV?: boolean
+  closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
 export default function SaleTableRow(props: SaleTableRowProp) {
   const [isbn, setIsbn] = useState(props.sale.bookId)
-  const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
+  const book = api.books.findInternalBook.useQuery({isbn:props.sale.bookId}).data
   const defaultPrice = props.sale?.price
   const [deleteSaleView, setDeleteSaleView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -37,6 +38,7 @@ export default function SaleTableRow(props: SaleTableRowProp) {
       toast.success("Successfully modified sale!")
     }
   })
+
   const [visible, setVisible] = useState(true)
 
   function handleRowEdit() {
@@ -86,7 +88,7 @@ export default function SaleTableRow(props: SaleTableRowProp) {
 
   return (
       <>
-        {visible &&
+        {visible && 
         (props.isView ?
                 <tr>
                   <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
@@ -95,19 +97,19 @@ export default function SaleTableRow(props: SaleTableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ?
+                (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BookCardProp saveFunction={setIsbn} defaultValue={{}}></BookCardProp>
+                          <BookCardProp saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}}></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setSalePrice} heading="Retail Price"
                                                      required="True" dataType="number"
-                                                     defaultValue=""></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? salePrice : ""}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantitySold} heading="Quantity Sold"
                                              required="True" dataType="number"
-                                             defaultValue=""></MutableTableEntry>
+                                             defaultValue={props.isCSV ? quantitySold : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNewSale}></SaveRowEntry>
-                          <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>
-                        </tr>
+                          <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.sale.bookId : undefined}></DeleteRowEntry>
+                        </tr> : null )
                         :
                         (isEditing ?
                             <tr>

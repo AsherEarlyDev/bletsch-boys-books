@@ -13,6 +13,7 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:any})
   const [query, setQuery] = useState(props.defaultValue.title ?? "")
 
   useEffect(() => {
+    console.log(props.defaultValue.isbn)
     props.saveFunction(props.defaultValue.isbn)
   },[])
   const filteredBooks =

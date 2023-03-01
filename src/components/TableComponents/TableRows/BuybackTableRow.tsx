@@ -18,7 +18,8 @@ interface BuybackTableRowProp {
   buyback: Buyback
   isAdding: boolean
   isView: boolean
-  closeAdd?: () => void
+  isCSV?: boolean
+  closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
@@ -95,20 +96,20 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ?
+                (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BookCardProp saveFunction={setIsbn} defaultValue={{}} ></BookCardProp>
+                          <BookCardProp saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setBuybackPrice} heading="Buyback Price"
                                                      required="True" dataType="number"
-                                                     defaultValue=""></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? buybackPrice : ""}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantityBuyback} heading="Quantity Bought"
                                              required="True" dataType="number"
-                                             defaultValue=""></MutableTableEntry>
+                                             defaultValue={props.isCSV ? quantityBuyback : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNewBuyback}></SaveRowEntry>
-                          <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>
-                        </tr>
-                        :
+                          <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.buyback.bookId : undefined}></DeleteRowEntry>
+                        </tr> : null)
+                        : 
                         (isEditing ?
                             <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}

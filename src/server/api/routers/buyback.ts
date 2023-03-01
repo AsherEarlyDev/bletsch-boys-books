@@ -93,7 +93,8 @@ export const buybackRouter = createTRPCRouter({
                     isbn: input.isbn
                   },
                   data:{
-                    inventory: inventory
+                    inventory: inventory,
+                    shelfSpace: (inventory)*(book.dimensions[1] ?? .8)
                   }
                 })
                 await ctx.prisma.bookBuybackOrder.update({
@@ -181,7 +182,8 @@ export const buybackRouter = createTRPCRouter({
                 isbn: book.isbn
               },
               data:{
-                inventory: book.inventory + change
+                inventory: book.inventory + change,
+                shelfSpace: (book.inventory+change)*(book.dimensions[1] ?? .8)
               }
             })
 
@@ -245,6 +247,11 @@ export const buybackRouter = createTRPCRouter({
             id: input.id
           }
         })
+        const book = await ctx.prisma.book.findUnique({
+          where:{
+            isbn: buyback.bookId
+          }
+        })
         if(buyback){
           await ctx.prisma.book.update({
             where: {
@@ -253,7 +260,9 @@ export const buybackRouter = createTRPCRouter({
             data:{
               inventory: {
                 increment: buyback.quantity
-              }
+              },
+              shelfSpace: (book.inventory+buyback.quantity)*(book.dimensions[1] ?? .8)
+              
             }
           })
         }

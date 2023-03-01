@@ -15,6 +15,7 @@ import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Buyback } from "../../../../types/buybackTypes";
 import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import BuybackVendorSelect from "../../../CardComponents/BuybackVendorSelect";
+import Papa from "papaparse";
 
 interface EditBuybackTableModalProps{
   data: {
@@ -26,13 +27,13 @@ interface EditBuybackTableModalProps{
 }
 
 export default function EditBuybackTableModal(props: EditBuybackTableModalProps) {
-  console.log(props.data)
   const [date, setDate] = useState(props.data.date)
   const [vendorInfo, setVendorInfo] = useState({id: props.data.vendorId, name: ""})
   const [id, setId] = useState(props.data.id)
   const [addBuybackRowView, setAddBuybackRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Buyback"
+  const [buybackCSV, setBuybackCSV] = useState<any[]>()
   const modifyBuybackOrder = api.buybackOrder.modifyBuybackOrder.useMutation({
     onError: (error)=>{
       toast.error(error.message)
@@ -64,6 +65,45 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   }
   function closeConfirmationView(){
     setDisplayConfirmationView(false)
+  }
+
+  async function handleCSV(e: React.FormEvent<HTMLInputElement>){
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const csvVal = (formData.get("buybackCSV"))
+    Papa.parse(csvVal, {
+      header:true,
+      complete: function(results) {
+
+        const csv = results.data.map((result) => transformCSV(result))
+        setBuybackCSV(csv);
+      }
+  })}
+
+  function transformCSV(csv){
+    const quant = parseInt(csv.quantity)
+    const price = parseFloat(csv.unit_buyback_price)
+    return ({
+      bookId:csv.isbn,
+      quantity:quant,
+      buybackPrice: price,
+      subtotal: quant* price,
+    })
+  }
+
+  function renderCSVRows(){
+    console.log("render")
+    console.log(buybackCSV)
+    return buybackCSV ? buybackCSV?.map((buyback) => (<BuybackTableRow saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} buyback={buyback}></BuybackTableRow>)) : null
+  }
+  
+  function removeCSVRow(isbn:string){
+    console.log("here")
+    console.log(buybackCSV)
+    console.log(buybackCSV.filter((value) => value.bookId !== isbn))
+    setBuybackCSV(buybackCSV.filter((value) => value.bookId !== isbn))
+    console.log(isbn)
+    console.log(buybackCSV)
   }
 
   function handleEditSubmission(){
@@ -143,6 +183,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
                     {buybacks?.map((buyback) => (<BuybackTableRow isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                    {renderCSVRows()}
                     {renderAddBuybackRow()}
                     </tbody>
                   </table>
@@ -159,6 +200,19 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
             </div>
           </div>
         </div>
+        <form method="post" onSubmit={handleCSV}>
+          <div>
+            <label>Import with a CSV: </label>
+            <input type="file" id="buybackCSV" name="buybackCSV" accept=".csv"></input>
+            <div>
+              <button
+              type="submit"
+              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
+                Upload CSV
+              </button>
+            </div>
+          </div>
+        </form>
         <div className="px-4 py-2 sm:px-6">
           <SaveCardChanges saveModal={openConfirmationView} closeModal={props.closeOut}></SaveCardChanges>
         </div>

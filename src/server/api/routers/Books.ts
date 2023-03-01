@@ -638,6 +638,7 @@ async function getPurchases (ctx: context, isbn:string){
   })
   return purchases
 }
+
 async function getSales (ctx: context, isbn:string){
   const sales = await ctx.prisma.sale.findMany({
     where:{

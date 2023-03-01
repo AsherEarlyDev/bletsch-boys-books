@@ -17,6 +17,7 @@ import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
 import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Vendor } from "../../../../types/vendorTypes";
 import Papa from "papaparse";
+import { Header } from "semantic-ui-react";
 
 interface EditPurchaseTableModalProps{
   purchaseOrderId: string
@@ -96,7 +97,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     Papa.parse(csvVal, {
       header:true,
       complete: function(results) {
-        console.log(results)
         const csv = results.data.map((result) => transformCSV(result))
         setPurchaseCSV(csv);
       }
@@ -114,7 +114,12 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
 
   function renderCSVRows(){
-    return setPurchaseCSV ? purchaseCSV?.map((purchase) => (<PurchaseTableRow saveAdd={handleAddPurchase} isView={false} isAdding={true} isCSV={true} purchase={purchase}></PurchaseTableRow>)) : null
+    const purchases = purchaseCSV ? purchaseCSV?.map((purchase) => (<PurchaseTableRow saveAdd={handleAddPurchase} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} purchase={purchase}></PurchaseTableRow>)) : null
+    return purchases
+  }
+
+  function removeCSVRow(isbn:string){
+    setPurchaseCSV(purchaseCSV.filter((value) => value.bookId !== isbn))
   }
 
   function openAddPurchaseRow(){
@@ -174,7 +179,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
                       <ColumnHeading label="Delete"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {purchases?.map((purchase) => (<PurchaseTableRow isView={false} isAdding={true} purchase={purchase}></PurchaseTableRow>))}
+                    {purchases?.map((purchase) => (<PurchaseTableRow isView={false} isAdding={false} purchase={purchase}></PurchaseTableRow>))}
                     {renderCSVRows()}
                     {renderAddPurchaseRow()}
                     

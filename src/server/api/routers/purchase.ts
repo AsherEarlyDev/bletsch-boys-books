@@ -54,7 +54,7 @@ export const purchaseRouter = createTRPCRouter({
                     inventory: {
                       increment: parseInt(input.quantity)
                     },
-                    shelfSpace: (book.inventory+parseInt(input.quantity))*book.dimensions[1] ?? .8
+                    shelfSpace: (book.inventory+parseInt(input.quantity))*(book.dimensions[1] ?? .8)
                   }
                 })
                 await ctx.prisma.purchaseOrder.update({
@@ -133,7 +133,7 @@ export const purchaseRouter = createTRPCRouter({
               },
               data:{
                 inventory: book.inventory + change,
-                shelfSpace: (book.inventory + change) * book.dimensions[1] ?? .8
+                shelfSpace: (book.inventory + change) * (book.dimensions[1] ?? .8)
               }
             })
             await ctx.prisma.purchase.update({

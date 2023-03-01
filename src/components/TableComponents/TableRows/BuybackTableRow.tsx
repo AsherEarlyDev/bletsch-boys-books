@@ -20,14 +20,13 @@ interface BuybackTableRowProp {
   vendorId: string
   isAdding: boolean
   isView: boolean
-  closeAdd?: () => void
+  isCSV?: boolean
+  closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
 export default function BuybackTableRow(props: BuybackTableRowProp) {
-  console.log(props.buyback)
   const [isbn, setIsbn] = useState(props.buyback.bookId)
-  console.log("ISBN: "+isbn)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = props.buyback?.buybackPrice
   const [deleteBuybackView, setDeleteBuybackView] = useState(false)
@@ -99,20 +98,21 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ?
+                (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={{}} ></BuybackCardProp>
+
+                          <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BuybackCardProp>
                           <MutableCurrencyTableEntry saveValue={setBuybackPrice} heading="Buyback Price"
                                                      required="True" dataType="number"
-                                                     defaultValue=""></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? buybackPrice : ""}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantityBuyback} heading="Quantity Bought"
                                              required="True" dataType="number"
-                                             defaultValue=""></MutableTableEntry>
+                                             defaultValue={props.isCSV ? quantityBuyback : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNewBuyback}></SaveRowEntry>
-                          <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>
-                        </tr>
-                        :
+                          <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.buyback.bookId : undefined}></DeleteRowEntry>
+                        </tr> : null)
+                        : 
                         (isEditing ?
                             <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}

@@ -9,7 +9,6 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
-import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
 import DeletePurchaseModal from "../Modals/PurchaseModals/DeletePurchaseModal";
@@ -19,7 +18,7 @@ interface PurchaseTableRowProp {
   isAdding: boolean
   isView: boolean
   isCSV?: boolean
-  closeAdd?: () => void
+  closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
@@ -88,7 +87,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
 
   return (
       <>
-        {visible &&
+        {visible && 
         (props.isView ?
                 <tr>
                   <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
@@ -97,7 +96,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ?
+                (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
                           <BookCardProp saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPurchasePrice} heading="Purchase Price"
@@ -108,8 +107,8 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
                                              defaultValue={props.isCSV ? quantityPurchased : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNewPurchase}></SaveRowEntry>
-                          <DeleteRowEntry onDelete={props.closeAdd}></DeleteRowEntry>
-                        </tr>
+                          <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.purchase.bookId : undefined}></DeleteRowEntry>
+                        </tr> : null )
                         :
                         (isEditing ?
                             <tr>

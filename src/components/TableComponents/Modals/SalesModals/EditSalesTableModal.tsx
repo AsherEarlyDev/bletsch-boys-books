@@ -16,8 +16,7 @@ import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import {toast} from "react-toastify";
 import {PlusIcon} from "@heroicons/react/24/solid";
-import AddSaleRecModal from "./AddSaleRecModal";
-import GenSalesReportModal from "../../../SalesComponents/SalesReportModal";
+import Papa from "papaparse";
 
 interface EditSalesTableModalProps{
   salesRecId: string
@@ -30,6 +29,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   const [addSaleRowView, setAddSaleRowView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const header = date + " Sales Reconciliation"
+  const [saleCSV, setSaleCSV] = useState<any[]>()
   const modifySaleRec = api.salesRec.modifySaleRec.useMutation({
     onError: (error)=>{
       toast.error(error.message)
@@ -77,6 +77,38 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     else{
       toast.error("Date Input Details Undefined!")
     }
+  }
+
+  async function handleCSV(e: React.FormEvent<HTMLInputElement>){
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const csvVal = (formData.get("saleCSV"))
+    Papa.parse(csvVal, {
+      header:true,
+      complete: function(results) {
+        const csv = results.data.map((result) => transformCSV(result))
+        setSaleCSV(csv);
+      }
+  })}
+
+  function transformCSV(csv){
+    const quant = parseInt(csv.quantity)
+    const price = parseFloat(csv.unit_retail_price)
+    return ({
+      bookId:csv.isbn,
+      quantity:quant,
+      price: price,
+      subtotal: quant* price,
+    })
+  }
+
+  function renderCSVRows(){
+    
+    return saleCSV ? saleCSV?.map((sale) => (<SaleTableRow saveAdd={handleAddSale} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} sale={sale}></SaleTableRow>)) : null
+  }
+  
+  function removeCSVRow(isbn:string){
+    setSaleCSV(saleCSV.filter((value) => value.bookId !== isbn))
   }
 
   function openAddSaleRow(){
@@ -134,6 +166,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
                     {sales?.map((sale) => (<SaleTableRow isView={false} isAdding={false} sale={sale}></SaleTableRow>))}
+                    {renderCSVRows()}
                     {renderAddSaleRow()}
                     </tbody>
                   </table>
@@ -150,9 +183,23 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
             </div>
           </div>
         </div>
+        <form method="post" onSubmit={handleCSV}>
+          <div>
+            <label>Import with a CSV: </label>
+            <input type="file" id="saleCSV" name="saleCSV" accept=".csv"></input>
+            <div>
+              <button
+              type="submit"
+              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
+                Upload CSV
+              </button>
+            </div>
+          </div>
+        </form>
         <div className="px-4 py-2 sm:px-6">
           <SaveCardChanges saveModal={openConfirmationView} closeModal={props.closeOut}></SaveCardChanges>
         </div>
+        
         {renderConfirmationView()}
       </div>
   )

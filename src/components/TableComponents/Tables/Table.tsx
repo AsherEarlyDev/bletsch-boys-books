@@ -4,6 +4,7 @@ import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
 import FilterableColumnHeading from "../TableColumnHeadings/FilterableColumnHeading";
 import PaginationBar from "../../../pages/PaginationBar";
 import { useRouter } from 'next/router'
+import {FunnelIcon} from "@heroicons/react/24/outline";
 
 interface TableProps{
     sorting:{
@@ -52,11 +53,12 @@ return(
                         <TableHeader>
                             {
                                 props.headersNotFiltered.includes(props.firstHeader[1]) ? <td></td> :
-                                (<td className="mt-5">
+                                (<td className="mt-5 items-center">
                                     <textarea
                                     rows={1}
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     defaultValue={query[props.firstHeader[1]] || ""}
+                                    placeholder="Filter by name..."
                                     onChange={(value) => {
                                         router.push({
                                             pathname: '/records',
@@ -74,6 +76,7 @@ return(
                                     rows={1}
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     defaultValue={query[label[1]] || ""}
+                                    placeholder={label[1]=="authorNames" ? "Filter by author..." : ("Filter by " +  label[1] + "...")}
                                     onChange={(value) => {
                                         router.push({
                                             pathname: '/records',

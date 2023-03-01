@@ -34,7 +34,7 @@ export const purchaseOrderRouter = createTRPCRouter({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
-                        vendorName: vendor.vendorName
+                        vendorName: vendor.name
                     },
                 });
                 return {id: newPurchaseOrder.id, date: date, vendor: vendor}
@@ -169,8 +169,8 @@ export const purchaseOrderRouter = createTRPCRouter({
                   purchaseOrderId: sorted.id
                 }
               })
-              let month = sorted.date.getMonth()+1
-              if (month < 10) month = "0"+month.toString()
+              let month = (sorted.date.getMonth()+1).toString()
+              if (parseInt(month) < 10) month = "0"+month.toString()
               const order = {
                 id: sorted.id,
                 vendorId: sorted.vendorId,

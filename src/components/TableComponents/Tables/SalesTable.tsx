@@ -48,6 +48,7 @@ export default function SalesTable() {
   const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
   const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
   const costReport = api.salesReport.generateCostReport.useQuery({startDate: startDate, endDate: endDate}).data
+  const buybackReport = api.salesReport.generateBuybacksReport.useQuery({startDate: startDate, endDate: endDate}).data
   const topSellers = api.salesReport.getTopSelling.useQuery({startDate: startDate, endDate: endDate}).data
   const numberOfEntries = api.salesRec.getNumberOfSalesRecs.useQuery().data
 
@@ -169,7 +170,7 @@ export default function SalesTable() {
   }
 
   function generateReport (){
-    const reportObj = createSalesReportArray(revenueReport, costReport, startDate, endDate)
+    const reportObj = createSalesReportArray(revenueReport, buybackReport, costReport, startDate, endDate)
     generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
   }
 

@@ -164,7 +164,6 @@ export default function VendorTable() {
                sortableHeaders={SORTABLE_HEADERS}
                staticHeaders={STATIC_HEADERS}
                items={vendors}
-               headersNotFiltered={["price", "inventory"]}
                pageNumber={pageNumber}
                numberOfPages={numberOfPages}
                entriesPerPage={VENDORS_PER_PAGE}

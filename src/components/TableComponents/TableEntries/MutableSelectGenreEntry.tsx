@@ -2,16 +2,20 @@ import React, { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import {api} from "../../../utils/api";
+import {EventListener} from "@fluentui/react-component-event-listener";
+import defaultProps = EventListener.defaultProps;
+import TableEntry from "./TableEntry";
 
 
 
-export default function MutableSelectGenreEntry(props:{saveFunction: any, defaultValue:string}) {
+export default function MutableSelectGenreEntry(props:{saveFunction: any, defaultValue:string, width?:number}) {
   const genres = api.genre.getGenres.useQuery().data
   const initialGenre = props.defaultValue
   const [selected, setSelected] = useState(initialGenre)
   console.log(selected)
   const [query, setQuery] = useState('')
   props.saveFunction(selected)
+  const classProps="w-44 mt-1  w-" + props.width
   
   const filteredGenres =
       genres ? (query === ''
@@ -25,7 +29,7 @@ export default function MutableSelectGenreEntry(props:{saveFunction: any, defaul
 
   return (
       <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">
-          <div className="w-44 mt-1  w-32">
+          <div className={classProps}>
             <Combobox value={selected} onChange={setSelected}>
               <div className="relative mt-1">
                 <div className="relative w-full cursor-default overflow-hidden border border-gray-300 rounded-md bg-white text-left shadow-sd focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-500 sm:text-sm">
@@ -94,4 +98,8 @@ export default function MutableSelectGenreEntry(props:{saveFunction: any, defaul
       </td>
 
   )
+}
+
+MutableSelectGenreEntry.defaultProps = {
+  width: 32
 }

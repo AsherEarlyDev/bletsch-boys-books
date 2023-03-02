@@ -21,7 +21,7 @@ export default function BookTable() {
   const BOOKS_PER_PAGE = 10
   const FIRST_HEADER =  ["Title", "title"]
 
-  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"], ["Last Month Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best Buyback Price", "bestBuybackPrice"]]
+  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inv.", "inventory"], ["30 Day Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best BB Price", "bestBuybackPrice"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}]
 
   const STATIC_HEADERS = ["Edit", "Delete"]

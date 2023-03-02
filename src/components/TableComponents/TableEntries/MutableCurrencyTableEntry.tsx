@@ -3,6 +3,7 @@ import CurrencyInput from "react-currency-input-field";
 import {CurrencyDollarIcon} from "@heroicons/react/20/solid";
 
 export default function MutableCurrencyTableEntry(props:any) {
+  const classProps = "mt-1 p-1 block text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm w-" + props.width
   const handleChange = (event: { target: { value: any; }; }) => {
     props.saveValue(parseFloat(event.target.value))
   };
@@ -18,9 +19,12 @@ export default function MutableCurrencyTableEntry(props:any) {
               required={props.required}
               onChange={handleChange}
               min="0"
-              className="mt-1 p-1 block w-32 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={classProps}
           />
         </div>
       </td>
   )
+}
+MutableCurrencyTableEntry.defaultProps= {
+  width: 32
 }

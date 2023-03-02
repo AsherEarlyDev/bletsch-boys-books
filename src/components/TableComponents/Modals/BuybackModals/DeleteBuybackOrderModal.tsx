@@ -23,7 +23,7 @@ export default function DeleteBuybackOrderModal(props:DeleteBuybackOrderModalPro
       toast.error(error.message)
     },
     onSuccess: ()=>{
-      toast.success("Successfully deleted Buyback Order!")
+      window.location.reload()
     }})
   const message = ("Are you sure you want to delete this Buyback order from the database? This action cannot be undone. All associated Buybacks will be deleted")
 

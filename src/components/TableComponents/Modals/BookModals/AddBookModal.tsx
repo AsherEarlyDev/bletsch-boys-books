@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
+import { toast } from "react-toastify";
 
 interface BookModalProp{
   showBookEdit(isbn: string[]): Promise<void>,
@@ -29,7 +30,7 @@ export default function AddBookModal(props: BookModalProp) {
       await props.showBookEdit(isbnArray)
     }
     else{
-      alert("Specified input is invalid. Please separate all ISBN values by either a space or a comma.")
+      toast.error("Specified input is invalid. Please separate all ISBN values by either a space or a comma.")
     }
     
 

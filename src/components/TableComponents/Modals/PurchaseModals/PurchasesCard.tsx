@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { api } from '../../../../utils/api';
 import CreateEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
+import { toast } from "react-toastify";
 
 
 
@@ -48,7 +49,7 @@ export default function PurchasesCard(props:PurchasesProp) {
                     })
               }
               else{
-                  alert("No vendor under that name")
+                  toast.error("No vendor under that name")
               }
               closeModal()
          }
@@ -66,7 +67,7 @@ export default function PurchasesCard(props:PurchasesProp) {
         
       }
       else{
-        alert("error")
+        toast.error("error")
       }
     
     

@@ -10,6 +10,7 @@ import { api } from '../../../../utils/api';
 import ImmutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import {CldImage, CldUploadButton} from "next-cloudinary";
+import { toast } from "react-toastify";
 
 
 interface BookCardProp{
@@ -30,7 +31,14 @@ export default function EditBookModal(props:BookCardProp) {
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
   const [thickness, setHeight] = useState<number>(defaultDimenions[1] ?? 0)
   const [height, setLength] = useState<number>(defaultDimenions[2] ?? 0)
-  const action = api.books.editBook.useMutation()
+  const action = api.books.editBook.useMutation({
+    onSuccess: ()=>{
+      window.location.reload()
+    },
+    onError: (error)=>{
+      toast.error(error.message)
+    }
+  })
 
   function closeModal(){
     setOpen(false)
@@ -57,7 +65,7 @@ export default function EditBookModal(props:BookCardProp) {
       closeModal()
     }
     else{
-      alert("Need to choose a genre")
+      toast.error("Need to choose a genre")
     }
   }
 

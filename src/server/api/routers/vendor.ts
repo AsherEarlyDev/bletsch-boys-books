@@ -131,7 +131,7 @@ export const vendorRouter = createTRPCRouter({
             }
           }
         );
-        const buybacks = await ctx.prisma.buybackOrder.findFirst(
+        const buybacks = await ctx.prisma.bookBuybackOrder.findFirst(
           {
             where:
             {
@@ -164,8 +164,6 @@ export const vendorRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
 
       try {
-        console.log("IM HERE")      
-        console.log(input.vendorId)
         return await ctx.prisma.vendor.findFirst({
           where:{
             id: input.vendorId

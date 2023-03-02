@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
+import { toast } from 'react-toastify';
 import { api } from '../../../../utils/api';
 
 interface GenreModalProp{
@@ -9,7 +10,14 @@ interface GenreModalProp{
 
 export default function AddGenreModal(props: GenreModalProp) {
   const [isOpen, setIsOpen] = useState(false)
-  const addGenre = api.genre.addGenre.useMutation()
+  const addGenre = api.genre.addGenre.useMutation({
+    onError: (error)=>{
+      toast.error(error.message)
+    },
+    onSuccess: ()=>{
+      window.location.reload()
+    }
+  })
 
   function closeModal() {
     setIsOpen(false)

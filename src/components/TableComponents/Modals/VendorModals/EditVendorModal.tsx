@@ -29,7 +29,7 @@ export default function EditVendorModal(props:EditVendorCardProp) {
     },
     onSuccess: ()=>{
       closeModal()
-      toast.success("Successfully Modified Vendor!")
+      window.location.reload()
     }
   });
 
@@ -53,11 +53,11 @@ export default function EditVendorModal(props:EditVendorCardProp) {
         })
       }
       catch(error){
-        console.log(error)
+        toast.error(error)
       }
     }
     else{
-      alert("error")
+      toast.error("Vendor invalid")
     }
   }
 

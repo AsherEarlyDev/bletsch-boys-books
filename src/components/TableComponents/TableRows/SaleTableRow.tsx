@@ -82,7 +82,7 @@ export default function SaleTableRow(props: SaleTableRowProp) {
   }
 
   function saveNewSale() {
-    alert("ready: " + isbn)
+    toast.success("ready: " + isbn)
     props.saveAdd(isbn, quantitySold, salePrice)
   }
 

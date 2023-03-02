@@ -50,7 +50,8 @@ export default function BuybackTable() {
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
     onSuccess: ()=>{
       setDisplayEditBuybackView(true)
-    }
+    },
+    
   })
   const vendors = api.vendor.getVendorsWithBuyback.useQuery().data
   

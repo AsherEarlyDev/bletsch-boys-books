@@ -5,7 +5,7 @@ import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {useState} from "react";
 import {editableBook} from "../../../../types/bookTypes";
-
+import { toast } from "react-toastify";
 
 interface DeleteBookProp{
   bookInfo:  editableBook | undefined
@@ -14,7 +14,14 @@ interface DeleteBookProp{
 
 
 export default function DeleteBookModal(props:DeleteBookProp) {
-  const deleteBook = api.books.deleteBookByISBN.useMutation();
+  const deleteBook = api.books.deleteBookByISBN.useMutation({
+    onSuccess: ()=>{
+      window.location.reload()
+    },
+    onError: (error)=>{
+      toast.error("Unable to delete book!")
+    }
+  });
   const [open, setOpen] = useState(true)
   const message = ("Are you sure you want to delete " + props.bookInfo.title + " from the book database? This action cannot be undone.")
 
@@ -29,7 +36,7 @@ export default function DeleteBookModal(props:DeleteBookProp) {
       closeModal()
     }
     else{
-        alert("error")
+        toast.error("error")
       }
   }
 

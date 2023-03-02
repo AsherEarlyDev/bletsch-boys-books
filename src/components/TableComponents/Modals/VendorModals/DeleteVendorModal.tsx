@@ -20,7 +20,7 @@ export default function DeleteVendorModal(props:DeleteVendorProp) {
     toast.error(error.message)
   },
   onSuccess: ()=>{
-    toast.success("Successfully deleted vendor!")
+    window.location.reload()
   }
 });
   const [open, setOpen] = useState(true)

@@ -7,6 +7,7 @@ import SaveCardChanges from "./CardComponents/SaveCardChanges";
 import { editableBook } from '../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../utils/api';
+import { toast } from "react-toastify";
 
 
 interface BookCardProp{
@@ -52,7 +53,7 @@ export default function BookCard(props:BookCardProp) {
       closeModal()
     }
     else{
-      alert("Need to choose a genre")
+      toast.error("Need to choose a genre")
     }
   }
 

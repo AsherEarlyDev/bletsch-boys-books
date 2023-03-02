@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function MutableTableEntry(props:any) {
+  const classProps="mt-1 p-1 block text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm w-" + props.width
   const handleChange = (event: { target: { value: any; }; }) => {
     props.saveValue(event.target.value)
   };
@@ -15,9 +16,13 @@ export default function MutableTableEntry(props:any) {
               required={props.required}
               onChange={handleChange}
               min="0"
-              className="mt-1 p-1 block w-32 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={classProps}
           />
         </div>
       </td>
   )
+}
+
+MutableTableEntry.defaultProps={
+  width: 32
 }

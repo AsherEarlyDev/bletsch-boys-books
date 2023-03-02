@@ -13,7 +13,7 @@ export default function TableEntryWithTag(props: TableEntryWithTagsInterface) {
   if (props.firstEntry == true) {
     return (
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-          <div className="inline-flex group w-[26rem] items-center">
+          <div className="inline-flex group w-[18rem] items-center">
           {(props.imageUrl) ?
               <CldUploadButton
                   uploadPreset="book-image-preset"
@@ -40,7 +40,7 @@ export default function TableEntryWithTag(props: TableEntryWithTagsInterface) {
                 </CldImage>
               </CldUploadButton>
                 : null}
-            <div className="text-left overflow-hidden truncate w-60">
+            <div className="text-left overflow-hidden truncate w-44">
               {props.children}
             </div>
             <div>

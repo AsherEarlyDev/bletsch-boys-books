@@ -11,6 +11,11 @@ export type Revenue = {
     sales: any[]
 }
 
+export type BuybackRevenue = {
+    revenue: number,
+    buybacks: any[]
+}
+
 export type Cost = {
     cost: number,
     purchases: any[]

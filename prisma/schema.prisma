@@ -163,3 +163,10 @@ model Admin {
   password String
   id       Int    @id @default(autoincrement())
 }
+
+model Image {
+  id       String @id
+  publicId String @unique
+  format   String
+  version  String
+}

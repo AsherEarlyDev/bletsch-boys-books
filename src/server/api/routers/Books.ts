@@ -419,6 +419,23 @@ export const BooksRouter = createTRPCRouter({
       throw("Book cannot be modified")
     }
   }),
+
+  getBookTransactionDetails: publicProcedure.input(
+      z.string()
+  ).query(async({ctx, input}) => {
+    try{
+      const sales = await getSales(ctx, input)
+      const purchases = await getPurchases(ctx, input)
+      const buybacks = await getBookBuyback(ctx, input)
+      return {
+        sales: sales,
+        purchases: purchases,
+        buybacks: buybacks}
+    }
+    catch(error){
+      throw("Cannot get book transaction details")
+    }
+}),
   
   deleteBookByISBN: publicProcedure.input(
     z.string()
@@ -479,7 +496,6 @@ const deleteBook = async (ctx: context, isbn:string) =>{
     }
   })
 }
-
 const prepData = async (ctx: context, input: any) => {
   const ids = await getAuthorIDs(ctx, input.author)
   const entry = await convertGenreFieldToID(ctx, input)
@@ -493,7 +509,6 @@ const findIndividualAuthor = async(ctx: context, author: string) =>{
     }
   });
 }
-
 const createAuthor = async(ctx: context, author: string) =>{
   await ctx.prisma.author.create({
     data:{
@@ -501,7 +516,6 @@ const createAuthor = async(ctx: context, author: string) =>{
     }
   })
 }
-
 const getAuthorIDs = async (ctx: context, authors:string[]) => {
   const authorIDs: id[] = [] 
   for (const individualAuthor of authors){
@@ -567,7 +581,6 @@ const externalSort =async (input, ctx:context, paginate?:boolean) => {
 
 }
 
-
 const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   const {genre, ...data}= input
   try{
@@ -590,6 +603,7 @@ const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
 }
 
 const getLastMonthSales = async (isbn: string, ctx: context) => {  
+
   const currentDate = new Date()
   var lastMonth = new Date()
   lastMonth.setDate(lastMonth.getDate() - 30)
@@ -617,7 +631,6 @@ const getLastMonthSales = async (isbn: string, ctx: context) => {
   }
   return sum
 }
-
 async function getBestBuybackRate (isbn:string, ctx:context){
   const purchases = await ctx.prisma.purchase.findMany({
     where:{
@@ -644,8 +657,7 @@ async function getBestBuybackRate (isbn:string, ctx:context){
     if(price > highestBuyBack) highestBuyBack = price
   }
   return highestBuyBack
-} 
-
+}
 async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
   return await Promise.all(books.map(async (book) => {
     const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
@@ -659,6 +671,66 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
   })
   );
 }
+
+async function getPurchases (ctx: context, isbn:string){
+  const purchases = await ctx.prisma.purchase.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      purchaseOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
+    }
+  })
+  return purchases
+}
+
+async function getSales (ctx: context, isbn:string){
+  const sales = await ctx.prisma.sale.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      saleReconciliation: {
+        select:{
+          date:true
+        }
+      }
+    }
+  })
+  return sales
+}
+async function getBookBuyback (ctx: context, isbn:string){
+  const bookBuybacks = await ctx.prisma.buyback.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      buybackPrice: true,
+      bookBuybackOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
+    }
+  })
+  return bookBuybacks
+}
+
+
 
 
 

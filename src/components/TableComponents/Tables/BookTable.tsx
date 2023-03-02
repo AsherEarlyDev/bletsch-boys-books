@@ -18,8 +18,10 @@ export default function BookTable() {
   const {query} = useRouter()
   const BOOKS_PER_PAGE = 10
   const FIRST_HEADER =  ["Title", "title"]
+
   const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inventory", "inventory"], ["Last Month Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best Buyback Price", "bestBuybackPrice"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}]
+
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
@@ -155,7 +157,7 @@ export default function BookTable() {
                 onClick={() => router.push({pathname: '/records',})}
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
             >Clear Filters</button></div>
-            <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Filter" submitText="Add Filters"></FilterModal>
+            <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Advanced Filter" submitText="Add Filters"></FilterModal>
             <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
             <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
             <CSVLink filename={"BletschBoysBookList.csv"}  data={csvBooks} headers={CSV_HEADERS} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">

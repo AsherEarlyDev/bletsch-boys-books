@@ -33,13 +33,13 @@ export default function BookTableRow(props:BookTableRowProp) {
         </ViewTableEntry>
         <TableEntry>{props.bookInfo.isbn}</TableEntry>
         <TableEntry>{props.bookInfo.author.map((author) => author.name).join(", ")}</TableEntry>
-        <TableEntry>{props.bookInfo.genre.name}</TableEntry>
-        <TableEntry>${props.bookInfo.retailPrice.toFixed(2)}</TableEntry>
-        <TableEntry>{props.bookInfo.inventory}</TableEntry>
-        <TableEntry>{props.bookInfo.lastMonthSales}</TableEntry>
-        <TableEntry>{props.bookInfo.dimensions[1] || props.bookInfo.shelfSpace==0 ? props.bookInfo.shelfSpace : props.bookInfo.shelfSpace+" (est)"}</TableEntry>
-        <TableEntry>{props.bookInfo.daysOfSupply}</TableEntry>
-        <TableEntry>{props.bookInfo.bestBuybackPrice==0 ? "-" : props.bookInfo.bestBuybackPrice}</TableEntry>
+        <TableEntry width={28}>{props.bookInfo.genre.name}</TableEntry>
+        <TableEntry width={20}>${props.bookInfo.retailPrice.toFixed(2)}</TableEntry>
+        <TableEntry width={16}>{props.bookInfo.inventory}</TableEntry>
+        <TableEntry width={12}>{props.bookInfo.lastMonthSales}</TableEntry>
+        <TableEntry width={16}>{(props.bookInfo.dimensions[1])?.toFixed(1) + "\"" || props.bookInfo.shelfSpace==0 ? (props.bookInfo.shelfSpace)?.toFixed(1) +"\"" : (props.bookInfo.shelfSpace)?.toFixed(1)+"\" (est)"}</TableEntry>
+        <TableEntry width={12}>{(props.bookInfo.daysOfSupply == Infinity ? "Inf." : props.bookInfo.daysOfSupply )}</TableEntry>
+        <TableEntry width={12}>{props.bookInfo.bestBuybackPrice==0 ? "-" : "$" + props.bookInfo.bestBuybackPrice.toFixed(2)}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
       </tr>

@@ -14,9 +14,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
+import { useRouter } from 'next/router';
 
 
 export default function SalesTable() {
+  const {query} = useRouter()
   const date = new Date()
   const ENTRIES_PER_PAGE = 5
   const FIRST_HEADER =  ["Date Created", "date"]
@@ -36,6 +38,9 @@ export default function SalesTable() {
   const [displayEditSalesRecView, setDisplayEditSalesRecView] = useState(false)
   const [displayDeleteSalesRecView, setDisplayDeleteSalesRecView] = useState(false)
   const [displaySalesRecView, setDisplaySalesRecView] = useState(false)
+  const currentISBN = query.isbn ? query.isbn.toString() : ''
+  const currentURLSale = api.salesRec.getSaleRec.useQuery([currentISBN]).data.salesRec[0]
+  const displaySalesRecView2 = query.view ? query.view.toString() ==='true' : false
   const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
@@ -146,9 +151,9 @@ export default function SalesTable() {
   function renderSalesRecView() {
     return(
         <>
-          {(displaySalesRecView && currentSalesRec) ?
+          {(displaySalesRecView2 && currentSalesRec) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
-                <ViewSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeSalesRecView}></ViewSalesTableModal>
+                <ViewSalesTableModal salesRecId={currentURLSale.id} salesRecDate={currentURLSale.date} sales={currentURLSale.sales} closeOut={closeSalesRecView}></ViewSalesTableModal>
               </CreateSaleEntries>)
               : null}
         </>

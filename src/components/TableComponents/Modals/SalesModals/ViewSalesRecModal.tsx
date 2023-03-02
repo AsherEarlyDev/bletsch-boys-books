@@ -125,7 +125,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <ImmutableCardProp heading="Sale ID" data={props.sale.id}></ImmutableCardProp>
               <ImmutableCardProp heading="Subtotal" data={props.sale.subtotal}></ImmutableCardProp>
               <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
-              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
+              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} ></BookCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
               <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string"
@@ -142,7 +142,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
               <CardTitle heading="Sale" subheading="Add sale information below..."></CardTitle>
             </div>
             <CardGrid>
-              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
+              <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} ></BookCardProp>
               <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string"
                                defaultValue={props.sale.quantity}></MutableCardProp>
               <MutableCardProp saveValue={setPrice} heading="Price (Defaults to book retail price)" required="True" dataType="string"

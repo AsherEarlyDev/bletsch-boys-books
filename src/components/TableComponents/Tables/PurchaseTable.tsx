@@ -235,7 +235,6 @@ export default function PurchaseTable() {
             entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
           {renderEditPurchaseView()}
-          {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
           {renderAdd()}

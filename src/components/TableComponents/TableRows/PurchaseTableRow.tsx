@@ -24,7 +24,7 @@ interface PurchaseTableRowProp {
 
 export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   const [isbn, setIsbn] = useState(props.purchase.bookId)
-  const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
+  const book = api.books.findInternalBook.useQuery({isbn: props.purchase.bookId}).data
   const defaultPrice = props.purchase?.price
   const [deletePurchaseView, setDeletePurchaseView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)

@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { BookBuybackOrder } from "@prisma/client";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
 
 export const buybackOrderRouter = createTRPCRouter({
     createBuybackOrder: publicProcedure
@@ -253,6 +254,11 @@ export const buybackOrderRouter = createTRPCRouter({
             buybackOrderId: input.buybackOrderId
           }
         })
+        const book = await ctx.prisma.book.findUnique({
+          where:{
+            isbn: isbn
+          }
+        })
         for (const buyback of buybacks){
           await ctx.prisma.book.update({
             where:{
@@ -261,7 +267,9 @@ export const buybackOrderRouter = createTRPCRouter({
             data:{
               inventory: {
                 increment: buyback.quantity
-              }
+              },
+              shelfSpace: (book.inventory+buyback.quantity)*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
+              
             }
           })
   

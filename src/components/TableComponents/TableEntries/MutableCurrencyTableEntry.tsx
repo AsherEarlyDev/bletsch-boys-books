@@ -4,13 +4,13 @@ import {CurrencyDollarIcon} from "@heroicons/react/20/solid";
 
 export default function MutableCurrencyTableEntry(props:any) {
   const handleChange = (event: { target: { value: any; }; }) => {
-    props.saveValue(event.target.value)
+    props.saveValue(parseFloat(event.target.value))
   };
   return (
       <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">
         <div className="text-left">
           <input
-              placeholder={props.defaultValue ? "$" + props.defaultValue.toFixed(2) : null}
+              placeholder={props.defaultValue ? ("$" + props.defaultValue.toFixed(2) ?? ""): null}
               type={props.dataType}
               name={props.heading}
               step="0.01"

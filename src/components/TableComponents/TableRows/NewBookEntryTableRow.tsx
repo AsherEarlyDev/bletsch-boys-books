@@ -83,13 +83,13 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
               {props.bookInfo.title}
             </TableEntryWithTag>
             <TableEntry>{props.bookInfo.isbn}</TableEntry>
-            <TableEntry>{props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}</TableEntry>
+            <TableEntry width={28}>{props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}</TableEntry>
             <TableEntry>{props.bookInfo.publisher}</TableEntry>
-            <TableEntry>{props.bookInfo.publicationYear}</TableEntry>
-            <TableEntry>{props.bookInfo.inventory}</TableEntry>
-            <MutableSelectGenreEntry saveFunction={setGenre} defaultValue={props.bookInfo.genre}></MutableSelectGenreEntry>
-            <MutableCurrencyTableEntry saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCurrencyTableEntry>
-            <MutableTableEntry saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableTableEntry>
+            <TableEntry width={20}>{props.bookInfo.publicationYear}</TableEntry>
+            <TableEntry width={20}>{props.bookInfo.inventory}</TableEntry>
+            <MutableSelectGenreEntry width={28} saveFunction={setGenre} defaultValue={props.bookInfo.genre}></MutableSelectGenreEntry>
+            <MutableCurrencyTableEntry width={24} saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCurrencyTableEntry>
+            <MutableTableEntry width={24} saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableTableEntry>
             <MutableDimensionsTableEntry defaultLength={length} defaultWidth={width} defaultHeight={height} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsTableEntry>
             <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">
               <button

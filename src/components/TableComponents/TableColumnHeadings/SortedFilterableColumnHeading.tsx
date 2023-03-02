@@ -33,7 +33,7 @@ function flipOrder(){
           } className="group inline-flex">
             {props.label}
             <span
-                className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                className="invisible ml-1 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
                           <ChevronDownIcon className="h-5 w-5" aria-hidden="true"/>
                         </span>
           </button>
@@ -42,7 +42,7 @@ function flipOrder(){
   }
   else{
     return (
-        <th scope="col" className="px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" className="pl-2 pr-1 py-3.5 text-left text-sm font-semibold text-gray-900">
             <button onClick={() =>  {
             flipOrder()
             props.resetPage(0)
@@ -50,9 +50,9 @@ function flipOrder(){
           }
           } className="group inline-flex">
               {props.label}
-              <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+              <span className="invisible ml-1 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
                             <ChevronDownIcon
-                                className="invisible ml-2 h-5 w-5 flex-none rounded text-gray-400 group-hover:visible group-focus:visible"
+                                className="invisible ml-1 h-5 w-5 flex-none rounded text-gray-400 group-hover:visible group-focus:visible"
                                 aria-hidden="true"
                             />
                           </span>

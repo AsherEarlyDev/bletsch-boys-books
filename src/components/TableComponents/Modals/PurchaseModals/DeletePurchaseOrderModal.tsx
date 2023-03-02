@@ -23,7 +23,7 @@ export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalP
       toast.error(error.message)
     },
     onSuccess: ()=>{
-      toast.success("Successfully deleted Purchase Order!")
+      window.location.reload()
     }})
   const message = ("Are you sure you want to delete this purchase order from the database? This action cannot be undone. All associated purchases will be deleted")
 
@@ -40,7 +40,7 @@ export default function DeletePurchaseOrderModal(props:DeletePurchaseOrderModalP
       closeModal()
     }
     else{
-      alert("Error")
+      toast.error("Error")
     }
   }
 

@@ -13,6 +13,8 @@ import Table from './Table';
 import NewBookEntryTable from "./NewBookEntryTable";
 import { useRouter } from 'next/router'
 import { CSVLink } from "react-csv";
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function BookTable() {
   const {query} = useRouter()
@@ -178,6 +180,7 @@ export default function BookTable() {
             {renderEditBookView()}
             {renderDeleteBookView()}
             {renderBookView()}
+            <ToastContainer/>
           </div>
         </div>
       </div>

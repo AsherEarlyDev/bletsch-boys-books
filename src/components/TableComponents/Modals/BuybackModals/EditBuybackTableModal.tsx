@@ -9,7 +9,8 @@ import {api} from "../../../../utils/api";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
-import {toast} from "react-toastify";
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {PlusIcon} from "@heroicons/react/24/solid";
 import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Buyback } from "../../../../types/buybackTypes";
@@ -46,7 +47,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   })
   const addBuyback = api.buyback.createBuyback.useMutation({
     onError: (error)=>{
-      toast.error(error.message)
+      toast.error("Failed to add buyback!")
     },
     onSuccess: ()=>{
       toast.success("Successfully added buyback!")
@@ -120,6 +121,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
         vendorId: newVendorId
       })
       props.closeOut()
+      window.location.reload()
     }
     else{
       toast.error("Input Details Undefined!")
@@ -229,6 +231,8 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
           <SaveCardChanges saveModal={openConfirmationView} closeModal={props.closeOut}></SaveCardChanges>
         </div>
         {renderConfirmationView()}
+        <ToastContainer/>
+
       </div>
   )
 }

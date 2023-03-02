@@ -25,6 +25,7 @@ export default function ConfirmCard(props:ConfirmCardProp) {
   function handleClick(){
     props.onConfirm()
     closeModal()
+    window.location.reload()
   }
 
 

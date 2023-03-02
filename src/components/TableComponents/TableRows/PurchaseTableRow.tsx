@@ -81,7 +81,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   }
 
   function saveNewPurchase() {
-    alert("ready: " + isbn)
+    toast.success("ready: " + isbn)
     props.saveAdd(isbn, quantityPurchased, purchasePrice)
   }
 

@@ -28,7 +28,11 @@ export default function VendorTable() {
         sortBy: sortField,
         descOrAsc: sortOrder
       }).data
-  const newVendor = api.vendor.createVendor.useMutation()
+  const newVendor = api.vendor.createVendor.useMutation({
+    onSuccess: ()=>{
+      window.location.reload()
+    }
+  })
   const numberOfPages = Math.ceil(api.vendor.getNumVendors.useQuery().data / VENDORS_PER_PAGE)
   const numberOfEntries = api.vendor.getNumVendors.useQuery().data
   const [displayEditVendorView, setDisplayEditVendorView] = useState(false)

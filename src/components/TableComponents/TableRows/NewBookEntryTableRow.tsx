@@ -66,7 +66,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         imageLink: image,
 
       })
-      alert(((props.isExisting) ? "Edited book: " : "Added book: ") + props.bookInfo.title)
+      toast.success(((props.isExisting) ? "Edited book: " : "Added book: ") + props.bookInfo.title)
       closeModal()
     }
     else{

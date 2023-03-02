@@ -5,6 +5,8 @@ import GenreTableRow from '../TableRows/GenreTableRow';
 import Table from './Table';
 import AddGenreModal from '../Modals/GenreModals/AddGenreModal';
 import TableDetails from '../TableDetails';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function GenreTable() {
   const GENRES_PER_PAGE = 5
@@ -43,6 +45,7 @@ export default function GenreTable() {
         entriesPerPage={GENRES_PER_PAGE}
         numberOfEntries={totalNumberOfEntries}
         renderRow={renderGenreRow}></Table>
+        <ToastContainer/>
       </div>
     </div>
     )

@@ -9,6 +9,7 @@ import GenreCardProp from "../../../CardComponents/GenreCardProp";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import { toast } from 'react-toastify';
 
 interface EditGenreModalProp{
   itemIdentifier: string,
@@ -18,7 +19,14 @@ interface EditGenreModalProp{
 
 export default function EditGenreModal(props: EditGenreModalProp) {
   const [isOpen, setIsOpen] = useState(false);
-  const changeGenre = api.genre.changeGenreName.useMutation()
+  const changeGenre = api.genre.changeGenreName.useMutation({
+    onError: (error)=>{
+      toast.error(error.message)
+    },
+    onSuccess: ()=>{
+      window.location.reload()
+    }
+  })
 
   function closeModal() {
     setIsOpen(false)

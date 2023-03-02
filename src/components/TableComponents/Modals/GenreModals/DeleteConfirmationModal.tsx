@@ -2,6 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
 import { api } from '../../../../utils/api';
 import {TrashIcon} from "@heroicons/react/20/solid";
+import { toast } from 'react-toastify';
 
 interface BookModalProp{
   itemIdentifier: string,
@@ -11,7 +12,21 @@ interface BookModalProp{
 
 export default function DeleteBookModal(props: BookModalProp) {
   const [isOpen, setIsOpen] = useState(false);
-  const deleteItem = props.genre ? api.genre.deleteGenreByName.useMutation() : api.books.deleteBookByISBN.useMutation();
+  const deleteItem = props.genre ? api.genre.deleteGenreByName.useMutation({
+    onError: (error)=>{
+      toast.error(error.message)
+    },
+    onSuccess: ()=>{
+      window.location.reload()
+    }
+  }) : api.books.deleteBookByISBN.useMutation({
+    onError: (error)=>{
+      toast.error(error.message)
+    },
+    onSuccess: ()=>{
+      window.location.reload()
+    }
+  });
 
   function closeModal() {
     setIsOpen(false)

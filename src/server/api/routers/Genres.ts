@@ -1,5 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import {number, z} from "zod"
+import { TRPCError } from "@trpc/server";
 export const GenreRouter = createTRPCRouter({
     getGenres:publicProcedure
     .input(z.optional(z.object({
@@ -9,17 +10,23 @@ export const GenreRouter = createTRPCRouter({
         genreDescOrAsc: z.string()
       })))
     .query(async({ctx, input}) => {
-        if(input){
-            return await ctx.prisma.genre.findMany({
-                take: input.genresPerPage,
-                skip: input.genrePageNumber*input.genresPerPage,
-                orderBy:[{
-                    [input.genreSortBy]: input.genreDescOrAsc,
-                }]
-            })
+        try{
+            if(input){
+                return await ctx.prisma.genre.findMany({
+                    take: input.genresPerPage,
+                    skip: input.genrePageNumber*input.genresPerPage,
+                    orderBy:[{
+                        [input.genreSortBy]: input.genreDescOrAsc,
+                    }]
+                })
+            }
+            else{
+                return await ctx.prisma.genre.findMany({})}
         }
-        else{
-            return await ctx.prisma.genre.findMany({})}
+        catch(error){
+            throw new TRPCError({code: 'BAD_REQUEST', message: "Unable to get Genres!"})
+        }
+        
     }),
 
     changeGenreName:publicProcedure.input(z.object({
@@ -37,15 +44,23 @@ export const GenreRouter = createTRPCRouter({
         })
 
     }),
+
     addGenre:publicProcedure
     .input(z.string())
     .mutation(async ({ctx, input}) => {
-        await ctx.prisma.genre.create({
-            data:{
-                name:input
-            }
-        })
+        try{
+            await ctx.prisma.genre.create({
+                data:{
+                    name:input
+                }
+            })
+        }
+        catch(error){
+            throw new TRPCError({code: 'BAD_REQUEST', message: "Unable to add Genre!"})
+        }
+        
     }),
+
     getNumberOfGenres:publicProcedure
     .query(async ({ctx, input}) => {
         return await ctx.prisma.genre.count()
@@ -62,7 +77,7 @@ export const GenreRouter = createTRPCRouter({
               })
         }
         catch{
-            throw("Can't delete genre")
+            throw new TRPCError({code: 'BAD_REQUEST', message: "Unable to delete Genre!"})
         }
     }),
 
@@ -79,7 +94,7 @@ export const GenreRouter = createTRPCRouter({
             })
         }
         catch{
-            throw("Genre Inventory can't be pulled")
+            throw new TRPCError({code: 'BAD_REQUEST', message: "Genre Inventory can't be pulled!"})
         }
     })
 })

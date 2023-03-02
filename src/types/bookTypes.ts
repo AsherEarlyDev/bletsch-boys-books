@@ -22,12 +22,22 @@ export type googleBookInfo = {
     averageRating?: number,
     ratingsCount?: number,
     contentVersion?: string,
-    imageLinks?: object,
+    imageLinks?: googleImages,
     language?: string,
     infoLink?: string,
     canonicalVolumeLink?: string,
     saleInfo?:saleInfo,
     accessInfo?: {}
+}
+
+export type googleImages = {
+    smallThumbnail: string,
+    thumbnail: string
+    small: string
+    medium: string
+    large: string
+    extraLarge: string
+
 }
 
 export type editableBook = {
@@ -42,6 +52,11 @@ export type editableBook = {
     retailPrice?: number,
     inventory: number,
     authorNames: string
+    lastMonthSales?: number
+    imageLink?: string
+    shelfSpace: number
+    daysOfSupply:number,
+    bestBuybackPrice:number
 }
 
 export type completeBook = {
@@ -65,7 +80,12 @@ export type databaseBook = {
     dimensions: Array<number>,
     pageCount?: number,
     genreID: string,
-    retailPrice: number
+
+    retailPrice: number,
+    inventory: number,
+    shelfSpace: number,
+    imageLink?: string
+
 }
 
 

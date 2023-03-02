@@ -4,14 +4,16 @@ import GenreCardProp from "./CardComponents/GenreCardProp";
 import CardTitle from "./CardComponents/CardTitle";
 import CardGrid from "./CardComponents/CardGrid";
 import SaveCardChanges from "./CardComponents/SaveCardChanges";
-import { completeBook, databaseBook, editableBook } from '../types/bookTypes';
+import { editableBook } from '../types/bookTypes';
 import { useState } from 'react';
 import { api } from '../utils/api';
+import { toast } from "react-toastify";
 
 
 interface BookCardProp{
   bookInfo:  editableBook | undefined
   cardType: string
+  closeOut?: () => void
 }
 
 
@@ -28,6 +30,11 @@ export default function BookCard(props:BookCardProp) {
   const [height, setHeight] = useState<number>(defaultDimenions[2] ?? 0)
   const action = (props.cardType === "edit") ? (api.books.editBook.useMutation()) : (api.books.saveBook.useMutation())
 
+  function closeModal(){
+    setOpen(false)
+    props.closeOut()
+  }
+
   function saveBook(){
     if(props.bookInfo && genre){
       action.mutate({
@@ -39,17 +46,15 @@ export default function BookCard(props:BookCardProp) {
         retailPrice: Number(retailPrice),
         pageCount: Number(pageCount),
         dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
-        genre: genre.name
+        genre: genre.name,
+        shelfSpace: props.bookInfo.shelfSpace ?? 0,
+        inventory: props.bookInfo.inventory
       })
       closeModal()
     }
     else{
-      alert("Need to choose a genre")
+      toast.error("Need to choose a genre")
     }
-  }
-
-  function closeModal(){
-    setOpen(false)
   }
 
   return (

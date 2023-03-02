@@ -1,4 +1,3 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
 
 export default function MutableCardProp(props:any) {
   const handleChange = (event: { target: { value: any; }; }) => {
@@ -11,7 +10,7 @@ export default function MutableCardProp(props:any) {
             {props.heading}
           </label>
         </dt>
-        <dd className="mt-1 text-sm text-gray-900">
+        <dd className="flex mt-1 text-sm text-gray-900 justify-center">
           <input
               placeholder={props.defaultValue}
               type={props.dataType}
@@ -20,6 +19,7 @@ export default function MutableCardProp(props:any) {
               required={props.required}
               onChange={handleChange}
               min="0"
+              max={props.max ? props.max : null}
               className="mt-1 p-1 block w-44 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
         </dd>

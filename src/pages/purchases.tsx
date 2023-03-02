@@ -1,5 +1,5 @@
 import AppShell from "../components/AppShell";
-import PurchaseTable from "../components/PurchaseComponents/PurchaseTable";
+import PurchaseTable from "../components/TableComponents/Tables/PurchaseTable";
 
 
 export default function PurchasesPage() {

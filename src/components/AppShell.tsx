@@ -1,5 +1,5 @@
 import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
-import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, ReactPropTypes, useState} from "react";
+import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import {signOut, useSession} from "next-auth/react";
 
@@ -12,9 +12,11 @@ const user = {
 const navigation = [
   {name: 'Dashboard', href: '/dashboard'},
   {name: 'Records', href: '/records'},
+  {name: 'Genres', href: '/genres'},
   {name: 'Vendors', href: '/vendors'},
   {name: 'Sales', href: '/sales'},
   {name: 'Purchases', href: '/purchases'},
+  {name: 'Buybacks', href: '/buybacks'},
 ]
 const userNavigation = [
   {name: 'Change Password', href: '/reset-password'},
@@ -31,8 +33,7 @@ export default function AppShell(props: any) {
     const sessionData = useSession();
 
     async function logOut(e) {
-      const res = await signOut({callbackUrl: "/"});
-      console.log(res)
+      const res = await signOut({callbackUrl: "/", redirect: false});
     }
 
     return (

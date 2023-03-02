@@ -1,6 +1,7 @@
+import { TRPCError } from "@trpc/server";
 import { Input } from "postcss";
 import { z } from "zod";
-import { Cost, Revenue, topSellers } from "../../../types/salesTypes";
+import { BuybackRevenue, Cost, Revenue, topSellers } from "../../../types/salesTypes";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 
@@ -61,7 +62,75 @@ export const salesReportRouter = createTRPCRouter({
             .sort((a: [Date, Revenue], b: [Date, Revenue]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+       }
+     }),
+
+     generateBuybacksReport: publicProcedure
+    .input(
+       z.object({
+         startDate: z.string(),
+         endDate: z.string()
+       })
+     )
+     .query(async ({ ctx, input }) => {
+       try {
+          let totalRevenue = 0
+          let dateMap = new Map<Date, BuybackRevenue>();
+          const buybacks = await ctx.prisma.bookBuybackOrder.findMany({
+            where:{
+              date: {
+                gte: new Date(input.startDate),
+                lte: new Date(input.endDate)
+              }
+            }
+          })
+          console.log(buybacks)
+          if(buybacks){
+            for (const buyback of buybacks){
+              let revenue = 0
+              const buy = await ctx.prisma.buyback.findMany({
+                where:
+                {
+                    buybackOrderId: buyback.id
+                }
+                })
+                console.log(buy)
+              for (const b of buy){
+                revenue += b.quantity * b.buybackPrice
+              }
+              const dateMapObj = dateMap.get(buyback.date)
+              if (dateMapObj){
+                dateMap.set(buyback.date, {
+                  revenue: dateMapObj.revenue + revenue,
+                  buybacks: [...dateMapObj.buybacks, ...buy]
+                })
+              }
+              else{
+                dateMap.set(buyback.date, {
+                  revenue: revenue,
+                  buybacks: [...buy]
+                })
+              }
+              console.log("Rev: "+revenue)
+              totalRevenue += revenue
+            }
+            console.log("Total Rev: "+totalRevenue)
+          }
+          
+          return {
+            totalRevenue: totalRevenue,
+            resultsMap: new Map([...dateMap.entries()]
+            .sort((a: [Date, BuybackRevenue], b: [Date, BuybackRevenue]) => (a[0] > b[0]) ? 1 : -1))
+          }
+       } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 
@@ -119,7 +188,10 @@ export const salesReportRouter = createTRPCRouter({
             .sort((a: [Date, Cost], b: [Date, Cost]) => (a[0] > b[0]) ? 1 : -1))
           }
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 
@@ -170,11 +242,11 @@ export const salesReportRouter = createTRPCRouter({
                 let currRev = books.get(sale.bookId)?.revenue
                 if(currRev && book)
                   books.set(sale.bookId, {numBooks: updatedNumBooks, revenue: rev+currRev, 
-                    recentCost: 0, profit: 0, title: book.title})
+                    recentCost: 0, title: book.title})
               }
               else{
                 books.set(sale.bookId, {numBooks: sale.quantity, revenue: sale.quantity * sale.price, 
-                  recentCost: 0, profit: 0, title: book.title})
+                  recentCost: 0, title: book.title})
               }
             }
         }
@@ -186,22 +258,21 @@ export const salesReportRouter = createTRPCRouter({
                 purchaseOrderId: order.id
             }
             })
-            console.log(purchases)
             for (const purchase of purchases){
               
                 let booksObj = books.get(purchase.bookId)
                 if (booksObj){
+                  console.log("ID: "+purchase.bookId)
                   console.log("Revenue: "+booksObj.revenue)
                   console.log("Price: "+purchase.price)
                   console.log("NumBooks: "+booksObj.numBooks)
                   books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
-                    recentCost: purchase.price * booksObj.numBooks, profit: booksObj.revenue - purchase.price * booksObj.numBooks,
-                     title: booksObj.title})
+                    recentCost: purchase.price * booksObj.numBooks, title: booksObj.title})
                 }
             }
         }
         let results = []
-        console.log(books)
+
         books.forEach( (value,key)=> {
           
           const res = {
@@ -210,15 +281,18 @@ export const salesReportRouter = createTRPCRouter({
             numBooks: value.numBooks,
             recentCost: value.recentCost,
             revenue: value.revenue,
-            profit: value.profit
+            profit: value.revenue - value.recentCost
           }
           results.push(res)
         })
 
-        results = results.sort((a: any, b: any) => (a.numBooks > b.numBooks) ? 1 : -1)
+        results = results.sort((a: any, b: any) => (a.numBooks < b.numBooks) ? 1 : -1)
         return results.slice(0,10)
        } catch (error) {
-         console.log(error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
        }
      }),
 

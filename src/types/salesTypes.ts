@@ -3,13 +3,17 @@ export type topSellers = {
     numBooks: number,
     revenue: number,
     recentCost: number,
-    profit: number,
     title: string
 }
 
 export type Revenue = {
     revenue: number,
     sales: any[]
+}
+
+export type BuybackRevenue = {
+    revenue: number,
+    buybacks: any[]
 }
 
 export type Cost = {

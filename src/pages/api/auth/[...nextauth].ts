@@ -15,6 +15,10 @@ export const authOptions: NextAuthOptions = {
   session:{
     strategy: 'jwt'
   },
+  pages: {
+    signIn: "/index",
+    error: "/"
+  },
   // Include user.id on session
   callbacks: {
     async jwt({user, token}){
@@ -49,9 +53,9 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user){
-          console.log("No User")
           return null
         }
+
 
         if (credentials && credentials.password){
           const isValidPassword = bcrypt.compareSync(
@@ -60,11 +64,13 @@ export const authOptions: NextAuthOptions = {
           );
 
           if (!isValidPassword) {
-            console.log("Wrong Password")
-            return null
+            throw new Error("Wrong Password")
           } 
 
           return user;
+        }
+        else{
+          throw new Error("Please Enter a Password")
         }
 
       }

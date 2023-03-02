@@ -3,6 +3,8 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { rawGoogleOutput, googleBookInfo, editableBook as editableBook, completeBook, id, databaseBook } from "../../../types/bookTypes";
 import { Author, Book, Genre, Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth/core/types";
+import { TRPCError } from "@trpc/server";
+import cloudinary from "cloudinary"
 
 type context = {
   session: Session | null;
@@ -10,6 +12,7 @@ type context = {
 }
 const DEFAULT_EMPTY_STRING_FIELD_VALUE = ""
 const DEFAULT_EMPTY_NUMBER_FIELD_VALUE = 0
+export const DEFAULT_THICKNESS_IN_CENTIMETERS = .8
 
 const zBook = z.object({
   isbn: z.string(),
@@ -20,7 +23,10 @@ const zBook = z.object({
   dimensions: z.array(z.number()),
   pageCount: z.optional(z.number()),
   genre: z.string(),
-  retailPrice: z.number()
+  retailPrice: z.number(),
+  shelfSpace: z.number(),
+  inventory: z.number(),
+  imageLink: z.optional(z.string())
 })
 
 const fetchBookFromExternal = async (isbn: string) => {
@@ -36,23 +42,56 @@ const fetchBookFromExternal = async (isbn: string) => {
 }
 
 const transformRawBook = (input:googleBookInfo, isbn:string) =>{
-  const bookInfo: editableBook = {
-    isbn: isbn,
-    title: input.title,
-    publisher: input.publisher,
-    author: input.authors,
-    publicationYear: (new Date(input.publishedDate)).getFullYear(),
-    dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
-    pageCount: input.pageCount,
-    genre:input. mainCategory,
-    retailPrice: input.saleInfo?.retailPrice.amount,
-    inventory: 0,
-    authorNames:input.authors.join(", ")
-  }
+  const googleImageUrl = input.imageLinks.thumbnail
+  const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
+    console.log(result)
+    if (result) {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: result.secure_url,
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
+      }
+      return bookInfo
+    } else {
+      const bookInfo: editableBook = {
+        isbn: isbn,
+        title: input.title,
+        publisher: input.publisher,
+        author: input.authors,
+        publicationYear: (new Date(input.publishedDate)).getFullYear(),
+        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+        pageCount: input.pageCount,
+        genre: input.mainCategory,
+        retailPrice: input.saleInfo?.retailPrice.amount,
+        inventory: 0,
+        authorNames: input.authors.join(", "),
+        imageLink: "",
+        lastMonthSales:0,
+        shelfSpace:0,
+        daysOfSupply:Infinity,
+        bestBuybackPrice:0
+      }
+      return bookInfo
+    }
+  }))
   return bookInfo
 } 
 
-const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; }) =>{
+const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Genre; }, ctx:context) =>{
+  const lastMonthSales = await getLastMonthSales(book.isbn, ctx)
   const bookInfo: editableBook = {
     isbn: book.isbn,
     title: book.title,
@@ -64,7 +103,13 @@ const transformDatabaseBook = (book: Book & { author: Author[]; genre: Genre; })
     genre:book.genre.name,
     retailPrice: book.retailPrice,
     inventory: book.inventory,
-    authorNames: book.authorNames
+    authorNames: book.authorNames,
+    lastMonthSales: lastMonthSales,
+    shelfSpace: book.shelfSpace,
+    daysOfSupply:lastMonthSales==0 ? Infinity : book.inventory/(await getLastMonthSales(book.isbn, ctx))*30,
+    bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
+    imageLink: book.imageLink
+
   }
   return bookInfo
 }
@@ -96,7 +141,7 @@ export const BooksRouter = createTRPCRouter({
     for(const isbn of input){
       try{
         var book = await getBookIfExists(ctx, isbn)
-        if(book) internalBooks.push(transformDatabaseBook(book))
+        if(book) internalBooks.push(await transformDatabaseBook(book, ctx))
         else{
           const externalBook = await fetchBookFromExternal(isbn)
           if(externalBook) externalBooks.push(externalBook)
@@ -120,7 +165,7 @@ export const BooksRouter = createTRPCRouter({
     ).query(async ({ctx, input}) => {
         try{
           let book = await getBookIfExists(ctx, input.isbn)
-          if(book) return transformDatabaseBook(book)
+          if(book) return await transformDatabaseBook(book, ctx)
         }
         catch{
           console.log("error")
@@ -128,7 +173,7 @@ export const BooksRouter = createTRPCRouter({
     }),
 
   getAllInternalBooks: publicProcedure
-  .input(z.object({
+  .input(z.optional(z.object({
     pageNumber: z.number(),
     booksPerPage: z.number(),
     sortBy: z.string(),
@@ -138,14 +183,89 @@ export const BooksRouter = createTRPCRouter({
       isbn: z.string(),
       publisher: z.string(),
       genre: z.string(),
-      author: z.string()
+      authorNames: z.string()
     })
-  }))
+  })))
   .query(async ({ctx, input}) => {
     if(input){
-      return await ctx.prisma.book.findMany({
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+        return externalSort(input, ctx, true)
+      }
+      const books = await ctx.prisma.book.findMany({
         take: input.booksPerPage,
         skip: input.pageNumber*input.booksPerPage,
+        include:{
+          author:true,
+          genre:true
+        },
+        orderBy: (input.sortBy==="genre" ? {
+          genre:{
+            name: input.descOrAsc
+          }
+        } :  [
+          {
+            [input.sortBy]: input.descOrAsc,
+          }
+        ]),
+        where:{
+          title:{
+            contains: input.filters.title,
+            mode: 'insensitive'
+          },
+          authorNames:{
+            contains: input.filters.authorNames,
+            mode: 'insensitive'
+          },
+          
+          publisher:{
+            contains: input.filters.publisher,
+            mode: 'insensitive'
+          },
+          genre:{
+            name:{
+              contains: input.filters.genre,
+              mode: 'insensitive'
+            }
+          },
+          isbn:{
+            contains: input.filters.isbn,
+            mode: 'insensitive'
+          }
+        }
+      
+      })
+      const editedBooks = await addExtraBookFields(books, ctx)
+      
+      return editedBooks
+    }
+    else{
+      return await ctx.prisma.book.findMany({
+        include:{
+          author:true,
+          genre:true
+        }
+      })
+    }
+  }),
+
+  getAllInternalBooksNoPagination: publicProcedure
+  .input(z.optional(z.object({
+    sortBy: z.string(),
+    descOrAsc: z.string(),
+    filters: z.object({
+      title: z.string(),
+      isbn: z.string(),
+      publisher: z.string(),
+      genre: z.string(),
+      authorNames: z.string()
+    })
+  })))
+  .query(async ({ctx, input}) => {
+    if(input){
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+        return externalSort(input, ctx, false)
+      }
+      const books = await ctx.prisma.book.findMany({
         include:{
           author:true,
           genre:true
@@ -165,7 +285,7 @@ export const BooksRouter = createTRPCRouter({
             mode: 'insensitive'
           },
           authorNames:{
-            contains: input.filters.author,
+            contains: input.filters.authorNames,
             mode: 'insensitive'
           },
           
@@ -183,18 +303,18 @@ export const BooksRouter = createTRPCRouter({
             contains: input.filters.isbn,
             mode: 'insensitive'
           }
-
         }
-      
       })
+      const editedBooks = await addExtraBookFields(books, ctx)
+      return editedBooks
     }
     else{
-      return await ctx.prisma.book.findMany({
+      return addExtraBookFields(await ctx.prisma.book.findMany({
         include:{
           author:true,
           genre:true
         }
-      })
+      }), ctx)
     }
   }),
 
@@ -205,7 +325,7 @@ export const BooksRouter = createTRPCRouter({
       isbn: z.string(),
       publisher: z.string(),
       genre: z.string(),
-      author: z.string()
+      authorNames: z.string()
     })
   }))
   .query(async ({ctx, input}) => {
@@ -216,7 +336,7 @@ export const BooksRouter = createTRPCRouter({
           mode: 'insensitive'
         },
         authorNames:{
-          contains: input.filters.author,
+          contains: input.filters.authorNames,
           mode: 'insensitive'
         },
         
@@ -253,8 +373,10 @@ export const BooksRouter = createTRPCRouter({
             publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,
             dimensions: data.dimensions,
             pageCount: data.pageCount,
+            imageLink: data.imageLink,
             retailPrice: data.retailPrice,
             authorNames: data.author.join(", "),
+            shelfSpace: data.inventory * (data.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS),
             author:{
               connect:authorIDs
             },
@@ -282,6 +404,7 @@ export const BooksRouter = createTRPCRouter({
           },
           data:{
             ...data,
+            shelfSpace: data.inventory * (data.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS),
             author:{
               set:authorIDs
             },
@@ -296,6 +419,23 @@ export const BooksRouter = createTRPCRouter({
       throw("Book cannot be modified")
     }
   }),
+
+  getBookTransactionDetails: publicProcedure.input(
+      z.string()
+  ).query(async({ctx, input}) => {
+    try{
+      const sales = await getSales(ctx, input)
+      const purchases = await getPurchases(ctx, input)
+      const buybacks = await getBookBuyback(ctx, input)
+      return {
+        sales: sales,
+        purchases: purchases,
+        buybacks: buybacks}
+    }
+    catch(error){
+      throw("Cannot get book transaction details")
+    }
+}),
   
   deleteBookByISBN: publicProcedure.input(
     z.string()
@@ -307,8 +447,46 @@ export const BooksRouter = createTRPCRouter({
     catch(error){
       throw("Cannot delete book")
     }
-  })
+  }),
 
+  getBooksByVendorId: publicProcedure
+  .input(z.object({
+      vendorId: z.string()
+    })
+  )
+  .query(async ({ctx, input}) => {
+      try{
+        const books = []
+        const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
+          where:{
+            vendorId: input.vendorId
+          }
+        })
+        for (const purchaseOrder of purchaseOrders){
+            const purchases = await ctx.prisma.purchase.findMany({
+              where:{
+                purchaseOrderId: purchaseOrder.id
+              }
+            })
+            for (const purch of purchases){
+              const book = await ctx.prisma.book.findFirst({
+                where:{
+                  isbn: purch.bookId
+                }
+              })
+              books.push(book)
+            }
+        }
+        console.log(books)
+        return books
+      }
+      catch(error){
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: error.message
+          })
+      }
+    })
 })
 
 const deleteBook = async (ctx: context, isbn:string) =>{
@@ -318,7 +496,6 @@ const deleteBook = async (ctx: context, isbn:string) =>{
     }
   })
 }
-
 const prepData = async (ctx: context, input: any) => {
   const ids = await getAuthorIDs(ctx, input.author)
   const entry = await convertGenreFieldToID(ctx, input)
@@ -332,7 +509,6 @@ const findIndividualAuthor = async(ctx: context, author: string) =>{
     }
   });
 }
-
 const createAuthor = async(ctx: context, author: string) =>{
   await ctx.prisma.author.create({
     data:{
@@ -340,7 +516,6 @@ const createAuthor = async(ctx: context, author: string) =>{
     }
   })
 }
-
 const getAuthorIDs = async (ctx: context, authors:string[]) => {
   const authorIDs: id[] = [] 
   for (const individualAuthor of authors){
@@ -364,6 +539,47 @@ const getAuthorIDs = async (ctx: context, authors:string[]) => {
   return authorIDs
 }
 
+const externalSort =async (input, ctx:context, paginate?:boolean) => {
+  const books = await ctx.prisma.book.findMany({
+    include:{
+      author:true,
+      genre:true
+    },
+    where:{
+      title:{
+        contains: input.filters.title,
+        mode: 'insensitive'
+      },
+      authorNames:{
+        contains: input.filters.authorNames,
+        mode: 'insensitive'
+      },
+      
+      publisher:{
+        contains: input.filters.publisher,
+        mode: 'insensitive'
+      },
+      genre:{
+        name:{
+          contains: input.filters.genre,
+          mode: 'insensitive'
+        }
+      },
+      isbn:{
+        contains: input.filters.isbn,
+        mode: 'insensitive'
+      }
+    }
+  })
+
+  const editedBooks = await addExtraBookFields(books, ctx)
+  const sorted = editedBooks.sort((a, b) => {
+    if(input.descOrAsc === "asc")return a[input.sortBy] - b[input.sortBy]
+    return b[input.sortBy] - a[input.sortBy]
+ })
+  return paginate ? sorted.slice((input.pageNumber*input.booksPerPage), (input.pageNumber*input.booksPerPage)+input.booksPerPage) : sorted
+
+}
 
 const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   const {genre, ...data}= input
@@ -386,3 +602,146 @@ const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   }
 }
 
+const getLastMonthSales = async (isbn: string, ctx: context) => {  
+
+  const currentDate = new Date()
+  var lastMonth = new Date()
+  lastMonth.setDate(lastMonth.getDate() - 30)
+  const salesRecs = await ctx.prisma.sale.findMany({
+    where:{
+      saleReconciliation: {
+        date: {
+          lte: currentDate,
+          gte: lastMonth
+        }        
+      },
+      bookId:{
+        contains:isbn
+      }
+    },
+    select: {
+      quantity: true,
+      id: true
+
+    }
+  })
+  var sum = 0
+  for(const sale of salesRecs){
+    sum = sum + sale.quantity
+  }
+  return sum
+}
+async function getBestBuybackRate (isbn:string, ctx:context){
+  const purchases = await ctx.prisma.purchase.findMany({
+    where:{
+      bookId:isbn,
+      purchaseOrder:{
+        vendor:{
+          bookBuybackPercentage:{
+            gte:0
+          }
+        }
+      }
+    },
+    include:{
+      purchaseOrder:{
+        include:{
+          vendor:true
+        }
+      }
+    }
+  })
+  var highestBuyBack = 0
+  for(const purchase of purchases){
+    const price = purchase.price * (purchase.purchaseOrder.vendor.bookBuybackPercentage)
+    if(price > highestBuyBack) highestBuyBack = price
+  }
+  return highestBuyBack
+}
+async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
+  return await Promise.all(books.map(async (book) => {
+    const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
+    return (
+      {
+        ...book,
+        lastMonthSales: lastMonthSales,
+        daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
+        bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx)
+      });
+  })
+  );
+}
+
+async function getPurchases (ctx: context, isbn:string){
+  const purchases = await ctx.prisma.purchase.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      purchaseOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
+    }
+  })
+  return purchases
+}
+
+async function getSales (ctx: context, isbn:string){
+  const sales = await ctx.prisma.sale.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      price: true,
+      saleReconciliation: {
+        select:{
+          date:true
+        }
+      }
+    }
+  })
+  return sales
+}
+async function getBookBuyback (ctx: context, isbn:string){
+  const bookBuybacks = await ctx.prisma.buyback.findMany({
+    where:{
+      bookId:isbn
+    },
+    select:{
+      id: true,
+      quantity: true,
+      buybackPrice: true,
+      bookBuybackOrder: {
+        select:{
+          date:true,
+          vendor:true
+        }
+      }
+    }
+  })
+  return bookBuybacks
+}
+
+
+
+
+
+function generateLastMonthDatesArray(){
+  var dateArray=[]
+  const lastMonth = new Date()
+  lastMonth.setDate(lastMonth.getDate() - 30)
+  for(var i=0; i<31; i++){
+    var date = new Date()
+    date.setDate(lastMonth.getDate()+i)
+    dateArray.push(date)
+  }
+  return dateArray
+}

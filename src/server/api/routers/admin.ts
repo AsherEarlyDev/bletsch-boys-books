@@ -6,6 +6,31 @@ import SalesPage from "../../../pages/sales";
 const SALT_ROUNDS = 10;
 
 export const adminRouter = createTRPCRouter({
+  getAllUsers: publicProcedure.query(async ({ ctx }) => {
+    try {
+      return await ctx.prisma.admin.findMany();
+    } catch (error) {
+      console.log(error);
+    }
+  }),
+  createNewUser: publicProcedure.input(z.object({
+    username: z.string(),
+    password: z.string(),
+    isAdmin: z.boolean()
+  })).mutation(async({ctx, input}) => {
+    try {
+      await ctx.prisma.admin.create({
+          data: {
+            username: input.username,
+            password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
+            isAdmin: input.isAdmin
+          },
+      });
+    } catch (error){
+      console.log(error)
+    }
+  }),
+
   createAdminPassword: publicProcedure
     .input(
       z.object({

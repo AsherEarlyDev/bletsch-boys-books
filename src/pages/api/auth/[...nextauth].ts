@@ -44,15 +44,19 @@ export const authOptions: NextAuthOptions = {
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
+        username: { label: "Username", type: "username"},
         password: { label: "Password", type: "password"}
       },
-      async authorize (credentials, req) {
-
+      async authorize(credentials, req) {
+        console.log(credentials.username)
+        const submittedUsername = credentials.username
+        //Will need to change to find unique
         const user = await prisma.admin.findUnique({
-          where: { id: 1 },
-        });
+          where: { username: submittedUsername},
+        })
 
         if (!user){
+          throw new Error("Username does not exist.")
           return null
         }
 

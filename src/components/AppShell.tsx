@@ -17,6 +17,7 @@ const navigation = [
   {name: 'Sales', href: '/sales'},
   {name: 'Purchases', href: '/purchases'},
   {name: 'Buybacks', href: '/buybacks'},
+  {name: 'User Management', href: '/user-management'},
 ]
 const userNavigation = [
   {name: 'Change Password', href: '/reset-password'},

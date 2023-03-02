@@ -12,6 +12,7 @@ type context = {
 }
 const DEFAULT_EMPTY_STRING_FIELD_VALUE = ""
 const DEFAULT_EMPTY_NUMBER_FIELD_VALUE = 0
+export const DEFAULT_THICKNESS_IN_CENTIMETERS = .8
 
 const zBook = z.object({
   isbn: z.string(),
@@ -187,6 +188,9 @@ export const BooksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+        return externalSort(input, ctx, true)
+      }
       const books = await ctx.prisma.book.findMany({
         take: input.booksPerPage,
         skip: input.pageNumber*input.booksPerPage,
@@ -194,7 +198,7 @@ export const BooksRouter = createTRPCRouter({
           author:true,
           genre:true
         },
-        orderBy: input.sortBy==="genre" ? {
+        orderBy: (input.sortBy==="genre" ? {
           genre:{
             name: input.descOrAsc
           }
@@ -202,7 +206,7 @@ export const BooksRouter = createTRPCRouter({
           {
             [input.sortBy]: input.descOrAsc,
           }
-        ],
+        ]),
         where:{
           title:{
             contains: input.filters.title,
@@ -231,6 +235,7 @@ export const BooksRouter = createTRPCRouter({
       
       })
       const editedBooks = await addExtraBookFields(books, ctx)
+      
       return editedBooks
     }
     else{
@@ -257,6 +262,9 @@ export const BooksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+        return externalSort(input, ctx, false)
+      }
       const books = await ctx.prisma.book.findMany({
         include:{
           author:true,
@@ -301,12 +309,12 @@ export const BooksRouter = createTRPCRouter({
       return editedBooks
     }
     else{
-      return await ctx.prisma.book.findMany({
+      return addExtraBookFields(await ctx.prisma.book.findMany({
         include:{
           author:true,
           genre:true
         }
-      })
+      }), ctx)
     }
   }),
 
@@ -368,7 +376,7 @@ export const BooksRouter = createTRPCRouter({
             imageLink: data.imageLink,
             retailPrice: data.retailPrice,
             authorNames: data.author.join(", "),
-            shelfSpace: data.inventory * (data.dimensions[1] ?? .08),
+            shelfSpace: data.inventory * (data.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS),
             author:{
               connect:authorIDs
             },
@@ -396,7 +404,7 @@ export const BooksRouter = createTRPCRouter({
           },
           data:{
             ...data,
-            shelfSpace: data.inventory * (data.dimensions[1] ?? .8),
+            shelfSpace: data.inventory * (data.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS),
             author:{
               set:authorIDs
             },
@@ -517,6 +525,47 @@ const getAuthorIDs = async (ctx: context, authors:string[]) => {
   return authorIDs
 }
 
+const externalSort =async (input, ctx:context, paginate?:boolean) => {
+  const books = await ctx.prisma.book.findMany({
+    include:{
+      author:true,
+      genre:true
+    },
+    where:{
+      title:{
+        contains: input.filters.title,
+        mode: 'insensitive'
+      },
+      authorNames:{
+        contains: input.filters.authorNames,
+        mode: 'insensitive'
+      },
+      
+      publisher:{
+        contains: input.filters.publisher,
+        mode: 'insensitive'
+      },
+      genre:{
+        name:{
+          contains: input.filters.genre,
+          mode: 'insensitive'
+        }
+      },
+      isbn:{
+        contains: input.filters.isbn,
+        mode: 'insensitive'
+      }
+    }
+  })
+
+  const editedBooks = await addExtraBookFields(books, ctx)
+  const sorted = editedBooks.sort((a, b) => {
+    if(input.descOrAsc === "asc")return a[input.sortBy] - b[input.sortBy]
+    return b[input.sortBy] - a[input.sortBy]
+ })
+  return paginate ? sorted.slice((input.pageNumber*input.booksPerPage), (input.pageNumber*input.booksPerPage)+input.booksPerPage) : sorted
+
+}
 
 
 const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
@@ -540,7 +589,7 @@ const convertGenreFieldToID = async (ctx: context, input: completeBook) =>{
   }
 }
 
-const getLastMonthSales = async (isbn: string, ctx: context) => {
+const getLastMonthSales = async (isbn: string, ctx: context) => {  
   const currentDate = new Date()
   var lastMonth = new Date()
   lastMonth.setDate(lastMonth.getDate() - 30)

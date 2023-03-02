@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
 
 export const buybackRouter = createTRPCRouter({
     createBuyback: publicProcedure
@@ -103,7 +104,7 @@ export const buybackRouter = createTRPCRouter({
                   },
                   data:{
                     inventory: inventory,
-                    shelfSpace: (inventory)*(book.dimensions[1] ?? .8)
+                    shelfSpace: (inventory)*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
                   }
                 })
                 await ctx.prisma.bookBuybackOrder.update({
@@ -192,7 +193,7 @@ export const buybackRouter = createTRPCRouter({
               },
               data:{
                 inventory: book.inventory + change,
-                shelfSpace: (book.inventory+change)*(book.dimensions[1] ?? .8)
+                shelfSpace: (book.inventory+change)*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
               }
             })
 
@@ -270,7 +271,7 @@ export const buybackRouter = createTRPCRouter({
               inventory: {
                 increment: buyback.quantity
               },
-              shelfSpace: (book.inventory+buyback.quantity)*(book.dimensions[1] ?? .8)
+              shelfSpace: (book.inventory+buyback.quantity)*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
               
             }
           })

@@ -22,7 +22,6 @@ export default function MutableTableEntry(props:any) {
       </td>
   )
 }
-
 MutableTableEntry.defaultProps={
   width: 32
 }

@@ -15,7 +15,6 @@ export default function MutableSelectGenreEntry(props:{saveFunction: any, defaul
   console.log(selected)
   const [query, setQuery] = useState('')
   props.saveFunction(selected)
-
   const classProps="w-44 mt-1  w-" + props.width
   
   const filteredGenres =

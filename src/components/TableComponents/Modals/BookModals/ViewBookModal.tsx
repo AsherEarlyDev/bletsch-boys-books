@@ -16,6 +16,7 @@ interface BookModalProp {
     lastMonthSales: number;
     daysOfSupply:number;
     bestBuybackPrice: number;
+    shelfSpace: number;
   },
   closeOut: () => void
   openEdit: (isbn: string) => void

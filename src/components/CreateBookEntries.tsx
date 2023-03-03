@@ -1,7 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
-import BookCard from "./BookCard";
-import {editableBook} from "../types/bookTypes";
 
 interface CreateBookEntryInterface{
   submitText: string

@@ -43,18 +43,18 @@ export default function UserTable() {
   // }
   //
   //
-  // async function openEditVendorView(id: string) {
-  //   if (vendors) {
-  //     for (const ven of vendors) {
-  //       if (ven.id === id) {
-  //         setCurrentVendor({
+  // async function openEditUserView(id: number) {
+  //   if (users) {
+  //     for (const user of users) {
+  //       if (user.id === id) {
+  //         setCurrentUser({
   //           id: ven.id,
   //           name: ven.name,
   //           buybackRate: ven.bookBuybackPercentage
   //         })
   //       }
   //     }
-  //     setDisplayEditVendorView(true)
+  //     setDisplayEditUserView(true)
   //   }
   // }
   //

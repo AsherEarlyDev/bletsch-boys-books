@@ -719,10 +719,10 @@ async function getBookBuyback (ctx: context, isbn:string){
       id: true,
       quantity: true,
       buybackPrice: true,
-      bookBuybackOrder: {
+      BookBuybackOrder: {
         select:{
           date:true,
-          vendor:true
+          Vendor:true
         }
       }
     }

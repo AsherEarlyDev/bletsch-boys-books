@@ -87,22 +87,27 @@ export default function EditBookModal(props:BookCardProp) {
                 :
                 <h3 className="m-5 text-md">Book has no cover image...</h3>
             }
-            <CldUploadButton
-                uploadPreset="book-image-preset"
-                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                onUpload={(result, widget) => {
-                  console.log(result)
-                  if (result.event == "success") {
-                    setImage(result?.info.secure_url)
-                    widget.close()
-                  }
-                }}
-                options={{
-                  multiple: false,
-                  sources: ["local", "url"],
-                  clientAllowedFormats: ["image"]
-                }}
-            />
+            <div className="flex flex-row gap-3 my-2 justify-center">
+              {image &&
+              <button onClick={() => {setImage("")}} className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm">
+                Delete
+              </button>}
+              <CldUploadButton
+                  uploadPreset="book-image-preset"
+                  className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
+                  onUpload={(result, widget) => {
+                    if (result.event == "success") {
+                      setImage(result?.info.secure_url)
+                      widget.close()
+                    }
+                  }}
+                  options={{
+                    multiple: false,
+                    sources: ["local", "url"],
+                    clientAllowedFormats: ["image"]
+                  }}
+              />
+            </div>
           </div>
           <CardGrid>
             <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>

@@ -28,7 +28,6 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
           buybackMap.forEach((value,key)=>{
             const date = (key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear()
             const mapObj = totalMap.get(date)
-            console.log(value.revenue)
             totalMap.set(date, {cost: mapObj.cost, revenue: mapObj.revenue, buybackRevenue: value.revenue})
           })
         }
@@ -38,10 +37,10 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
           let date = new Date(key)
           resultsArray.push({
             date: (date.getMonth()+1)+"/"+(date.getDate())+"/"+date.getFullYear(),
-            cost: value.cost,
-            revenue: value.revenue,
-            profit: value.revenue + value.buybackRevenue - value.cost,
-            buybackRevenue: value.buybackRevenue
+            cost: value.cost.toFixed(2),
+            revenue: value.revenue.toFixed(2),
+            profit: (value.revenue + value.buybackRevenue - value.cost).toFixed(2),
+            buybackRevenue: value.buybackRevenue.toFixed(2)
           })
         })
         resultsArray = resultsArray.sort((a: any, b: any) => (new Date(a.date) > new Date(b.date)) ? 1 : -1)
@@ -62,16 +61,16 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
       topSellers: {recentCost: number, revenue: number, profit: number, isbn: string, title: string, numBooks: number}[],
       totalCost: number, totalRevenue: number){
       const report = new jsPDF();
-      const totalProfit = totalRevenue-totalCost
+      const totalProfit = (totalRevenue-totalCost)
       const totalTableCol = ["Total Cost", "Total Revenue", "Total Profit"]
-      const tableCol = ["Date","Daily Cost", "Daily Sale Revenue", "Daily Profit", "Daily Buyback Revenue"]
+      const tableCol = ["Date","Daily Cost", "Daily Sale Revenue", "Daily Buyback Revenue", "Daily Profit"]
       const topSellersColumn = ["Book ISBN","Book Title","Quantity Sold","Total Cost Most-Recent", "Total Revenue", "Total Profit"]
-      let totalRow = [totalCost, totalRevenue, totalProfit]
+      let totalRow = [totalCost.toFixed(2), totalRevenue.toFixed(2), totalProfit.toFixed(2)]
       let dailyRow = []
       let topSellersRow = []
       if (results && topSellers){
         results.map((result)=>{
-          let dailyTemp = [result.date, result.cost, result.revenue, result.profit, result.buybackRevenue]
+          let dailyTemp = [result.date, result.cost, result.revenue, result.buybackRevenue, result.profit]
           dailyRow.push(dailyTemp)
         })
   

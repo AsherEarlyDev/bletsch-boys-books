@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
 import {api} from "../../../../utils/api";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import {PencilSquareIcon} from "@heroicons/react/20/solid";
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 
@@ -15,7 +15,6 @@ export default function EditUserModal(props: UserModalProp) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(props.isAdmin)
-  console.log(isAdmin)
 
   const editUser = api.admin.editUser.useMutation({
     onError: (error) => {

@@ -17,9 +17,10 @@ export default function DeleteUserModal(props: DeleteUserModalProp) {
       toast.error(error.message)
     },
     onSuccess: () => {
-      toast.success("Successfully created new user!")
+      toast.success("Successfully delete user.")
     }
   });
+
   function handleDeleteUser(){
     deleteUser.mutate({
       userId: props.id

@@ -33,39 +33,37 @@ export const adminRouter = createTRPCRouter({
   }),
   editUser: publicProcedure.input(z.object({id: z.number(), isAdmin: z.boolean(), password: z.string().optional()})).mutation(async({ctx, input}) => {
     try{
-      await ctx.prisma.admin.update({
-      where:
-          {
-            id: input.id
-          },
-      data:
-          {
-            isAdmin: input.isAdmin,
-            password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
-          },
-    });
+      if(input.id!=1){
+        if(input.password){
+          await ctx.prisma.admin.update({
+            where:
+                {
+                  id: input.id
+                },
+            data:
+                {
+                  isAdmin: input.isAdmin,
+                  password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
+                },
+          });
+        }
+        else{
+          await ctx.prisma.admin.update({
+            where:
+                {
+                  id: input.id
+                },
+            data:
+                {
+                  isAdmin: input.isAdmin,
+                },
+          });
+        }
+      }
   } catch (error){
     console.log(error);
   }
   }),
-
-  createAdminPassword: publicProcedure
-    .input(
-      z.object({
-        password: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.admin.create({
-          data: {
-            password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
-          },
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }),
     getPassword: publicProcedure
     .query(async ({ ctx }) => {
       try {
@@ -108,7 +106,7 @@ export const adminRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.user.delete({
+        await ctx.prisma.admin.delete({
           where: {
             id: input.userId
           }

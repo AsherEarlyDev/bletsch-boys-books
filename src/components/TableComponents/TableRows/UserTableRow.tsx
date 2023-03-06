@@ -6,6 +6,7 @@ import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import AddUserModal from "../Modals/UserModals/AddUserModal";
 import EditUserModal from "../Modals/UserModals/EditUserModal";
 import DeleteUserModal from "../Modals/UserModals/DeleteUserModal";
+import {ToastContainer} from "react-toastify";
 
 
 interface UserTableRowProps{
@@ -18,23 +19,14 @@ interface UserTableRowProps{
 
 
 export function UserTableRow(props: UserTableRowProps){
-  function handleEdit(){
-    console.log("Editing user")
-    // props.onEdit(props.vendorInfo.id)
-  }
-  function handleDelete(){
-    console.log("Deleting user")
-    // props.onDelete(props.vendorInfo.id)
-  }
-  function handleView(){
-    // props.onView(props.vendorInfo.id)
-  }
   return (
       <tr>
         <TableEntry firstEntry={true}>{props.userInfo.name}</TableEntry>
         <TableEntry>{props.userInfo.isAdmin ? "Admin" : "Not admin."}</TableEntry>
-        <EditUserModal isAdmin={props.userInfo.isAdmin} username={props.userInfo.name} id={props.userInfo.id}></EditUserModal>
-        <DeleteUserModal id={props.userInfo.id}></DeleteUserModal>
+        {props.userInfo.id != 1 &&
+        <EditUserModal isAdmin={props.userInfo.isAdmin} username={props.userInfo.name} id={props.userInfo.id}></EditUserModal>}
+        {props.userInfo.id != 1 &&
+        <DeleteUserModal id={props.userInfo.id}></DeleteUserModal>}
       </tr>
       
   )

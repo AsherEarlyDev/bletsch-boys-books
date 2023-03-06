@@ -254,12 +254,14 @@ export const buybackOrderRouter = createTRPCRouter({
             buybackOrderId: input.buybackOrderId
           }
         })
-        const book = await ctx.prisma.book.findUnique({
-          where:{
-            isbn: isbn
-          }
-        })
+        
         for (const buyback of buybacks){
+          const book = await ctx.prisma.book.findUnique({
+            where:{
+              isbn: buyback.bookId
+            }
+          })
+
           await ctx.prisma.book.update({
             where:{
               isbn: buyback.bookId

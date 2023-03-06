@@ -231,7 +231,6 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
           <SaveCardChanges saveModal={openConfirmationView} closeModal={props.closeOut}></SaveCardChanges>
         </div>
         {renderConfirmationView()}
-        <ToastContainer/>
 
       </div>
   )

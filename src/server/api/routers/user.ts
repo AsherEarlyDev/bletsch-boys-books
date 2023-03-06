@@ -6,10 +6,10 @@ import {TRPCError} from "@trpc/server";
 
 const SALT_ROUNDS = 10;
 
-export const adminRouter = createTRPCRouter({
+export const userRouter = createTRPCRouter({
   getAllUsers: publicProcedure.query(async ({ ctx }) => {
     try {
-      return await ctx.prisma.admin.findMany();
+      return await ctx.prisma.user.findMany();
     } catch (error) {
       console.log(error);
     }
@@ -17,77 +17,73 @@ export const adminRouter = createTRPCRouter({
   createNewUser: publicProcedure.input(z.object({
     username: z.string(),
     password: z.string(),
-    isAdmin: z.boolean()
+    role: z.enum(["USER", "ADMIN", "SUPERADMIN"])
   })).mutation(async({ctx, input}) => {
     try {
-      await ctx.prisma.admin.create({
+      await ctx.prisma.user.create({
           data: {
-            username: input.username,
+            name: input.username,
             password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
-            isAdmin: input.isAdmin
+            role: input.role
           },
       });
     } catch (error){
       console.log(error)
     }
   }),
-  editUser: publicProcedure.input(z.object({id: z.number(), isAdmin: z.boolean(), password: z.string().optional()})).mutation(async({ctx, input}) => {
+  editUser: publicProcedure.input(z.object({id: z.string(), role: z.enum(["USER", "ADMIN", "SUPERADMIN"]), password: z.string().optional()})).mutation(async({ctx, input}) => {
     try{
-      if(input.id!=1){
         if(input.password){
-          await ctx.prisma.admin.update({
+          await ctx.prisma.user.update({
             where:
                 {
                   id: input.id
                 },
             data:
                 {
-                  isAdmin: input.isAdmin,
+                  role: input.role,
                   password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
                 },
           });
         }
         else{
-          await ctx.prisma.admin.update({
+          await ctx.prisma.user.update({
             where:
                 {
                   id: input.id
                 },
             data:
                 {
-                  isAdmin: input.isAdmin,
+                  role: input.role,
                 },
           });
         }
-      }
   } catch (error){
     console.log(error);
   }
   }),
-    getPassword: publicProcedure
-    .query(async ({ ctx }) => {
+  getPassword: publicProcedure
+  .query(async ({ ctx }) => {
       try {
-        return await ctx.prisma.admin.findFirst({
+        return await ctx.prisma.user.findFirst({
           where: {
-            id: 1,
+            id: ctx.session.user?.id,
           },
         });
       } catch (error) {
         console.log(error);
       }
     }),
-    changePassword: publicProcedure
-    .input(
-      z.object({
+  changePassword: publicProcedure
+  .input(z.object({
         password: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
+      }))
+  .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.admin.update({
+        await ctx.prisma.user.update({
           where:
           {
-            id: 1
+            id: ctx.session.user?.id
           },
           data: {
             password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
@@ -97,16 +93,11 @@ export const adminRouter = createTRPCRouter({
         console.log(error);
       }
     }),
-
-    deleteUser: publicProcedure
-    .input(
-        z.object({
-          userId: z.number(),
-        })
-    )
-    .mutation(async ({ ctx, input }) => {
+  deleteUser: publicProcedure
+  .input(z.object({userId: z.string(),}))
+  .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.admin.delete({
+        await ctx.prisma.user.delete({
           where: {
             id: input.userId
           }
@@ -115,5 +106,13 @@ export const adminRouter = createTRPCRouter({
         throw new TRPCError({code: error.code, message: error.message})
       }
     }),
-
+  getNumberOfUsers: publicProcedure
+  .query(async ({ ctx }) => {
+    try {
+      const users = await ctx.prisma.user.findMany();
+      return users.length;
+    } catch (error) {
+      throw new TRPCError({code: error.code, message: error.message})
+    }
+  }),
 });

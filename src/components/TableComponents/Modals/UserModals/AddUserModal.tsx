@@ -13,7 +13,7 @@ export default function AddUserModal(props: UserModalProp) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false)
-  const createUser = api.admin.createNewUser.useMutation({
+  const createUser = api.user.createNewUser.useMutation({
     onError: (error) => {
       toast.error(error.message)
     },
@@ -26,7 +26,7 @@ export default function AddUserModal(props: UserModalProp) {
       createUser.mutate({
         password: pass,
         username: username,
-        isAdmin: isAdmin
+        role: (isAdmin ? "ADMIN" : "USER")
       });
       closeModal()
     }

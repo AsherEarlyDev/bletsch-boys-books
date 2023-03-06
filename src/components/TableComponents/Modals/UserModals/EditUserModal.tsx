@@ -7,7 +7,7 @@ import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 
 interface UserModalProp{
   username: string
-  id: number
+  id: string
   isAdmin: boolean
 }
 
@@ -16,7 +16,7 @@ export default function EditUserModal(props: UserModalProp) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(props.isAdmin)
 
-  const editUser = api.admin.editUser.useMutation({
+  const editUser = api.user.editUser.useMutation({
     onError: (error) => {
       toast.error(error.message)
     },
@@ -29,7 +29,7 @@ export default function EditUserModal(props: UserModalProp) {
       if(pass == ""){
         editUser.mutate({
           id: props.id,
-          isAdmin: isAdmin
+          role: (isAdmin ? "ADMIN" : "USER")
         });
       }
       else{
@@ -37,7 +37,7 @@ export default function EditUserModal(props: UserModalProp) {
         editUser.mutate({
           id: props.id,
           password: pass,
-          isAdmin: isAdmin
+          role: (isAdmin ? "ADMIN" : "USER")
         });
       }
       closeModal()

@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { BookBuybackOrder } from "@prisma/client";
-import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackOrderRouter = createTRPCRouter({
     createBuybackOrder: publicProcedure

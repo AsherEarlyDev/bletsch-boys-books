@@ -20,10 +20,7 @@ model Book {
   retailPrice     Float
   inventory       Int        @default(0)
   genre           Genre      @relation(fields: [genreID], references: [id])
-<<<<<<< HEAD
-=======
   Buyback         Buyback[]
->>>>>>> main
   purchases       Purchase[]
   sales           Sale[]
   author          Author[]   @relation("AuthorToBook")

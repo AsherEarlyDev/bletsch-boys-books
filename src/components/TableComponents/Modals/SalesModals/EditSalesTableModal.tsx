@@ -129,7 +129,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     setAddSaleRowView(false)
   }
   function handleAddSale(isbn: string, quantity: number, price: number){
-    if(isbn && quantity && price){
+    if(isbn && quantity){
       addSale.mutate({
         saleReconciliationId: props.salesRecId,
         isbn: isbn,
@@ -139,7 +139,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       closeAddSaleRow()
     }
     else{
-      toast.error("Cannot add sale.")
+      toast.error("Cannot add sale. IDK WHY")
     }
   }
 

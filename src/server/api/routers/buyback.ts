@@ -203,7 +203,7 @@ export const buybackRouter = createTRPCRouter({
               buybackOrderId: input.buybackOrderId,
               bookId: input.isbn,
               quantity: parseInt(input.quantity),
-              price: parseFloat(input.price),
+              buybackPrice: parseFloat(input.price),
               subtotal: parseFloat(input.price) * parseInt(input.quantity)
             },
             });

@@ -52,7 +52,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       toast.error("Failed to add buyback!")
     },
     onSuccess: ()=>{
-      toast.success("Successfully added buyback!")
+      toast.success("Successfully added buyback! This is where things are broken")
     }
   })
   const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.data.id}).data

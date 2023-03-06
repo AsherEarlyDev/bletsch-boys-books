@@ -38,7 +38,7 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry width={20}>{props.bookInfo.inventory}</TableEntry>
         <TableEntry width={20}>{props.bookInfo.lastMonthSales}</TableEntry>
         <TableEntry width={16}>{(props.bookInfo.dimensions[1])?.toFixed(1) + "\"" || props.bookInfo.shelfSpace==0 ? (props.bookInfo.shelfSpace)?.toFixed(1) +"\"" : (props.bookInfo.shelfSpace)?.toFixed(1)+"\" (est)"}</TableEntry>
-        <TableEntry width={12}>{(props.bookInfo.daysOfSupply == Infinity ? "Inf." : props.bookInfo.daysOfSupply )}</TableEntry>
+        <TableEntry width={12}>{(props.bookInfo.daysOfSupply == Infinity ? "Inf." : props.bookInfo.daysOfSupply?.toFixed(2) )}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.bestBuybackPrice==0 ? "-" : "$" + props.bookInfo.bestBuybackPrice.toFixed(2)}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}

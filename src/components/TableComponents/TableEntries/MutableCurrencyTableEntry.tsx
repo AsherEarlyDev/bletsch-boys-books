@@ -25,7 +25,6 @@ export default function MutableCurrencyTableEntry(props:any) {
       </td>
   )
 }
-
 MutableCurrencyTableEntry.defaultProps= {
   width: 32
 }

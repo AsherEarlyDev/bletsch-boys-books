@@ -20,6 +20,10 @@ model Book {
   retailPrice     Float
   inventory       Int        @default(0)
   genre           Genre      @relation(fields: [genreID], references: [id])
+<<<<<<< HEAD
+=======
+  Buyback         Buyback[]
+>>>>>>> main
   purchases       Purchase[]
   sales           Sale[]
   author          Author[]   @relation("AuthorToBook")
@@ -32,9 +36,11 @@ model Genre {
 }
 
 model Vendor {
-  id            String          @id @default(cuid())
-  name          String
-  purchaseOrder PurchaseOrder[]
+  id                    String             @id @default(cuid())
+  name                  String
+  bookBuybackPercentage Float?             @default(0)
+  BookBuybackOrder      BookBuybackOrder[]
+  purchaseOrder         PurchaseOrder[]
 }
 
 model Author {
@@ -54,11 +60,15 @@ model Purchase {
 }
 
 model PurchaseOrder {
-  id        String     @id @default(cuid())
-  vendorId  String
-  date      DateTime
-  purchases Purchase[]
-  vendor    Vendor     @relation(fields: [vendorId], references: [id])
+  id          String     @id @default(cuid())
+  vendorId    String
+  date        DateTime
+  cost        Float      @default(0)
+  totalBooks  Int        @default(0)
+  uniqueBooks Int        @default(0)
+  vendorName  String     @default("")
+  purchases   Purchase[]
+  vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }
 
 model Sale {
@@ -122,8 +132,38 @@ model VerificationToken {
 }
 
 model Admin {
-  isAdmin  Boolean @default(false)
   password String
-  username String @unique
-  id       Int    @unique @id @default(autoincrement())
+  username String   @unique
+  isAdmin  Boolean  @default(false)
+  id       Int      @id @default(autoincrement())
+}
+
+model BookBuybackOrder {
+  id          String    @id
+  vendorId    String
+  date        DateTime
+  revenue     Float     @default(0)
+  totalBooks  Int       @default(0)
+  uniqueBooks Int       @default(0)
+  vendorName  String    @default("")
+  Vendor      Vendor    @relation(fields: [vendorId], references: [id])
+  Buyback     Buyback[]
+}
+
+model Buyback {
+  id               String           @id
+  quantity         Int
+  buybackPrice     Float
+  bookId           String
+  buybackOrderId   String
+  subtotal         Float            @default(0)
+  Book             Book             @relation(fields: [bookId], references: [isbn])
+  BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
+}
+
+model Image {
+  id       String @id
+  publicId String @unique
+  format   String
+  version  String
 }

@@ -5,6 +5,7 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import AddUserModal from "../Modals/UserModals/AddUserModal";
 import EditUserModal from "../Modals/UserModals/EditUserModal";
+import DeleteUserModal from "../Modals/UserModals/DeleteUserModal";
 
 
 interface UserTableRowProps{
@@ -33,7 +34,7 @@ export function UserTableRow(props: UserTableRowProps){
         <TableEntry firstEntry={true}>{props.userInfo.name}</TableEntry>
         <TableEntry>{props.userInfo.isAdmin ? "Admin" : "Not admin."}</TableEntry>
         <EditUserModal isAdmin={props.userInfo.isAdmin} username={props.userInfo.name} id={props.userInfo.id}></EditUserModal>
-        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
+        <DeleteUserModal id={props.userInfo.id}></DeleteUserModal>
       </tr>
       
   )

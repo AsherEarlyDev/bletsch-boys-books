@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import bcrypt from 'bcryptjs'
 import SalesPage from "../../../pages/sales";
+import {TRPCError} from "@trpc/server";
 
 const SALT_ROUNDS = 10;
 
@@ -89,7 +90,7 @@ export const adminRouter = createTRPCRouter({
           where:
           {
             id: 1
-        },
+          },
           data: {
             password: bcrypt.hashSync(input.password, bcrypt.genSaltSync(SALT_ROUNDS)),
           },
@@ -98,4 +99,23 @@ export const adminRouter = createTRPCRouter({
         console.log(error);
       }
     }),
+
+    deleteUser: publicProcedure
+    .input(
+        z.object({
+          userId: z.number(),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.user.delete({
+          where: {
+            id: input.userId
+          }
+        })
+      } catch (error) {
+        throw new TRPCError({code: error.code, message: error.message})
+      }
+    }),
+
 });

@@ -46,9 +46,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       toast.success("Successfully added sale!")
     }
   })
-  //Replace below once this is working...
-  const sales: Sale[] =api.sales.getSalesByRecId.useQuery({saleRecId: props.salesRecId}).data
-  //const sales = props.sales
+  const sales: Sale[] = api.sales.getSalesByRecId.useQuery({saleRecId: props.salesRecId}).data
 
 
   function openConfirmationView(){
@@ -79,7 +77,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     }
   }
 
-  async function handleCSV(e: React.FormEvent<HTMLInputElement>){
+  async function handleCSV(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const csvVal = (formData.get("saleCSV"))

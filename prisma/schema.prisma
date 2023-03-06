@@ -19,9 +19,6 @@ model Book {
   genreID         String
   retailPrice     Float
   inventory       Int        @default(0)
-  authorNames     String
-  imageLink       String?
-  shelfSpace      Float?     @default(0)
   genre           Genre      @relation(fields: [genreID], references: [id])
   Buyback         Buyback[]
   purchases       Purchase[]
@@ -55,7 +52,6 @@ model Purchase {
   price           Float
   bookId          String
   purchaseOrderId String
-  subtotal        Float         @default(0)
   book            Book          @relation(fields: [bookId], references: [isbn])
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
@@ -78,18 +74,14 @@ model Sale {
   price                Float
   bookId               String
   saleReconciliationId String
-  subtotal             Float              @default(0)
   book                 Book               @relation(fields: [bookId], references: [isbn])
   saleReconciliation   saleReconciliation @relation(fields: [saleReconciliationId], references: [id])
 }
 
 model saleReconciliation {
-  id          String   @id @default(cuid())
-  date        DateTime
-  totalBooks  Int      @default(0)
-  uniqueBooks Int      @default(0)
-  revenue     Float    @default(0)
-  sales       Sale[]
+  id    String   @id @default(cuid())
+  date  DateTime
+  sales Sale[]
 }
 
 model Account {

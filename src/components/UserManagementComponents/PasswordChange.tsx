@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { api } from "../utils/api";
-import SuccessAlert from "./BasicComponents/SuccessAlert";
+import { api } from "../../utils/api";
+import SuccessAlert from "../BasicComponents/SuccessAlert";
 
 export default function PasswordChange() {
   const [newPassword, setNewPassword] = useState('');

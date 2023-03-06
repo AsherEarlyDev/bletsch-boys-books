@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import SalesRecTableRow from "../TableRows/SalesRecTableRow";
-import EditSalesRecModal from "../Modals/SalesModals/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
 import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";

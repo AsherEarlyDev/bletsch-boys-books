@@ -25,8 +25,7 @@ const Home: NextPage = () => {
             Bletsch <span className="text-[hsl(280,100%,70%)]">Book</span> Boys
           </h1>
           <div className="flex flex-col items-center gap-2">
-              {/*{passwordData ? <AuthShowcase/> : <CreateAdmin/>}*/}
-            <AuthShowcase></AuthShowcase>
+             <AuthShowcase></AuthShowcase>
           </div>
         </div>
       </main>
@@ -36,15 +35,16 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const AuthShowcase: React.FC = () => {
+export function AuthShowcase(){
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const router = useRouter();
   const sessionData = useSession();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e)=>{
       e.preventDefault()
       const res = await signIn("credentials",
-      { callbackUrl: '/dashboard', password: password, redirect: false})
+      { callbackUrl: '/dashboard', username:username , password: password, redirect: false})
       if(res.ok){
         router.push('/dashboard')
       }
@@ -65,21 +65,36 @@ const AuthShowcase: React.FC = () => {
                     <button type="submit" value="Sign Out" onClick={async ()=>await signOut()} className="text-center w-50 flex rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Sign Out</button>
                   </div>
     </div> :
-        <div >
+        <div className="bg-gray-400 p-10 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100 shadow-lg">
           <form onSubmit={handleSubmit}>
-          <label htmlFor="password" className="text-center block text-sm font-medium text-white">
-                    Enter Password
-                  </label>
-                  <div className="mt-1 p-4">
-                    <input
-                        id="new password"
-                        name="new password"
-                        type="password"
-                        className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        onChange={e => {setPassword(e.currentTarget.value)}}
-                    />
-                  </div>
-                  <div>
+            <div className="m-5 mb-10">
+              <label htmlFor="username" className="text-center block text-sm font-medium text-white">
+                Enter Username
+              </label>
+              <div className="p-2">
+                <input
+                    id="username"
+                    name="username"
+                    type="username"
+                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    onChange={e => {setUsername(e.currentTarget.value)}}
+                />
+              </div>
+              <label htmlFor="password" className="text-center block text-sm font-medium text-white">
+                Enter Password
+              </label>
+              <div className="p-2">
+                <input
+                    id="new password"
+                    name="new password"
+                    type="password"
+                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    onChange={e => {setPassword(e.currentTarget.value)}}
+                />
+              </div>
+            </div>
+
+            <div>
                   <input type="submit" value="Sign In" className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     ></input>
                     <ToastContainer/>

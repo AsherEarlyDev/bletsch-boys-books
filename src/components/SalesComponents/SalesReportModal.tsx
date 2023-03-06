@@ -7,9 +7,10 @@ interface SaleReportModalProp{
   generateReport(): void;
   buttonText: string;
   submitText: string;
+}
 
 
-export default function GenSalesReportModal(props: SaleReportModalProp) {
+export default function GenSalesReportModal(props: SaleReportModalProp){
   const [isOpen, setIsOpen] = useState(false)
   const currDate = new Date()
 

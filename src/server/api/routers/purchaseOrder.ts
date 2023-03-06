@@ -17,6 +17,7 @@ export const purchaseOrderRouter = createTRPCRouter({
       .mutation(async ({ ctx, input }) => {
         try {
             const date  = input.date.replace(/-/g, '\/')
+            console.log("DATE: " + date)
             if (date === '' || !date){
               throw new TRPCError({
                 code: 'CONFLICT',
@@ -46,6 +47,7 @@ export const purchaseOrderRouter = createTRPCRouter({
           });
         }
       }),
+
     getNumPurchaseOrder: publicProcedure
     
    .query(async ({ ctx, input }) => {

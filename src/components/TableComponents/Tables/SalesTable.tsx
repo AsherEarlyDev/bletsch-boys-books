@@ -24,8 +24,8 @@ export default function SalesTable() {
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
-  const [startDate, setStartDate] = useState(date.toString())
-  const [endDate, setEndDate] = useState(date.toString())
+  const [startDate, setStartDate] = useState(date.toDateString())
+  const [endDate, setEndDate] = useState(date.toDateString())
   const [currentSalesRec, setCurrentSalesRec] = useState({
     id: '',
     date: '',

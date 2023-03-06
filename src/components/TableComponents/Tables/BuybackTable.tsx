@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
-import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import Table from './Table';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

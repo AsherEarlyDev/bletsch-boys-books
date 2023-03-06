@@ -9,7 +9,7 @@ import {api} from "../../../../utils/api";
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {Sale} from "../../../../types/salesTypes";
-import ViewSalesRecModal from "./ViewSalesRecModal";
+import ViewSalesRecModal from "./ViewSaleModal";
 import SaleTableRow from "../../TableRows/SaleTableRow";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";

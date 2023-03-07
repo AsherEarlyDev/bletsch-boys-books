@@ -131,7 +131,7 @@ const getBookIfExists = async (ctx:context, isbn:string) =>{
   }
 }
 
-export const BooksRouter = createTRPCRouter({
+export const booksRouter = createTRPCRouter({
   findBooks: publicProcedure.input(
     z.array(z.string())
   ).query(async ({ctx, input}) => {

@@ -16,20 +16,20 @@ import AddUserModal from "../Modals/UserModals/AddUserModal";
 
 
 export default function UserTable() {
-  const users = api.admin.getAllUsers.useQuery().data;
+  const users = api.user.getAllUsers.useQuery().data;
   const USERS_PER_PAGE = 5
   const FIRST_HEADER = ["Username", "username"]
   const SORTABLE_HEADERS = []
-  const STATIC_HEADERS = ["Is Admin","Edit", "Delete"]
+  const STATIC_HEADERS = ["Role","Edit", "Delete"]
   const [sortField, setSortField] = useState("name")
   const [sortOrder, setSortOrder] = useState("asc")
   const [pageNumber, setPageNumber] = useState(0)
-  const numberOfPages = Math.ceil(2 / USERS_PER_PAGE)
-  const numberOfEntries = 2
+  const numberOfEntries = api.user.getNumberOfUsers.useQuery().data;
+  const numberOfPages = Math.ceil(numberOfEntries / USERS_PER_PAGE)
 
   function renderUserRow() {
     return (users ? users.map((user) => (
-        <UserTableRow userInfo={{id: user.id, name: user.username, isAdmin: user.isAdmin}}></UserTableRow>)) : null)
+        <UserTableRow userInfo={{id: user.id, name: user.name, role: user.role}}></UserTableRow>)) : null)
   }
   return (
       <div className="px-4 sm:px-6 lg:px-8">

@@ -8,11 +8,11 @@ import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 
 interface DeleteUserModalProp{
-  id: number
+  id: string
 }
 
 export default function DeleteUserModal(props: DeleteUserModalProp) {
-  const deleteUser = api.admin.deleteUser.useMutation({
+  const deleteUser = api.user.deleteUser.useMutation({
     onError: (error) => {
       toast.error(error.message)
     },

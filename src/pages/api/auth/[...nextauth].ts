@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -19,7 +19,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/index",
     error: "/"
   },
-  // Include user.id on session
   callbacks: {
     async jwt({user, token}){
       if(user){
@@ -27,8 +26,8 @@ export const authOptions: NextAuthOptions = {
       }
       return Promise.resolve(token);
     },
-    session: async ({ session, token, user }) => {
-      session.user = user
+    session: async ({ session, token}) => {
+      session.user = token.user
       return Promise.resolve(session);
     },
   },
@@ -38,7 +37,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. "Sign in with...")
-      name: "Admin Password",
+      name: "Credentials",
       // `credentials` is used to generate a form on the sign in page.
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
@@ -48,29 +47,21 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password"}
       },
       async authorize(credentials, req) {
-        console.log(credentials.username)
-        const submittedUsername = credentials.username
-        //Will need to change to find unique
-        const user = await prisma.admin.findUnique({
-          where: { username: submittedUsername},
+        const user = await prisma.user.findFirst({
+          where: { name: credentials.username},
         })
-
         if (!user){
           throw new Error("Username does not exist.")
           return null
         }
-
-
         if (credentials && credentials.password){
           const isValidPassword = bcrypt.compareSync(
             credentials.password,
             user.password
           );
-
           if (!isValidPassword) {
-            throw new Error("Wrong Password")
-          } 
-
+            throw new Error("Invalid Password")
+          }
           return user;
         }
         else{

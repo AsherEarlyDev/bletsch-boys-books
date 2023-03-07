@@ -1,17 +1,14 @@
-import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { signIn, signOut, getSession, useSession } from "next-auth/react";
-import { EventHandler, FormEventHandler, useState } from "react";
-import { api } from "../utils/api";
-import { redirect } from "next/dist/server/api-utils";
-import { ToastContainer, toast } from 'react-toastify';
+import {signIn, signOut, useSession} from "next-auth/react";
+import {FormEventHandler, useState} from "react";
+import {api} from "../utils/api";
+import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useRouter } from "next/router";
+import {useRouter} from "next/router";
+import {NextPage} from "next";
 
 const Home: NextPage = () => {
-  const {data: passwordData} = api.admin.getPassword.useQuery();
-
+  const {data: passwordData} = api.user.getPassword.useQuery();
   return (
     <>
       <Head>
@@ -93,10 +90,8 @@ export function AuthShowcase(){
                 />
               </div>
             </div>
-
             <div>
-                  <input type="submit" value="Sign In" className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    ></input>
+                  <input type="submit" value="Sign In" className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"></input>
                     <ToastContainer/>
                   </div>
           </form>

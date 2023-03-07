@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const salesRouter = createTRPCRouter({
     createSale: publicProcedure

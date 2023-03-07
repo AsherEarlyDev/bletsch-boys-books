@@ -1,31 +1,29 @@
 import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import EditRowEntry from "../TableEntries/EditRowEntry";
-import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
-import ViewTableEntry from "../TableEntries/ViewTableEntry";
-import AddUserModal from "../Modals/UserModals/AddUserModal";
 import EditUserModal from "../Modals/UserModals/EditUserModal";
 import DeleteUserModal from "../Modals/UserModals/DeleteUserModal";
-import {ToastContainer} from "react-toastify";
-
+import {useSession} from "next-auth/react";
+import { Role } from "@prisma/client";
 
 interface UserTableRowProps{
     userInfo: {
-        id: number
+        id: string
         name: string
-        isAdmin: boolean
+        role: Role
     }
   }
 
 
 export function UserTableRow(props: UserTableRowProps){
+  const { data: session} = useSession()
+  console.log(session)
   return (
       <tr>
         <TableEntry firstEntry={true}>{props.userInfo.name}</TableEntry>
-        <TableEntry>{props.userInfo.isAdmin ? "Admin" : "Not admin."}</TableEntry>
-        {props.userInfo.id != 1 &&
-        <EditUserModal isAdmin={props.userInfo.isAdmin} username={props.userInfo.name} id={props.userInfo.id}></EditUserModal>}
-        {props.userInfo.id != 1 &&
+        <TableEntry>{props.userInfo.role}</TableEntry>
+        {(props.userInfo.id != session.user?.id && props.userInfo.role!="SUPERADMIN") &&
+        <EditUserModal isAdmin={props.userInfo.role=="ADMIN"} username={props.userInfo.name} id={props.userInfo.id}></EditUserModal>}
+        {(props.userInfo.id != session.user?.id && props.userInfo.role!="SUPERADMIN") &&
         <DeleteUserModal id={props.userInfo.id}></DeleteUserModal>}
       </tr>
       

@@ -19,7 +19,6 @@ interface OrderTableRowProp{
     onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
     onView: (id: string) =>void,
-    onAdd: (id: string) =>void
   }
 
 
@@ -32,9 +31,6 @@ export default function OrderTableRow(props:OrderTableRowProp) {
       }
     function handleView(){
       props.onView(props.OrderInfo.id)
-      }
-    function handleAdd(){
-      props.onAdd(props.OrderInfo.id)
       }
   return (
       <tr>

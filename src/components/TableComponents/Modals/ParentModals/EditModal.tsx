@@ -11,6 +11,7 @@ import { Vendor } from "../../../../types/vendorTypes";
 import { useState } from "react";
 import Papa from "papaparse";
 import BuybackTableRow from "../../TableRows/BuybackTableRow";
+import TableRow from "../../TableRows/Parent/TableRow";
 
 
 interface EditModalProps{
@@ -59,7 +60,7 @@ export default function EditModal(props: EditModalProps){
                       </TableHeader>
                       <tbody className="divide-y divide-gray-200 bg-white">
   
-                      {props.items?.map((buyback) => (<BuybackTableRow vendorId={props.vendor?.id} isView={false} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                      {props.items?.map((item) => (<TableRow type={props.type} vendorId={props.vendor?.id} isView={false} isAdding={false} item={item}></TableRow>))}
                       {props.renderCSV()}
                       {props.renderAdd()}
                       </tbody>

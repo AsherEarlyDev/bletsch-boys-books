@@ -1,18 +1,18 @@
-import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../../../CardComponents/MutableCardProp";
-import CardTitle from "../../../CardComponents/CardTitle";
-import CardGrid from "../../../CardComponents/CardGrid";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../../../CardComponents/MutableCardProp";
+import CardTitle from "../../../../CardComponents/CardTitle";
+import CardGrid from "../../../../CardComponents/CardGrid";
+import SaveCardChanges from "../../../../CardComponents/SaveCardChanges";
 import { SetStateAction, useState } from 'react';
-import { api } from '../../../../utils/api';
-import CreateSaleEntries from '../../../CreateEntries';
-import PrimaryButton from '../../../BasicComponents/PrimaryButton';
-import { Purchase } from "../../../../types/purchaseTypes";
-import DeletePurchaseOrderModal from "./DeletePurchaseOrderModal";
-import ConfirmCard from "../../../CardComponents/ConfirmationCard";
-import CreateEntries from "../../../CreateEntries";
-import DeleteSaleModal from "../SalesModals/DeleteSaleModal";
-import BookCardProp from "../../../CardComponents/BookCardProp";
+import { api } from '../../../../../utils/api';
+import CreateSaleEntries from '../../../../CreateEntries';
+import PrimaryButton from '../../../../BasicComponents/PrimaryButton';
+import { Purchase } from "../../../../../types/purchaseTypes";
+import DeletePurchaseOrderModal from "../DeletePurchaseOrderModal";
+import ConfirmCard from "../../../../CardComponents/ConfirmationCard";
+import CreateEntries from "../../../../CreateEntries";
+import DeleteSaleModal from "../../SalesModals/DeleteSaleModal";
+import BookCardProp from "../../../../CardComponents/BookCardProp";
 
 
 
@@ -108,7 +108,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
         <ImmutableCardProp heading="Purchase ID" data={props.purchase.id}></ImmutableCardProp>
         <ImmutableCardProp heading="Subtotal" data={props.purchase.subtotal}></ImmutableCardProp>
         <ImmutableCardProp heading="Book Title" data={title}></ImmutableCardProp>
-        <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} displayTitleOrISBN={"isbn"}></BookCardProp>
+        <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn} ></BookCardProp>
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
         defaultValue={props.purchase.quantity}></MutableCardProp>
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
@@ -125,7 +125,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
     <CardTitle heading="Purchase" subheading="Add purchase information below..."></CardTitle>
     </div>
     <CardGrid>
-      <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn } displayTitleOrISBN={"isbn"}></BookCardProp>
+      <BookCardProp saveFunction={setIsbn} defaultValue={book.isbn } ></BookCardProp>
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
       defaultValue={props.purchase.quantity}></MutableCardProp>
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 

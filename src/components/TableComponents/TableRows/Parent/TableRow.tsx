@@ -29,7 +29,7 @@ interface TableRowProp {
   isCSV?: boolean
   closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
-  edit: ()=>void
+  edit?: ()=>void
 }
 
 export default function TableRow(props: TableRowProp) {

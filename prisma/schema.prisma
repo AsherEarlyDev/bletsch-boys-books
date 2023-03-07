@@ -109,9 +109,9 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
+  revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
-  revenue     Float    @default(0)
   sales       Sale[]
 }
 
@@ -147,6 +147,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String
+  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
 }
@@ -159,14 +161,15 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Admin {
-  password String
-  id       Int    @id @default(autoincrement())
-}
-
 model Image {
   id       String @id
   publicId String @unique
   format   String
   version  String
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }

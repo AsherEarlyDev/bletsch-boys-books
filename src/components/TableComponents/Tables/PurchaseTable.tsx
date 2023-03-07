@@ -3,8 +3,8 @@ import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
 import PurchaseOrderTableRow from '../TableRows/Unused/PurchaseOrderTableRow';
-import AddPurchaseOrderModal from '../Modals/ParentModals/AddOrderModal';
-import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
+import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
+import ViewPurchaseModal from '../Modals/PurchaseModals/Unused/ViewPurchaseModal';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import Table from './Table';
 import {toast, ToastContainer} from 'react-toastify';
@@ -63,7 +63,7 @@ export default function PurchaseTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onAdd={handleAdd} onView={openPurchaseView}
+        <OrderTableRow onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)
@@ -177,45 +177,45 @@ export default function PurchaseTable() {
     setDisplayPurchaseView(false)
   }
 
-  const handleAdd = async (id: string) => {
-    if (purchaseOrder2) {
-      for (const order of purchaseOrder2) {
-        if (order.id === id) {
-          setId(order.id)
-        }
-      }
-      setDisplayAddPurchaseView(true)
-    }
-  }
+  // const handleAdd = async (id: string) => {
+  //   if (purchaseOrder2) {
+  //     for (const order of purchaseOrder2) {
+  //       if (order.id === id) {
+  //         setId(order.id)
+  //       }
+  //     }
+  //     setDisplayAddPurchaseView(true)
+  //   }
+  // }
 
-  function renderAdd() {
-    const dummyPurchase = {
-      id: '',
-      purchaseOrderId: purchaseOrderId,
-      price: 0,
-      quantity: 0,
-      bookId: '',
-      subtotal: 0
-    }
-    return <>
-      {(displayAddPurchaseView && purchaseOrderId) ?
-          <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
-            <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}
-                               closeOut={function (): void {
-                                 throw new Error('Function not implemented.');
-                               }}></ViewPurchaseModal></CreateEntries> : null}
-    </>;
-  }
+  // function renderAdd() {
+  //   const dummyPurchase = {
+  //     id: '',
+  //     purchaseOrderId: purchaseOrderId,
+  //     price: 0,
+  //     quantity: 0,
+  //     bookId: '',
+  //     subtotal: 0
+  //   }
+  //   return <>
+  //     {(displayAddPurchaseView && purchaseOrderId) ?
+  //         <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
+  //           <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}
+  //                              closeOut={function (): void {
+  //                                throw new Error('Function not implemented.');
+  //                              }}></ViewPurchaseModal></CreateEntries> : null}
+  //   </>;
+  // }
 
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          <AddPurchaseOrderModal showPurchaseOrderEdit={handlePurchaseOrderSubmission}
+          <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission}
                                  buttonText="Create Purchase Order"
                                  submitText="Create Purchase Order"
-                                 vendorList={vendors}></AddPurchaseOrderModal>
+                                 vendorList={vendors}></AddOrderModal>
         </TableDetails>
         <Table
             setPage={setPageNumber}
@@ -238,7 +238,7 @@ export default function PurchaseTable() {
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
-          {renderAdd()}
+          {/* {renderAdd()} */}
           <ToastContainer/>
         </div>
       </div>

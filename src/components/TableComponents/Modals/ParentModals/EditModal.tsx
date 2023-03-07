@@ -1,16 +1,16 @@
 import { PlusIcon } from "@heroicons/react/24/outline";
-import MutableCardProp from "../../CardComponents/MutableCardProp";
-import SaveCardChanges from "../../CardComponents/SaveCardChanges";
-import VendorSelect from "../../CardComponents/VendorSelect";
-import ColumnHeading from "../TableColumnHeadings/ColumnHeading";
-import TableDetails from "../TableDetails";
-import TableHeader from "../TableHeader";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
+import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import VendorSelect from "../../../CardComponents/VendorSelect";
+import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
+import TableDetails from "../../TableDetails";
+import TableHeader from "../../TableHeader";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Vendor } from "../../../types/vendorTypes";
+import { Vendor } from "../../../../types/vendorTypes";
 import { useState } from "react";
 import Papa from "papaparse";
-import BuybackTableRow from "../TableRows/BuybackTableRow";
+import BuybackTableRow from "../../TableRows/BuybackTableRow";
 
 
 interface EditModalProps{
@@ -94,7 +94,6 @@ export default function EditModal(props: EditModalProps){
             <SaveCardChanges saveModal={props.openConfirmation} closeModal={props.closeOut}></SaveCardChanges>
           </div>
           {props.confirmationView()}
-          <ToastContainer/>
   
         </div>
     )

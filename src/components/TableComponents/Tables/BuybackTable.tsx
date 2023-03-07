@@ -5,12 +5,13 @@ import CreateEntries from '../../CreateEntries';
 import Table from './Table';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BuybackOrderTableRow from '../TableRows/BuybackOrderTableRow';
+import BuybackOrderTableRow from '../TableRows/Unused/BuybackOrderTableRow';
 import EditBuybackTableModal from '../Modals/BuybackModals/EditBuybackTableModal';
 import ViewBuybackTableModal from '../Modals/BuybackModals/ViewBuybackTableModal';
-import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
+import AddPurchaseOrderModal from '../Modals/ParentModals/AddOrderModal';
 import DeleteBuybackOrderModal from '../Modals/BuybackModals/DeleteBuybackOrderModal';
 import ViewBuybackModal from '../Modals/BuybackModals/ViewBuybackModal';
+import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 
 export default function BuybackTable() {
   const FIRST_HEADER = ["Date Created", "date"]
@@ -70,9 +71,9 @@ export default function BuybackTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <BuybackOrderTableRow onAdd={handleAdd} onView={openBuybackView}
+        <OrderTableRow onAdd={handleAdd} onView={openBuybackView}
                                onDelete={openDeleteBuybackView} onEdit={openEditBuybackView}
-                               buybackOrderInfo={order}></BuybackOrderTableRow>
+                               OrderInfo={order}></OrderTableRow>
     )) : null)
   }
 
@@ -169,7 +170,7 @@ export default function BuybackTable() {
                                         buybacks={buybacks}
                                         buybackOrderId={currentOrder.id}
                                         buybackDate={currentOrder.date}
-                                        buybackVendorName={currentOrder.vendor.name}></ViewBuybackTableModal>
+                                        buybackVendor={currentOrder.vendor}></ViewBuybackTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

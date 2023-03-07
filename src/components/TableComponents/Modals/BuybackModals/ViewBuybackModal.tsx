@@ -31,7 +31,7 @@ export default function ViewBuybackModal(props:ViewBuybackModalProp) {
     title = book.title
   }
   const [quantity, setQuantity] = useState(props.buyback.quantity)
-  const [price, setPrice] = useState(props.buyback.buybackPrice)
+  const [price, setPrice] = useState(props.buyback.price)
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
   const [displayConfirmationView, setDisplayConfirmationView] = useState(false)
   const modBuyback = api.buyback.modifyBuyback.useMutation()
@@ -113,7 +113,7 @@ export default function ViewBuybackModal(props:ViewBuybackModalProp) {
         <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
         defaultValue={props.buyback.quantity}></MutableCardProp>
         <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
-        defaultValue={props.buyback.buybackPrice}></MutableCardProp>
+        defaultValue={props.buyback.price}></MutableCardProp>
       </CardGrid>
       <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>
       <div>
@@ -130,7 +130,7 @@ export default function ViewBuybackModal(props:ViewBuybackModalProp) {
       <MutableCardProp saveValue={setQuantity} heading="Quantity" required="True" dataType="string" 
       defaultValue={props.buyback.quantity}></MutableCardProp>
       <MutableCardProp saveValue={setPrice} heading="Price" required="True" dataType="string" 
-      defaultValue={props.buyback.buybackPrice}></MutableCardProp>
+      defaultValue={props.buyback.price}></MutableCardProp>
     </CardGrid>
     <SaveCardChanges closeModal={closeModal} saveModal={openConfirmationView}></SaveCardChanges>
     <div>

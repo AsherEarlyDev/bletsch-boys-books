@@ -6,11 +6,12 @@ import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import { Buyback } from "../../../../types/buybackTypes";
 import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import {api} from "../../../../utils/api";
+import { Vendor } from "../../../../types/vendorTypes";
 
 interface ViewBuybackTableModalProps{
   buybackOrderId: string
   buybackDate: string
-  buybackVendorName: string
+  buybackVendor: Vendor
   buybacks: Buyback[]
   closeOut: () => void
 }
@@ -27,7 +28,7 @@ export default function ViewBuybackTableModal(props: ViewBuybackTableModalProps)
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
-          <TableDetails tableName={header} tableDescription={"Vendor: " + props.buybackVendorName + ",  OrderID: " + props.buybackOrderId}>
+          <TableDetails tableName={header} tableDescription={"Vendor: " + props.buybackVendor.name + ",  OrderID: " + props.buybackOrderId}>
           </TableDetails>
           {hasBuyback ? (
           <div className="mt-8 flex flex-col">
@@ -42,7 +43,7 @@ export default function ViewBuybackTableModal(props: ViewBuybackTableModalProps)
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.buybacks.map((buyback) => (<BuybackTableRow isView={true} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                    {props.buybacks.map((buyback) => (<BuybackTableRow vendorId={props.buybackVendor.id} isView={true} isAdding={false} buyback={buyback}></BuybackTableRow>))}
                     </tbody>
                   </table>
                 </div>

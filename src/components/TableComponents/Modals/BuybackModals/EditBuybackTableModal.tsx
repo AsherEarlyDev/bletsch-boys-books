@@ -18,7 +18,7 @@ import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import BuybackVendorSelect from "../../../CardComponents/BuybackVendorSelect";
 import Papa from "papaparse";
 import { Vendor } from "../../../../types/vendorTypes";
-import EditModal from "../EditModal";
+import EditModal from "../ParentModals/EditModal";
 
 interface EditBuybackTableModalProps{
   data: {
@@ -52,7 +52,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       toast.error("Failed to add buyback!")
     },
     onSuccess: ()=>{
-      toast.success("Successfully added buyback! This is where things are broken")
+      toast.success("Successfully added buyback!")
     }
   })
   const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.data.id}).data

@@ -40,6 +40,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
     }
   })
   const [visible, setVisible] = useState(true)
+  
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -81,7 +82,6 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   }
 
   function saveNewPurchase() {
-    toast.success("ready: " + isbn)
     props.saveAdd(isbn, quantityPurchased, purchasePrice)
   }
 

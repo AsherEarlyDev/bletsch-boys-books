@@ -2,8 +2,8 @@ import {useState} from 'react';
 import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
-import PurchaseOrderTableRow from '../TableRows/PurchaseOrderTableRow';
-import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
+import PurchaseOrderTableRow from '../TableRows/Unused/PurchaseOrderTableRow';
+import AddPurchaseOrderModal from '../Modals/ParentModals/AddOrderModal';
 import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import Table from './Table';
@@ -11,6 +11,7 @@ import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
+import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 
 
 export default function PurchaseTable() {
@@ -62,9 +63,9 @@ export default function PurchaseTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <PurchaseOrderTableRow onAdd={handleAdd} onView={openPurchaseView}
+        <OrderTableRow onAdd={handleAdd} onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
-                               purchaseOrderInfo={order}></PurchaseOrderTableRow>
+                               OrderInfo={order}></OrderTableRow>
     )) : null)
   }
 

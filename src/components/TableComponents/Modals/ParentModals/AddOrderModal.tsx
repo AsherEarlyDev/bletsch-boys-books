@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { Vendor } from '../../../../types/purchaseTypes';
+import { Vendor } from '../../../../types/vendorTypes';
 
 interface PurchaseOrderModalProp{
   showPurchaseOrderEdit(date: string, vendorId: string): Promise<void>,

@@ -1,9 +1,9 @@
-import TableEntry from "../TableEntries/TableEntry";
+import TableEntry from "../../TableEntries/TableEntry";
 import React from "react";
-import ViewTableEntry from "../TableEntries/ViewTableEntry";
-import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
-import EditRowEntry from "../TableEntries/EditRowEntry";
-import { BuybackOrder } from "../../../types/buybackTypes";
+import ViewTableEntry from "../../TableEntries/ViewTableEntry";
+import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
+import EditRowEntry from "../../TableEntries/EditRowEntry";
+import { BuybackOrder } from "../../../../types/buybackTypes";
 
 interface BuybackOrderTableRowProp{
     buybackOrderInfo: BuybackOrder,

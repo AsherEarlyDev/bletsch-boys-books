@@ -11,7 +11,7 @@ import ConfirmCard from "../../../../CardComponents/ConfirmationCard";
 import CreateEntries from "../../../../CreateEntries";
 import BookCardProp from "../../../../CardComponents/BookCardProp";
 import { Buyback } from "../../../../../types/buybackTypes";
-import DeleteBuybackOrderModal from "../../BuybackModals/DeleteBuybackOrderModal";
+import DeleteBuybackOrderModal from "../../BuybackModals/Unused/DeleteBuybackOrderModal";
 import { genericItem } from "../../../../../types/generalTypes";
 
 

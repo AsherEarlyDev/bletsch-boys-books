@@ -5,12 +5,8 @@ import VendorSelect from "../../../CardComponents/VendorSelect";
 import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import TableDetails from "../../TableDetails";
 import TableHeader from "../../TableHeader";
-import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Vendor } from "../../../../types/vendorTypes";
-import { useState } from "react";
-import Papa from "papaparse";
-import BuybackTableRow from "../../TableRows/BuybackTableRow";
 import TableRow from "../../TableRows/Parent/TableRow";
 
 
@@ -19,6 +15,7 @@ interface EditModalProps{
     type: string
     id: string
     vendor?: Vendor
+    vendors: Vendor[]
     date: string
     tableHeadings: string[]
     items: any[]
@@ -46,7 +43,7 @@ export default function EditModal(props: EditModalProps){
             <div className="flex flex-row gap-10 pt-4 justify-center">
               <MutableCardProp saveValue={props.setDate} heading="Change Date" required="True" dataType="date" defaultValue={props.date}></MutableCardProp>
               <div className="mt-1">
-                {(props.vendor && props.saveVendor)? <VendorSelect saveFunction={props.saveVendor} defaultValue={props.vendor?.name}></VendorSelect>: null}
+                {(props.vendor && props.saveVendor)? <VendorSelect vendors={props.vendors} saveFunction={props.saveVendor} defaultValue={props.vendor?.name}></VendorSelect>: null}
               </div>
             </div>
             <div className="mt-8 flex flex-col">

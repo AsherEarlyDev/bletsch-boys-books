@@ -11,7 +11,7 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
-import DeletePurchaseModal from "../Modals/PurchaseModals/DeletePurchaseModal";
+import DeletePurchaseModal from "../Modals/PurchaseModals/Unused/DeletePurchaseModal";
 
 interface PurchaseTableRowProp {
   purchase: Purchase

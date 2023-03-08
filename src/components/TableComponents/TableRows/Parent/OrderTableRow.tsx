@@ -23,6 +23,13 @@ interface OrderTableRowProp{
 
 
 export default function OrderTableRow(props:OrderTableRowProp) {
+    let price: any = props.OrderInfo.cost ? props.OrderInfo.cost : props.OrderInfo.revenue
+    if (price === undefined){
+      price = "0.00"
+    }
+    else{
+      price = price.toFixed(2)
+    }
     function handleEdit(){
         props.onEdit(props.OrderInfo.id)
       }
@@ -38,7 +45,7 @@ export default function OrderTableRow(props:OrderTableRowProp) {
         <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
-        <TableEntry>${props.OrderInfo.cost ? props.OrderInfo.cost.toFixed(2) : props.OrderInfo.revenue.toFixed(2)}</TableEntry>
+        <TableEntry>${price}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

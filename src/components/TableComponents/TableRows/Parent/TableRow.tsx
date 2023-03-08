@@ -8,8 +8,9 @@ import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../../CreateEntries";
-import DeleteBuybackModal from "../../Modals/BuybackModals/DeleteBuybackModal";
 import BuybackCardProp from "../../../CardComponents/BuybackCardProp";
+import DeleteModal from "../../Modals/ParentModals/DeleteModal";
+import BookCardProp from "../../../CardComponents/BookCardProp";
 
 interface TableRowProp {
   type: string
@@ -33,6 +34,7 @@ interface TableRowProp {
 }
 
 export default function TableRow(props: TableRowProp) {
+  console.log(props.isAdding)
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = props.item?.price ? props.item?.price : props.item?.buybackPrice
@@ -50,12 +52,26 @@ export default function TableRow(props: TableRowProp) {
 
 
   function renderDeleteView() {
+    const deleteMutation = props.type === "Buyback" ? api.buyback.deleteBuyback.useMutation({
+      onError: (error)=>{
+        toast.error(error.message)
+      },
+      onSuccess: ()=>{
+        toast.success("Successfully deleted Buyback!")
+      }}) :
+      api.purchase.deletePurchase.useMutation({
+        onError: (error)=>{
+          toast.error(error.message)
+        },
+        onSuccess: ()=>{
+          toast.success("Successfully deleted Purchase!")
+        }})
     return <>
       {deleteView ?
           <CreateSaleEntries closeStateFunction={setDeleteView} submitText={"Delete "+props.type}>
-            <DeleteBuybackModal price={price} quantity={quantity}
+            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={price} quantity={quantity}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeleteView} buybackId={props.item.id}></DeleteBuybackModal>
+                            closeOut={closeDeleteView} id={props.item.id}></DeleteModal>
           </CreateSaleEntries> : null}
     </>;
   }
@@ -86,8 +102,8 @@ export default function TableRow(props: TableRowProp) {
                 (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
 
-                          <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BuybackCardProp>
-                          <MutableCurrencyTableEntry saveValue={setPrice} heading="Buyback Price"
+                          <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
+                          <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
                                                      defaultValue={props.isCSV ? price : ""}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantity} heading="Quantity Bought"

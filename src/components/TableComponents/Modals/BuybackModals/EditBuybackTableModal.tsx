@@ -1,24 +1,14 @@
-import TableDetails from "../../TableDetails";
-import { editableBook } from '../../../../types/bookTypes';
-import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
-import TableHeader from "../../TableHeader";
-import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useRef, useState} from "react";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import {api} from "../../../../utils/api";
-import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {PlusIcon} from "@heroicons/react/24/solid";
-import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Buyback } from "../../../../types/buybackTypes";
-import BuybackTableRow from "../../TableRows/BuybackTableRow";
-import BuybackVendorSelect from "../../../CardComponents/BuybackVendorSelect";
 import Papa from "papaparse";
 import { Vendor } from "../../../../types/vendorTypes";
 import EditModal from "../ParentModals/EditModal";
+import TableRow from "../../TableRows/Parent/TableRow";
 
 interface EditBuybackTableModalProps{
   data: {
@@ -56,6 +46,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     }
   })
   const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.data.id}).data
+  const vendors: Vendor[] = api.vendor.getVendorsWithBuyback.useQuery().data
 
   function openConfirmationView(){
     setDisplayConfirmationView(true)
@@ -99,7 +90,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
 
   function renderCSVRows(){
 
-    return buybackCSV ? buybackCSV?.map((buyback) => (<BuybackTableRow saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} buyback={buyback} vendorId={props.data.vendor.id}></BuybackTableRow>)) : null
+    return buybackCSV ? buybackCSV?.map((buyback) => (<TableRow type="Buyback" saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={buyback} vendorId={props.data.vendor.id}></TableRow>)) : null
   }
   
   function removeCSVRow(isbn:string){
@@ -143,7 +134,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       bookId: '',
       subtotal: 0
     }
-    return (addBuybackRowView && (<BuybackTableRow vendorId={props.data.vendor.id} isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} buyback={dummyBuyback}></BuybackTableRow>));
+    return (addBuybackRowView && (<TableRow type="Buyback" vendorId={props.data.vendor.id} isView={false} saveAdd={handleAddBuyback} closeAdd={closeAddBuybackRow} isAdding={true} item={dummyBuyback}></TableRow>));
   }
 
   function closeAddBuybackRow(){
@@ -190,6 +181,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     confirmationView={renderConfirmationView}
     renderCSV={renderCSVRows}
     renderAdd={renderAddBuybackRow}
+    vendors={vendors}
     ></EditModal>
   )
 }

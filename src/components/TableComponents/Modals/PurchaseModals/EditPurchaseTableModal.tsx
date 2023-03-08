@@ -1,24 +1,13 @@
-import TableDetails from "../../TableDetails";
-import { editableBook } from '../../../../types/bookTypes';
-import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
-import TableHeader from "../../TableHeader";
-import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import {api} from "../../../../utils/api";
-import SaleTableRow from "../../TableRows/SaleTableRow";
-import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import {toast} from "react-toastify";
-import {PlusIcon} from "@heroicons/react/24/solid";
 import {Purchase} from "../../../../types/purchaseTypes";
-import PurchaseTableRow from "../../TableRows/PurchaseTableRow";
-import VendorSelect from "../../../CardComponents/VendorSelect";
 import { Vendor } from "../../../../types/vendorTypes";
 import Papa from "papaparse";
-import { Header } from "semantic-ui-react";
 import EditModal from "../ParentModals/EditModal";
+import TableRow from "../../TableRows/Parent/TableRow";
 
 interface EditPurchaseTableModalProps{
   purchaseOrderId: string
@@ -54,6 +43,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     }
   })
   const purchases: Purchase[] = api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: props.purchaseOrderId}).data
+  const vendors: Vendor[] = api.vendor.getAllVendors.useQuery().data
 
   function saveVendorInfo(vendor: Vendor){
     setVendorBuyback(vendor.bookBuybackPercentage)
@@ -116,7 +106,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
 
   function renderCSVRows(){
-    const purchases = purchaseCSV ? purchaseCSV?.map((purchase) => (<PurchaseTableRow saveAdd={handleAddPurchase} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} purchase={purchase}></PurchaseTableRow>)) : null
+    const purchases = purchaseCSV ? purchaseCSV?.map((purchase) => (<TableRow vendorId={props.purchaseVendor.id} type="Purchase" saveAdd={handleAddPurchase} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={purchase}></TableRow>)) : null
     return purchases
   }
 
@@ -136,7 +126,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
       bookId: '',
       subtotal: 0
     }
-    return (addPurchaseRowView && (<PurchaseTableRow isView={false} saveAdd={handleAddPurchase} closeAdd={closeAddPurchaseRow} isAdding={true} purchase={dummyPurchase}></PurchaseTableRow>));
+    return (addPurchaseRowView && (<TableRow vendorId={props.purchaseVendor.id} type="Purchase" isView={false} saveAdd={handleAddPurchase} closeAdd={closeAddPurchaseRow} isAdding={true} item={dummyPurchase}></TableRow>));
   }
   function closeAddPurchaseRow(){
     setAddPurchaseRowView(false)
@@ -174,6 +164,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     confirmationView={renderConfirmationView}
     renderCSV={renderCSVRows}
     renderAdd={renderAddPurchaseRow}
+    vendors={vendors}
     ></EditModal>
   )
 }

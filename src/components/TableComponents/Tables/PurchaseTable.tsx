@@ -2,16 +2,14 @@ import {useState} from 'react';
 import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
-import PurchaseOrderTableRow from '../TableRows/Unused/PurchaseOrderTableRow';
 import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
-import ViewPurchaseModal from '../Modals/PurchaseModals/Unused/ViewPurchaseModal';
-import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
 import Table from './Table';
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
+import ViewPurchaseTableModal from '../Modals/PurchaseModals/Unused/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
+import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 
 
 export default function PurchaseTable() {
@@ -20,7 +18,6 @@ export default function PurchaseTable() {
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
-  const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
@@ -29,10 +26,7 @@ export default function PurchaseTable() {
   const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
-//   const [displayEntries, setDisplayEntries] = useState(false)
   const [sortOrder, setSortOrder] = useState("asc")
-  //const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrderDetails
-  //.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data;
   const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrders.useQuery({
     pageNumber: pageNumber,
     entriesPerPage: ENTRIES_PER_PAGE,
@@ -43,12 +37,12 @@ export default function PurchaseTable() {
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
   const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
-  const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
     onSuccess: ()=>{
       setDisplayEditPurchaseView(true)
     }
   })
+  const deletePurchase = api.purchaseOrder.deletePurchaseOrder
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
@@ -72,7 +66,6 @@ export default function PurchaseTable() {
   async function openEditPurchaseView(id: string) {
     if (purchaseOrder2) {
       for (const order of purchaseOrder2) {
-        console.log(order)
         if (order.id === id) {
           setCurrentOrder({
             id: order.id,
@@ -131,8 +124,8 @@ export default function PurchaseTable() {
           {(displayDeletePurchaseView && currentOrder) ?
               <CreateEntries closeStateFunction={setDisplayDeletePurchaseView}
                              submitText='Delete Purchase Order'>
-                <DeletePurchaseOrderModal closeOut={closeDeletePurchaseView}
-                                          purchaseId={currentOrder.id}></DeletePurchaseOrderModal>
+                <DeleteOrderModal closeOut={closeDeletePurchaseView}
+                                          id={currentOrder.id} type="Purchase" deleteMutation={deletePurchase}></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -177,37 +170,6 @@ export default function PurchaseTable() {
     setDisplayPurchaseView(false)
   }
 
-  // const handleAdd = async (id: string) => {
-  //   if (purchaseOrder2) {
-  //     for (const order of purchaseOrder2) {
-  //       if (order.id === id) {
-  //         setId(order.id)
-  //       }
-  //     }
-  //     setDisplayAddPurchaseView(true)
-  //   }
-  // }
-
-  // function renderAdd() {
-  //   const dummyPurchase = {
-  //     id: '',
-  //     purchaseOrderId: purchaseOrderId,
-  //     price: 0,
-  //     quantity: 0,
-  //     bookId: '',
-  //     subtotal: 0
-  //   }
-  //   return <>
-  //     {(displayAddPurchaseView && purchaseOrderId) ?
-  //         <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
-  //           <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}
-  //                              closeOut={function (): void {
-  //                                throw new Error('Function not implemented.');
-  //                              }}></ViewPurchaseModal></CreateEntries> : null}
-  //   </>;
-  // }
-
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
@@ -238,7 +200,6 @@ export default function PurchaseTable() {
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
-          {/* {renderAdd()} */}
           <ToastContainer/>
         </div>
       </div>

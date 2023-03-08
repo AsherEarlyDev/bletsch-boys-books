@@ -8,7 +8,7 @@ import { api } from '../../../../../utils/api';
 import CreateSaleEntries from '../../../../CreateEntries';
 import PrimaryButton from '../../../../BasicComponents/PrimaryButton';
 import { Purchase } from "../../../../../types/purchaseTypes";
-import DeletePurchaseOrderModal from "../DeletePurchaseOrderModal";
+import DeletePurchaseOrderModal from "./DeletePurchaseOrderModal";
 import ConfirmCard from "../../../../CardComponents/ConfirmationCard";
 import CreateEntries from "../../../../CreateEntries";
 import DeleteSaleModal from "../../SalesModals/DeleteSaleModal";

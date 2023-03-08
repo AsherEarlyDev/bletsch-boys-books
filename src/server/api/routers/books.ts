@@ -131,7 +131,7 @@ const getBookIfExists = async (ctx:context, isbn:string) =>{
   }
 }
 
-export const BooksRouter = createTRPCRouter({
+export const booksRouter = createTRPCRouter({
   findBooks: publicProcedure.input(
     z.array(z.string())
   ).query(async ({ctx, input}) => {
@@ -719,10 +719,10 @@ async function getBookBuyback (ctx: context, isbn:string){
       id: true,
       quantity: true,
       buybackPrice: true,
-      bookBuybackOrder: {
+      BookBuybackOrder: {
         select:{
           date:true,
-          vendor:true
+          Vendor:true
         }
       }
     }

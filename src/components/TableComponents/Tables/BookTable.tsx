@@ -51,6 +51,7 @@ export default function BookTable() {
   function forceDataRender (){
     setPageNumber(pageNumber)
   }
+
   async function openNewBookSubmissionsView(isbns:string[]){
     setCurrentIsbns(isbns)
     if (entryBookData) {

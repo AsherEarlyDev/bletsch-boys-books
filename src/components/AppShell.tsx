@@ -2,26 +2,8 @@ import {Dialog, Disclosure, Menu, Transition} from "@headlessui/react";
 import {Fragment, JSXElementConstructor, ReactElement, ReactFragment, useState} from "react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import {signOut, useSession} from "next-auth/react";
+import {api} from "../utils/api";
 
-
-const user = {
-  name: 'Hypothetical Books',
-  imageUrl:
-      'https://source.unsplash.com/9DaOYUYnOls',
-}
-const navigation = [
-  {name: 'Dashboard', href: '/dashboard'},
-  {name: 'Records', href: '/records'},
-  {name: 'Genres', href: '/genres'},
-  {name: 'Vendors', href: '/vendors'},
-  {name: 'Sales', href: '/sales'},
-  {name: 'Purchases', href: '/purchases'},
-  {name: 'Buybacks', href: '/buybacks'},
-]
-const userNavigation = [
-  {name: 'Change Password', href: '/reset-password'},
-  {name: 'Sign out', href: '/'},
-]
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -30,7 +12,36 @@ function classNames(...classes: string[]) {
 
 
 export default function AppShell(props: any) {
-    const sessionData = useSession();
+    const {data, status} = useSession();
+
+    const user = {
+      name: (data?.user ? data.user.name : "Hypothetical Books"),
+      imageUrl:
+          'https://source.unsplash.com/9DaOYUYnOls',
+    }
+    const navigation = ((data?.user?.role != "USER") ? [
+      {name: 'Dashboard', href: '/dashboard'},
+      {name: 'Records', href: '/records'},
+      {name: 'Genres', href: '/genres'},
+      {name: 'Vendors', href: '/vendors'},
+      {name: 'Sales', href: '/sales'},
+      {name: 'Purchases', href: '/purchases'},
+      {name: 'Buybacks', href: '/buybacks'},
+      {name: 'User Management', href: '/user-management'},
+    ] : [
+      {name: 'Dashboard', href: '/dashboard'},
+      {name: 'Records', href: '/records'},
+      {name: 'Genres', href: '/genres'},
+      {name: 'Vendors', href: '/vendors'},
+      {name: 'Sales', href: '/sales'},
+      {name: 'Purchases', href: '/purchases'},
+      {name: 'Buybacks', href: '/buybacks'},
+    ])
+
+    const userNavigation = [
+      {name: 'Change Password', href: '/reset-password'},
+      {name: 'Sign out', href: '/'},
+    ]
 
     async function logOut(e) {
       const res = await signOut({callbackUrl: "/", redirect: false});
@@ -76,7 +87,8 @@ export default function AppShell(props: any) {
                           <div className="ml-4 flex items-center md:ml-6">
                             {/* Profile dropdown */}
                             <Menu as="div" className="relative ml-3">
-                              <div>
+                              <div className="flex flex-row gap-3 align-center justify-center items-center text-indigo-300 block px-3 py-2 rounded-md text-base font-medium">
+                                {data?.user?.name}
                                 <Menu.Button
                                     className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                   <span className="sr-only">Open user menu</span>

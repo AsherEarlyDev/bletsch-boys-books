@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { api } from "../utils/api";
-import SuccessAlert from "./BasicComponents/SuccessAlert";
+import { api } from "../../utils/api";
+import SuccessAlert from "../BasicComponents/SuccessAlert";
 
 export default function PasswordChange() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [alert, toggleAlert] = useState(false);
-  const adminPass = api.admin.changePassword.useMutation();
+  const adminPass = api.user.changePassword.useMutation();
   function handlePasswordSubmit(pass: string, confirmPass: string){
     if (pass === confirmPass){
       adminPass.mutate({

@@ -1,5 +1,5 @@
 import AppShell from "../components/AppShell";
-import PasswordChange from "../components/PasswordChange";
+import PasswordChange from "../components/UserManagementComponents/PasswordChange";
 
 export default function DocumentationPage() {
   return (

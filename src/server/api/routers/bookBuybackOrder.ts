@@ -6,13 +6,12 @@ import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackOrderRouter = createTRPCRouter({
     createBuybackOrder: publicProcedure
-    .input(
-        z.object({
+    .input(z.object({
           vendorId: z.string(),
-          date: z.string()
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
+          date: z.string(),
+          userName: z.string()
+        }))
+    .mutation(async ({ ctx, input }) => {
         try {
             const date  = input.date.replace(/-/g, '\/')
             if (date === '' || !date){
@@ -29,11 +28,11 @@ export const buybackOrderRouter = createTRPCRouter({
               })
             if (vendor){
                 const newBuyback = await ctx.prisma.bookBuybackOrder.create({
-                    data: {
-                        date: new Date(date),
-                        vendorId: input.vendorId,
-                        vendorName: vendor.name
-                    },
+                  data: {
+                    date: new Date(date),
+                    vendorId: input.vendorId,
+                    vendorName: vendor.name,
+                    userName: input.userName},
                 });
                 return {id: newBuyback.id, date: date, vendor: vendor}
             }

@@ -34,6 +34,7 @@ export default function BuybackOrderTableRow(props:BuybackOrderTableRowProp) {
         <TableEntry>{props.buybackOrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.buybackOrderInfo.totalBooks}</TableEntry>
         <TableEntry>${props.buybackOrderInfo.revenue.toFixed(2)}</TableEntry>
+        <TableEntry>{props.buybackOrderInfo.userName}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

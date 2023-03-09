@@ -8,13 +8,12 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const purchaseOrderRouter = createTRPCRouter({
     createPurchaseOrder: publicProcedure
-    .input(
-        z.object({
+    .input(z.object({
           vendorId: z.string(),
-          date: z.string()
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
+          date: z.string(),
+          userName: z.string()
+        }))
+    .mutation(async ({ ctx, input }) => {
         try {
             const date  = input.date.replace(/-/g, '\/')
             if (date === '' || !date){
@@ -34,7 +33,8 @@ export const purchaseOrderRouter = createTRPCRouter({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
-                        vendorName: vendor.name
+                        vendorName: vendor.name,
+                        userName: input.userName
                     },
                 });
                 return {id: newPurchaseOrder.id, date: date, vendor: vendor}
@@ -46,8 +46,8 @@ export const purchaseOrderRouter = createTRPCRouter({
           });
         }
       }),
+
     getNumPurchaseOrder: publicProcedure
-    
    .query(async ({ ctx, input }) => {
      try {
          const orders = await ctx.prisma.purchaseOrder.findMany()
@@ -67,7 +67,7 @@ export const purchaseOrderRouter = createTRPCRouter({
     sortBy: z.string(),
     descOrAsc: z.string()
   }))
-  .query(async ({ctx, input}) => {
+   .query(async ({ctx, input}) => {
     if(input){
       const rawData = await ctx.prisma.purchaseOrder.findMany({
         take: input.entriesPerPage,
@@ -99,13 +99,13 @@ export const purchaseOrderRouter = createTRPCRouter({
   }),
 
    getPurchaseOrderDetails: publicProcedure
-      .input(z.object({
+   .input(z.object({
         pageNumber: z.number(),
         entriesPerPage: z.number(),
         sortBy: z.string(),
         descOrAsc: z.string()
       }))
-     .query(async ({ ctx, input }) => {
+   .query(async ({ ctx, input }) => {
        try {
            const purchaseOrderArray = [];
            const purchaseOrders = await ctx.prisma.purchaseOrder.findMany()
@@ -194,13 +194,11 @@ export const purchaseOrderRouter = createTRPCRouter({
      }),
 
     modifyPurchaseOrder: publicProcedure
-    .input(
-      z.object({
+    .input(z.object({
         purchaseOrderId: z.string(),
         vendorId: z.string(),
         date: z.string()
-      })
-    )
+      }))
     .mutation(async ({ ctx, input }) => {
       try {
         const date  = input.date.replace(/-/g, '\/')

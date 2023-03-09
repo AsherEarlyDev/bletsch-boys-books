@@ -5,6 +5,7 @@ export type PurchaseOrder = {
     purchases: any[],
     totalBooks: number,
     uniqueBooks: number,
+    userName: string,
     cost: number
 }
 

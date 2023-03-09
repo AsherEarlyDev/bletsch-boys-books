@@ -74,6 +74,7 @@ model PurchaseOrder {
   totalBooks  Int        @default(0)
   uniqueBooks Int        @default(0)
   vendorName  String     @default("")
+  userName    String     @default("")
   purchases   Purchase[]
   vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }
@@ -153,6 +154,7 @@ model BookBuybackOrder {
   uniqueBooks Int       @default(0)
   vendorName  String    @default("")
   Vendor      Vendor    @relation(fields: [vendorId], references: [id])
+  userName    String    @default("")
   Buyback     Buyback[]
 }
 

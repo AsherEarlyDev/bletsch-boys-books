@@ -34,6 +34,7 @@ export default function PurchaseOrderTableRow(props:PurchaseOrderTableRowProp) {
         <TableEntry>{props.purchaseOrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.purchaseOrderInfo.totalBooks}</TableEntry>
         <TableEntry>${props.purchaseOrderInfo.cost.toFixed(2)}</TableEntry>
+        <TableEntry>{props.purchaseOrderInfo.userName}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

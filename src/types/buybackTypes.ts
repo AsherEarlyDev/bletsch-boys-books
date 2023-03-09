@@ -5,7 +5,8 @@ export type BuybackOrder = {
     buybacks: any[],
     totalBooks: number,
     uniqueBooks: number,
-    revenue: number
+    revenue: number,
+    userName: string
 }
 
 export type Buyback = {

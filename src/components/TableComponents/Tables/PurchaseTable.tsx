@@ -11,11 +11,12 @@ import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
+import {useSession} from "next-auth/react";
 
 
 export default function PurchaseTable() {
   const FIRST_HEADER = ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
@@ -50,12 +51,14 @@ export default function PurchaseTable() {
   })
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
+  const {data, status} = useSession();
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string) {
     if (createPurchaseOrder) {
       createPurchaseOrder.mutate({
         date: date,
-        vendorId: vendorId
+        vendorId: vendorId,
+        userName: data?.user?.name
       })
     }
   }

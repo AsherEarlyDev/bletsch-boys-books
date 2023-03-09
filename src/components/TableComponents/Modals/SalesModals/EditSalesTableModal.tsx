@@ -9,7 +9,7 @@ import {api} from "../../../../utils/api";
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {Sale} from "../../../../types/salesTypes";
-import ViewSalesRecModal from "./ViewSalesRecModal";
+import ViewSalesRecModal from "./ViewSaleModal";
 import SaleTableRow from "../../TableRows/SaleTableRow";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
@@ -127,7 +127,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     setAddSaleRowView(false)
   }
   function handleAddSale(isbn: string, quantity: number, price: number){
-    if(isbn && quantity && price){
+    if(isbn && quantity){
       addSale.mutate({
         saleReconciliationId: props.salesRecId,
         isbn: isbn,
@@ -137,7 +137,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       closeAddSaleRow()
     }
     else{
-      toast.error("Cannot add sale.")
+      toast.error("Cannot add sale. IDK WHY")
     }
   }
 

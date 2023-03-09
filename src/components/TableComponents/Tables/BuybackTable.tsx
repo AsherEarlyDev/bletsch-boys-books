@@ -2,16 +2,14 @@ import {useState} from 'react';
 import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
-import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
 import Table from './Table';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BuybackOrderTableRow from '../TableRows/BuybackOrderTableRow';
 import EditBuybackTableModal from '../Modals/BuybackModals/EditBuybackTableModal';
-import ViewBuybackTableModal from '../Modals/BuybackModals/ViewBuybackTableModal';
-import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
-import DeleteBuybackOrderModal from '../Modals/BuybackModals/DeleteBuybackOrderModal';
-import ViewBuybackModal from '../Modals/BuybackModals/ViewBuybackModal';
+import ViewBuybackTableModal from '../Modals/BuybackModals/Unused/ViewBuybackTableModal';
+import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
+import OrderTableRow from '../TableRows/Parent/OrderTableRow';
+import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 
 export default function BuybackTable() {
   const FIRST_HEADER = ["Date Created", "date"]
@@ -19,7 +17,6 @@ export default function BuybackTable() {
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [buybacks, setBuybacks] = useState<any[]>([])
-  const [buybackOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
@@ -39,13 +36,7 @@ export default function BuybackTable() {
   const [displayEditBuybackView, setDisplayEditBuybackView] = useState(false)
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
   const [displayBuybackView, setDisplayBuybackView] = useState(false)
-  const [displayAddBuybackView, setDisplayAddBuybackView] = useState(false)
   const [onlyEdit, setOnlyEdit] = useState(false)
-  const [createData, setCreateData] = useState({
-    date: '',
-    vendorId: '',
-    id: ''
-  })
   
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
     onSuccess: ()=>{
@@ -53,6 +44,7 @@ export default function BuybackTable() {
     },
     
   })
+  const deleteBuyback = api.buybackOrder.deleteBuybackOrder
   const vendors = api.vendor.getVendorsWithBuyback.useQuery().data
   
 
@@ -71,9 +63,9 @@ export default function BuybackTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <BuybackOrderTableRow onAdd={handleAdd} onView={openBuybackView}
+        <OrderTableRow onView={openBuybackView}
                                onDelete={openDeleteBuybackView} onEdit={openEditBuybackView}
-                               buybackOrderInfo={order}></BuybackOrderTableRow>
+                               OrderInfo={order}></OrderTableRow>
     )) : null)
   }
 
@@ -100,7 +92,7 @@ export default function BuybackTable() {
         <>
           {(displayEditBuybackView && value) ?
               <CreateEntries closeStateFunction={setDisplayEditBuybackView}
-                             submitText="Edit Buybacl">
+                             submitText="Edit Buyback">
                 <EditBuybackTableModal closeOut={closeEditBuybackView}
                                         data={value}></EditBuybackTableModal></CreateEntries> : null}
         </>
@@ -128,13 +120,14 @@ export default function BuybackTable() {
   }
 
   function renderDeleteBuybackView() {
+    
     return (
         <>
           {(displayDeleteBuybackView && currentOrder) ?
               <CreateEntries closeStateFunction={setDisplayDeleteBuybackView}
                              submitText='Delete Buyback'>
-                <DeleteBuybackOrderModal closeOut={closeDeleteBuybackView}
-                                          buybackId={currentOrder.id}></DeleteBuybackOrderModal>
+                <DeleteOrderModal closeOut={closeDeleteBuybackView}
+                                          id={currentOrder.id} deleteMutation={deleteBuyback} type="Buyback"></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -170,7 +163,7 @@ export default function BuybackTable() {
                                         buybacks={buybacks}
                                         buybackOrderId={currentOrder.id}
                                         buybackDate={currentOrder.date}
-                                        buybackVendorName={currentOrder.vendor.name}></ViewBuybackTableModal>
+                                        buybackVendor={currentOrder.vendor}></ViewBuybackTableModal>
               </CreateEntries>) : null) : null}
         </>
     )
@@ -180,45 +173,15 @@ export default function BuybackTable() {
     setDisplayBuybackView(false)
   }
 
-  const handleAdd = async (id: string) => {
-    if (buybackOrder) {
-      for (const order of buybackOrder) {
-        if (order.id === id) {
-          setId(order.id)
-        }
-      }
-      setDisplayAddBuybackView(true)
-    }
-  }
-
-  function renderAdd() {
-    const dummyBuyback = {
-      id: '',
-      buybackOrderId: buybackOrderId,
-      buybackPrice: 0,
-      quantity: 0,
-      bookId: '',
-      subtotal: 0
-    }
-    return <>
-      {(displayAddBuybackView && buybackOrderId) ?
-          <CreateEntries closeStateFunction={setDisplayAddBuybackView} submitText="Add Sale">
-            <ViewBuybackModal cardType={'entry'} buyback={dummyBuyback}
-                               closeOut={function (): void {
-                                 throw new Error('Function not implemented.');
-                               }}></ViewBuybackModal></CreateEntries> : null}
-    </>;
-  }
-
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Book Buybacks"
                       tableDescription="A list of all the Book Buybacks and their details.">
-          <AddPurchaseOrderModal showPurchaseOrderEdit={handleBuybackSubmission}
+          <AddOrderModal showOrderEdit={handleBuybackSubmission}
                                  buttonText="Create Buyback"
                                  submitText="Create Buyback"
-                                 vendorList={vendors}></AddPurchaseOrderModal>
+                                 vendorList={vendors}></AddOrderModal>
         </TableDetails>
         <Table
             setPage={setPageNumber}
@@ -240,7 +203,6 @@ export default function BuybackTable() {
         <div>
           {renderDeleteBuybackView()}
           {renderBuybackView()}
-          {renderAdd()}
           {renderEditBuybackView()}
           <ToastContainer/>
         </div>

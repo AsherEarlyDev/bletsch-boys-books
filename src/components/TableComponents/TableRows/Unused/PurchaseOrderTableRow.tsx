@@ -1,9 +1,9 @@
-import TableEntry from "../TableEntries/TableEntry";
+import TableEntry from "../../TableEntries/TableEntry";
 import React from "react";
-import { PurchaseOrder } from "../../../types/purchaseTypes";
-import ViewTableEntry from "../TableEntries/ViewTableEntry";
-import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
-import EditRowEntry from "../TableEntries/EditRowEntry";
+import { PurchaseOrder } from "../../../../types/purchaseTypes";
+import ViewTableEntry from "../../TableEntries/ViewTableEntry";
+import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
+import EditRowEntry from "../../TableEntries/EditRowEntry";
 
 interface PurchaseOrderTableRowProp{
     purchaseOrderInfo: PurchaseOrder,

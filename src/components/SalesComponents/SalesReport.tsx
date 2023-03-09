@@ -24,24 +24,21 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
             const mapObj = totalMap.get(date)
             totalMap.set(date, {cost: value.cost, revenue: mapObj.revenue, buybackRevenue: 0})
           })
-          console.log(buybackMap)
           buybackMap.forEach((value,key)=>{
             const date = (key.getMonth()+1)+"/"+(key.getDate())+"/"+key.getFullYear()
             const mapObj = totalMap.get(date)
-            console.log(value.revenue)
             totalMap.set(date, {cost: mapObj.cost, revenue: mapObj.revenue, buybackRevenue: value.revenue})
           })
         }
-        console.log(totalMap)
 
         totalMap.forEach((value,key)=>{
           let date = new Date(key)
           resultsArray.push({
             date: (date.getMonth()+1)+"/"+(date.getDate())+"/"+date.getFullYear(),
-            cost: value.cost,
-            revenue: value.revenue,
-            profit: value.revenue + value.buybackRevenue - value.cost,
-            buybackRevenue: value.buybackRevenue
+            cost: value.cost.toFixed(2),
+            revenue: value.revenue.toFixed(2),
+            profit: (value.revenue + value.buybackRevenue - value.cost).toFixed(2),
+            buybackRevenue: value.buybackRevenue.toFixed(2)
           })
         })
         resultsArray = resultsArray.sort((a: any, b: any) => (new Date(a.date) > new Date(b.date)) ? 1 : -1)
@@ -49,29 +46,28 @@ export function createSalesReportArray(rev: {totalRevenue: number, resultsMap: M
     }
 
     export function generateDatesArray(start: string, end: string){
-      let endDate = end.split("-")
-      let date = parseInt(endDate[2])+1
-      endDate[2] = date.toString()
-      for(var arr=[],dt=new Date(start); dt<=new Date(endDate.join("-")); dt.setDate(dt.getDate()+1)){
+      let startDate = start.replaceAll('-','/')
+      let endDate = end.replaceAll('-','/')
+      for(var arr=[],dt=new Date(startDate); dt<=new Date(endDate); dt.setDate(dt.getDate()+1)){
         arr.push(new Date(dt));
-    }
-    return arr;
+      }
+      return arr;
     }
 
     export function generateSalesReportPDF(results: {date: string, cost: number, revenue: number, profit: number, buybackRevenue: number}[],
       topSellers: {recentCost: number, revenue: number, profit: number, isbn: string, title: string, numBooks: number}[],
       totalCost: number, totalRevenue: number){
       const report = new jsPDF();
-      const totalProfit = totalRevenue-totalCost
+      const totalProfit = (totalRevenue-totalCost)
       const totalTableCol = ["Total Cost", "Total Revenue", "Total Profit"]
-      const tableCol = ["Date","Daily Cost", "Daily Sale Revenue", "Daily Profit", "Daily Buyback Revenue"]
+      const tableCol = ["Date","Daily Cost", "Daily Sale Revenue", "Daily Buyback Revenue", "Daily Profit"]
       const topSellersColumn = ["Book ISBN","Book Title","Quantity Sold","Total Cost Most-Recent", "Total Revenue", "Total Profit"]
-      let totalRow = [totalCost, totalRevenue, totalProfit]
+      let totalRow = [totalCost?.toFixed(2), totalRevenue?.toFixed(2), totalProfit?.toFixed(2)]
       let dailyRow = []
       let topSellersRow = []
       if (results && topSellers){
         results.map((result)=>{
-          let dailyTemp = [result.date, result.cost, result.revenue, result.profit, result.buybackRevenue]
+          let dailyTemp = [result.date, result.cost, result.revenue, result.buybackRevenue, result.profit]
           dailyRow.push(dailyTemp)
         })
   

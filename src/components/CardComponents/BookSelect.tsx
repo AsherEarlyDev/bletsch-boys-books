@@ -5,9 +5,15 @@ import { api } from '../../utils/api'
 
 
 
-export default function BookSelect(props:{saveFunction: any, defaultValue?:any}) {
+export default function BookSelect(props:{saveFunction: any, defaultValue?:any, vendorId: string, type: string}) {
   // Saves the ISBN of the book selected no matter what option is chosen
-  const books = api.books.getAllInternalBooks.useQuery().data
+  let books
+  if (props.type === "Buyback"){
+    books = api.books.getBooksByVendorId.useQuery({vendorId: props.vendorId}).data
+  }
+  else{
+    books = api.books.getAllInternalBooks.useQuery().data
+  }
   
 
   const [query, setQuery] = useState(props.defaultValue.title ?? "")

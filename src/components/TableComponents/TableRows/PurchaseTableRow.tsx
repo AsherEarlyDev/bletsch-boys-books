@@ -11,7 +11,7 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
-import DeletePurchaseModal from "../Modals/PurchaseModals/DeletePurchaseModal";
+import DeletePurchaseModal from "../Modals/PurchaseModals/Unused/DeletePurchaseModal";
 
 interface PurchaseTableRowProp {
   purchase: Purchase
@@ -40,6 +40,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
     }
   })
   const [visible, setVisible] = useState(true)
+  
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -81,7 +82,6 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   }
 
   function saveNewPurchase() {
-    toast.success("ready: " + isbn)
     props.saveAdd(isbn, quantityPurchased, purchasePrice)
   }
 

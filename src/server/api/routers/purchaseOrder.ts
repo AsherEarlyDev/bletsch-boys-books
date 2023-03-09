@@ -16,6 +16,7 @@ export const purchaseOrderRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
         try {
             const date  = input.date.replace(/-/g, '\/')
+            console.log("DATE: " + date)
             if (date === '' || !date){
               throw new TRPCError({
                 code: 'CONFLICT',
@@ -229,14 +230,14 @@ export const purchaseOrderRouter = createTRPCRouter({
     deletePurchaseOrder: publicProcedure
     .input(
       z.object({
-        purchaseOrderId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const purchases = await ctx.prisma.purchase.findMany({
           where: {
-            purchaseOrderId: input.purchaseOrderId
+            purchaseOrderId: input.id
           }
         })
         for (const purch of purchases){
@@ -272,7 +273,7 @@ export const purchaseOrderRouter = createTRPCRouter({
         }
         await ctx.prisma.purchaseOrder.delete({
           where: {
-            id: input.purchaseOrderId
+            id: input.id
           }
         })
       } catch (error) {

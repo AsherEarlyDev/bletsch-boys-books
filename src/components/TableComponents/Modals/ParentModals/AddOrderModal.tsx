@@ -1,15 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { Vendor } from '../../../../types/purchaseTypes';
+import { Vendor } from '../../../../types/vendorTypes';
 
-interface PurchaseOrderModalProp{
-  showPurchaseOrderEdit(date: string, vendorId: string): Promise<void>,
+interface OrderModalProp{
+  showOrderEdit(date: string, vendorId: string): Promise<void>,
   vendorList: Vendor[],
   buttonText: string;
   submitText: string;
 }
 
-export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
+export default function AddOrderModal(props: OrderModalProp) {
   const [vendorId, setId] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const currDate = new Date()
@@ -31,7 +31,7 @@ export default function AddPurchaseOrderModal(props: PurchaseOrderModalProp) {
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string
     closeModal()
-    props.showPurchaseOrderEdit(date, vendorId)
+    props.showOrderEdit(date, vendorId)
   }
 
   return (

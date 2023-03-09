@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import SalesRecTableRow from "../TableRows/SalesRecTableRow";
+import EditSalesRecModal from "../Modals/SalesModals/Unused/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
-import ViewSalesRecModal from '../Modals/SalesModals/ViewSalesRecModal';
+import ViewSalesRecModal from '../Modals/SalesModals/ViewSaleModal';
 import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
@@ -23,8 +24,8 @@ export default function SalesTable() {
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
-  const [startDate, setStartDate] = useState(date.toString())
-  const [endDate, setEndDate] = useState(date.toString())
+  const [startDate, setStartDate] = useState(date.toDateString())
+  const [endDate, setEndDate] = useState(date.toDateString())
   const [currentSalesRec, setCurrentSalesRec] = useState({
     id: '',
     date: '',

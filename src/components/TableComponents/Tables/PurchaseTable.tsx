@@ -10,6 +10,7 @@ import ViewPurchaseTableModal from '../Modals/PurchaseModals/Unused/ViewPurchase
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
 
 export default function PurchaseTable() {
@@ -157,10 +158,10 @@ export default function PurchaseTable() {
           {displayPurchaseView ? (purchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases}
-                                        purchaseOrderId={currentOrder.id}
-                                        purchaseDate={currentOrder.date}
-                                        purchaseVendorName={currentOrder.vendor.name}></ViewPurchaseTableModal>
+                <ViewTableModal type="Purchases" closeOut={closePurchaseView} items={purchases}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

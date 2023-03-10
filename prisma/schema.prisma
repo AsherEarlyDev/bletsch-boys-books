@@ -1,24 +1,18 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }
 
 model Book {
@@ -34,7 +28,7 @@ model Book {
   authorNames     String
   imageLink       String?
   shelfSpace      Float?     @default(0)
-  Genre           Genre      @relation(fields: [genreID], references: [id])
+  genre           Genre      @relation(fields: [genreID], references: [id])
   Buyback         Buyback[]
   purchases       Purchase[]
   sales           Sale[]
@@ -105,6 +99,24 @@ model saleReconciliation {
   sales       Sale[]
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -115,12 +127,12 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
+  password      String
+  role          Role      @default(USER)
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String
-  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
 }
@@ -134,7 +146,7 @@ model VerificationToken {
 }
 
 model BookBuybackOrder {
-  id          String    @id
+  id          String    @id @default(cuid())
   vendorId    String
   date        DateTime
   revenue     Float     @default(0)
@@ -142,12 +154,12 @@ model BookBuybackOrder {
   uniqueBooks Int       @default(0)
   vendorName  String    @default("")
   userName    String    @default("")
-  vendor      Vendor    @relation(fields: [vendorId], references: [id])
   buybacks    Buyback[]
+  vendor      Vendor    @relation(fields: [vendorId], references: [id])
 }
 
 model Buyback {
-  id               String           @id
+  id               String           @id @default(cuid())
   quantity         Int
   buybackPrice     Float
   bookId           String
@@ -155,10 +167,4 @@ model Buyback {
   subtotal         Float            @default(0)
   Book             Book             @relation(fields: [bookId], references: [isbn])
   BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
-}
-
-enum Role {
-  USER
-  ADMIN
-  SUPERADMIN
 }

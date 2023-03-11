@@ -20,6 +20,8 @@ export default function ViewTableModal(props: ViewTableModalProps) {
   const header = `${props.date} ${props.type}`
   const hasItem = (props.items.length != 0)
 
+  const tableDescription = props.vendor ? `Vendor: ${props.vendor.name}, Order ID: ${props.id}`: `Sales Record ID: ${props.id}`
+
   function handleSave(){
     props.closeOut
   }
@@ -28,7 +30,7 @@ export default function ViewTableModal(props: ViewTableModalProps) {
   return (
       <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
         <div className="mb-8">
-          <TableDetails tableName={header} tableDescription={`Vendor: ${props.vendor.name}, Order ID: ${props.id}`}>
+          <TableDetails tableName={header} tableDescription={tableDescription}>
           </TableDetails>
           {hasItem ? (
           <div className="mt-8 flex flex-col">

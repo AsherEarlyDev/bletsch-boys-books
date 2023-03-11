@@ -14,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
 
 export default function SalesTable() {
@@ -148,7 +149,10 @@ export default function SalesTable() {
         <>
           {(displaySalesRecView && currentSalesRec) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
-                <ViewSalesTableModal salesRecId={currentSalesRec.id} salesRecDate={currentSalesRec.date} sales={currentSales} closeOut={closeSalesRecView}></ViewSalesTableModal>
+                <ViewTableModal type="Sale" closeOut={closeSalesRecView} items={ currentSales}
+                                        id={currentSalesRec.id}
+                                        date={currentSalesRec.date}
+                                        vendor={null}></ViewTableModal>
               </CreateSaleEntries>)
               : null}
         </>
@@ -174,23 +178,23 @@ export default function SalesTable() {
     generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
   }
 
-  function renderAdd() {
-    const dummySale = {
-      id: '',
-      saleReconciliationId: saleRecId,
-      price: 0,
-      quantity: 0,
-      bookId: '',
-      subtotal: 0
-    }
+  // function renderAdd() {
+  //   const dummySale = {
+  //     id: '',
+  //     saleReconciliationId: saleRecId,
+  //     price: 0,
+  //     quantity: 0,
+  //     bookId: '',
+  //     subtotal: 0
+  //   }
 
-    return <>
-      {(displayAddSaleView && saleRecId)?
-          <CreateSaleEntries closeStateFunction={setDisplayAddSaleView} submitText="Add Sale">
-            <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries>
-             : null}
-    </>;
-  }
+  //   return <>
+  //     {(displayAddSaleView && saleRecId)?
+  //         <CreateSaleEntries closeStateFunction={setDisplayAddSaleView} submitText="Add Sale">
+  //           <ViewSalesRecModal cardType={'entry'} sale={dummySale}></ViewSalesRecModal></CreateSaleEntries>
+  //            : null}
+  //   </>;
+  // }
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">

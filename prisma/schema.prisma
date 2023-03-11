@@ -30,7 +30,7 @@ model Account {
 model Author {
   id   String @id
   name String
-  Book Book[] @relation("AuthorToBook")
+  Book Book[]
 }
 
 model Book {
@@ -50,7 +50,7 @@ model Book {
   Buyback         Buyback[]
   Purchase        Purchase[]
   Sale            Sale[]
-  Author          Author[]   @relation("AuthorToBook")
+  Author          Author[]
 }
 
 model BookBuybackOrder {

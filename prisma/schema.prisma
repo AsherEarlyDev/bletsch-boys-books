@@ -1,3 +1,9 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -24,7 +30,7 @@ model Account {
 model Author {
   id   String @id
   name String
-  Book Book[]
+  Book Book[] @relation("AuthorToBook")
 }
 
 model Book {
@@ -44,7 +50,7 @@ model Book {
   Buyback         Buyback[]
   Purchase        Purchase[]
   Sale            Sale[]
-  Author          Author[]
+  Author          Author[]   @relation("AuthorToBook")
 }
 
 model BookBuybackOrder {
@@ -55,6 +61,7 @@ model BookBuybackOrder {
   totalBooks  Int       @default(0)
   uniqueBooks Int       @default(0)
   vendorName  String    @default("")
+  userName    String    @default("")
   Vendor      Vendor    @relation(fields: [vendorId], references: [id])
   Buyback     Buyback[]
 }
@@ -76,13 +83,6 @@ model Genre {
   Book Book[]
 }
 
-model Image {
-  id       String @id
-  publicId String @unique
-  format   String
-  version  String
-}
-
 model Purchase {
   id              String        @id
   quantity        Int
@@ -102,6 +102,7 @@ model PurchaseOrder {
   totalBooks  Int        @default(0)
   uniqueBooks Int        @default(0)
   vendorName  String     @default("")
+  userName    String     @default("")
   Purchase    Purchase[]
   Vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }

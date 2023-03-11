@@ -10,6 +10,7 @@ import ViewBuybackTableModal from '../Modals/BuybackModals/Unused/ViewBuybackTab
 import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
 export default function BuybackTable() {
   const FIRST_HEADER = ["Date Created", "date"]
@@ -159,11 +160,10 @@ export default function BuybackTable() {
           {displayBuybackView ? (buybacks ? (
               <CreateEntries closeStateFunction={setDisplayBuybackView}
                              submitText="Show Buyback Details">
-                <ViewBuybackTableModal closeOut={closeBuybackView}
-                                        buybacks={buybacks}
-                                        buybackOrderId={currentOrder.id}
-                                        buybackDate={currentOrder.date}
-                                        buybackVendor={currentOrder.vendor}></ViewBuybackTableModal>
+                <ViewTableModal type="Buyback" closeOut={closeBuybackView} items={ buybacks}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import TableHeader from "../TableHeader";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
 import DeleteVendorModal from '../Modals/VendorModals/DeleteVendorModal';
 import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
@@ -21,8 +20,7 @@ export default function VendorTable() {
   const [sortField, setSortField] = useState("name")
   const [sortOrder, setSortOrder] = useState("asc")
   const [pageNumber, setPageNumber] = useState(0)
-  const vendors = api.vendor.getVendors.useQuery(
-      {
+  const vendors = api.vendor.getVendors.useQuery({
         pageNumber: pageNumber,
         entriesPerPage: VENDORS_PER_PAGE,
         sortBy: sortField,
@@ -142,16 +140,13 @@ export default function VendorTable() {
 
   function renderVendorRow() {
     return (vendors ? vendors.map((vendor) => (
-        <VendorTableRow onView={openVendorView} onEdit={openEditVendorView}
-                        onDelete={openDeleteVendorView}
-                        vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
+        <VendorTableRow onView={openVendorView} onEdit={openEditVendorView} onDelete={openDeleteVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Vendors" tableDescription="A list of all the Vendors.">
-          <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor"
-                          submitText="Add Vendor"></AddVendorModal>
+          <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
         </TableDetails>
         <Table sorting={{
           setOrder: setSortOrder,

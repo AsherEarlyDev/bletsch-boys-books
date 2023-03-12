@@ -82,7 +82,7 @@ export default function VendorTable() {
     setDisplayEditVendorView(false)
   }
 
-  async function openDeleteVendorView(id: striDeleteVendorng) {
+  async function openDeleteVendorView(id: string) {
     if (vendors) {
       for (const ven of vendors) {
         if (ven.id === id) {
@@ -143,7 +143,7 @@ export default function VendorTable() {
   function renderVendorRow() {
     return (vendors ? vendors.map((vendor) => (
         <VendorTableRow onView={openVendorView} onEdit={openEditVendorView}
-                        onDelete={openView}
+                        onDelete={openDeleteVendorView}
                         vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 

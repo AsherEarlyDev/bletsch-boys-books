@@ -7,7 +7,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 
 export const purchaseOrderRouter = createTRPCRouter({
-    createPurchaseOrder: publicProcedure
+    createPurchaseOrder: protectedProcedure
     .input(z.object({
           vendorId: z.string(),
           date: z.string(),
@@ -194,7 +194,7 @@ export const purchaseOrderRouter = createTRPCRouter({
        }
      }),
 
-    modifyPurchaseOrder: publicProcedure
+    modifyPurchaseOrder: protectedProcedure
     .input(z.object({
         purchaseOrderId: z.string(),
         vendorId: z.string(),
@@ -227,12 +227,10 @@ export const purchaseOrderRouter = createTRPCRouter({
       }
     }),
 
-    deletePurchaseOrder: publicProcedure
-    .input(
-      z.object({
+    deletePurchaseOrder: protectedProcedure
+    .input(z.object({
         id: z.string(),
-      })
-    )
+      }))
     .mutation(async ({ ctx, input }) => {
       try {
         const purchases = await ctx.prisma.purchase.findMany({

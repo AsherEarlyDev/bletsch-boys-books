@@ -684,7 +684,8 @@ async function getPurchases (ctx: context, isbn:string){
       purchaseOrder: {
         select:{
           date:true,
-          vendor:true
+          vendor:true,
+          id:true
         }
       }
     }
@@ -703,7 +704,8 @@ async function getSales (ctx: context, isbn:string){
       price: true,
       saleReconciliation: {
         select:{
-          date:true
+          date:true,
+          id:true
         }
       }
     }
@@ -719,10 +721,11 @@ async function getBookBuyback (ctx: context, isbn:string){
       id: true,
       quantity: true,
       buybackPrice: true,
-      BookBuybackOrder: {
+      bookBuybackOrder: {
         select:{
           date:true,
-          Vendor:true
+          vendor:true,
+          id:true
         }
       }
     }

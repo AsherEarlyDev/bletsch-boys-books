@@ -62,6 +62,21 @@ export const purchaseOrderRouter = createTRPCRouter({
      }
    }),
 
+   getUniquePurchaseOrders: publicProcedure
+   .input(z.string())
+  .query(async ({ctx, input}) => {
+    const rawData = await ctx.prisma.purchaseOrder.findUnique({
+      where:{
+        id:input
+      },
+      include:{
+        vendor: true,
+        purchases: true
+      }
+    })
+    return transformData([rawData])[0]
+  }),
+
    getPurchaseOrders: publicProcedure
    .input(z.object({
     pageNumber: z.number(),
@@ -293,7 +308,7 @@ export const purchaseOrderRouter = createTRPCRouter({
 
   });
 
-  const transformData = (purchaseOrder:PurchaseOrder[]) => {
+  const transformData = (purchaseOrder) => {
     return purchaseOrder.map((order) => {
       return({
         ...order,

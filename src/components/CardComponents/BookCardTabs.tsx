@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Tab } from '@headlessui/react'
 import { api } from "../../utils/api";
+import Link from 'next/link';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -65,7 +66,7 @@ export default function BookCardTabs(props: BookCardTabsProps) {
                 }
                   <ul>
                   {transactions.map((transaction) => (
-                      <li
+                      <Link href={{pathname: (idx==0 ? '/sales' : (idx==1 ? "/purchases" : "/buybacks")), query:{openView:"true", viewId:(idx==0 ? transaction.saleReconciliation.id : (idx==1 ? transaction.purchaseOrder.id : transaction.bookBuybackOrder.id))}}}><li
                           key={transaction.id}
                           className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
                       >
@@ -82,7 +83,7 @@ export default function BookCardTabs(props: BookCardTabsProps) {
                         <h3 className="text-sm font-medium leading-5 w-32">
                           ${transaction.price?.toFixed(2)}
                         </h3>
-                      </li>
+                      </li></Link>
                   ))}
                 </ul>
               </Tab.Panel>

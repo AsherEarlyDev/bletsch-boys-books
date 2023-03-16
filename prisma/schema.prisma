@@ -24,7 +24,7 @@ model Account {
 model Author {
   id   String @id
   name String
-  Book Book[]
+  Book Book[] @relation("AuthorToBook")
 }
 
 model Book {
@@ -44,7 +44,7 @@ model Book {
   Buyback         Buyback[]
   Purchase        Purchase[]
   Sale            Sale[]
-  Author          Author[]
+  Author          Author[]   @relation("AuthorToBook")
 }
 
 model BookBuybackOrder {
@@ -131,8 +131,6 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String
-  role          Role      @default(USER)
   Account       Account[]
   Session       Session[]
 }
@@ -156,14 +154,13 @@ model VerificationToken {
 model saleReconciliation {
   id          String   @id
   date        DateTime
-  revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
+  revenue     Float    @default(0)
   Sale        Sale[]
 }
 
-enum Role {
-  USER
-  ADMIN
-  SUPERADMIN
+model Admin {
+  password String
+  id       Int    @id @default(autoincrement())
 }

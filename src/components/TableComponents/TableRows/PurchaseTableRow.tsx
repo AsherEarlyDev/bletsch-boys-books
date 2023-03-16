@@ -12,6 +12,7 @@ import CreateSaleEntries from "../../CreateEntries";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
 import DeletePurchaseModal from "../Modals/PurchaseModals/Unused/DeletePurchaseModal";
+import LinkedBookTitle from "../../BasicComponents/DynamicRouting/LinkedBookTitle";
 
 interface PurchaseTableRowProp {
   purchase: Purchase
@@ -87,10 +88,10 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
 
   return (
       <>
-        {visible && 
+        {visible && book && 
         (props.isView ?
                 <tr>
-                  <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
+                  {<LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>}
                   <TableEntry>${Number(purchasePrice).toFixed(2)}</TableEntry>
                   <TableEntry>{quantityPurchased}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>

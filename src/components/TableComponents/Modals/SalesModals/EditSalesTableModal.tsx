@@ -91,9 +91,9 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
 
   function transformCSV(csv){
     const quant = parseInt(csv.quantity)
-    const price = parseFloat(csv.unit_retail_price)
+    const price = parseFloat(csv.unit_retail_price.replaceAll('$', ''))
     return ({
-      bookId:csv.isbn,
+      bookId:(csv.isbn).replaceAll('-', ''),
       quantity:quant,
       price: price,
       subtotal: quant* price,

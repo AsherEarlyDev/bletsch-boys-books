@@ -10,8 +10,11 @@ import ViewBuybackTableModal from '../Modals/BuybackModals/Unused/ViewBuybackTab
 import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import { useRouter } from 'next/router';
 
 export default function BuybackTable() {
+  const {query} = useRouter()
+  const router = useRouter()
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
@@ -35,7 +38,10 @@ export default function BuybackTable() {
   const numberOfPages = Math.ceil(numberOfEntries / ENTRIES_PER_PAGE)
   const [displayEditBuybackView, setDisplayEditBuybackView] = useState(false)
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
-  const [displayBuybackView, setDisplayBuybackView] = useState(false)
+  const displayBuybackView = query.openView ? (query.openView==="true" ? true : false) : false
+  const currentBuybackId = query.viewId ? query.viewId.toString() : ""
+  const viewCurrentOrder = api.buybackOrder.getUniqueBuybackOrders.useQuery(currentBuybackId).data
+  const viewCurrentBuybacks = viewCurrentOrder ? viewCurrentOrder.buybacks : undefined
   const [onlyEdit, setOnlyEdit] = useState(false)
   
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
@@ -138,32 +144,33 @@ export default function BuybackTable() {
   }
 
   async function openBuybackView(id: string) {
-    if (buybackOrder) {
-      for (const order of buybackOrder) {
-        if (order.id === id && order.buybacks) {
-          setCurrentOrder({
-            id: order.id,
-            date: order.date,
-            vendor: order.vendor,
-          })
-          setBuybacks(order.buybacks)
-        }
+    setDisplayBuybackView(true, id)
+  }
+  function setDisplayBuybackView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/buybacks',
+      query:{
+        openView:"true",
+        viewId: id
       }
-      setDisplayBuybackView(true)
-    }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/buybacks',
+      
+    }, undefined, { shallow: true })
   }
 
   function renderBuybackView() {
     return (
         <>
-          {displayBuybackView ? (buybacks ? (
+          {displayBuybackView ? (viewCurrentBuybacks ? (
               <CreateEntries closeStateFunction={setDisplayBuybackView}
                              submitText="Show Buyback Details">
                 <ViewBuybackTableModal closeOut={closeBuybackView}
-                                        buybacks={buybacks}
-                                        buybackOrderId={currentOrder.id}
-                                        buybackDate={currentOrder.date}
-                                        buybackVendor={currentOrder.vendor}></ViewBuybackTableModal>
+                                        buybacks={viewCurrentBuybacks}
+                                        buybackOrderId={viewCurrentOrder.id}
+                                        buybackDate={viewCurrentOrder.date}
+                                        buybackVendor={viewCurrentOrder.vendor}></ViewBuybackTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

@@ -45,6 +45,21 @@ export const buybackOrderRouter = createTRPCRouter({
         }
       }),
 
+      getUniqueBuybackOrders: publicProcedure
+      .input(z.string())
+      .query(async ({ctx, input}) => {
+        const rawData = await ctx.prisma.bookBuybackOrder.findUnique({
+          where:{
+          id:input
+          },
+          include:{
+            vendor: true,
+            buybacks: true
+          }         
+        })
+        return transformData([rawData])[0]
+     }),
+
       getBuybackOrders: publicProcedure
       .input(z.object({
        pageNumber: z.number(),
@@ -295,7 +310,7 @@ export const buybackOrderRouter = createTRPCRouter({
     })
   });
 
-  const transformData = (buybackOrder: BookBuybackOrder[]) => {
+  const transformData = (buybackOrder) => {
     return buybackOrder.map((rec) => {
       return({
         ...rec,

@@ -28,7 +28,9 @@ export default function BookTable() {
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
   const [displayEditBookView, setDisplayEditBookView] = useState(false)
-  const [displayBookView, setDisplayBookView] = useState(false)
+  const displayBookView = query.openView ? (query.openView==="true" ? true : false) : false
+  const viewCurrentISBN =  query.viewId ? query.viewId.toString() : ""
+  const viewCurrentBook = api.books.findBooks.useQuery([viewCurrentISBN]).data
   const [displayDeleteBookView, setDisplayDeleteBookView] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
@@ -122,21 +124,29 @@ export default function BookTable() {
   }
 
   async function openBookView(isbn: string){
-    if (books){
-      for (const book of books){
-        if (book.isbn === isbn){
-          setCurrentIsbns([isbn])
-        }
-      }
-      setDisplayBookView(true)
-    }
+    setDisplayBookView(true, isbn)
   }
+
+  function setDisplayBookView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/records',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/records',
+      
+    }, undefined, { shallow: true })
+  }
+
   function renderBookView() {
     return(
         <>
-          {(displayBookView && entryBookData) ?
+          {(displayBookView && viewCurrentBook) ?
               <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
-                <ViewBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
+                <ViewBookModal bookInfo={viewCurrentBook.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
               </CreateEntries> : null}
         </>
     )

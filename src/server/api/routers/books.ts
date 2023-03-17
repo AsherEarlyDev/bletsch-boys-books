@@ -29,20 +29,21 @@ const zBook = z.object({
   imageLink: z.optional(z.string())
 })
 
-const fetchBookFromExternal = async (isbn: string) => {
+const fetchBookFromExternal = async (isbn: string, ctx:context) => {
     const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${process.env.SECRET_KEY_GOOGLE_API}`);
     const data:rawGoogleOutput = await res.json();
     const book: googleBookInfo | undefined = data.items[0]?.volumeInfo
     if (book != undefined){
-      return transformRawBook(book, isbn);
+      return await transformRawBook(book, isbn, ctx);
     }
     else{
       throw console.error("Book Not Found");
     } 
 }
 
-const transformRawBook = (input:googleBookInfo, isbn:string) =>{
+const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) =>{
   const googleImageUrl = input.imageLinks.thumbnail
+  const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
     console.log(result)
     if (result) {
@@ -62,7 +63,9 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
         lastMonthSales:0,
         shelfSpace:0,
         daysOfSupply:Infinity,
-        bestBuybackPrice:0
+        bestBuybackPrice:0,
+        numberRelatedBooks: relatedBooks.length,
+        relatedBooks: relatedBooks
       }
       return bookInfo
     } else {
@@ -82,7 +85,9 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
         lastMonthSales:0,
         shelfSpace:0,
         daysOfSupply:Infinity,
-        bestBuybackPrice:0
+        bestBuybackPrice:0,
+        numberRelatedBooks: relatedBooks.length,
+        relatedBooks: relatedBooks
       }
       return bookInfo
     }
@@ -92,6 +97,7 @@ const transformRawBook = (input:googleBookInfo, isbn:string) =>{
 
 const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Genre; }, ctx:context) =>{
   const lastMonthSales = await getLastMonthSales(book.isbn, ctx)
+  const relatedBooks = (await findRelatedBooks(book.title, book.isbn, ctx))
   const bookInfo: editableBook = {
     isbn: book.isbn,
     title: book.title,
@@ -108,7 +114,9 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
     shelfSpace: book.shelfSpace,
     daysOfSupply:lastMonthSales==0 ? Infinity : book.inventory/(await getLastMonthSales(book.isbn, ctx))*30,
     bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
-    imageLink: book.imageLink
+    imageLink: book.imageLink,
+    numberRelatedBooks: relatedBooks.length,
+    relatedBooks: relatedBooks
 
   }
   return bookInfo
@@ -143,7 +151,7 @@ export const booksRouter = createTRPCRouter({
         var book = await getBookIfExists(ctx, isbn)
         if(book) internalBooks.push(await transformDatabaseBook(book, ctx))
         else{
-          const externalBook = await fetchBookFromExternal(isbn)
+          const externalBook = await fetchBookFromExternal(isbn, ctx)
           if(externalBook) externalBooks.push(externalBook)
         }
       }
@@ -188,7 +196,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
         return externalSort(input, ctx, true)
       }
       const books = await ctx.prisma.book.findMany({
@@ -262,7 +270,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
         return externalSort(input, ctx, false)
       }
       const books = await ctx.prisma.book.findMany({
@@ -420,6 +428,15 @@ export const booksRouter = createTRPCRouter({
     }
   }),
 
+  findRelatedBooks:publicProcedure
+  .input(z.object({
+    title:z.string(),
+    isbn:z.string(),
+  }))
+  .query(async({ctx, input}) => {
+    return await findRelatedBooks(input.title, input.isbn, ctx)
+  }),
+
   getBookTransactionDetails: publicProcedure.input(
       z.string()
   ).query(async({ctx, input}) => {
@@ -427,10 +444,7 @@ export const booksRouter = createTRPCRouter({
       const sales = await getSales(ctx, input)
       const purchases = await getPurchases(ctx, input)
       const buybacks = await getBookBuyback(ctx, input)
-      return {
-        sales: sales,
-        purchases: purchases,
-        buybacks: buybacks}
+      return unifyTransactions(sales, purchases, buybacks)
     }
     catch(error){
       throw("Cannot get book transaction details")
@@ -661,12 +675,15 @@ async function getBestBuybackRate (isbn:string, ctx:context){
 async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
   return await Promise.all(books.map(async (book) => {
     const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
+    const relatedBooks = await findRelatedBooks(book.title, book.isbn, ctx)
     return (
       {
         ...book,
         lastMonthSales: lastMonthSales,
         daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
-        bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx)
+        bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
+        numberRelatedBooks: relatedBooks.length,
+        relatedBooks: relatedBooks
       });
   })
   );
@@ -690,7 +707,12 @@ async function getPurchases (ctx: context, isbn:string){
       }
     }
   })
-  return purchases
+  return purchases.map((purchase) => ({
+    ...purchase,
+    type:"Purchase",
+    inventory:0,
+    date:(purchase.purchaseOrder.date.getMonth()+1)+"-"+(purchase.purchaseOrder.date.getDate())+"-"+purchase.purchaseOrder.date.getFullYear(),
+  }))
 }
 
 async function getSales (ctx: context, isbn:string){
@@ -710,7 +732,12 @@ async function getSales (ctx: context, isbn:string){
       }
     }
   })
-  return sales
+  return sales.map((sale) => ({
+    ...sale,
+    type:"Sale",
+    inventory:0,
+    date:(sale.saleReconciliation.date.getMonth()+1)+"-"+(sale.saleReconciliation.date.getDate())+"-"+sale.saleReconciliation.date.getFullYear(),
+  }))
 }
 async function getBookBuyback (ctx: context, isbn:string){
   const bookBuybacks = await ctx.prisma.buyback.findMany({
@@ -730,10 +757,43 @@ async function getBookBuyback (ctx: context, isbn:string){
       }
     }
   })
-  return bookBuybacks
+  return bookBuybacks.map((buyback) => ({
+    ...buyback,
+    type:"Buyback",
+    inventory:0,
+    date:(buyback.bookBuybackOrder.date.getMonth()+1)+"-"+(buyback.bookBuybackOrder.date.getDate())+"-"+buyback.bookBuybackOrder.date.getFullYear(),
+  }))
 }
 
+function unifyTransactions(sales, purchases, buybacks){
+  const rawList = [].concat(sales, purchases, buybacks)
+  const sortedList = rawList.sort((a, b) => {
+    return a.date < b.date ? 1 : -1
+ })
+ var runningTotal = 0;
+ for (let i = sortedList.length-1; i >=0; i--){
+  if(sortedList[i].type==="Purchase"){
+    runningTotal+=sortedList[i].quantity
+  }
+  else{
+    runningTotal-=sortedList[i].quantity
+  }
+  sortedList[i].inventory=runningTotal
+ }
+ return sortedList
+}
 
+async function findRelatedBooks(input: string,isbn:string, ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
+  const words = (input.split(' ')).join(" & ");
+  const relatedBooks = await ctx.prisma.book.findMany({
+    where: {
+      title: {
+        search: words
+      }
+    }
+  });
+  return relatedBooks.filter((relatedBook)=> relatedBook.isbn !== isbn);
+}
 
 
 

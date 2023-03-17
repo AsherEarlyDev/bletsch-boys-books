@@ -8,18 +8,19 @@ function classNames(...classes) {
 }
 
 interface BookCardTabsProps{
+  title:string
   isbn: string
 }
 
 export default function BookCardTabs(props: BookCardTabsProps) {
   const transactionDetails = api.books.getBookTransactionDetails.useQuery(props.isbn).data
-  console.log(transactionDetails)
+  const relatedBooks = api.books.findRelatedBooks.useQuery({isbn:props.isbn, title:props.title}).data
   let [categories] = useState(transactionDetails)
 
   return (
       <Tab.Group>
         <Tab.List className="flex space-x-1 rounded-xl bg-indigo-300 p-1 mx-5">
-          {transactionDetails && (Object.keys(transactionDetails).map((category) => (
+          {transactionDetails && ((["Transactions", "Related Books"]).map((category) => (
               <Tab
                   key={category}
                   className={({ selected }) =>
@@ -37,58 +38,74 @@ export default function BookCardTabs(props: BookCardTabsProps) {
               )))}
         </Tab.List>
         <Tab.Panels className="mt-2">
-          {transactionDetails && (Object.values(transactionDetails).map((transactions, idx) => (
-              <Tab.Panel
-                  key={idx}
+          {transactionDetails &&
+              [<Tab.Panel
                   className={classNames(
                       'rounded-xl bg-white p-3',
-                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400'
-                  )}
-              >
-                {transactions.length ?
+                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400')}>
+                {transactionDetails.length ?
                 <div
                     className="flex flex-row justify-between mx-2 border-b border-solid border-indigo-400 p-2 text-left">
-                  <h3 className="text-sm font-medium leading-5 w-32">
-                    {(idx == 1 ? "Date Bought" : (idx == 2 ? "Date Bought Back" : "Date Sold"))}
-                  </h3>
-                  {(idx == 1 || idx==2) &&
-                  <h3 className="text-sm font-medium leading-5 w-32">
-                    Vendor
-                  </h3>}
-                  <h3 className="text-sm font-medium leading-5 w-32">
-                    {(idx == 1 ? "Quantity Bought" : (idx == 2 ? "Quantity Returned" : "Quantity Sold"))}
-                  </h3>
-                  <h3 className="text-sm font-medium leading-5 w-32">
-                    {(idx == 1 ? "Purchase Price" : (idx == 2 ? "Buyback Price" : "Sale Price"))}
-                  </h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Type</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Date</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">User</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Vendor</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Price</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Quantity</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Running Inventory</h3>
                 </div>:
                     <h2>No specified  transactions available for book.</h2>
                 }
                   <ul>
-                  {transactions.map((transaction) => (
-                      <Link href={{pathname: (idx==0 ? '/sales' : (idx==1 ? "/purchases" : "/buybacks")), query:{openView:"true", viewId:(idx==0 ? transaction.saleReconciliation.id : (idx==1 ? transaction.purchaseOrder.id : transaction.bookBuybackOrder.id))}}}><li
+                  {transactionDetails.map((transaction) => (
+                      <Link href={{pathname: (transaction.type==="Sale" ? '/sales' : (transaction.type==="Purchase" ? "/purchases" : "/buybacks")), query:{openView:"true", viewId:(transaction.type==="Sale" ? transaction.saleReconciliation.id : (transaction.type==="Purchase" ? transaction.purchaseOrder.id : transaction.bookBuybackOrder.id))}}}><li
                           key={transaction.id}
                           className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
                       >
-                        <h3 className="text-sm font-medium leading-5 w-32">
-                          {transaction.purchaseOrder?.date.toLocaleDateString("en-US") || transaction.bookBuybackOrder?.date.toLocaleDateString("en-US")  || transaction.saleReconciliation?.date.toLocaleDateString("en-US")}
-                        </h3>
-                        {(idx==1 || idx==2) &&
-                        <h3 className="text-sm font-medium leading-5 w-32">
-                          {transaction.purchaseOrder?.vendor.name || transaction.bookBuybackOrder?.vendor.name}
-                        </h3>}
-                        <h3 className="text-sm font-medium leading-5 w-32">
-                          {transaction.quantity}
-                        </h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">
-                          ${transaction.price?.toFixed(2)}
-                        </h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.type}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.date}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">Add User Details</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.purchaseOrder?.vendor.name ?? transaction.bookBuybackOrder?.vendor.name ?? ""}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{"$"+(transaction.price?.toFixed(2) ?? transaction.buybackPrice?.toFixed(2) ?? "0.00")}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.quantity}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.inventory}</h3>
+                        
                       </li></Link>
                   ))}
                 </ul>
-              </Tab.Panel>
+              </Tab.Panel>,
+              relatedBooks &&<Tab.Panel
+                  className={classNames(
+                      'rounded-xl bg-white p-3',
+                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-400')}>
+                {relatedBooks.length > 0 ?
+                <div
+                    className="flex flex-row justify-between mx-2 border-b border-solid border-indigo-400 p-2 text-left">
+                  <h3 className="text-sm font-medium leading-5 w-32">Title</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">ISBN</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Author</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Publisher</h3>
+                  <h3 className="text-sm font-medium leading-5 w-32">Publication Year</h3>
+                </div>:
+                    <h2>No related books for this book.</h2>
+                }
+                  <ul>
+                  {relatedBooks.map((book) => (
+                      
+                      <Link href={{pathname:"/records", query:{isbn:book.isbn}}}><li 
+                          className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
+                      >
+                        <h3 className="text-sm font-medium leading-5 w-32">{book.title}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{book.isbn}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{book.authorNames}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{book.publisher}</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{book.publicationYear}</h3>
+                      </li></Link>
+                  ))}
+                </ul>
+              </Tab.Panel>]
 
-          )))}
+          }
         </Tab.Panels>
       </Tab.Group>
   )

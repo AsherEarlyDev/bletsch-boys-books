@@ -11,6 +11,7 @@ import CreateSaleEntries from "../../../CreateEntries";
 import BuybackCardProp from "../../../CardComponents/BuybackCardProp";
 import DeleteModal from "../../Modals/ParentModals/DeleteModal";
 import BookCardProp from "../../../CardComponents/BookCardProp";
+import LinkedBookTitle from "../../../BasicComponents/DynamicRouting/LinkedBookTitle";
 
 interface TableRowProp {
   type: string
@@ -90,10 +91,10 @@ export default function TableRow(props: TableRowProp) {
 
   return (
       <>
-        {visible &&
+        {visible && book &&
         (props.isView ?
                 <tr>
-                  <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
+                  <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>
                   <TableEntry>${Number(price).toFixed(2)}</TableEntry>
                   <TableEntry>{quantity}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>

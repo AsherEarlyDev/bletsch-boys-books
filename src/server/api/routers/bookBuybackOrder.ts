@@ -70,6 +70,58 @@ export const buybackOrderRouter = createTRPCRouter({
               [input.sortBy]: input.descOrAsc,
             }
 
+      getUniqueBuybackOrders: publicProcedure
+      .input(z.string())
+      .query(async ({ctx, input}) => {
+        const rawData = await ctx.prisma.bookBuybackOrder.findUnique({
+          where:{
+          id:input
+          },
+          include:{
+            vendor: true,
+            buybacks: true
+          }         
+        })
+        return transformData([rawData])[0]
+     }),
+
+      getBuybackOrders: publicProcedure
+      .input(z.object({
+       pageNumber: z.number(),
+       entriesPerPage: z.number(),
+       sortBy: z.string(),
+       descOrAsc: z.string()
+     }))
+     .query(async ({ctx, input}) => {
+       if(input){
+         const rawData = await ctx.prisma.bookBuybackOrder.findMany({
+           take: input.entriesPerPage,
+           skip: input.pageNumber*input.entriesPerPage,
+           include:{
+             vendor: true,
+             buybacks: true
+           },
+           orderBy: input.sortBy==="vendorName" ? {
+             vendor:{
+               name: input.descOrAsc
+             }
+           } :  
+             {
+               [input.sortBy]: input.descOrAsc,
+             }
+           
+         
+         })
+         return transformData(rawData)
+       }
+       else{
+         return transformData(await ctx.prisma.bookBuybackOrder.findMany({
+           include:{
+             vendor: true
+           }
+         }))
+       }
+     }),
 
       })
       return transformData(rawData)
@@ -271,10 +323,14 @@ export const buybackOrderRouter = createTRPCRouter({
           }
         })
       }
-      await ctx.prisma.bookBuybackOrder.delete({
-        where: {
-          id: input.id
-        }
+    })
+  });
+
+  const transformData = (buybackOrder) => {
+    return buybackOrder.map((rec) => {
+      return({
+        ...rec,
+        date:(rec.date.getMonth()+1)+"-"+(rec.date.getDate())+"-"+rec.date.getFullYear(),
       })
     } catch (error) {
       throw new TRPCError({

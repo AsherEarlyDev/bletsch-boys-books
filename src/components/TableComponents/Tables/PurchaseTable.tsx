@@ -11,9 +11,14 @@ import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableMo
 import {useSession} from "next-auth/react";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import { useRouter } from 'next/router'
+import { boolean } from 'zod';
 
 
 export default function PurchaseTable() {
+  const {query} = useRouter()
+  const router = useRouter()
+
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
@@ -37,7 +42,10 @@ export default function PurchaseTable() {
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
-  const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
+  const displayPurchaseView = query.openView ? (query.openView==="true" ? true : false) : false
+  const currentViewId = query.viewId ? query.viewId.toString() : ""
+  const viewCurrentOrder = api.purchaseOrder.getUniquePurchaseOrders.useQuery(currentViewId).data
+  const viewCurrentPurchases = viewCurrentOrder ? viewCurrentOrder.purchases : undefined
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
     onSuccess: ()=>{
       setDisplayEditPurchaseView(true)
@@ -99,7 +107,19 @@ export default function PurchaseTable() {
     )
   }
   
-  
+  function setDisplayPurchaseView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/purchases',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/purchases',
+      
+    }, undefined, { shallow: true })
+  }
   
   function closeEditPurchaseView() {
     setDisplayEditPurchaseView(false)
@@ -139,31 +159,20 @@ export default function PurchaseTable() {
   }
 
   async function openPurchaseView(id: string) {
-    if (purchaseOrder2) {
-      for (const order of purchaseOrder2) {
-        if (order.id === id && order.purchases) {
-          setCurrentOrder({
-            id: order.id,
-            date: order.date,
-            vendor: order.vendor
-          })
-          setPurchases(order.purchases)
-        }
-      }
-      setDisplayPurchaseView(true)
-    }
+    setDisplayPurchaseView(true, id)
+    
   }
 
   function renderPurchaseView() {
     return (
         <>
-          {displayPurchaseView ? (purchases ? (
+          {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases}
-                                        purchaseOrderId={currentOrder.id}
-                                        purchaseDate={currentOrder.date}
-                                        purchaseVendorName={currentOrder.vendor.name}></ViewPurchaseTableModal>
+                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={viewCurrentPurchases}
+                                        purchaseOrderId={viewCurrentOrder.id}
+                                        purchaseDate={viewCurrentOrder.date}
+                                        purchaseVendorName={viewCurrentOrder.vendor.name}></ViewPurchaseTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

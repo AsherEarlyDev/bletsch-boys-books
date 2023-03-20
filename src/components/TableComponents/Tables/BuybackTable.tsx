@@ -6,6 +6,7 @@ import Table from './Table';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditBuybackTableModal from '../Modals/BuybackModals/EditBuybackTableModal';
+import {useSession} from "next-auth/react";
 import ViewBuybackTableModal from '../Modals/BuybackModals/Unused/ViewBuybackTableModal';
 import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
@@ -16,7 +17,7 @@ export default function BuybackTable() {
   const {query} = useRouter()
   const router = useRouter()
   const FIRST_HEADER = ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [buybacks, setBuybacks] = useState<any[]>([])
@@ -43,6 +44,12 @@ export default function BuybackTable() {
   const viewCurrentOrder = api.buybackOrder.getUniqueBuybackOrders.useQuery(currentBuybackId).data
   const viewCurrentBuybacks = viewCurrentOrder ? viewCurrentOrder.buybacks : undefined
   const [onlyEdit, setOnlyEdit] = useState(false)
+  const [createData, setCreateData] = useState({
+    date: '',
+    vendorId: '',
+    id: ''
+  })
+  const {data, status} = useSession();
   
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
     onSuccess: ()=>{
@@ -61,7 +68,8 @@ export default function BuybackTable() {
     if (createBuybackOrder) {
         createBuybackOrder.mutate({
         date: date,
-        vendorId: vendorId
+        vendorId: vendorId,
+        userName: data?.user?.name
       })
     }
     

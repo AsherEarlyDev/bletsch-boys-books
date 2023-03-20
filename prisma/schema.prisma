@@ -1,30 +1,18 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Author {
-  id   String @id
-  name String
-  Book Book[] @relation("AuthorToBook")
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }
 
 model Book {
@@ -40,107 +28,113 @@ model Book {
   authorNames     String
   imageLink       String?
   shelfSpace      Float?     @default(0)
-  Genre           Genre      @relation(fields: [genreID], references: [id])
+  genre           Genre      @relation(fields: [genreID], references: [id])
   Buyback         Buyback[]
-  Purchase        Purchase[]
-  Sale            Sale[]
-  Author          Author[]   @relation("AuthorToBook")
-}
-
-model BookBuybackOrder {
-  id          String    @id
-  vendorId    String
-  date        DateTime
-  revenue     Float     @default(0)
-  totalBooks  Int       @default(0)
-  uniqueBooks Int       @default(0)
-  vendorName  String    @default("")
-  Vendor      Vendor    @relation(fields: [vendorId], references: [id])
-  Buyback     Buyback[]
-}
-
-model Buyback {
-  id               String           @id
-  quantity         Int
-  buybackPrice     Float
-  bookId           String
-  buybackOrderId   String
-  subtotal         Float            @default(0)
-  Book             Book             @relation(fields: [bookId], references: [isbn])
-  BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
+  purchases       Purchase[]
+  sales           Sale[]
+  author          Author[]   @relation("AuthorToBook")
 }
 
 model Genre {
-  id   String @id
-  name String @unique
-  Book Book[]
+  id    String @id @default(cuid())
+  name  String @unique
+  books Book[]
 }
 
-model Image {
-  id       String @id
-  publicId String @unique
-  format   String
-  version  String
+model Vendor {
+  id                    String             @id @default(cuid())
+  name                  String
+  bookBuybackPercentage Float?             @default(0)
+  BookBuybackOrder      BookBuybackOrder[]
+  purchaseOrder         PurchaseOrder[]
+}
+
+model Author {
+  id   String @id @default(cuid())
+  name String
+  book Book[] @relation("AuthorToBook")
 }
 
 model Purchase {
-  id              String        @id
+  id              String        @id @default(cuid())
   quantity        Int
   price           Float
   bookId          String
   purchaseOrderId String
   subtotal        Float         @default(0)
-  Book            Book          @relation(fields: [bookId], references: [isbn])
-  PurchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  book            Book          @relation(fields: [bookId], references: [isbn])
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
 
 model PurchaseOrder {
-  id          String     @id
+  id          String     @id @default(cuid())
   vendorId    String
   date        DateTime
   cost        Float      @default(0)
   totalBooks  Int        @default(0)
   uniqueBooks Int        @default(0)
   vendorName  String     @default("")
-  Purchase    Purchase[]
-  Vendor      Vendor     @relation(fields: [vendorId], references: [id])
+  userName    String     @default("")
+  purchases   Purchase[]
+  vendor      Vendor     @relation(fields: [vendorId], references: [id])
 }
 
 model Sale {
-  id                   String             @id
+  id                   String             @id @default(cuid())
   quantity             Int
   price                Float
   bookId               String
   saleReconciliationId String
   subtotal             Float              @default(0)
-  Book                 Book               @relation(fields: [bookId], references: [isbn])
+  book                 Book               @relation(fields: [bookId], references: [isbn])
   saleReconciliation   saleReconciliation @relation(fields: [saleReconciliationId], references: [id])
 }
 
+model saleReconciliation {
+  id          String   @id @default(cuid())
+  date        DateTime
+  revenue     Float    @default(0)
+  totalBooks  Int      @default(0)
+  uniqueBooks Int      @default(0)
+  sales       Sale[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 model Session {
-  id           String   @id
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id            String    @id
+  id            String    @id @default(cuid())
+  password      String
+  role          Role      @default(USER)
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  Account       Account[]
-  Session       Session[]
-}
-
-model Vendor {
-  id                    String             @id
-  name                  String
-  bookBuybackPercentage Float?             @default(0)
-  BookBuybackOrder      BookBuybackOrder[]
-  PurchaseOrder         PurchaseOrder[]
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
@@ -151,16 +145,26 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model saleReconciliation {
-  id          String   @id
+model BookBuybackOrder {
+  id          String    @id @default(cuid())
+  vendorId    String
   date        DateTime
-  totalBooks  Int      @default(0)
-  uniqueBooks Int      @default(0)
-  revenue     Float    @default(0)
-  Sale        Sale[]
+  revenue     Float     @default(0)
+  totalBooks  Int       @default(0)
+  uniqueBooks Int       @default(0)
+  vendorName  String    @default("")
+  userName    String    @default("")
+  buybacks    Buyback[]
+  vendor      Vendor    @relation(fields: [vendorId], references: [id])
 }
 
-model Admin {
-  password String
-  id       Int    @id @default(autoincrement())
+model Buyback {
+  id               String           @id @default(cuid())
+  quantity         Int
+  buybackPrice     Float
+  bookId           String
+  buybackOrderId   String
+  subtotal         Float            @default(0)
+  Book             Book             @relation(fields: [bookId], references: [isbn])
+  BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
 }

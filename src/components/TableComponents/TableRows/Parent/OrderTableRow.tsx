@@ -15,6 +15,7 @@ interface OrderTableRowProp{
         uniqueBooks: number,
         cost?: number
         revenue?: number
+        userName: string
     },
     onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
@@ -46,6 +47,7 @@ export default function OrderTableRow(props:OrderTableRowProp) {
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
         <TableEntry>${price}</TableEntry>
+        <TableEntry>{props.OrderInfo.userName}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

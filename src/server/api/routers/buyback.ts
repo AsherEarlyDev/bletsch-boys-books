@@ -5,7 +5,7 @@ import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackRouter = createTRPCRouter({
-    createBuyback: publicProcedure
+    createBuyback: protectedProcedure
     .input(
         z.object({
           buybackOrderId: z.string(),
@@ -145,7 +145,7 @@ export const buybackRouter = createTRPCRouter({
         
       }),
 
-    modifyBuyback: publicProcedure
+    modifyBuyback: protectedProcedure
     .input(
       z.object({
           id: z.string(),
@@ -241,7 +241,7 @@ export const buybackRouter = createTRPCRouter({
         
     }),
 
-    deleteBuyback: publicProcedure
+    deleteBuyback: protectedProcedure
     .input(
       z.object({
         id: z.string(),

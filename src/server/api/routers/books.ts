@@ -738,7 +738,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
       id: true,
       quantity: true,
       buybackPrice: true,
-      bookBuybackOrder: {
+      BookBuybackOrder: {
         select:{
           date:true,
           vendor:true,
@@ -751,7 +751,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
     ...buyback,
     type:"Buyback",
     inventory:0,
-    date:(buyback.bookBuybackOrder.date.getMonth()+1)+"-"+(buyback.bookBuybackOrder.date.getDate())+"-"+buyback.bookBuybackOrder.date.getFullYear(),
+    date:(buyback.BookBuybackOrder.date.getMonth()+1)+"-"+(buyback.BookBuybackOrder.date.getDate())+"-"+buyback.BookBuybackOrder.date.getFullYear(),
   }))
 }
 

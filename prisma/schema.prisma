@@ -9,12 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-  SUPERADMIN
-}
-
 model Book {
   isbn            String     @id
   title           String
@@ -127,12 +121,12 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  password      String
-  role          Role      @default(USER)
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String
+  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
 }
@@ -154,8 +148,8 @@ model BookBuybackOrder {
   uniqueBooks Int       @default(0)
   vendorName  String    @default("")
   userName    String    @default("")
-  buybacks    Buyback[]
   vendor      Vendor    @relation(fields: [vendorId], references: [id])
+  buybacks    Buyback[]
 }
 
 model Buyback {
@@ -167,4 +161,10 @@ model Buyback {
   subtotal         Float            @default(0)
   Book             Book             @relation(fields: [bookId], references: [isbn])
   BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }

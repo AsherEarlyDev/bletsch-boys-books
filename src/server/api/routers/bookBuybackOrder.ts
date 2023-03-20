@@ -1,74 +1,49 @@
-import {TRPCError} from "@trpc/server";
-import {z} from "zod";
-import {createTRPCRouter, protectedProcedure, publicProcedure} from "../trpc";
-import {BookBuybackOrder} from "@prisma/client";
-import {DEFAULT_THICKNESS_IN_CENTIMETERS} from "./books";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { BookBuybackOrder } from "@prisma/client";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackOrderRouter = createTRPCRouter({
-  createBuybackOrder: protectedProcedure
-  .input(z.object({
-    vendorId: z.string(),
-    date: z.string(),
-    userName: z.string()
-  }))
-  .mutation(async ({ctx, input}) => {
-    try {
-      const date = input.date.replace(/-/g, '\/')
-      if (date === '' || !date) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'No date given!',
-        });
-      }
-      const vendor = await ctx.prisma.vendor.findFirst({
-        where:
-            {
-              id: input.vendorId
+    createBuybackOrder: publicProcedure
+    .input(
+        z.object({
+          vendorId: z.string(),
+          date: z.string()
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        try {
+            const date  = input.date.replace(/-/g, '\/')
+            if (date === '' || !date){
+              throw new TRPCError({
+                code: 'CONFLICT',
+                message: 'No date given!',
+              });
             }
-      })
-      if (vendor) {
-        const newBuyback = await ctx.prisma.bookBuybackOrder.create({
-          data: {
-            date: new Date(date),
-            vendorId: input.vendorId,
-            userName: input.userName,
-            vendorName: vendor.name
-          },
-        });
-        return {id: newBuyback.id, date: date, vendor: vendor}
-      }
-    } catch (error) {
-      throw new TRPCError({
-        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
-        message: error.message,
-      });
-    }
-  }),
-
-  getBuybackOrders: publicProcedure
-  .input(z.object({
-    pageNumber: z.number(),
-    entriesPerPage: z.number(),
-    sortBy: z.string(),
-    descOrAsc: z.string()
-  }))
-  .query(async ({ctx, input}) => {
-    if (input) {
-      const rawData = await ctx.prisma.bookBuybackOrder.findMany({
-        take: input.entriesPerPage,
-        skip: input.pageNumber * input.entriesPerPage,
-        include: {
-          vendor: true,
-          buybacks: true
-        },
-        orderBy: input.sortBy === "vendorName" ? {
-              vendor: {
-                name: input.descOrAsc
-              }
-            } :
-            {
-              [input.sortBy]: input.descOrAsc,
+            const vendor = await ctx.prisma.vendor.findFirst({
+                where:
+                {
+                  id: input.vendorId
+                }
+              })
+            if (vendor){
+                const newBuyback = await ctx.prisma.bookBuybackOrder.create({
+                    data: {
+                        date: new Date(date),
+                        vendorId: input.vendorId,
+                        vendorName: vendor.name
+                    },
+                });
+                return {id: newBuyback.id, date: date, vendor: vendor}
             }
+        } catch (error) {
+          throw new TRPCError({
+            code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+            message: error.message,
+          });
+        }
+      }),
 
       getUniqueBuybackOrders: publicProcedure
       .input(z.string())
@@ -123,42 +98,33 @@ export const buybackOrderRouter = createTRPCRouter({
        }
      }),
 
-      })
-      return transformData(rawData)
-    } else {
-      return transformData(await ctx.prisma.bookBuybackOrder.findMany({
-        include: {
-          vendor: true
-        }
-      }))
-    }
-  }),
-
-  getNumBuybackOrder: publicProcedure
-  .query(async ({ctx, input}) => {
-    try {
-      const orders = await ctx.prisma.bookBuybackOrder.findMany()
-      return orders.length
-    } catch (error) {
+    getNumBuybackOrder: publicProcedure
+    
+   .query(async ({ ctx, input }) => {
+     try {
+         const orders = await ctx.prisma.bookBuybackOrder.findMany()
+         return orders.length
+     } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: error.message,
       });
-    }
-  }),
+     }
+   }),
 
-  getTotalBuybackOrder: publicProcedure
-  .query(async ({ctx, input}) => {
-    try {
-      const orders = await ctx.prisma.bookBuybackOrder.findMany()
-      return orders
-    } catch (error) {
+   getTotalBuybackOrder: publicProcedure
+    
+   .query(async ({ ctx, input }) => {
+     try {
+         const orders = await ctx.prisma.bookBuybackOrder.findMany()
+         return orders
+     } catch (error) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: error.message,
       });
-    }
-  }),
+     }
+   }),
 
   //  getBuybackOrderDetails: publicProcedure
   //     .input(z.object({
@@ -191,6 +157,8 @@ export const buybackOrderRouter = createTRPCRouter({
   //                   total = total + buyback.quantity
   //                   cost = cost + buyback.quantity*buyback.price
   //                 })
+
+
   //                 await ctx.prisma.bookBuybackOrder.update({
   //                   where:{
   //                     id: buybackOrderId
@@ -201,6 +169,7 @@ export const buybackOrderRouter = createTRPCRouter({
   //                     totalBooks: total
   //                   }
   //                 })
+
   //             }
   //             else{
   //               throw new TRPCError({
@@ -242,7 +211,7 @@ export const buybackOrderRouter = createTRPCRouter({
   //             }
   //             buybackOrderArray.push(order);
   //           }
-
+            
   //           return buybackOrderArray
   //      } catch (error) {
   //       throw new TRPCError({
@@ -252,76 +221,91 @@ export const buybackOrderRouter = createTRPCRouter({
   //      }
   //    }),
 
-  modifyBuybackOrder: protectedProcedure
-  .input(z.object({
+    modifyBuybackOrder: publicProcedure
+    .input(
+      z.object({
         buybackOrderId: z.string(),
         vendorId: z.string(),
         date: z.string()
-      }))
-  .mutation(async ({ctx, input}) => {
-    try {
-      const date = input.date.replace(/-/g, '\/')
-      if (date === '' || !date) {
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const date  = input.date.replace(/-/g, '\/')
+        if (date === '' || !date){
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'No date given!',
+          });
+        }
+        await ctx.prisma.bookBuybackOrder.update({
+          where:
+          {
+            id: input.buybackOrderId
+        },
+          data: {
+            date: new Date(date),
+            vendorId: input.vendorId
+          },
+        });
+      } catch (error) {
         throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'No date given!',
+          code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+          message: error.message,
         });
       }
-      await ctx.prisma.bookBuybackOrder.update({
-        where:
-            {
-              id: input.buybackOrderId
-            },
-        data: {
-          date: new Date(date),
-          vendorId: input.vendorId
-        },
-      });
-    } catch (error) {
-      throw new TRPCError({
-        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
-        message: error.message,
-      });
-    }
-  }),
+    }),
 
-  deleteBuybackOrder: protectedProcedure
-  .input(z.object({
-        id: z.string(),
-      }))
-  .mutation(async ({ctx, input}) => {
-    try {
-      const buybacks = await ctx.prisma.buyback.findMany({
-        where: {
-          buybackOrderId: input.id
+    deleteBuybackOrder: publicProcedure
+    .input(
+        z.object({
+          id: z.string(),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const buybacks = await ctx.prisma.buyback.findMany({
+          where: {
+            buybackOrderId: input.id
+          }
+        })
+        
+        for (const buyback of buybacks){
+          const book = await ctx.prisma.book.findUnique({
+            where:{
+              isbn: buyback.bookId
+            }
+          })
+
+          await ctx.prisma.book.update({
+            where:{
+              isbn: buyback.bookId
+            },
+            data:{
+              inventory: {
+                increment: buyback.quantity
+              },
+              shelfSpace: (book.inventory+buyback.quantity)*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
+              
+            }
+          })
+  
+          await ctx.prisma.buyback.delete({
+            where: {
+              id: buyback.id
+            }
+          })
         }
-      })
-
-      for (const buyback of buybacks) {
-        const book = await ctx.prisma.book.findUnique({
+        await ctx.prisma.bookBuybackOrder.delete({
           where: {
-            isbn: buyback.bookId
+            id: input.id
           }
         })
-
-        await ctx.prisma.book.update({
-          where: {
-            isbn: buyback.bookId
-          },
-          data: {
-            inventory: {
-              increment: buyback.quantity
-            },
-            shelfSpace: (book.inventory + buyback.quantity) * (book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
-
-          }
-        })
-
-        await ctx.prisma.buyback.delete({
-          where: {
-            id: buyback.id
-          }
-        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
       }
     })
   });
@@ -332,20 +316,5 @@ export const buybackOrderRouter = createTRPCRouter({
         ...rec,
         date:(rec.date.getMonth()+1)+"-"+(rec.date.getDate())+"-"+rec.date.getFullYear(),
       })
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: error.message,
-      });
-    }
-  })
-});
-
-const transformData = (buybackOrder: BookBuybackOrder[]) => {
-  return buybackOrder.map((rec) => {
-    return ({
-      ...rec,
-      date: (rec.date.getMonth() + 1) + "-" + (rec.date.getDate()) + "-" + rec.date.getFullYear(),
     })
-  })
-}
+  }

@@ -776,7 +776,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
     ...buyback,
     type:"Buyback",
     quantity: (buyback.quantity * -1),
-    userName: buyback.purchaseOrder.userName,
+    userName: buyback.BookBuybackOrder.userName,
     inventory:0,
     date:(buyback.BookBuybackOrder.date.getMonth()+1)+"-"+(buyback.BookBuybackOrder.date.getDate())+"-"+buyback.BookBuybackOrder.date.getFullYear(),
   }))

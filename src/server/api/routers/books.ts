@@ -702,6 +702,7 @@ async function getPurchases(ctx: context, isbn: string) {
     ...purchase,
     type:"Purchase",
     inventory:0,
+    userName: purchase.purchaseOrder.userName,
     date:(purchase.purchaseOrder.date.getMonth()+1)+"-"+(purchase.purchaseOrder.date.getDate())+"-"+purchase.purchaseOrder.date.getFullYear(),
   }))
 }
@@ -775,6 +776,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
     ...buyback,
     type:"Buyback",
     quantity: (buyback.quantity * -1),
+    userName: buyback.purchaseOrder.userName,
     inventory:0,
     date:(buyback.BookBuybackOrder.date.getMonth()+1)+"-"+(buyback.BookBuybackOrder.date.getDate())+"-"+buyback.BookBuybackOrder.date.getFullYear(),
   }))

@@ -3,9 +3,14 @@ import {Fragment, useRef, useState} from 'react'
 import { toast } from "react-toastify";
 import MutableCardProp from '../../../CardComponents/MutableCardProp';
 import { ReactSortable } from "react-sortablejs";
+import BookCardProp from '../../../CardComponents/BookCardProp';
 interface ShelfCalculatorModalProp{
   buttonText: string;
   submitText: string;
+}
+interface ShelfBook{
+  book;
+  displayCount: number;
 }
 
 export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
@@ -13,6 +18,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   const [isOpen, setIsOpen] = useState(false)
   const [width, setWidth] = useState(DEFAULT_WIDTH)
   const [bookList, setBookList] = useState([{name:"a noble radience"}, {name:"a noble radience"}])
+  const [currentBook, setCurrentBook] = useState("")
 
   function closeModal() {
     setIsOpen(false)
@@ -98,6 +104,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                         </div>
                         <div className="mt-5">
                         <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={DEFAULT_WIDTH}></MutableCardProp>
+                        <BookCardProp saveFunction={setCurrentBook} ></BookCardProp>
                         </div>
                         <ReactSortable
                           filter=".addImageButtonContainer"

@@ -691,6 +691,7 @@ async function getPurchases(ctx: context, isbn: string) {
         select:{
           date:true,
           vendor:true,
+          userName:true,
           id:true
         }
       }
@@ -742,6 +743,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
         select:{
           date:true,
           vendor:true,
+          userName:true,
           id:true
         }
       }

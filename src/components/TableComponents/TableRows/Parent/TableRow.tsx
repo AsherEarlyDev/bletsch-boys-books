@@ -91,7 +91,7 @@ export default function TableRow(props: TableRowProp) {
 
   return (
       <>
-        {visible && book &&
+        {visible && 
         (props.isView ?
                 <tr>
                   <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>
@@ -122,7 +122,7 @@ export default function TableRow(props: TableRowProp) {
                               <MutableCurrencyTableEntry saveValue={setPrice}
                                                          heading={props.type+" Price"} required="True"
                                                          dataType="number"
-                                                         defaultValue={setPrice}></MutableCurrencyTableEntry>
+                                                         defaultValue={price}></MutableCurrencyTableEntry>
                               <MutableTableEntry saveValue={setQuantity} heading="Quantity"
                                                  required="True" dataType="number"
                                                  defaultValue={quantity}></MutableTableEntry>

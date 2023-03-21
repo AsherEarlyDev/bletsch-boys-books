@@ -64,7 +64,7 @@ export default function BookCardTabs(props: BookCardTabsProps) {
                       >
                         <h3 className="text-sm font-medium leading-5 w-32">{transaction.type}</h3>
                         <h3 className="text-sm font-medium leading-5 w-32">{transaction.date}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">Add User Details</h3>
+                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.purchaseOrder?.userName ?? transaction.BookBuybackOrder?.userName ?? ""}</h3>
                         <h3 className="text-sm font-medium leading-5 w-32">{transaction.purchaseOrder?.vendor.name ?? transaction.BookBuybackOrder?.vendor.name ?? ""}</h3>
                         <h3 className="text-sm font-medium leading-5 w-32">{"$"+(transaction.price?.toFixed(2) ?? transaction.buybackPrice?.toFixed(2) ?? "0.00")}</h3>
                         <h3 className="text-sm font-medium leading-5 w-32">{transaction.quantity}</h3>

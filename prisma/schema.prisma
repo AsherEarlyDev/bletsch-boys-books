@@ -10,23 +10,24 @@ datasource db {
 }
 
 model Book {
-  isbn            String     @id
-  title           String
-  publisher       String
-  publicationYear Int
-  dimensions      Float[]
-  pageCount       Int?
-  genreID         String
-  retailPrice     Float
-  inventory       Int        @default(0)
-  authorNames     String
-  imageLink       String?
-  shelfSpace      Float?     @default(0)
-  genre           Genre      @relation(fields: [genreID], references: [id])
-  Buyback         Buyback[]
-  purchases       Purchase[]
-  sales           Sale[]
-  author          Author[]   @relation("AuthorToBook")
+  isbn                String                @id
+  title               String
+  publisher           String
+  publicationYear     Int
+  dimensions          Float[]
+  pageCount           Int?
+  genreID             String
+  retailPrice         Float
+  inventory           Int                   @default(0)
+  authorNames         String
+  imageLink           String?
+  shelfSpace          Float?                @default(0)
+  genre               Genre                 @relation(fields: [genreID], references: [id])
+  Buyback             Buyback[]
+  purchases           Purchase[]
+  sales               Sale[]
+  author              Author[]              @relation("AuthorToBook")
+  InventoryCorrection InventoryCorrection[]
 }
 
 model Genre {
@@ -120,15 +121,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
+  id                  String                @id @default(cuid())
+  name                String?
+  email               String?               @unique
+  emailVerified       DateTime?
+  image               String?
+  password            String
+  role                Role                  @default(USER)
+  accounts            Account[]
+  sessions            Session[]
 }
 
 model VerificationToken {
@@ -161,6 +162,15 @@ model Buyback {
   subtotal         Float            @default(0)
   Book             Book             @relation(fields: [bookId], references: [isbn])
   BookBuybackOrder BookBuybackOrder @relation(fields: [buybackOrderId], references: [id])
+}
+
+model InventoryCorrection {
+  id         String   @id @default(cuid())
+  date       DateTime
+  bookId     String
+  book       Book     @relation(fields: [bookId], references: [isbn])
+  adjustment Int
+  userName   String
 }
 
 enum Role {

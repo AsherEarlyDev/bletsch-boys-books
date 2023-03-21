@@ -11,6 +11,8 @@ import ImmutableDimensionsCardProp from "../../../CardComponents/MutableDimensio
 import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import {CldImage, CldUploadButton} from "next-cloudinary";
 import { toast } from "react-toastify";
+import {z} from "zod";
+import {useSession} from "next-auth/react";
 
 
 interface BookCardProp{
@@ -20,6 +22,7 @@ interface BookCardProp{
 
 
 export default function EditBookModal(props:BookCardProp) {
+  const {data, status} = useSession();
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
@@ -27,14 +30,21 @@ export default function EditBookModal(props:BookCardProp) {
   const [open, setOpen] = useState(true)
   const [image, setImage] = useState(props.bookInfo?.imageLink)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
+  const [updatedInventory, setUpdatedInventory] = useState<number>(props.bookInfo.inventory)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimenions[0] ?? 0)
   const [thickness, setHeight] = useState<number>(defaultDimenions[1] ?? 0)
   const [height, setLength] = useState<number>(defaultDimenions[2] ?? 0)
+  const currDate = new Date()
   const action = api.books.editBook.useMutation({
     onSuccess: ()=>{
       window.location.reload()
     },
+    onError: (error)=>{
+      toast.error(error.message)
+    }
+  })
+  const createCorrection = api.inventoryCorrection.createInventoryCorrection.useMutation({
     onError: (error)=>{
       toast.error(error.message)
     }
@@ -47,21 +57,44 @@ export default function EditBookModal(props:BookCardProp) {
 
   function saveBook(){
     if(props.bookInfo && genre){
-      action.mutate({
-        isbn: props.bookInfo.isbn,
-        title: props.bookInfo.title ?? "",
-        publisher: props.bookInfo.publisher ?? "",
-        publicationYear: props.bookInfo.publicationYear ?? -1,
-        author: props.bookInfo.author ?? [],
-        retailPrice: Number(retailPrice),
-        pageCount: Number(pageCount),
-        dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
-        genre: genre.name,
-        shelfSpace: props.bookInfo.shelfSpace ?? 0,
-        inventory: props.bookInfo.inventory,
-        imageLink: image
-
+      if(updatedInventory == props.bookInfo.inventory){
+        action.mutate({
+          isbn: props.bookInfo.isbn,
+          title: props.bookInfo.title ?? "",
+          publisher: props.bookInfo.publisher ?? "",
+          publicationYear: props.bookInfo.publicationYear ?? -1,
+          author: props.bookInfo.author ?? [],
+          retailPrice: Number(retailPrice),
+          pageCount: Number(pageCount),
+          dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
+          genre: genre.name,
+          shelfSpace: props.bookInfo.shelfSpace ?? 0,
+          inventory: props.bookInfo.inventory,
+          imageLink: image
+        })
+      }
+      else{
+        action.mutate({
+          isbn: props.bookInfo.isbn,
+          title: props.bookInfo.title ?? "",
+          publisher: props.bookInfo.publisher ?? "",
+          publicationYear: props.bookInfo.publicationYear ?? -1,
+          author: props.bookInfo.author ?? [],
+          retailPrice: Number(retailPrice),
+          pageCount: Number(pageCount),
+          dimensions: (width && thickness && height)? [Number(width), Number(thickness), Number(height)] : [],
+          genre: genre.name,
+          shelfSpace: props.bookInfo.shelfSpace ?? 0,
+          inventory: Number(updatedInventory),
+          imageLink: image
       })
+        createCorrection.mutate({
+          isbn: props.bookInfo.isbn,
+          date: (currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear(),
+          userName: data?.user?.name,
+          adjustment: (updatedInventory - props.bookInfo.inventory)
+        })
+      }
       closeModal()
     }
     else{
@@ -115,7 +148,10 @@ export default function EditBookModal(props:BookCardProp) {
             <ImmutableCardProp heading="Author(s)" data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
             <ImmutableCardProp heading="Publication Year" data={props.bookInfo.publicationYear}></ImmutableCardProp>
             <ImmutableCardProp heading="Publisher" data={props.bookInfo.publisher}></ImmutableCardProp>
-            <ImmutableCardProp heading="Inventory" data={props.bookInfo.inventory}></ImmutableCardProp>
+            <div className="flex flex-row gap-3 justify-center">
+              <MutableCardProp saveValue={setUpdatedInventory} shrink={true} heading="Inventory" dataType="number" defaultValue={props.bookInfo.inventory}></MutableCardProp>
+              <ImmutableCardProp heading="Inv. Change" data={((updatedInventory - props.bookInfo.inventory) > 0 ) ? "+" + (updatedInventory - props.bookInfo.inventory) : (updatedInventory - props.bookInfo.inventory)}></ImmutableCardProp>
+            </div>
             <GenreCardProp saveFunction={setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
             <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
             <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>

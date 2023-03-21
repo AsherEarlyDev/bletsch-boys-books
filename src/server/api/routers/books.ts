@@ -445,7 +445,8 @@ export const booksRouter = createTRPCRouter({
       const sales = await getSales(ctx, input)
       const purchases = await getPurchases(ctx, input)
       const buybacks = await getBookBuyback(ctx, input)
-      return unifyTransactions(sales, purchases, buybacks)
+      const corrections = await getCorrections(ctx, input)
+      return unifyTransactions(sales, purchases, buybacks, corrections)
     }
     catch(error){
       throw("Cannot get book transaction details")
@@ -725,8 +726,29 @@ async function getSales(ctx: context, isbn: string) {
     ...sale,
     type:"Sale",
     inventory:0,
+    quantity: (buyback.sale * -1),
     date:(sale.saleReconciliation.date.getMonth()+1)+"-"+(sale.saleReconciliation.date.getDate())+"-"+sale.saleReconciliation.date.getFullYear(),
   }))
+}
+
+async function getCorrections(ctx: context, isbn: string) {
+  const corrections = await ctx.prisma.inventoryCorrection.findMany({
+    where: {
+      bookId: isbn
+    },
+    select: {
+      id: true,
+      date: true,
+      adjustment: true,
+      userName: true,
+    }
+  })
+  return corrections.map((correction) => ({
+    ...correction,
+    quantity: correction.adjustment,
+    date:(correction.date.getMonth()+1)+"-"+(correction.date.getDate())+"-"+correction.date.getFullYear(),
+    type:"Correction",
+    }))
 }
 
 async function getBookBuyback(ctx: context, isbn: string) {
@@ -750,24 +772,20 @@ async function getBookBuyback(ctx: context, isbn: string) {
   return bookBuybacks.map((buyback) => ({
     ...buyback,
     type:"Buyback",
+    quantity: (buyback.quantity * -1),
     inventory:0,
     date:(buyback.BookBuybackOrder.date.getMonth()+1)+"-"+(buyback.BookBuybackOrder.date.getDate())+"-"+buyback.BookBuybackOrder.date.getFullYear(),
   }))
 }
 
-function unifyTransactions(sales, purchases, buybacks){
-  const rawList = [].concat(sales, purchases, buybacks)
+function unifyTransactions(sales, purchases, buybacks, corrections){
+  const rawList = [].concat(sales, purchases, buybacks, corrections)
   const sortedList = rawList.sort((a, b) => {
-    return a.date < b.date ? 1 : -1
+    return (new Date(a.date)< new Date(b.date)) ? 1 : -1
  })
  var runningTotal = 0;
  for (let i = sortedList.length-1; i >=0; i--){
-  if(sortedList[i].type==="Purchase"){
-    runningTotal+=sortedList[i].quantity
-  }
-  else{
-    runningTotal-=sortedList[i].quantity
-  }
+  runningTotal+=sortedList[i].quantity
   sortedList[i].inventory=runningTotal
  }
  return sortedList

@@ -58,19 +58,17 @@ export default function BookCardTabs(props: BookCardTabsProps) {
                 }
                   <ul>
                   {transactionDetails.map((transaction) => (
-                      <Link href={{pathname: (transaction.type==="Sale" ? '/sales' : (transaction.type==="Purchase" ? "/purchases" : "/buybacks")), query:{openView:"true", viewId:(transaction.type==="Sale" ? transaction.saleReconciliation.id : (transaction.type==="Purchase" ? transaction.purchaseOrder.id : transaction.BookBuybackOrder.id))}}}><li
-                          key={transaction.id}
-                          className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
-                      >
-                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.type}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.date}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">Add User Details</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.purchaseOrder?.vendor.name ?? transaction.BookBuybackOrder?.vendor.name ?? ""}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">{"$"+(transaction.price?.toFixed(2) ?? transaction.buybackPrice?.toFixed(2) ?? "0.00")}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.quantity}</h3>
-                        <h3 className="text-sm font-medium leading-5 w-32">{transaction.inventory}</h3>
-                        
-                      </li></Link>
+                      <Link href={{pathname: (transaction.type==="Sale" ? '/sales' : (transaction.type==="Purchase" ? "/purchases" : "/buybacks")), query:{openView:"true", viewId:(transaction.type==="Sale" ? transaction.saleReconciliation.id : (transaction.type==="Purchase" ? transaction.purchaseOrder.id : (transaction.type==="Buyback" ? transaction.BookBuybackOrder.id : null)))}}}>
+                        <li key={transaction.id} className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left">
+                          <h3 className="text-sm font-medium leading-5 w-32">{transaction.type}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{transaction.date}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{transaction.userName}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{transaction.purchaseOrder?.vendor.name ?? transaction.BookBuybackOrder?.vendor.name ?? "---"}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{"$"+((transaction.price?.toFixed(2)) ?? transaction.buybackPrice?.toFixed(2) ?? "---")}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{(transaction.quantity > 0) ? "+" + (transaction.quantity) : (transaction.quantity)}</h3>
+                          <h3 className="text-sm font-medium leading-5 w-32">{transaction.inventory}</h3>
+                        </li>
+                      </Link>
                   ))}
                 </ul>
               </Tab.Panel>,

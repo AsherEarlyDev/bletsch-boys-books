@@ -727,7 +727,7 @@ async function getSales(ctx: context, isbn: string) {
     ...sale,
     type:"Sale",
     inventory:0,
-    quantity: (buyback.sale * -1),
+    quantity: (sale.quantity * -1),
     date:(sale.saleReconciliation.date.getMonth()+1)+"-"+(sale.saleReconciliation.date.getDate())+"-"+sale.saleReconciliation.date.getFullYear(),
   }))
 }

@@ -24,10 +24,10 @@ model Book {
   shelfSpace          Float?                @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
+  InventoryCorrection InventoryCorrection[]
   purchases           Purchase[]
   sales               Sale[]
   author              Author[]              @relation("AuthorToBook")
-  InventoryCorrection InventoryCorrection[]
 }
 
 model Genre {
@@ -121,15 +121,15 @@ model Session {
 }
 
 model User {
-  id                  String                @id @default(cuid())
-  name                String?
-  email               String?               @unique
-  emailVerified       DateTime?
-  image               String?
-  password            String
-  role                Role                  @default(USER)
-  accounts            Account[]
-  sessions            Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
@@ -168,9 +168,9 @@ model InventoryCorrection {
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
-  book       Book     @relation(fields: [bookId], references: [isbn])
   adjustment Int
   userName   String
+  book       Book     @relation(fields: [bookId], references: [isbn])
 }
 
 enum Role {

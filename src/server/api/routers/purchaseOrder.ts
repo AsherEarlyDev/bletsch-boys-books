@@ -63,18 +63,18 @@ export const purchaseOrderRouter = createTRPCRouter({
 
    getUniquePurchaseOrders: publicProcedure
    .input(z.string())
-  .query(async ({ctx, input}) => {
-    const rawData = await ctx.prisma.purchaseOrder.findUnique({
-      where:{
-        id:input
-      },
-      include:{
-        vendor: true,
-        purchases: true
-      }
-    })
-    return transformData([rawData])[0]
-  }),
+   .query(async ({ctx, input}) => {
+     const rawData = await ctx.prisma.purchaseOrder.findUnique({
+       where:{
+         id:input
+       },
+       include:{
+         vendor: true,
+         purchases: true
+       }
+     })
+     return transformData([rawData])[0]
+   }),
 
    getPurchaseOrders: publicProcedure
    .input(z.object({

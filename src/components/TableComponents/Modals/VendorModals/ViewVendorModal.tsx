@@ -17,7 +17,6 @@ interface ViewVendorModalProp{
   vendorName: string
   buybackRate: number
   closeOut: () => void
-  openEdit: (id: string) => void
 }
 
 export default function ViewVendorModal(props:ViewVendorModalProp) {
@@ -26,11 +25,6 @@ export default function ViewVendorModal(props:ViewVendorModalProp) {
 
   function closeModal(){
     setOpen(false)
-    props.closeOut()
-  }
-
-  function openEdit(){
-    props.openEdit(props.vendorId)
     props.closeOut()
   }
 
@@ -46,7 +40,7 @@ export default function ViewVendorModal(props:ViewVendorModalProp) {
             </CardGrid>
             <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
               <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>
-              <PrimaryButton onClick={openEdit} buttonText="Edit Vendor"></PrimaryButton>
+              {/*<PrimaryButton onClick={openEdit} buttonText="Edit Vendor"></PrimaryButton>*/}
             </div>
           </div>
           : null)

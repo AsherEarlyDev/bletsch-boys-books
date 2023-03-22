@@ -101,7 +101,6 @@ export default function BookTable() {
   async function openBookView(isbn: string){
     setDisplayBookView(true, isbn)
   }
-
   function setDisplayBookView(view:boolean, id?: string) {
     view ? router.push({
       pathname:'/records',
@@ -115,7 +114,6 @@ export default function BookTable() {
       
     }, undefined, { shallow: true })
   }
-
   function renderBookView() {
     return(
         <>

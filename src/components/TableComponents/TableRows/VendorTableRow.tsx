@@ -6,6 +6,7 @@ import ViewTableEntry from "../TableEntries/ViewTableEntry";
 import {useSession} from "next-auth/react";
 import DeleteEntryModal from "../Modals/MasterModals/DeleteEntryModal";
 import {api} from "../../../utils/api";
+import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
 
 
 interface VendorRowProps{
@@ -14,16 +15,12 @@ interface VendorRowProps{
         name: string
         buybackRate: number
     },
-    onEdit: (id:string) => void,
     onView: (id: string) => void
   }
 
 
 export function VendorTableRow(props: VendorRowProps){
     const { data: session} = useSession()
-    function handleEdit(){
-      props.onEdit(props.vendorInfo.id)
-    }
     function handleView(){
       props.onView(props.vendorInfo.id)
     }
@@ -32,7 +29,7 @@ export function VendorTableRow(props: VendorRowProps){
         <ViewTableEntry onView={handleView}>{props.vendorInfo.name}</ViewTableEntry>
         <TableEntry>{(props.vendorInfo.buybackRate === null) || (props.vendorInfo.buybackRate === 0)? "" : 
         (props.vendorInfo.buybackRate * 100)+"%"}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
+        <EditVendorModal vendorId={props.vendorInfo.id} vendorName={props.vendorInfo.name} buyback={props.vendorInfo.buybackRate}></EditVendorModal>
         <DeleteEntryModal id={props.vendorInfo.id} item={"Vendor"} router={api.vendor.deleteVendor}></DeleteEntryModal>
       </tr>
       

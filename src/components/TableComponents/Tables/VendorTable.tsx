@@ -4,7 +4,6 @@ import TableDetails from "../TableDetails";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
 import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
 import CreateEntries from "../../CreateEntries";
-import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
 import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -47,38 +46,6 @@ export default function VendorTable() {
     }
   }
 
-
-  async function openEditVendorView(id: string) {
-    if (vendors) {
-      for (const ven of vendors) {
-        if (ven.id === id) {
-          setCurrentVendor({
-            id: ven.id,
-            name: ven.name,
-            buybackRate: ven.bookBuybackPercentage
-          })
-        }
-      }
-      setDisplayEditVendorView(true)
-    }
-  }
-
-  function renderEditVendorView() {
-    return (
-        <>
-          {(displayEditVendorView && currentVendor) ?
-              <CreateEntries closeStateFunction={setDisplayEditVendorView} submitText="Edit Vendor">
-                <EditVendorModal closeOut={closeEditVendorView} vendorId={currentVendor.id}
-                                 vendorName={currentVendor.name} buyback={currentVendor.buybackRate}></EditVendorModal>
-              </CreateEntries> : null}
-        </>
-    )
-  }
-
-  function closeEditVendorView() {
-    setDisplayEditVendorView(false)
-  }
-
   async function openVendorView(id: string) {
     if (vendors) {
       for (const ven of vendors) {
@@ -98,10 +65,7 @@ export default function VendorTable() {
     return <>
       {(displayVendorView && currentVendor) ?
           <CreateEntries closeStateFunction={setDisplayVendorView} submitText="Edit Vendor">
-            <ViewVendorModal closeOut={closeVendorView} vendorId={currentVendor.id}
-                             vendorName={currentVendor.name}
-                             buybackRate={currentVendor.buybackRate}
-                             openEdit={openEditVendorView}></ViewVendorModal></CreateEntries> : null}
+            <ViewVendorModal closeOut={closeVendorView} vendorId={currentVendor.id} vendorName={currentVendor.name} buybackRate={currentVendor.buybackRate}></ViewVendorModal></CreateEntries> : null}
     </>;
   }
 
@@ -111,7 +75,7 @@ export default function VendorTable() {
 
   function renderVendorRow() {
     return (vendors ? vendors.map((vendor) => (
-        <VendorTableRow onView={openVendorView} onEdit={openEditVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
+        <VendorTableRow onView={openVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (
@@ -136,7 +100,6 @@ export default function VendorTable() {
                numberOfEntries={numberOfEntries}
                renderRow={renderVendorRow}></Table>
         <div>
-          {renderEditVendorView()}
           {renderVendorView()}
           <ToastContainer/>
         </div>

@@ -8,14 +8,20 @@ import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewPurchaseTableModal from '../Modals/PurchaseModals/Unused/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
+import {useSession} from "next-auth/react";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
+import { useRouter } from 'next/router'
+import { boolean } from 'zod';
 
 
 export default function PurchaseTable() {
+  const {query} = useRouter()
+  const router = useRouter()
+
   const FIRST_HEADER = ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
   const STATIC_HEADERS = ["Edit", "Delete"]
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
@@ -37,7 +43,10 @@ export default function PurchaseTable() {
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
-  const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
+  const displayPurchaseView = query.openView ? (query.openView==="true" ? true : false) : false
+  const currentViewId = query.viewId ? query.viewId.toString() : ""
+  const viewCurrentOrder = api.purchaseOrder.getUniquePurchaseOrders.useQuery(currentViewId).data
+  const viewCurrentPurchases = viewCurrentOrder ? viewCurrentOrder.purchases : undefined
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
     onSuccess: ()=>{
       setDisplayEditPurchaseView(true)
@@ -46,12 +55,14 @@ export default function PurchaseTable() {
   const deletePurchase = api.purchaseOrder.deletePurchaseOrder
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
+  const {data, status} = useSession();
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string) {
     if (createPurchaseOrder) {
       createPurchaseOrder.mutate({
         date: date,
-        vendorId: vendorId
+        vendorId: vendorId,
+        userName: data?.user?.name
       })
     }
   }
@@ -97,7 +108,19 @@ export default function PurchaseTable() {
     )
   }
   
-  
+  function setDisplayPurchaseView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/purchases',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/purchases',
+      
+    }, undefined, { shallow: true })
+  }
   
   function closeEditPurchaseView() {
     setDisplayEditPurchaseView(false)
@@ -137,25 +160,14 @@ export default function PurchaseTable() {
   }
 
   async function openPurchaseView(id: string) {
-    if (purchaseOrder2) {
-      for (const order of purchaseOrder2) {
-        if (order.id === id && order.purchases) {
-          setCurrentOrder({
-            id: order.id,
-            date: order.date,
-            vendor: order.vendor
-          })
-          setPurchases(order.purchases)
-        }
-      }
-      setDisplayPurchaseView(true)
-    }
+    setDisplayPurchaseView(true, id)
+    
   }
 
   function renderPurchaseView() {
     return (
         <>
-          {displayPurchaseView ? (purchases ? (
+          {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
                 <ViewTableModal type="Purchases" closeOut={closePurchaseView} items={purchases}

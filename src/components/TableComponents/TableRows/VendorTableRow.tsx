@@ -3,6 +3,7 @@ import React from "react";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
+import {useSession} from "next-auth/react";
 
 
 interface VendorRowProps{
@@ -18,6 +19,7 @@ interface VendorRowProps{
 
 
 export function VendorTableRow(props: VendorRowProps){
+    const { data: session} = useSession()
     function handleEdit(){
       props.onEdit(props.vendorInfo.id)
     }

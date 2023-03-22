@@ -64,7 +64,7 @@ export const vendorRouter = createTRPCRouter({
       }
     }),
 
-    createVendor: publicProcedure
+    createVendor: protectedProcedure
     .input(
       z.object({
         name: z.string(),
@@ -87,7 +87,7 @@ export const vendorRouter = createTRPCRouter({
       }
     }),
 
-    modifyVendor: publicProcedure
+    modifyVendor: protectedProcedure
     .input(
       z.object({
         vendorId: z.string(),
@@ -115,7 +115,7 @@ export const vendorRouter = createTRPCRouter({
       }
     }),
 
-    deleteVendor: publicProcedure
+    deleteVendor: protectedProcedure
     .input(
       z.object({
         vendorId: z.string(),

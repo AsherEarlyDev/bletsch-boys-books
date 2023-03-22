@@ -16,7 +16,6 @@ interface UserTableRowProps{
 
 export function UserTableRow(props: UserTableRowProps){
   const { data: session} = useSession()
-  console.log(session)
   return (
       <tr>
         <TableEntry firstEntry={true}>{props.userInfo.name}</TableEntry>

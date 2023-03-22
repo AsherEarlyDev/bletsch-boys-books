@@ -56,7 +56,9 @@ export type editableBook = {
     imageLink?: string
     shelfSpace: number
     daysOfSupply:number,
-    bestBuybackPrice:number
+    bestBuybackPrice:number,
+    numberRelatedBooks: number,
+    relatedBooks: Array<object>
 }
 
 export type completeBook = {

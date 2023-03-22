@@ -14,7 +14,7 @@ interface DeleteVendorProp{
 }
 
 
-export default function DeleteVendorModal(props:DeleteVendorProp) {
+export default function DeleteVendorModalOld(props:DeleteVendorProp) {
   const deleteVendor = api.vendor.deleteVendor.useMutation({
     onError: (error)=>{
     toast.error(error.message)

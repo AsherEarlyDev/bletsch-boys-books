@@ -11,6 +11,7 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
+import LinkedBookTitle from "../../BasicComponents/DynamicRouting/LinkedBookTitle";
 
 interface SaleTableRowProp {
   sale: Sale
@@ -88,10 +89,10 @@ export default function SaleTableRow(props: SaleTableRowProp) {
 
   return (
       <>
-        {visible && 
+        {visible &&
         (props.isView ?
                 <tr>
-                  <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
+                  <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>
                   <TableEntry>${Number(salePrice).toFixed(2)}</TableEntry>
                   <TableEntry>{quantitySold}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>

@@ -96,9 +96,9 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function transformCSV(csv){
     const quant = parseInt(csv.quantity)
-    const price = parseFloat(csv.unit_wholesale_price)
+    const price = parseFloat(csv.unit_wholesale_price.replaceAll('$', ''))
     return ({
-      bookId:csv.isbn,
+      bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,
       price: price,
       subtotal: quant* price,
@@ -116,6 +116,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function openAddPurchaseRow(){
     setAddPurchaseRowView(true)
+    console.log(addPurchaseRowView)
   }
   function renderAddPurchaseRow(){
     const dummyPurchase = {

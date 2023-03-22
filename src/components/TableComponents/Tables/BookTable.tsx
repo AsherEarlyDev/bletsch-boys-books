@@ -21,14 +21,16 @@ export default function BookTable() {
   const BOOKS_PER_PAGE = 10
   const FIRST_HEADER =  ["Title", "title"]
 
-  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inv.", "inventory"], ["30 Day Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best BB Price", "bestBuybackPrice"]]
+  const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inv.", "inventory"], ["30 Day Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best BB Price", "bestBuybackPrice"], ["Related Books", "numberRelatedBooks"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}]
 
   const STATIC_HEADERS = ["Edit", "Delete"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
   const [displayEditBookView, setDisplayEditBookView] = useState(false)
-  const [displayBookView, setDisplayBookView] = useState(false)
+  const displayBookView = query.openView ? (query.openView==="true" ? true : false) : false
+  const viewCurrentISBN =  query.viewId ? query.viewId.toString() : ""
+  const viewCurrentBook = api.books.findBooks.useQuery([viewCurrentISBN]).data
   const [displayDeleteBookView, setDisplayDeleteBookView] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
@@ -122,21 +124,29 @@ export default function BookTable() {
   }
 
   async function openBookView(isbn: string){
-    if (books){
-      for (const book of books){
-        if (book.isbn === isbn){
-          setCurrentIsbns([isbn])
-        }
-      }
-      setDisplayBookView(true)
-    }
+    setDisplayBookView(true, isbn)
   }
+
+  function setDisplayBookView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/records',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/records',
+      
+    }, undefined, { shallow: true })
+  }
+
   function renderBookView() {
     return(
         <>
-          {(displayBookView && entryBookData) ?
+          {(displayBookView && viewCurrentBook) ?
               <CreateEntries closeStateFunction={setDisplayBookView} submitText="Edit Book">
-                <ViewBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
+                <ViewBookModal bookInfo={viewCurrentBook.internalBooks[0]} closeOut={closeBookView} openEdit={openEditBookView}></ViewBookModal>
               </CreateEntries> : null}
         </>
     )
@@ -172,7 +182,7 @@ export default function BookTable() {
                  sortableHeaders={SORTABLE_HEADERS}
                  staticHeaders={STATIC_HEADERS}
                  items= {books}
-                 headersNotFiltered={["retailPrice", "inventory", "lastMonthSales", "shelfSpace", "daysOfSupply", "bestBuybackPrice"]}
+                 headersNotFiltered={["retailPrice", "inventory", "lastMonthSales", "shelfSpace", "daysOfSupply", "bestBuybackPrice", "numberRelatedBooks"]}
                  pageNumber={pageNumber}
                  numberOfPages={numberOfPages}
                  entriesPerPage={BOOKS_PER_PAGE}

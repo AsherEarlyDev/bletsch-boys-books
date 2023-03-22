@@ -14,7 +14,7 @@ export const userRouter = createTRPCRouter({
       console.log(error);
     }
   }),
-  createNewUser: publicProcedure.input(z.object({
+  createNewUser: protectedProcedure.input(z.object({
     username: z.string(),
     password: z.string(),
     role: z.enum(["USER", "ADMIN", "SUPERADMIN"])
@@ -31,7 +31,7 @@ export const userRouter = createTRPCRouter({
       console.log(error)
     }
   }),
-  editUser: publicProcedure.input(z.object({id: z.string(), role: z.enum(["USER", "ADMIN", "SUPERADMIN"]), password: z.string().optional()})).mutation(async({ctx, input}) => {
+  editUser: protectedProcedure.input(z.object({id: z.string(), role: z.enum(["USER", "ADMIN", "SUPERADMIN"]), password: z.string().optional()})).mutation(async({ctx, input}) => {
     try{
         if(input.password){
           await ctx.prisma.user.update({
@@ -74,7 +74,7 @@ export const userRouter = createTRPCRouter({
         console.log(error);
       }
     }),
-  changePassword: publicProcedure
+  changePassword: protectedProcedure
   .input(z.object({
         password: z.string(),
       }))
@@ -93,7 +93,7 @@ export const userRouter = createTRPCRouter({
         console.log(error);
       }
     }),
-  deleteUser: publicProcedure
+  deleteUser: protectedProcedure
   .input(z.object({userId: z.string(),}))
   .mutation(async ({ ctx, input }) => {
       try {

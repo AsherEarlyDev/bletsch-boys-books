@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {createTRPCRouter, protectedProcedure, publicProcedure} from "../trpc";
 import {number, z} from "zod"
 import { TRPCError } from "@trpc/server";
 export const GenreRouter = createTRPCRouter({
@@ -29,7 +29,7 @@ export const GenreRouter = createTRPCRouter({
         
     }),
 
-    changeGenreName:publicProcedure.input(z.object({
+    changeGenreName:protectedProcedure.input(z.object({
         originalName: z.string(),
         newName: z.string()
     }))
@@ -45,7 +45,7 @@ export const GenreRouter = createTRPCRouter({
 
     }),
 
-    addGenre:publicProcedure
+    addGenre:protectedProcedure
     .input(z.string())
     .mutation(async ({ctx, input}) => {
         try{
@@ -66,7 +66,7 @@ export const GenreRouter = createTRPCRouter({
         return await ctx.prisma.genre.count()
     }),
 
-    deleteGenreByName:publicProcedure
+    deleteGenreByName:protectedProcedure
     .input(z.string())
     .mutation(async ({ctx, input}) => {
         try{

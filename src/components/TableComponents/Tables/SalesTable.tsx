@@ -14,10 +14,17 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
+<<<<<<< HEAD
 import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
+=======
+import { useRouter } from 'next/router'
+>>>>>>> main
 
 export default function SalesTable() {
+  const {query} = useRouter()
+  const router = useRouter()
+
   const date = new Date()
   const ENTRIES_PER_PAGE = 5
   const FIRST_HEADER =  ["Date Created", "date"]
@@ -36,7 +43,10 @@ export default function SalesTable() {
   const [sortField, setSortField] = useState("id")
   const [displayEditSalesRecView, setDisplayEditSalesRecView] = useState(false)
   const [displayDeleteSalesRecView, setDisplayDeleteSalesRecView] = useState(false)
-  const [displaySalesRecView, setDisplaySalesRecView] = useState(false)
+  const displaySalesRecView = query.openView ? (query.openView==="true" ? true : false) : false
+  const currentSalesRecId = query.viewId ? query.viewId.toString() : ""
+  const viewCurrentOrder = api.salesRec.getUniqueSalesRecs.useQuery(currentSalesRecId).data
+  const viewCurrentSales = viewCurrentOrder ? viewCurrentOrder.sales : undefined
   const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
   const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
@@ -131,32 +141,38 @@ export default function SalesTable() {
   }
 
   async function openSalesRecView(id: string){
-    if (salesRecs){
-      for (const rec of salesRecs){
-        if (rec.id === id){
-          setCurrentSalesRec({
-            id: rec.id,
-            date: rec.date,
-          })
-          setCurrentSales(rec.sales)
-        }
-      }
-      setDisplaySalesRecView(true)
-    }
+    setDisplaySalesRecView(true, id)
   }
   function renderSalesRecView() {
     return(
         <>
-          {(displaySalesRecView && currentSalesRec) ?
+          {(displaySalesRecView && viewCurrentSales) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
+<<<<<<< HEAD
                 <ViewTableModal type="Sale" closeOut={closeSalesRecView} items={ currentSales}
                                         id={currentSalesRec.id}
                                         date={currentSalesRec.date}
                                         vendor={null}></ViewTableModal>
+=======
+                <ViewSalesTableModal salesRecId={viewCurrentOrder.id} salesRecDate={viewCurrentOrder.date} sales={viewCurrentSales} closeOut={closeSalesRecView}></ViewSalesTableModal>
+>>>>>>> main
               </CreateSaleEntries>)
               : null}
         </>
     )
+  }
+  function setDisplaySalesRecView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/sales',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/sales',
+      
+    }, undefined, { shallow: true })
   }
   function closeSalesRecView(){
     setDisplaySalesRecView(false)

@@ -72,6 +72,21 @@ export const salesRecRouter = createTRPCRouter({
     }
   }),
 
+  getUniqueSalesRecs:publicProcedure
+  .input(z.string())
+  .query(async ({ ctx, input }) => {
+    const rawData = await ctx.prisma.saleReconciliation.findUnique({
+      where:{
+        id:input
+      },
+      include:{
+        sales: true
+      }
+    })
+    return transformData([rawData])[0]
+    
+  }),
+
   getSalesRecs:publicProcedure
   .input(z.object({
     pageNumber: z.number(),

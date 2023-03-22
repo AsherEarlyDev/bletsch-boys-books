@@ -79,9 +79,9 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
 
   function transformCSV(csv){
     const quant = parseInt(csv.quantity)
-    const price = parseFloat(csv.unit_buyback_price)
+    const price = parseFloat(csv.unit_buyback_price.replaceAll('$', ''))
     return ({
-      bookId:csv.isbn,
+      bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,
       buybackPrice: price,
       subtotal: quant* price,

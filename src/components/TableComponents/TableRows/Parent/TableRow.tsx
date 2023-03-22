@@ -6,12 +6,10 @@ import MutableTableEntry from "../../TableEntries/MutableTableEntry";
 import EditRowEntry from "../../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../../TableEntries/SaveRowEntry";
-import {toast} from "react-toastify";
-import CreateSaleEntries from "../../../CreateEntries";
 import BuybackCardProp from "../../../CardComponents/BuybackCardProp";
-import DeleteModal from "../../Modals/ParentModals/DeleteModal";
 import BookCardProp from "../../../CardComponents/BookCardProp";
 import LinkedBookTitle from "../../../BasicComponents/DynamicRouting/LinkedBookTitle";
+import DeleteEntryModal from "../../Modals/MasterModals/DeleteEntryModal";
 
 interface TableRowProp {
   type: string
@@ -35,11 +33,9 @@ interface TableRowProp {
 }
 
 export default function TableRow(props: TableRowProp) {
-  console.log(props.isAdding)
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = props.item?.price ? props.item?.price : props.item?.buybackPrice
-  const [deleteView, setDeleteView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [price, setPrice] = useState<number>(defaultPrice)
   const [quantity, setQuantity] = useState(props.item.quantity)
@@ -49,40 +45,6 @@ export default function TableRow(props: TableRowProp) {
 
   function handleRowEdit() {
     setIsEditing(true)
-  }
-
-
-  function renderDeleteView() {
-    const deleteMutation = props.type === "Buyback" ? api.buyback.deleteBuyback.useMutation({
-      onError: (error)=>{
-        toast.error(error.message)
-      },
-      onSuccess: ()=>{
-        toast.success("Successfully deleted Buyback!")
-      }}) :
-      api.purchase.deletePurchase.useMutation({
-        onError: (error)=>{
-          toast.error(error.message)
-        },
-        onSuccess: ()=>{
-          toast.success("Successfully deleted Purchase!")
-        }})
-    return <>
-      {deleteView ?
-          <CreateSaleEntries closeStateFunction={setDeleteView} submitText={"Delete "+props.type}>
-            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={price} quantity={quantity}
-                            bookTitle={(book) ? book.title : ""} onDelete={setVisible}
-                            closeOut={closeDeleteView} id={props.item.id}></DeleteModal>
-          </CreateSaleEntries> : null}
-    </>;
-  }
-
-  function closeDeleteView() {
-    setDeleteView(false)
-  }
-
-  function openDeleteView() {
-    setDeleteView(true)
   }
 
   function saveNew() {
@@ -115,34 +77,25 @@ export default function TableRow(props: TableRowProp) {
                           <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.item.bookId : undefined}></DeleteRowEntry>
                         </tr> : null)
                         : 
-                        (isEditing ?
-                            <tr>
+                        (isEditing ? <tr>
                               {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
                               <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp>
-                              <MutableCurrencyTableEntry saveValue={setPrice}
-                                                         heading={props.type+" Price"} required="True"
-                                                         dataType="number"
-                                                         defaultValue={price}></MutableCurrencyTableEntry>
-                              <MutableTableEntry saveValue={setQuantity} heading="Quantity"
-                                                 required="True" dataType="number"
-                                                 defaultValue={quantity}></MutableTableEntry>
+                              <MutableCurrencyTableEntry saveValue={setPrice} heading={props.type+" Price"} required="True" dataType="number" defaultValue={price}></MutableCurrencyTableEntry>
+                              <MutableTableEntry saveValue={setQuantity} heading="Quantity" required="True" dataType="number" defaultValue={quantity}></MutableTableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                               <SaveRowEntry onSave={props.edit}></SaveRowEntry>
-                              <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>
-                            </tr>
-                            :
-                            <tr>
+                              <DeleteEntryModal id={props.item.id} item={props.type} router={props.type === "Buyback" ? api.buyback.deleteBuyback : api.purchase.deletePurchase}></DeleteEntryModal>
+                            </tr> : <tr>
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
                               <TableEntry>${Number(price).toFixed(2)}</TableEntry>
                               <TableEntry>{quantity}</TableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                               <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>
-                              <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>
+                              <DeleteEntryModal id={props.item.id} item={props.type} router={props.type === "Buyback" ? api.buyback.deleteBuyback : api.purchase.deletePurchase}></DeleteEntryModal>
                             </tr>)
                 )
         )
         }
-        {renderDeleteView()}
       </>
   )
 }

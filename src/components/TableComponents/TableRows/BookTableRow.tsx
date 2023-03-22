@@ -5,11 +5,12 @@ import { CldImage, CldUploadButton, CldUploadWidget } from 'next-cloudinary'
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
+import DeleteEntryModal from "../Modals/MasterModals/DeleteEntryModal";
+import {api} from "../../../utils/api";
 
 interface BookTableRowProp{
   bookInfo: any
   onEdit: (isbn:string) => void
-  onDelete: (isbn:string)=> void
   onView: (isbn:string)=> void
 }
 
@@ -18,9 +19,6 @@ export default function BookTableRow(props:BookTableRowProp) {
   const isInStock: boolean = (props.bookInfo.inventory != 0)
   function handleEdit(){
     props.onEdit(props.bookInfo.isbn)
-  }
-  function handleDelete(){
-    props.onDelete(props.bookInfo.isbn)
   }
   function handleView(){
     props.onView(props.bookInfo.isbn)
@@ -42,7 +40,7 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry width={12}>{props.bookInfo.bestBuybackPrice==0 ? "-" : "$" + props.bookInfo.bestBuybackPrice.toFixed(2)}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.numberRelatedBooks}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
+        {isInStock ? null : <DeleteEntryModal id={props.bookInfo.isbn} item={"Book"} router={api.books.deleteBookByISBN}></DeleteEntryModal>}
       </tr>
   )
 }

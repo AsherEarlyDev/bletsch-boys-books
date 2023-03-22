@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
-import DeleteVendorModal from '../Modals/VendorModals/DeleteVendorModal';
 import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
 import CreateEntries from "../../CreateEntries";
 import EditVendorModal from "../Modals/VendorModals/EditVendorModal";
@@ -80,34 +79,6 @@ export default function VendorTable() {
     setDisplayEditVendorView(false)
   }
 
-  async function openDeleteVendorView(id: string) {
-    if (vendors) {
-      for (const ven of vendors) {
-        if (ven.id === id) {
-          setCurrentVendor({
-            id: ven.id,
-            name: ven.name,
-            buybackRate: ven.bookBuybackPercentage
-          })
-        }
-      }
-      setDisplayDeleteVendorView(true)
-    }
-  }
-
-  function renderDeleteVendorView() {
-    return <>
-      {(displayDeleteVendorView && currentVendor) ?
-          <CreateEntries closeStateFunction={setDisplayDeleteVendorView} submitText="Delete Vendor">
-            <DeleteVendorModal closeOut={closeDeleteVendorView} vendorId={currentVendor.id}
-                               vendorName={currentVendor.name}></DeleteVendorModal></CreateEntries> : null}
-    </>;
-  }
-
-  function closeDeleteVendorView() {
-    setDisplayDeleteVendorView(false)
-  }
-
   async function openVendorView(id: string) {
     if (vendors) {
       for (const ven of vendors) {
@@ -140,7 +111,7 @@ export default function VendorTable() {
 
   function renderVendorRow() {
     return (vendors ? vendors.map((vendor) => (
-        <VendorTableRow onView={openVendorView} onEdit={openEditVendorView} onDelete={openDeleteVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
+        <VendorTableRow onView={openVendorView} onEdit={openEditVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (
@@ -166,7 +137,6 @@ export default function VendorTable() {
                renderRow={renderVendorRow}></Table>
         <div>
           {renderEditVendorView()}
-          {renderDeleteVendorView()}
           {renderVendorView()}
           <ToastContainer/>
         </div>

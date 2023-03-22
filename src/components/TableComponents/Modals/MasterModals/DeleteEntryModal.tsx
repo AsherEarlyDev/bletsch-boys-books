@@ -10,10 +10,11 @@ import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 interface DeleteEntryModalProp{
   id: string
   item: string
+  router: any
 }
 
 export default function DeleteEntryModal(props: DeleteEntryModalProp) {
-  const deleteRoute = api.user.deleteUser.useMutation({
+  const deleteRoute = props.router.useMutation({
     onError: (error) => {
       toast.error(error.message)
     },
@@ -22,11 +23,8 @@ export default function DeleteEntryModal(props: DeleteEntryModalProp) {
     }
   });
 
-  //change all schema object Id names to just id and this universalizes
   function handleDelete(){
-    deleteRoute.mutate({
-      userId: props.id
-    });
+    deleteRoute.mutate(props.id);
     closeModal()
   }
 

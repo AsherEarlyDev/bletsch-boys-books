@@ -67,7 +67,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
 
   function handleEditSubmission(){
-    //Need to add vendor to modification but need to fetch vendor id from vendor name
     setDisplayConfirmationView(false)
     const newVendorId = vendorId ? vendorId : props.purchaseVendor.id
     if(props.purchaseOrderId && date && newVendorId){
@@ -116,7 +115,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function openAddPurchaseRow(){
     setAddPurchaseRowView(true)
-    console.log(addPurchaseRowView)
   }
   function renderAddPurchaseRow(){
     const dummyPurchase = {

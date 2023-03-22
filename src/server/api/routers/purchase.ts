@@ -183,16 +183,12 @@ export const purchaseRouter = createTRPCRouter({
       }),
 
       deletePurchase: protectedProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        })
-      )
+      .input(z.string())
       .mutation(async ({ ctx, input }) => {
         try {
           const purchase = await ctx.prisma.purchase.findFirst({
             where: {
-              id: input.id
+              id: input
             }
           })
           if (purchase){
@@ -237,7 +233,7 @@ export const purchaseRouter = createTRPCRouter({
               })
               await ctx.prisma.purchase.delete({
                 where: {
-                  id: input.id
+                  id: input
                 }
               })
             }
@@ -248,8 +244,6 @@ export const purchaseRouter = createTRPCRouter({
               });
             }
           }
-          
-          
         } catch (error) {
           throw new TRPCError({
             code: error.code,

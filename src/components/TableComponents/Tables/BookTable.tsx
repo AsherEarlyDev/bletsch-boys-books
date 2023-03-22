@@ -6,7 +6,6 @@ import BookTableRow from "../TableRows/BookTableRow";
 import { Book, Genre, Author } from '@prisma/client';
 import FilterModal from '../../FilterModal';
 import CreateEntries from "../../CreateEntries";
-import DeleteBookModal from "../Modals/BookModals/DeleteBookModal";
 import EditBookModal from "../Modals/BookModals/EditBookModal";
 import ViewBookModal from "../Modals/BookModals/ViewBookModal";
 import Table from './Table';
@@ -99,30 +98,6 @@ export default function BookTable() {
     forceDataRender()
   }
 
-  async function openDeleteBookView(isbn: string){
-    if (books){
-      for (const book of books){
-        if (book.isbn === isbn){
-          setCurrentIsbns([isbn])
-        }
-      }
-      setDisplayDeleteBookView(true)
-    }
-  }
-  function renderDeleteBookView() {
-    return(
-        <>
-          {(displayDeleteBookView && entryBookData) ?
-              <CreateEntries closeStateFunction={setDisplayDeleteBookView} submitText="Delete Book">
-                <DeleteBookModal bookInfo={entryBookData.internalBooks[0]} closeOut={closeDeleteBookView}></DeleteBookModal>
-              </CreateEntries> : null}
-        </>
-    )
-  }
-  function closeDeleteBookView(){
-    setDisplayDeleteBookView(false)
-  }
-
   async function openBookView(isbn: string){
     setDisplayBookView(true, isbn)
   }
@@ -157,7 +132,7 @@ export default function BookTable() {
 
   function renderBookRow(items:any[]){
     return(books ? books.map((book) => (
-      <BookTableRow onEdit={openEditBookView} onDelete={openDeleteBookView} onView={openBookView} bookInfo={book}></BookTableRow>
+      <BookTableRow onEdit={openEditBookView} onView={openBookView} bookInfo={book}></BookTableRow>
   )) : null)
   }
 
@@ -191,7 +166,6 @@ export default function BookTable() {
           <div>
             {renderNewBookEntriesView()}
             {renderEditBookView()}
-            {renderDeleteBookView()}
             {renderBookView()}
             <ToastContainer/>
           </div>

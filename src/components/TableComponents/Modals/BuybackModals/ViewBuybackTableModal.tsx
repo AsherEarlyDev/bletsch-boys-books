@@ -1,12 +1,12 @@
-import TableDetails from "../../../TableDetails";
-import TableHeader from "../../../TableHeader";
-import ColumnHeading from "../../../TableColumnHeadings/ColumnHeading";
+import TableDetails from "../../TableDetails";
+import TableHeader from "../../TableHeader";
+import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import PrimaryButton from "../../../../BasicComponents/PrimaryButton";
-import { Buyback } from "../../../../../types/buybackTypes";
-import BuybackTableRow from "../../../TableRows/BuybackTableRow";
-import {api} from "../../../../../utils/api";
-import { Vendor } from "../../../../../types/vendorTypes";
+import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import { Buyback } from "../../../../types/buybackTypes";
+import BuybackTableViewRow from "../../TableRows/BuybackTableViewRow";
+import {api} from "../../../../utils/api";
+import { Vendor } from "../../../../types/vendorTypes";
 
 interface ViewBuybackTableModalProps{
   buybackOrderId: string
@@ -43,7 +43,7 @@ export default function ViewBuybackTableModal(props: ViewBuybackTableModalProps)
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.buybacks.map((buyback) => (<BuybackTableRow vendorId={props.buybackVendor.id} isView={true} isAdding={false} buyback={buyback}></BuybackTableRow>))}
+                    {props.buybacks.map((buyback) => (<BuybackTableViewRow vendorId={props.buybackVendor.id} isView={true} isAdding={false} buyback={buyback}></BuybackTableViewRow>))}
                     </tbody>
                   </table>
                 </div>

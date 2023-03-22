@@ -116,18 +116,14 @@ export const vendorRouter = createTRPCRouter({
     }),
 
     deleteVendor: protectedProcedure
-    .input(
-      z.object({
-        vendorId: z.string(),
-      })
-    )
+    .input(z.string())
     .mutation(async ({ ctx, input }) => {
       try {
         const purchaseOrders = await ctx.prisma.purchaseOrder.findFirst(
           {
             where:
             {
-              vendorId: input.vendorId
+              vendorId: input
             }
           }
         );
@@ -135,7 +131,7 @@ export const vendorRouter = createTRPCRouter({
           {
             where:
             {
-              vendorId: input.vendorId
+              vendorId: input
             }
           }
         );
@@ -148,7 +144,7 @@ export const vendorRouter = createTRPCRouter({
         else{
           await ctx.prisma.vendor.delete({
             where: {
-              id: input.vendorId
+              id: input
             }
           })
         }

@@ -1,11 +1,11 @@
-import TableDetails from "../../../TableDetails";
-import TableHeader from "../../../TableHeader";
-import ColumnHeading from "../../../TableColumnHeadings/ColumnHeading";
+import TableDetails from "../../TableDetails";
+import TableHeader from "../../TableHeader";
+import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import PrimaryButton from "../../../../BasicComponents/PrimaryButton";
-import SaleTableRow from "../../../TableRows/SaleTableRow";
-import {Purchase} from "../../../../../types/purchaseTypes";
-import PurchaseTableRow from "../../../TableRows/PurchaseTableRow";
+import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import SaleTableRow from "../../TableRows/SaleTableRow";
+import {Purchase} from "../../../../types/purchaseTypes";
+import PurchaseTableViewRow from "../../TableRows/PurchaseTableViewRow";
 
 interface ViewPurchaseTableModalProps{
   purchaseOrderId: string
@@ -42,7 +42,7 @@ export default function ViewPurchaseTableModal(props: ViewPurchaseTableModalProp
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.purchases.map((purchase) => (<PurchaseTableRow isView={true} isAdding={false} purchase={purchase}></PurchaseTableRow>))}
+                    {props.purchases.map((purchase) => (<PurchaseTableViewRow purchase={purchase}></PurchaseTableViewRow>))}
                     </tbody>
                   </table>
                 </div>

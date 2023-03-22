@@ -1,11 +1,11 @@
 import {Author, Book, Genre } from "@prisma/client";
 import TableEntry from "../TableEntries/TableEntry";
 import React from "react";
-import DeleteConfirmationModal from "../Modals/GenreModals/DeleteConfirmationModal";
 import EditGenreModal from "../Modals/GenreModals/EditGenreModal";
 import { api } from "../../../utils/api";
 import { useRouter } from 'next/router'
 import Link from "next/link";
+import DeleteEntryModal from "../Modals/MasterModals/DeleteEntryModal";
 
 interface GenreTableRowProp{
   genre: Genre;
@@ -31,7 +31,8 @@ export default function GenreTableRow(props:GenreTableRowProp) {
         </td>
         <TableEntry>{genreInventory}</TableEntry>
         <EditGenreModal itemIdentifier={props.genre.name} buttonText="Edit" submitText="Submit Edit"></EditGenreModal>
-        {genreHasBooks ? null : <DeleteConfirmationModal genre = {true} itemIdentifier={props.genre.name} submitText="Delete Genre"></DeleteConfirmationModal>}
+        {genreHasBooks ? null : <DeleteEntryModal id={props.genre.name} item={"Genre"} router={api.genre.deleteGenreByName}></DeleteEntryModal>}
+
       </tr>
   )
 }

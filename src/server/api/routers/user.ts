@@ -94,12 +94,12 @@ export const userRouter = createTRPCRouter({
       }
     }),
   deleteUser: protectedProcedure
-  .input(z.object({userId: z.string(),}))
+  .input(z.string())
   .mutation(async ({ ctx, input }) => {
       try {
         await ctx.prisma.user.delete({
           where: {
-            id: input.userId
+            id: input
           }
         })
       } catch (error) {

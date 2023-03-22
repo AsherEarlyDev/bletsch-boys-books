@@ -14,7 +14,7 @@ interface BuybackTableRowProp {
   saveAdd?: (isbn: string, quantity: number, price: number) => void
 }
 
-export default function BuybackTableRow(props: BuybackTableRowProp) {
+export default function BuybackTableViewRow(props: BuybackTableRowProp) {
   const [isbn, setIsbn] = useState(props.buyback.bookId)
   const defaultPrice = props.buyback?.buybackPrice
   const [isEditing, setIsEditing] = useState(false)

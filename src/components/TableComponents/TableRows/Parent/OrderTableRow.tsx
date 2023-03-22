@@ -4,6 +4,8 @@ import { PurchaseOrder } from "../../../../types/purchaseTypes";
 import ViewTableEntry from "../../TableEntries/ViewTableEntry";
 import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
 import EditRowEntry from "../../TableEntries/EditRowEntry";
+import DeleteEntryModal from "../../Modals/MasterModals/DeleteEntryModal";
+import {api} from "../../../../utils/api";
 
 interface OrderTableRowProp{
     OrderInfo: {
@@ -17,8 +19,8 @@ interface OrderTableRowProp{
         revenue?: number
         userName: string
     },
+    item: string,
     onEdit: (id:string) => void,
-    onDelete: (id: string) =>void,
     onView: (id: string) =>void,
   }
 
@@ -34,9 +36,6 @@ export default function OrderTableRow(props:OrderTableRowProp) {
     function handleEdit(){
         props.onEdit(props.OrderInfo.id)
       }
-    function handleDelete(){
-      props.onDelete(props.OrderInfo.id)
-      }
     function handleView(){
       props.onView(props.OrderInfo.id)
       }
@@ -49,7 +48,7 @@ export default function OrderTableRow(props:OrderTableRowProp) {
         <TableEntry>${price}</TableEntry>
         <TableEntry>{props.OrderInfo.userName}</TableEntry>
         <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
+        <DeleteEntryModal id={props.OrderInfo.id} item={props.item} router={(props.item=="Buyback Order" ? api.buybackOrder.deleteBuybackOrder : api.purchaseOrder.deletePurchaseOrder)}></DeleteEntryModal>
       </tr>
   )
 }

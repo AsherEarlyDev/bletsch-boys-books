@@ -38,10 +38,10 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   const [currentBookISBN, setCurrentBook] = useState("")
   const currentBookObj = api.books.findBooks.useQuery([currentBookISBN]).data
   const currentBook = currentBookObj?.internalBooks[0] ?? {}
-  const takenSpaceArray = (bookList.map((book) => Number((book.displayCount * (book.dimensions[1] ? book.dimensions[1] : 0.8)).toFixed(2))))
+  const takenSpaceArray = (bookList.map((book) => book.mode.value==="cover" ? book.width : Number((book.displayCount * book.thickness).toFixed(2))))
   const takenSpace = takenSpaceArray.reduce((partialSum, a) => partialSum + a, 0) 
   const MODE_OPTIONS = [{value:"cover", display:"Cover Out"}, {value:"spine", display:"Spine Out"}]
-  
+  const SHELF_THICKNESS = 8
   function closeModal() {
     setIsOpen(false)
   }
@@ -89,6 +89,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
     temp[idx] = {...item, edit:!(temp[idx].edit)}
     setBookList(temp)
   }
+  const min = (...args) => args.reduce((min, num) => num < min ? num : min, args[0]);
 
   return (
       <>
@@ -139,7 +140,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                               <span><button
                                   onClick={() => {
                                     if(currentBook.title){
-                                      setBookList([...bookList, { name:currentBook.title, inventory: currentBook.inventory, displayCount:0, dimensions: currentBook.dimensions, edit:false, mode:{value:"spine", display:"Spine Out"}}])
+                                      setBookList([...bookList, { name:currentBook.title, inventory: currentBook.inventory, displayCount:0, dimensions: currentBook.dimensions, edit:false, mode:{value:"spine", display:"Spine Out"}, thickness:Number(currentBook.dimensions[1] ? currentBook.dimensions[1] : 0.8), width:Number(currentBook.dimensions[1] ? currentBook.dimensions[0] : 5)}])
                                     }
 
                                 }}
@@ -197,7 +198,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                                           leaveFrom="opacity-100"
                                                           leaveTo="opacity-0"
                                                       >
-                                                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                    <Listbox.Options className="absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                                       {MODE_OPTIONS.map((choice) => (
                                                         <Listbox.Option 
                                                         className={({ active }) =>
@@ -235,7 +236,8 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                               {item.edit ? 
                                                 <MutableTableEntry saveValue={(displayCount) =>{
                                                 const temp = [...bookList]
-                                                temp[idx] = {...item, displayCount:displayCount}
+                                                
+                                                temp[idx] = {...item, displayCount: item.mode.value=== "cover" ? min(displayCount, Number((SHELF_THICKNESS/item.thickness).toFixed(0))) : displayCount}
                                                 setBookList(temp)
                                               } } heading="Display Count"
                                                  required="True" dataType="number"
@@ -243,7 +245,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                                  :<TableEntry>{item.displayCount}</TableEntry>
                                               }
                                               {/* Dimensions are width thickness then height */}
-                                              <TableEntry>{(item.displayCount * (item.dimensions[1] ? item.dimensions[1] : 0.8)).toFixed(2)}"</TableEntry>
+                                              <TableEntry>{item.mode.value==="cover" ? item.width : (item.displayCount * item.thickness).toFixed(2)}"</TableEntry>
                                               {item.edit ? <SaveRowEntry onSave={() => reverseItemEditStatus(idx, item)}></SaveRowEntry> : <EditRowEntry onEdit={() => reverseItemEditStatus(idx, item)}></EditRowEntry>}
                                               <DeleteRowEntry onDelete={() => {
                                                 const temp = [...bookList]

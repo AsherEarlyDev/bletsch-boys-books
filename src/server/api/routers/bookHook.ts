@@ -8,7 +8,6 @@ const { Logtail } = require("@logtail/node");
 const logtail = new Logtail("PxJvYh15v3DCzCNouHKSg874");
 
 const saleRecord = z.object({
-    "?xml": z.object({'@_version': z.string(), '@_encoding': z.string()}),
     sale: z.object({
         "@_date": z.string(), 
         item: z.array(z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)}))
@@ -16,7 +15,6 @@ const saleRecord = z.object({
 })
 
 const saleRecordOneSale = z.object({
-  "?xml": z.object({'@_version': z.string(), '@_encoding': z.string()}),
   sale: z.object({
       "@_date": z.string(), 
       item: z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)})

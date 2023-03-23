@@ -11,9 +11,19 @@ import ColumnHeading from "../../TableColumnHeadings/ColumnHeading"
 ;
 import TableEntry from '../../TableEntries/TableEntry';
 import MutableTableEntry from '../../TableEntries/MutableTableEntry';
+import ImmutableCardProp from '../../../CardComponents/ImmutableCardProp';
+import CardGrid from '../../../CardComponents/CardGrid';
+import DeleteRowEntry from '../../TableEntries/DeleteRowEntry';
+import EditRowEntry from '../../TableEntries/EditRowEntry';
+import SaveRowEntry from '../../TableEntries/SaveRowEntry';
+import { Listbox } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import convertISBN10ToISBN13 from '../../../../server/api/HelperFunctions/convertISBN';
+
 interface ShelfCalculatorModalProp{
   buttonText: string;
   submitText: string;
+  isStandAlone?:boolean
 }
 interface ShelfBook{
   book;
@@ -28,12 +38,20 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   const [currentBookISBN, setCurrentBook] = useState("")
   const currentBookObj = api.books.findBooks.useQuery([currentBookISBN]).data
   const currentBook = currentBookObj?.internalBooks[0] ?? {}
-
+  const takenSpaceArray = (bookList.map((book) => Number((book.displayCount * (book.dimensions[1] ? book.dimensions[1] : 0.8)).toFixed(2))))
+  const takenSpace = takenSpaceArray.reduce((partialSum, a) => partialSum + a, 0) 
+  const MODE_OPTIONS = [{value:"cover", display:"Cover Out"}, {value:"spine", display:"Spine Out"}]
+  
   function closeModal() {
     setIsOpen(false)
   }
 
   function openModal() {
+    if(props.isStandAlone) {
+      setBookList([])
+      setWidth(DEFAULT_WIDTH)
+      setCurrentBook("")
+    }
     setIsOpen(true)
   }
 
@@ -50,6 +68,9 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
       toast.error("Specified input is invalid. Please separate all ISBN values by either a space or a comma.")
     }
   }
+  function handleDelete(){
+
+  }
 
   function parseIsbns(isbnString: string){
     let initialArray = isbnString.split(" ")
@@ -62,6 +83,11 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
 
     return secondArray
 
+  }
+  function reverseItemEditStatus(idx:number, item){
+    const temp = [...bookList]
+    temp[idx] = {...item, edit:!(temp[idx].edit)}
+    setBookList(temp)
   }
 
   return (
@@ -108,16 +134,21 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                             </TableDetails>
                             <div className="mt-5">
                               <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={DEFAULT_WIDTH}></MutableCardProp>
+                              <p>Add a book below</p>
                               <BookCardProp saveFunction={setCurrentBook} ></BookCardProp>
-                              <div><button type="button"
+                              <span><button
                                   onClick={() => {
                                     if(currentBook.title){
-                                      setBookList([...bookList, { name:currentBook.title, inventory: currentBook.inventory, displayCount:0, dimensions: currentBook.dimensions}])
+                                      setBookList([...bookList, { name:currentBook.title, inventory: currentBook.inventory, displayCount:0, dimensions: currentBook.dimensions, edit:false, mode:{value:"spine", display:"Spine Out"}}])
                                     }
 
                                 }}
-                                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                              >Add book</button></div>
+                                  className="inline-flex items-right justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                              >Add book</button></span>
+                              <CardGrid>
+                                <ImmutableCardProp heading="Space Taken" data = {takenSpace.toFixed(2)+" inches"}></ImmutableCardProp>
+                                <ImmutableCardProp heading="Available Space" data = {(width-takenSpace).toFixed(2)+" inches"}></ImmutableCardProp>
+                              </CardGrid>
                             </div>
                             <div className="mt-8 flex flex-col">
                               <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -127,8 +158,10 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                       <TableHeader>
                                         <ColumnHeading firstEntry={true} label="Title"></ColumnHeading>
                                         <ColumnHeading label="Inventory"></ColumnHeading>
+                                        <ColumnHeading label="Display Mode"></ColumnHeading>
                                         <ColumnHeading label="Display Count"></ColumnHeading>
                                         <ColumnHeading label="Shelf Space"></ColumnHeading>
+                                        <ColumnHeading label ="Edit"></ColumnHeading>
                                         <ColumnHeading label="Delete"></ColumnHeading>
                                       </TableHeader>
                                         <ReactSortable
@@ -144,16 +177,79 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                             <tr className="draggableItem">
                                               <TableEntry firstEntry={true}>{item.name}</TableEntry>
                                               <TableEntry>{item.inventory}</TableEntry>
-                                              <MutableTableEntry saveValue={(displayCount) =>{
+                                              {item.edit ? 
+                                                <td>
+                                                  <Listbox value={item.mode} onChange={(selected) =>{
+                                                const temp = [...bookList]
+                                                temp[idx] = {...item, mode:selected}
+                                                setBookList(temp)}}>
+                                                    <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                                                    <span className="block truncate">{item.mode.display}</span>
+                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                      <ChevronUpDownIcon
+                                                        className="h-5 w-5 text-gray-400"
+                                                        aria-hidden="true"
+                                                      />
+                                                    </span></Listbox.Button>
+                                                    <Transition
+                                                          as={Fragment}
+                                                          leave="transition ease-in duration-100"
+                                                          leaveFrom="opacity-100"
+                                                          leaveTo="opacity-0"
+                                                      >
+                                                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                      {MODE_OPTIONS.map((choice) => (
+                                                        <Listbox.Option 
+                                                        className={({ active }) =>
+                                                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                              active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                                                          }`
+                                                        }
+                                                          value={choice}
+                                                        >
+                                                          {({ selected, active }) => (
+                                                              <>
+                                                        <span
+                                                            className={`block truncate ${
+                                                                selected ? 'font-medium' : 'font-normal'
+                                                            }`}
+                                                        >
+                                                          {choice.display}
+                                                        </span>
+                                                                {selected ? (
+                                                                    <span
+                                                                        className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                                                                            active ? 'text-white' : 'text-indigo-500'
+                                                                        }`}
+                                                                    >
+                                                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                                          </span>
+                                                                ) : null}
+                                                              </>
+                                                          )}
+                                                        </Listbox.Option>
+                                                      ))}
+                                                    </Listbox.Options>
+                                                    </Transition>
+                                                  </Listbox></td>: <TableEntry>{item.mode.display}</TableEntry>}
+                                              {item.edit ? 
+                                                <MutableTableEntry saveValue={(displayCount) =>{
                                                 const temp = [...bookList]
                                                 temp[idx] = {...item, displayCount:displayCount}
                                                 setBookList(temp)
                                               } } heading="Display Count"
                                                  required="True" dataType="number"
                                                  defaultValue={0}></MutableTableEntry>
+                                                 :<TableEntry>{item.displayCount}</TableEntry>
+                                              }
                                               {/* Dimensions are width thickness then height */}
                                               <TableEntry>{(item.displayCount * (item.dimensions[1] ? item.dimensions[1] : 0.8)).toFixed(2)}"</TableEntry>
-                                              <TableEntry firstEntry={true}>{item.dimensions}</TableEntry>
+                                              {item.edit ? <SaveRowEntry onSave={() => reverseItemEditStatus(idx, item)}></SaveRowEntry> : <EditRowEntry onEdit={() => reverseItemEditStatus(idx, item)}></EditRowEntry>}
+                                              <DeleteRowEntry onDelete={() => {
+                                                const temp = [...bookList]
+                                                temp.splice(idx, 1)
+                                                setBookList(temp)
+                                              }}></DeleteRowEntry>
                                             </tr>
                                           ))}
                                         </ReactSortable>

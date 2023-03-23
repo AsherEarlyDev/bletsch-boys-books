@@ -13,7 +13,7 @@ export default function StoreOrganizer() {
 
     return (
         <>
-        <ShelfCalculatorModal  buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+        <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
         </>
     )
 }

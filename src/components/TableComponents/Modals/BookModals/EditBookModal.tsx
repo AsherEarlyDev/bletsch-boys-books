@@ -7,11 +7,9 @@ import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import { completeBook, databaseBook, editableBook } from '../../../../types/bookTypes';
 import React, { useState } from 'react';
 import { api } from '../../../../utils/api';
-import ImmutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import MutableDimensionsCardProp from "../../../CardComponents/MutableDimensionsCardProp";
 import {CldImage, CldUploadButton} from "next-cloudinary";
 import { toast } from "react-toastify";
-import {z} from "zod";
 import {useSession} from "next-auth/react";
 
 

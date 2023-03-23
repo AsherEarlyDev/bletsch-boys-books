@@ -3,8 +3,6 @@ import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import { VendorTableRow } from '../TableRows/VendorTableRow';
 import AddVendorModal from '../Modals/VendorModals/AddVendorModal';
-import CreateEntries from "../../CreateEntries";
-import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Table from "./Table";
@@ -31,10 +29,6 @@ export default function VendorTable() {
   })
   const numberOfPages = Math.ceil(api.vendor.getNumVendors.useQuery().data / VENDORS_PER_PAGE)
   const numberOfEntries = api.vendor.getNumVendors.useQuery().data
-  const [displayEditVendorView, setDisplayEditVendorView] = useState(false)
-  const [displayDeleteVendorView, setDisplayDeleteVendorView] = useState(false)
-  const [displayVendorView, setDisplayVendorView] = useState(false)
-  const [currentVendor, setCurrentVendor] = useState({id: '', name: '', buybackRate: null})
 
   const handleNewVendorSubmission = async (name: string, buyback: number) => {
     let buybackRate = buyback ? buyback : 0
@@ -46,36 +40,9 @@ export default function VendorTable() {
     }
   }
 
-  async function openVendorView(id: string) {
-    if (vendors) {
-      for (const ven of vendors) {
-        if (ven.id === id) {
-          setCurrentVendor({
-            id: ven.id,
-            name: ven.name,
-            buybackRate: ven.bookBuybackPercentage
-          })
-        }
-      }
-      setDisplayVendorView(true)
-    }
-  }
-
-  function renderVendorView() {
-    return <>
-      {(displayVendorView && currentVendor) ?
-          <CreateEntries closeStateFunction={setDisplayVendorView} submitText="Edit Vendor">
-            <ViewVendorModal closeOut={closeVendorView} vendorId={currentVendor.id} vendorName={currentVendor.name} buybackRate={currentVendor.buybackRate}></ViewVendorModal></CreateEntries> : null}
-    </>;
-  }
-
-  function closeVendorView() {
-    setDisplayVendorView(false)
-  }
-
   function renderVendorRow() {
     return (vendors ? vendors.map((vendor) => (
-        <VendorTableRow onView={openVendorView} vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
+        <VendorTableRow vendorInfo={{id: vendor.id, name: vendor.name, buybackRate: vendor.bookBuybackPercentage}}></VendorTableRow>)) : null)
   }
 
   return (
@@ -100,7 +67,6 @@ export default function VendorTable() {
                numberOfEntries={numberOfEntries}
                renderRow={renderVendorRow}></Table>
         <div>
-          {renderVendorView()}
           <ToastContainer/>
         </div>
       </div>

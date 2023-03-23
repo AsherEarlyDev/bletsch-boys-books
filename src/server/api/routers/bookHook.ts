@@ -4,6 +4,8 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { XMLParser } from "fast-xml-parser";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
+const { Logtail } = require("@logtail/node");
+const logtail = new Logtail("PxJvYh15v3DCzCNouHKSg874");
 
 const saleRecord = z.object({
     "?xml": z.object({'@_version': z.string(), '@_encoding': z.string()}),
@@ -32,7 +34,7 @@ export const bookHookRouter = createTRPCRouter({
     summary: "Add new sales to the system",
     contentTypes: ["application/xml"],} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ id: z.string().optional(), booksNotFound: z.array(z.string()).optional(), input: z.object({}).optional() }))
+    .output(z.object({ id: z.string().optional(), booksNotFound: z.array(z.string()).optional()}))
     .mutation( async ({ input, ctx }) => {
     try{
         const booksNotFound = []
@@ -50,7 +52,12 @@ export const bookHookRouter = createTRPCRouter({
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          return {input: {name: "hello"}}
+          logtail.info(parsedXml)
+          logtail.flush()
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: "Data in improper format!",
+          });
         }
 
         const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
@@ -129,6 +136,17 @@ export const bookHookRouter = createTRPCRouter({
                       bookId: isbn
                     }
                   })
+                  await ctx.prisma.book.update({
+                    where: {
+                        isbn: book.isbn
+                    },
+                    data:{
+                      increment:{
+                        inventory: -inventory,
+                      },
+                      shelfSpace: 0
+                    }
+                    })
                 }
               }
               else{

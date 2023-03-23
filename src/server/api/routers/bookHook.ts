@@ -34,7 +34,7 @@ export const bookHookRouter = createTRPCRouter({
     summary: "Add new sales to the system",
     contentTypes: ["application/xml"],} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ id: z.string().optional(), booksNotFound: z.array(z.string()).optional()}))
+    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
         const booksNotFound = []
@@ -161,7 +161,7 @@ export const bookHookRouter = createTRPCRouter({
                 message: "No Sale Record Created",
               });
         }
-        return {id: newSaleRecord.id, booksNotFound: booksNotFound }
+        return {message: `The sale was recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound.`, booksNotFound: booksNotFound }
     }
     catch(error){
         throw new TRPCError({

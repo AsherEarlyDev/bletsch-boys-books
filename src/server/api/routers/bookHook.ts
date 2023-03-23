@@ -52,7 +52,7 @@ export const bookHookRouter = createTRPCRouter({
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Input Data in Wrong Format',
+            message: `Input Data in Wrong Format. Here is your input data: ${parsedXml}`,
           });
         }
 
@@ -123,6 +123,16 @@ export const bookHookRouter = createTRPCRouter({
                     }
                 }
                 })
+                if (inventory < 0){
+                  await ctx.prisma.inventoryCorrection.create({
+                    data:{
+                      userName: ctx.session.user?.name,
+                      date: new Date(inputDate),
+                      adjustment: -inventory,
+                      bookId: isbn
+                    }
+                  })
+                }
               }
               else{
                 booksNotFound.push(sale.isbn)
@@ -136,8 +146,7 @@ export const bookHookRouter = createTRPCRouter({
                 message: "No Sale Record Created",
               });
         }
-        console.log(booksNotFound)
-        return {id: newSaleRecord.id, isInventoryNegative: inventory >= 0, booksNotFound: booksNotFound }
+        return {id: newSaleRecord.id, booksNotFound: booksNotFound }
     }
     catch(error){
         throw new TRPCError({

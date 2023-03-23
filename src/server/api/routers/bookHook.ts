@@ -50,7 +50,7 @@ export const bookHookRouter = createTRPCRouter({
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          return {input: input}
+          return {input: parsedXml}
         }
 
         const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')

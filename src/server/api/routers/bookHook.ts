@@ -32,7 +32,7 @@ export const bookHookRouter = createTRPCRouter({
     summary: "Add new sales to the system",
     contentTypes: ["application/xml"],} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ input: z.object({}) }))
+    .output(z.object({ id: z.string().optional(), booksNotFound: z.array(z.string()).optional(), input: z.object({}).optional() }))
     .mutation( async ({ input, ctx }) => {
     try{
         const booksNotFound = []
@@ -50,7 +50,7 @@ export const bookHookRouter = createTRPCRouter({
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          return {input: "Hello"}
+          return {input: {name: "hello"}}
         }
 
         const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
@@ -143,7 +143,7 @@ export const bookHookRouter = createTRPCRouter({
                 message: "No Sale Record Created",
               });
         }
-        // return {id: newSaleRecord.id, booksNotFound: booksNotFound }
+        return {id: newSaleRecord.id, booksNotFound: booksNotFound }
     }
     catch(error){
         throw new TRPCError({

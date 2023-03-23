@@ -52,7 +52,7 @@ export const bookHookRouter = createTRPCRouter({
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: `Input Data in Wrong Format. Here is your input data: ${parsedXml}`,
+            message: `Input Data in Wrong Format. Here is your input data: ${input}`,
           });
         }
 

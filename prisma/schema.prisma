@@ -173,7 +173,8 @@ model InventoryCorrection {
   userName   String
 }
 
-model Admin {
-  password String
-  id       Int    @id @default(autoincrement())
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
 }

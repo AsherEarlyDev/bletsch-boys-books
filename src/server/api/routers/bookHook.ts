@@ -5,14 +5,25 @@ import { XMLParser } from "fast-xml-parser";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
+const saleRecord = z.object({
+    "?xml": z.object({'@_version': z.string(), '@_encoding': z.string()}),
+    sale: z.object({
+        "@_date": z.string(), 
+        item: z.array(z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)}))
+    })
+})
 
-type ParsedXML = {
-    xml: string
-    root: {sale: {
-        date: string, 
-        sales: {isbn: string, quantity: number, price: number}[]
-    }}
-}
+const saleRecordOneSale = z.object({
+  "?xml": z.object({'@_version': z.string(), '@_encoding': z.string()}),
+  sale: z.object({
+      "@_date": z.string(), 
+      item: z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)})
+  })
+})
+
+type ParsedXML = z.infer<typeof saleRecord>
+
+
 
 export const bookHookRouter = createTRPCRouter({
     createSaleRecord: publicProcedure
@@ -25,10 +36,27 @@ export const bookHookRouter = createTRPCRouter({
     .output(z.object({ id: z.string(), inventory: z.boolean() }))
     .mutation( async ({ input, ctx }) => {
     try{
-        const parser = new XMLParser();
+        const options = {
+            attributeNamePrefix : "@_",
+            ignoreAttributes : false,
+            ignoreNameSpace: false,
+            numberParseOptions: {
+              "hex": false,
+              "leadingZeros": false
+          },
+            arrayMode: 'strict'
+        };
+        const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
-        const parsedXml = parser.parse(xml) as ParsedXML;
-        const inputDate = parsedXml.root.sale.date.replace(/-/g, '\/')
+        const parsedXml = parser.parse(xml);
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Input Data in Wrong Format',
+          });
+        }
+
+        const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
           data: {
             date: new Date(inputDate),
@@ -36,10 +64,13 @@ export const bookHookRouter = createTRPCRouter({
         });
         let inventory: number
         if (newSaleRecord.id){
-            const inputSales = parsedXml.root.sale.sales
+            const inputSales = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
             for (const sale of inputSales){
+              let isbn = sale.isbn
+              isbn = isbn.replace(/\D/g,'')
+              console.log(isbn)
               let price = sale.price
-              const isbn = convertISBN10ToISBN13(sale.isbn)
+              isbn = convertISBN10ToISBN13(isbn)
               const book = await ctx.prisma.book.findFirst({
                 where:{
                   isbn: isbn
@@ -50,7 +81,7 @@ export const bookHookRouter = createTRPCRouter({
               }
 
               if (book){
-                inventory = book.inventory - sale.quantity
+                inventory = book.inventory - sale.qty
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
                     saleReconciliationId: newSaleRecord.id,
@@ -62,9 +93,9 @@ export const bookHookRouter = createTRPCRouter({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
                       bookId: isbn,
-                      quantity: sale.quantity,
+                      quantity: sale.qty,
                       price: price,
-                      subtotal: price * sale.quantity
+                      subtotal: price * sale.qty
                     },
                   });
                 await ctx.prisma.book.update({
@@ -82,10 +113,10 @@ export const bookHookRouter = createTRPCRouter({
                 },
                 data:{
                     totalBooks: {
-                    increment: sale.quantity
+                    increment: sale.qty
                     },
                     revenue: {
-                    increment: sale.quantity*price
+                    increment: sale.qty*price
                     },
                     uniqueBooks: {
                     increment: unique

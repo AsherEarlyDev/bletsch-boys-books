@@ -14,12 +14,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
-<<<<<<< HEAD
 import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
-
-=======
 import { useRouter } from 'next/router'
->>>>>>> main
 
 export default function SalesTable() {
   const {query} = useRouter()
@@ -148,14 +144,10 @@ export default function SalesTable() {
         <>
           {(displaySalesRecView && viewCurrentSales) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
-<<<<<<< HEAD
                 <ViewTableModal type="Sale" closeOut={closeSalesRecView} items={ currentSales}
                                         id={currentSalesRec.id}
                                         date={currentSalesRec.date}
                                         vendor={null}></ViewTableModal>
-=======
-                <ViewSalesTableModal salesRecId={viewCurrentOrder.id} salesRecDate={viewCurrentOrder.date} sales={viewCurrentSales} closeOut={closeSalesRecView}></ViewSalesTableModal>
->>>>>>> main
               </CreateSaleEntries>)
               : null}
         </>

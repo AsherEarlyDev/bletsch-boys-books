@@ -51,14 +51,14 @@ export const bookHookRouter = createTRPCRouter({
         const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
-        // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-        //   logtail.info("parsedXml")
-        //   logtail.flush()
-        //   throw new TRPCError({
-        //     code: 'BAD_REQUEST',
-        //     message: "Data in improper format!",
-        //   });
-        // }
+        logtail.info("parsedXml")
+        logtail.flush()
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: "Data in improper format!",
+          });
+        }
 
         const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({

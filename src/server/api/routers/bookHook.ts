@@ -50,10 +50,7 @@ export const bookHookRouter = createTRPCRouter({
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: `Input Data in Wrong Format. Here is your input data: ${input.info}`,
-          });
+          throw new Error("Bad Data", {cause: input});
         }
 
         const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')

@@ -21,7 +21,6 @@ const saleRecordOneSale = z.object({
   })
 })
 
-type ParsedXML = z.infer<typeof saleRecord>
 
 
 
@@ -33,9 +32,10 @@ export const bookHookRouter = createTRPCRouter({
     summary: "Add new sales to the system",
     contentTypes: ["application/xml"],} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ id: z.string(), inventory: z.boolean() }))
+    .output(z.object({ id: z.string(), isInventoryNegative: z.boolean(), booksNotFound: z.array(z.string()) }))
     .mutation( async ({ input, ctx }) => {
     try{
+        const booksNotFound = []
         const options = {
             attributeNamePrefix : "@_",
             ignoreAttributes : false,
@@ -66,16 +66,16 @@ export const bookHookRouter = createTRPCRouter({
         if (newSaleRecord.id){
             const inputSales = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
             for (const sale of inputSales){
-              let isbn = sale.isbn
+              let isbn: string = sale.isbn
               isbn = isbn.replace(/\D/g,'')
-              console.log(isbn)
-              let price = sale.price
+              let price: number = sale.price
               isbn = convertISBN10ToISBN13(isbn)
               const book = await ctx.prisma.book.findFirst({
                 where:{
                   isbn: isbn
                 }
               })
+
               if (price === 0){
                 price = book.retailPrice
               }
@@ -125,13 +125,9 @@ export const bookHookRouter = createTRPCRouter({
                 })
               }
               else{
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: `No Book found under ISBN: ${sale.isbn}`,
-                  });
+                booksNotFound.push(sale.isbn)
               }
 
-              
             }
         }
         else{
@@ -140,8 +136,8 @@ export const bookHookRouter = createTRPCRouter({
                 message: "No Sale Record Created",
               });
         }
-        
-        return {id: newSaleRecord.id, inventory: inventory >= 0 }
+        console.log(booksNotFound)
+        return {id: newSaleRecord.id, isInventoryNegative: inventory >= 0, booksNotFound: booksNotFound }
     }
     catch(error){
         throw new TRPCError({

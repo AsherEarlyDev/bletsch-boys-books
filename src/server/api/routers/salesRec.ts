@@ -242,14 +242,14 @@ export const salesRecRouter = createTRPCRouter({
   deleteSaleRec: publicProcedure
   .input(
       z.object({
-        saleRecId: z.string(),
+        id: z.string(),
       })
   )
   .mutation(async ({ ctx, input }) => {
     try {
       const sales = await ctx.prisma.sale.findMany({
         where: {
-          saleReconciliationId: input.saleRecId
+          saleReconciliationId: input.id
         }
       })
       for (const sale of sales){
@@ -272,7 +272,7 @@ export const salesRecRouter = createTRPCRouter({
       }
       await ctx.prisma.saleReconciliation.delete({
         where: {
-          id: input.saleRecId
+          id: input.id
         }
       })
     } catch (error) {

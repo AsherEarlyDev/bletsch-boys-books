@@ -8,7 +8,6 @@ import EditRowEntry from "../TableEntries/EditRowEntry";
 
 interface SalesRecTableRowProp{
     salesRecInfo: SalesRec,
-    onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
     onView: (id: string) =>void,
     onAdd: (id: string) =>void
@@ -17,9 +16,6 @@ interface SalesRecTableRowProp{
 
 export default function SalesRecTableRow(props:SalesRecTableRowProp) {
 
-    function handleEdit(){
-        props.onEdit(props.salesRecInfo.id)
-      }
     function handleDelete(){
       props.onDelete(props.salesRecInfo.id)
       }
@@ -35,7 +31,6 @@ export default function SalesRecTableRow(props:SalesRecTableRowProp) {
         <TableEntry>{props.salesRecInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.salesRecInfo.totalBooks}</TableEntry>
         <TableEntry>${props.salesRecInfo.revenue.toFixed(2)}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>
   )

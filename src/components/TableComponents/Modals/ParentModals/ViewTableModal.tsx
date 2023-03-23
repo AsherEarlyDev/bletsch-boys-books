@@ -52,7 +52,7 @@ export default function ViewTableModal(props: ViewTableModalProps) {
               </div>
             </div>
           </div>
-          ) : <h2 className="m-10 ">{props.type} Order has no {props.type.toLowerCase()}s...</h2>}
+          ) : <h2 className="m-10 ">{props.type} has no {props.type.split(" ")[0].toLowerCase()}...</h2>}
         </div>
         <div className="px-4 py-8 sm:px-6">
           <PrimaryButton onClick={props.closeOut} buttonText="Close"></PrimaryButton>

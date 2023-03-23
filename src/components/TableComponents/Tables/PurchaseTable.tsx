@@ -69,7 +69,7 @@ export default function PurchaseTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openPurchaseView}
+        <OrderTableRow type="Purchase" onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)
@@ -149,7 +149,7 @@ export default function PurchaseTable() {
               <CreateEntries closeStateFunction={setDisplayDeletePurchaseView}
                              submitText='Delete Purchase Order'>
                 <DeleteOrderModal closeOut={closeDeletePurchaseView}
-                                          id={currentOrder.id} type="Purchase" deleteMutation={deletePurchase}></DeleteOrderModal>
+                                          id={currentOrder.id} type="Purchase Order" deleteMutation={deletePurchase}></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -170,7 +170,7 @@ export default function PurchaseTable() {
           {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewTableModal type="Purchases" closeOut={closePurchaseView} items={purchases}
+                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={purchases}
                                         id={currentOrder.id}
                                         date={currentOrder.date}
                                         vendor={currentOrder.vendor}></ViewTableModal>

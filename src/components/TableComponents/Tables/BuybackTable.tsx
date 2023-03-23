@@ -78,7 +78,7 @@ export default function BuybackTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openBuybackView}
+        <OrderTableRow type="Buyback" onView={openBuybackView}
                                onDelete={openDeleteBuybackView} onEdit={openEditBuybackView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)

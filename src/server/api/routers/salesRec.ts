@@ -206,7 +206,7 @@ export const salesRecRouter = createTRPCRouter({
 
 
 
-  modifySaleRec: publicProcedure
+  modifySaleRec: protectedProcedure
   .input(
       z.object({
         saleRecId: z.string(),
@@ -239,7 +239,7 @@ export const salesRecRouter = createTRPCRouter({
     }
   }),
 
-  deleteSaleRec: publicProcedure
+  deleteSaleRec: protectedProcedure
   .input(
       z.object({
         id: z.string(),

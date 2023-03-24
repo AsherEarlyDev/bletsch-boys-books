@@ -36,10 +36,10 @@ export const bookHookRouter = createTRPCRouter({
     .output(z.object({ message: z.string(), booksNotFound: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
-        if(ctx.req.headers.referer != "bookhook.colab.duke.edu"){
+        if(ctx.req.headers.referer != "bookhook.colab.duke.edu:8001"){
           throw new TRPCError({
             code: "UNAUTHORIZED",
-            message: "This site is not authorized!",
+            message: `This site is not authorized! ${ctx.req.headers.referer}`,
           });
         }
         const booksNotFound = []

@@ -39,7 +39,7 @@ export const bookHookRouter = createTRPCRouter({
         if(ctx.req.headers.referer != "bookhook.colab.duke.edu:8001"){
           throw new TRPCError({
             code: "UNAUTHORIZED",
-            message: `This site is not authorized! ${ctx.req.headers.referer}`,
+            message: `This site is not authorized! ${Object.values(ctx.req.headers)}`,
           });
         }
         const booksNotFound = []

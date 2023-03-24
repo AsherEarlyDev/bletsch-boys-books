@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import SalesRecTableRow from "../TableRows/SalesRecTableRow";
 import EditSalesRecModal from "../Modals/SalesModals/Unused/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
 import ViewSalesRecModal from '../Modals/SalesModals/ViewSaleModal';
@@ -18,16 +17,19 @@ import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 import { useRouter } from 'next/router'
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import {useSession} from "next-auth/react";
 
 export default function SalesTable() {
   const {query} = useRouter()
   const router = useRouter()
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
 
   const date = new Date()
   const ENTRIES_PER_PAGE = 5
   const FIRST_HEADER =  ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
-  const STATIC_HEADERS = ["","Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Delete"] : []
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [startDate, setStartDate] = useState(date.toDateString())

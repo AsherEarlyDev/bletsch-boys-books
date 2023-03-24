@@ -7,12 +7,15 @@ import AddGenreModal from '../Modals/GenreModals/AddGenreModal';
 import TableDetails from '../TableDetails';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useSession} from "next-auth/react";
 
 export default function GenreTable() {
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
   const GENRES_PER_PAGE = 5
   const numberOfGenrePages = Math.ceil(api.genre.getNumberOfGenres.useQuery().data / GENRES_PER_PAGE)
   const totalNumberOfEntries = api.genre.getNumberOfGenres.useQuery().data
-  const STATIC_HEADERS = [ "Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? [ "Edit", "Delete"] : []
   const SORTABLE_HEADERS = [["Inventory", "inventory"]]
   const FIRST_HEADER = ["Name", "name"]
   const [genreSortOrder, setGenreSortOrder] = useState("asc")
@@ -31,7 +34,7 @@ export default function GenreTable() {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="my-8">
         <TableDetails tableName="Genres" tableDescription="A list of all the genres.">
-          <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>
+          {isAdmin && <AddGenreModal buttonText="Add Genre" submitText="Add Genre"></AddGenreModal>}
         </TableDetails>
         <Table sorting = {{setOrder:setGenreSortOrder, setField:setGenreSortField, currentOrder:genreSortOrder, currentField:genreSortField}} 
         setPage= {setGenrePageNumber}

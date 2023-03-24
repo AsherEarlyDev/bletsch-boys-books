@@ -39,7 +39,7 @@ export const bookHookRouter = createTRPCRouter({
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
           throw new TRPCError({
             code: "UNAUTHORIZED",
-            message: `This site is not authorized! ${typeof(ctx.req.headers["x-real-ip"])}`,
+            message: `This site is not authorized!`,
           });
         }
         const booksNotFound = []

@@ -9,7 +9,8 @@ export const buybackOrderRouter = createTRPCRouter({
     .input(
         z.object({
           vendorId: z.string(),
-          date: z.string()
+          date: z.string(),
+          userName: z.string()
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -32,7 +33,8 @@ export const buybackOrderRouter = createTRPCRouter({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
-                        vendorName: vendor.name
+                        vendorName: vendor.name,
+                        userName: input.userName
                     },
                 });
                 return {id: newBuyback.id, date: date, vendor: vendor}
@@ -54,7 +56,7 @@ export const buybackOrderRouter = createTRPCRouter({
           },
           include:{
             vendor: true,
-            buybacks: true
+            buybacks: true,
           }         
         })
         return transformData([rawData])[0]

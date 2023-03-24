@@ -19,10 +19,12 @@ import { boolean } from 'zod';
 export default function PurchaseTable() {
   const {query} = useRouter()
   const router = useRouter()
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
 
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [currentOrder, setCurrentOrder] = useState({
@@ -55,7 +57,6 @@ export default function PurchaseTable() {
   const deletePurchase = api.purchaseOrder.deletePurchaseOrder
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
-  const {data, status} = useSession();
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string) {
     if (createPurchaseOrder) {
@@ -187,10 +188,7 @@ export default function PurchaseTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission}
-                                 buttonText="Create Purchase Order"
-                                 submitText="Create Purchase Order"
-                                 vendorList={vendors}></AddOrderModal>
+          {isAdmin && <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order" submitText="Create Purchase Order" vendorList={vendors}></AddOrderModal>}
         </TableDetails>
         <Table
             setPage={setPageNumber}

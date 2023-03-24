@@ -5,7 +5,7 @@ import GenreTable from "../components/TableComponents/Tables/GenreTable";
 export default function RecordPage() {
   return (
       <>
-        <AppShell activePage="Records"></AppShell>
+        <AppShell activePage="Books"></AppShell>
         <BookTable></BookTable>
       </>
   )

@@ -3,7 +3,6 @@ export type genericItem = {
     bookId: string,
     buybackOrderId?: string,
     purchaseOrderId?: string,
-    saleRecId?: string,
     quantity: number,
     price?: number,
     buybackPrice?: number

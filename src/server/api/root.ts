@@ -12,6 +12,7 @@ import { salesReportRouter } from "./routers/salesReport";
 import { buybackRouter } from "./routers/buyback";
 import { buybackOrderRouter } from "./routers/bookBuybackOrder";
 import {inventoryCorrectionRouter} from "./routers/inventoryCorrection";
+import { bookHookRouter } from "./routers/bookHook";
 
 
 /**
@@ -31,6 +32,7 @@ export const appRouter = createTRPCRouter({
   salesReport: salesReportRouter,
   buyback: buybackRouter,
   buybackOrder: buybackOrderRouter,
+  bookHook: bookHookRouter,
   inventoryCorrection: inventoryCorrectionRouter
 });
 

@@ -22,7 +22,7 @@ import { type Session } from "next-auth";
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
 
-type CreateContextOptions = {
+export type CreateContextOptions = {
   session: Session | null;
 };
 
@@ -35,7 +35,7 @@ type CreateContextOptions = {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
@@ -66,13 +66,23 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import type { OpenApiMeta } from "trpc-openapi";
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape }) {
-    return shape;
-  },
-});
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .meta<OpenApiMeta>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ error, shape }) {
+      if (
+        error.code === "INTERNAL_SERVER_ERROR" &&
+        process.env.NODE_ENV === "production"
+      ) {
+        return { ...shape, message: "Internal server error" };
+      }
+      return shape;
+    },
+  });
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)

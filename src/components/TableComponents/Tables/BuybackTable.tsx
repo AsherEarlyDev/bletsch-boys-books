@@ -12,6 +12,7 @@ import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 import { useRouter } from 'next/router';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
 export default function BuybackTable() {
   const {query} = useRouter()
@@ -77,7 +78,7 @@ export default function BuybackTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openBuybackView}
+        <OrderTableRow type="Buyback" onView={openBuybackView}
                                onDelete={openDeleteBuybackView} onEdit={openEditBuybackView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)
@@ -174,11 +175,11 @@ export default function BuybackTable() {
           {displayBuybackView ? (viewCurrentBuybacks ? (
               <CreateEntries closeStateFunction={setDisplayBuybackView}
                              submitText="Show Buyback Details">
-                <ViewBuybackTableModal closeOut={closeBuybackView}
-                                        buybacks={viewCurrentBuybacks}
-                                        buybackOrderId={viewCurrentOrder.id}
-                                        buybackDate={viewCurrentOrder.date}
-                                        buybackVendor={viewCurrentOrder.vendor}></ViewBuybackTableModal>
+                <ViewTableModal type="Buyback" closeOut={closeBuybackView}
+                                        items={buybacks}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

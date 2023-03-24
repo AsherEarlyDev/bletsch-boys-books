@@ -11,6 +11,7 @@ import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableMo
 import {useSession} from "next-auth/react";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 import { useRouter } from 'next/router'
 import { boolean } from 'zod';
 
@@ -68,7 +69,7 @@ export default function PurchaseTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openPurchaseView}
+        <OrderTableRow type="Purchase" onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)
@@ -148,7 +149,7 @@ export default function PurchaseTable() {
               <CreateEntries closeStateFunction={setDisplayDeletePurchaseView}
                              submitText='Delete Purchase Order'>
                 <DeleteOrderModal closeOut={closeDeletePurchaseView}
-                                          id={currentOrder.id} type="Purchase" deleteMutation={deletePurchase}></DeleteOrderModal>
+                                          id={currentOrder.id} type="Purchase Order" deleteMutation={deletePurchase}></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -169,10 +170,10 @@ export default function PurchaseTable() {
           {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={viewCurrentPurchases}
-                                        purchaseOrderId={viewCurrentOrder.id}
-                                        purchaseDate={viewCurrentOrder.date}
-                                        purchaseVendorName={viewCurrentOrder.vendor.name}></ViewPurchaseTableModal>
+                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={purchases}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )

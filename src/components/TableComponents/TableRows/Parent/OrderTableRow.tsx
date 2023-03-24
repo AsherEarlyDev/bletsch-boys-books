@@ -9,14 +9,15 @@ interface OrderTableRowProp{
     OrderInfo: {
         id: string,
         date: string,
-        vendor: {id: string, name: string, bookBuybackPercentage: number}
         items: any[],
         totalBooks: number,
         uniqueBooks: number,
-        cost?: number
-        revenue?: number
+        vendor?: {id: string, name: string, bookBuybackPercentage: number},
+        cost?: number,
+        revenue?: number,
         userName: string
     },
+    type: string,
     onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
     onView: (id: string) =>void,
@@ -43,13 +44,14 @@ export default function OrderTableRow(props:OrderTableRowProp) {
   return (
       <tr>
         <ViewTableEntry onView={handleView}>{props.OrderInfo.date}</ViewTableEntry>
-        <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>
+        {props.type === "Sale" ? null : <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>}
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
         <TableEntry>${price}</TableEntry>
         <TableEntry>{props.OrderInfo.userName}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
+        {props.type === "Sale" ? <>{null}<DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry> </>
+         : <><EditRowEntry onEdit={handleEdit}></EditRowEntry><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>}
+        
       </tr>
   )
 }

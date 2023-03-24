@@ -20,14 +20,15 @@ export default function GenreTableRow(props:GenreTableRowProp) {
   return (
       <tr>
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-        
-        <div><Link href={{pathname: '/records', query:{genre:props.genre.name}}}> 
+        <div>
+          <Link href={{pathname: '/books', query:{genre:props.genre.name}}}>
           <button  className = "italic text-indigo-600 hover:text-indigo-900 inline-flex group w-80">
               <div className="text-left overflow-hidden truncate w-60">
                 {props.genre.name}
               </div>
             </button>
-          </Link></div>
+          </Link>
+        </div>
         </td>
         <TableEntry>{genreInventory}</TableEntry>
         <EditGenreModal itemIdentifier={props.genre.name} buttonText="Edit" submitText="Submit Edit"></EditGenreModal>

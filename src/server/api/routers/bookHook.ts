@@ -67,7 +67,7 @@ export const bookHookRouter = createTRPCRouter({
         if (newSaleRecord.id){
             
             const inputSales: {isbn: string, qty: number, price: number}[] = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
-            inputSales.forEach(async (element) => {
+            for (const element of inputSales){
                 let isbn: string = element.isbn
                 isbn = isbn.replace(/\D/g,'')
                 isbn = convertISBN10ToISBN13(isbn)
@@ -82,7 +82,8 @@ export const bookHookRouter = createTRPCRouter({
                 else{
                   booksNotFound.push(element.isbn)
                 }
-            });
+            }
+  
 
             if (booksNotFound.length === inputSales.length){
               throw new TRPCError({

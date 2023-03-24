@@ -36,6 +36,7 @@ export const bookHookRouter = createTRPCRouter({
     .mutation( async ({ input, ctx }) => {
     try{
         const booksNotFound = []
+        const booksFound = []
         const options = {
             attributeNamePrefix : "@_",
             ignoreAttributes : false,
@@ -49,8 +50,6 @@ export const bookHookRouter = createTRPCRouter({
         const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
-        logtail.info("parsedXml")
-        logtail.flush()
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -66,23 +65,48 @@ export const bookHookRouter = createTRPCRouter({
         });
         let inventory: number
         if (newSaleRecord.id){
-            const inputSales = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
+            
+            const inputSales: {isbn: string, qty: number, price: number}[] = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
+            inputSales.forEach(async (element) => {
+                let isbn: string = element.isbn
+                isbn = isbn.replace(/\D/g,'')
+                isbn = convertISBN10ToISBN13(isbn)
+                const bookValidation = await ctx.prisma.book.findUnique({
+                  where:{
+                    isbn: isbn
+                  }
+                })
+                if (bookValidation){
+                  booksFound.push(element.isbn)
+                }
+                else{
+                  booksNotFound.push(element.isbn)
+                }
+            });
+
+            if (booksNotFound.length === inputSales.length){
+              throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: "None of the books you entered are in our system!",
+              });
+            }
+
             for (const sale of inputSales){
               let isbn: string = sale.isbn
               isbn = isbn.replace(/\D/g,'')
-              let price: number = sale.price
               isbn = convertISBN10ToISBN13(isbn)
-              const book = await ctx.prisma.book.findFirst({
-                where:{
-                  isbn: isbn
+              let price: number = sale.price
+
+              if (booksFound.includes(sale.isbn)){
+                const book = await ctx.prisma.book.findFirst({
+                  where:{
+                    isbn: isbn
+                  }
+                })
+                if (price === 0){
+                  price = book.retailPrice
                 }
-              })
 
-              if (price === 0){
-                price = book.retailPrice
-              }
-
-              if (book){
                 inventory = book.inventory - sale.qty
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
@@ -159,7 +183,8 @@ export const bookHookRouter = createTRPCRouter({
                 message: "No Sale Record Created",
               });
         }
-        return {message: `The sale was recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound.`, booksNotFound: booksNotFound }
+        
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound.`, booksNotFound: booksNotFound }
     }
     catch(error){
         throw new TRPCError({
@@ -170,3 +195,22 @@ export const bookHookRouter = createTRPCRouter({
       
     }),
   });
+
+  const validateBooks = async (isbns: string[], ctx)=>{
+    const found: string[] = []
+    const not_found: string[] = []
+      for (const isbn of isbns){
+          const book = await ctx.prisma.book.findUnique({
+              where: {
+                isbn: isbn
+              }
+          })
+          if (book){
+            found.push(isbn)
+          }
+          else{
+            not_found.push(isbn)
+          }
+      }
+      return {foundBooks: found, booksNotFound: not_found}
+  }

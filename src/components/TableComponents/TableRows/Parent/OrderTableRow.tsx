@@ -28,7 +28,6 @@ interface OrderTableRowProp{
 export default function OrderTableRow(props:OrderTableRowProp) {
     const {data, status} = useSession()
     const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
-    console.log(props.OrderInfo)
     let price: any = props.OrderInfo.cost ? props.OrderInfo.cost : props.OrderInfo.revenue
     if (price === undefined){
       price = "0.00"

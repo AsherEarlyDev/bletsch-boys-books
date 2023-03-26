@@ -5,7 +5,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const salesRouter = createTRPCRouter({
-    createSale: publicProcedure
+    createSale: protectedProcedure
     .input(
         z.object({
           saleReconciliationId: z.string(),
@@ -102,7 +102,7 @@ export const salesRouter = createTRPCRouter({
         
       }),
 
-    modifySale: publicProcedure
+    modifySale: protectedProcedure
     .input(
       z.object({
           id: z.string(),
@@ -198,7 +198,7 @@ export const salesRouter = createTRPCRouter({
         
     }),
 
-    deleteSale: publicProcedure
+    deleteSale: protectedProcedure
     .input(
       z.object({
         id: z.string(),

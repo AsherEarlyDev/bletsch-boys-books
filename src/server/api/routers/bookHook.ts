@@ -30,11 +30,18 @@ export const bookHookRouter = createTRPCRouter({
     path: "/bookhook",
     tags: ["bookhook"],
     summary: "Add new sales to the system",
-    contentTypes: ["application/xml"],} })
+    contentTypes: ["application/xml"],
+    protect: true} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
     .output(z.object({ message: z.string(), booksNotFound: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
+        if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: `This site is not authorized!`,
+          });
+        }
         const booksNotFound = []
         const booksFound = []
         const options = {

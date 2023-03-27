@@ -64,7 +64,16 @@ export const bookHookRouter = createTRPCRouter({
           });
         }
 
-        const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
+        let inputDate
+        if (new Date(parsedXml.sale["@_date"])){
+          inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
+        }
+        else{
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: "Date must be given in date format!",
+          });
+        }
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
           data: {
             date: new Date(inputDate),
@@ -171,8 +180,8 @@ export const bookHookRouter = createTRPCRouter({
                         isbn: book.isbn
                     },
                     data:{
-                      increment:{
-                        inventory: -inventory,
+                      inventory:{
+                        increment: -inventory,
                       },
                       shelfSpace: 0
                     }

@@ -72,7 +72,7 @@ export const bookHookRouter = createTRPCRouter({
         else{
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: "Date must be given in date format!",
+            message: "Date is in improper format!",
           });
         }
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
@@ -84,6 +84,12 @@ export const bookHookRouter = createTRPCRouter({
         if (newSaleRecord.id){
             
             const inputSales: {isbn: string, qty: number, price: number}[] = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
+            if (inputSales.length === 0){
+              throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: "No sales information was given!",
+              });
+            }
             for (const element of inputSales){
                 let isbn: string = element.isbn
                 isbn = isbn.replace(/\D/g,'')

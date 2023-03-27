@@ -65,7 +65,7 @@ export const bookHookRouter = createTRPCRouter({
         }
 
         let inputDate
-        if (new Date(parsedXml.sale["@_date"])){
+        if (Date.parse(parsedXml.sale["@_date"])){
           inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
         }
         else{

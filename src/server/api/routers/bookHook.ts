@@ -200,23 +200,27 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 })
                 log.info("Updating sale record")
+                log.info(`ID: ${newSaleRecord.id}`)
+                log.info(`Quantity: ${sale.qty}`)
+                log.info(`Price: ${price}`)
+                log.info(`Unique: ${unique}`)
                 await ctx.prisma.saleReconciliation.update({
-                where: {
-                    id: newSaleRecord.id
-                },
-                data:{
-                    totalBooks: {
-                    increment: sale.qty
-                    },
-                    revenue: {
-                    increment: sale.qty*price
-                    },
-                    uniqueBooks: {
-                    increment: unique
-                    }
-                }
+                  where: {
+                      id: newSaleRecord.id
+                  },
+                  data:{
+                      totalBooks: {
+                        increment: sale.qty
+                      },
+                      revenue: {
+                        increment: sale.qty*price
+                      },
+                      uniqueBooks: {
+                        increment: unique
+                      }
+                  }
                 })
-                log.info("creating inventory corrections")
+                log.info(`creating inventory corrections: ${inventory}`)
                 if (inventory < 0){
                   log.info("creating correction")
                   await ctx.prisma.inventoryCorrection.create({
@@ -262,7 +266,7 @@ export const bookHookRouter = createTRPCRouter({
     catch(error){
         throw new TRPCError({
             code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
-            message: error.message,
+            message: "Something is going wrong!",
           });
     }
       

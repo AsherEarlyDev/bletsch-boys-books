@@ -29,6 +29,7 @@ model Book {
   sales               Sale[]
   ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
+  }
 
 model Genre {
   id    String @id @default(cuid())

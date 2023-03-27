@@ -10,30 +10,17 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
+        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
+      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
   })
 })
 
-const saleRecordISBNNumber = z.object({
-  sale: z.object({
-      "@_date": z.string(), 
-      "item": z.array(z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
-  })
-})
-
-const saleRecordOneSaleISBNNumber = z.object({
-sale: z.object({
-    "@_date": z.string(), 
-    "item": z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
-})
-})
 
 
 
@@ -78,12 +65,7 @@ export const bookHookRouter = createTRPCRouter({
         log.info(saleRecord.safeParse(parsedXml))
         log.info(`SaleRecord2: `)
         log.info(saleRecordOneSale.safeParse(parsedXml))
-        log.info(`SaleRecord3: `)
-        log.info(saleRecordISBNNumber.safeParse(parsedXml))
-        log.info(`SaleRecord4: `)
-        log.info(saleRecordOneSaleISBNNumber.safeParse(parsedXml))
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success &&
-        !saleRecordISBNNumber.safeParse(parsedXml).success && !saleRecordOneSaleISBNNumber.safeParse(parsedXml).success){
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: `Data in improper format!`,
@@ -116,7 +98,19 @@ export const bookHookRouter = createTRPCRouter({
               });
             }
             for (const element of inputSales){
-                let isbn: string = typeof(element.isbn) === "string" ? element.isbn : parseInt(element.isbn).toString()
+                let isbn: string
+                if (typeof(element.isbn) === "string"){
+                  isbn = element.isbn
+                }
+                else if (typeof(element.isbn) === "number"){
+                  isbn = parseInt(element.isbn).toString()
+                }
+                else{
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "ISBN must be a string or number!",
+                  });
+                }
                 isbn = isbn.replaceAll("-",'')
                 if (!(/^\d+$/.test(isbn))){
                   throw new TRPCError({

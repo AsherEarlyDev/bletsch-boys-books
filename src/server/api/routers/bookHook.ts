@@ -204,22 +204,6 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`Quantity: ${sale.qty}`)
                 log.info(`Price: ${price}`)
                 log.info(`Unique: ${unique}`)
-                await ctx.prisma.saleReconciliation.update({
-                  where: {
-                      id: newSaleRecord.id
-                  },
-                  data:{
-                      totalBooks: {
-                        increment: sale.qty
-                      },
-                      revenue: {
-                        increment: sale.qty*price
-                      },
-                      uniqueBooks: {
-                        increment: unique
-                      }
-                  }
-                })
                 log.info(`creating inventory corrections: ${inventory}`)
                 if (inventory < 0){
                   log.info("creating correction")
@@ -252,6 +236,22 @@ export const bookHookRouter = createTRPCRouter({
                 else{
                   log.info("No correction needed")
                 }
+                await ctx.prisma.saleReconciliation.update({
+                  where: {
+                      id: newSaleRecord.id
+                  },
+                  data:{
+                      totalBooks: {
+                        increment: sale.qty
+                      },
+                      revenue: {
+                        increment: sale.qty*price
+                      },
+                      uniqueBooks: {
+                        increment: unique
+                      }
+                  }
+                })
               }
 
 

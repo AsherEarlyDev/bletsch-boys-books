@@ -35,7 +35,7 @@ export const bookHookRouter = createTRPCRouter({
     contentTypes: ["application/xml"],
     protect: true} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCounts: z.map(z.string(), z.number())}))
+    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCounts: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
@@ -44,7 +44,7 @@ export const bookHookRouter = createTRPCRouter({
             message: `This site is not authorized!`,
           });
         }
-        const inventoryCounts = new Map<string, number>();
+        const inventoryCounts = [];
         const booksNotFound = []
         const booksFound = []
         const options = {
@@ -168,9 +168,9 @@ export const bookHookRouter = createTRPCRouter({
                 }
 
                 inventory = book.inventory - sale.qty
-                log.info(`Inventory: ${inventory}`)
-                log.info(`Title: ${book.title}`)
-                inventoryCounts.set(book.title, inventory)
+                if (inventory < 0){
+
+                }
 
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
@@ -227,7 +227,7 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. If the inventory value returned is negative, please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. The list under inventoryCounts demonstrates the books that need inventory corrections! Please got to the books page to make these corrections.`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({

@@ -169,7 +169,7 @@ export const bookHookRouter = createTRPCRouter({
 
                 inventory = book.inventory - sale.qty
                 if (inventory < 0){
-
+                  inventoryCounts.push(book.title)
                 }
 
                 const uniqueBooks = await ctx.prisma.sale.findMany({

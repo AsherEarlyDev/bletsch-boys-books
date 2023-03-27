@@ -211,7 +211,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
-
+                inventoryCounts.set(book.title, inventory)
               }
 
 

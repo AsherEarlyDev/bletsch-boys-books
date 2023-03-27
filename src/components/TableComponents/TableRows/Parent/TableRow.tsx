@@ -35,10 +35,9 @@ interface TableRowProp {
 }
 
 export default function TableRow(props: TableRowProp) {
-  console.log(props.isAdding)
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.item?.price ? props.item?.price : props.item?.buybackPrice
+  const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
   const [deleteView, setDeleteView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [price, setPrice] = useState<number>(defaultPrice)
@@ -46,11 +45,15 @@ export default function TableRow(props: TableRowProp) {
   const [subtotal, setSubtotal] = useState(props.item.subtotal)
   const [visible, setVisible] = useState(true)
 
-
   function handleRowEdit() {
     setIsEditing(true)
   }
 
+  function handleBookSelect(bookId: string){
+    setIsbn(bookId)
+    console.log(book)
+    setPrice(book?.retailPrice)
+  }
 
   function renderDeleteView() {
     const deleteMutation = props.type === "Buyback" ? api.buyback.deleteBuyback.useMutation({
@@ -102,8 +105,7 @@ export default function TableRow(props: TableRowProp) {
                 :
                 (props.isAdding ? ((!props.isCSV || book) ?
                         <tr>
-
-                          <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {}} ></BookCardProp>
+                          <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
                                                      defaultValue={props.isCSV ? price : ""}></MutableCurrencyTableEntry>

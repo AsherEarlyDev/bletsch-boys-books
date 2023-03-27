@@ -10,30 +10,17 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
+        "item": z.array(z.object({"isbn": z.string() || z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)})
+      "item": z.object({"isbn": z.string() || z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
   })
 })
 
-const saleRecordISBNNumber = z.object({
-  sale: z.object({
-      "@_date": z.string(), 
-      "item": z.array(z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
-  })
-})
-
-const saleRecordOneSaleISBNNumber = z.object({
-sale: z.object({
-    "@_date": z.string(), 
-    "item": z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0)})
-})
-})
 
 
 
@@ -75,11 +62,10 @@ export const bookHookRouter = createTRPCRouter({
         log.info(parsedXml)
         log.info(`SaleRecord: `)
         log.info(saleRecord.safeParse(parsedXml))
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success 
-        && saleRecordISBNNumber.safeParse(parsedXml).success && !saleRecordOneSaleISBNNumber.safeParse(parsedXml).success){
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
+            message: `Data in improper format!`,
           });
         }
 
@@ -90,7 +76,7 @@ export const bookHookRouter = createTRPCRouter({
         else{
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: "Date is in improper format!",
+            message: "Date is in improper format! Must be of form YYYY-MM-DD.",
           });
         }
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
@@ -110,11 +96,11 @@ export const bookHookRouter = createTRPCRouter({
             }
             for (const element of inputSales){
                 let isbn: string = typeof(element.isbn) === "string" ? element.isbn : parseInt(element.isbn).toString()
-                isbn = isbn.replace("-",'')
+                isbn = isbn.replaceAll("-",'')
                 if (!(/^\d+$/.test(isbn))){
                   throw new TRPCError({
                     code: 'BAD_REQUEST',
-                    message: "ISBN must be a 10 or 13 digit number that may only contain a dash in between numbers. EX: 978-**********",
+                    message: "ISBN must be a 10 or 13-digit number that may only contain a dash in between numbers. EX: 978-**********",
                   });
                 }
                 isbn = convertISBN10ToISBN13(isbn)
@@ -140,10 +126,20 @@ export const bookHookRouter = createTRPCRouter({
             }
 
             for (const sale of inputSales){
-              let isbn: string = sale.isbn
-              isbn = isbn.replace(/\D/g,'')
+              let isbn: string = typeof(sale.isbn) === "string" ? sale.isbn : parseInt(sale.isbn).toString()
+              isbn = isbn.replaceAll("-",'')
               isbn = convertISBN10ToISBN13(isbn)
-              let price: number = sale.price
+              let price: number
+              let priceString: string = sale.price.toString()
+              if (parseFloat(priceString.replaceAll("$", ""))){
+                price = parseFloat(priceString.replaceAll("$", ""))
+              }
+              else{
+                throw new TRPCError({
+                  code: 'BAD_REQUEST',
+                  message: "Price must be a float with at most a $ sign at the front! EX: $X.XX or X.XX",
+                });
+              }
 
               if (booksFound.includes(sale.isbn)){
                 const book = await ctx.prisma.book.findFirst({

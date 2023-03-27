@@ -208,7 +208,7 @@ export const bookHookRouter = createTRPCRouter({
                 log.info("creating correction")
                 log.info("Updating sale record")
                 // log.info(`Username: ${ctx.session.user?.name}`)
-                log.info(`Date: ${new Date(inputDate)}`)
+                log.info(`Date: ${inputDate}`)
                 log.info(`Adjustment: ${-inventory}`)
                 log.info(`bookId: ${isbn}`)
                 // if (inventory < 0){

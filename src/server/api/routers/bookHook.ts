@@ -5,7 +5,7 @@ import { XMLParser } from "fast-xml-parser";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 const { Logtail } = require("@logtail/node");
-const logtail = new Logtail("PxJvYh15v3DCzCNouHKSg874");
+const { log } = require('@logtail/next');
 
 const saleRecord = z.object({
     sale: z.object({
@@ -57,12 +57,13 @@ export const bookHookRouter = createTRPCRouter({
         const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
-          });
-        }
+        log.info(`ParsedXml: ${parsedXml}`)
+        // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+        //   throw new TRPCError({
+        //     code: 'BAD_REQUEST',
+        //     message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
+        //   });
+        // }
 
         let inputDate
         if (Date.parse(parsedXml.sale["@_date"])){

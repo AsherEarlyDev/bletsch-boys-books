@@ -223,6 +223,11 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`creating inventory corrections: ${inventory}`)
                 if (inventory < 0){
                   log.info("creating correction")
+                  log.info("Updating sale record")
+                  log.info(`Username: ${ctx.session.user?.name}`)
+                  log.info(`Date: ${new Date(inputDate)}`)
+                  log.info(`Adjustment: ${-inventory}`)
+                  log.info(`bookId: ${isbn}`)
                   await ctx.prisma.inventoryCorrection.create({
                     data:{
                       userName: ctx.session.user?.name,

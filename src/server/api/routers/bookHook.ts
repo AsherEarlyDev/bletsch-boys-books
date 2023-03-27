@@ -10,14 +10,14 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
+        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.any()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
+      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.any()})
   })
 })
 
@@ -164,6 +164,12 @@ export const bookHookRouter = createTRPCRouter({
                 })
                 if (price === 0){
                   price = book.retailPrice
+                }
+                else if(price < 0){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Price must be greater than 0!",
+                  });
                 }
 
                 inventory = book.inventory - sale.qty

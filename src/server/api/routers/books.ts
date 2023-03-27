@@ -52,7 +52,6 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
   const googleImageUrl = input.imageLinks.thumbnail
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
-    console.log(result)
     if (result) {
       const bookInfo: editableBook = {
         isbn: isbn,
@@ -490,7 +489,6 @@ export const booksRouter = createTRPCRouter({
           books.push(book)
         }
       }
-      console.log(books)
       return books
     } catch (error) {
       throw new TRPCError({

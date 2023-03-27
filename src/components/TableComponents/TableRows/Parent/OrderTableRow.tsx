@@ -4,6 +4,7 @@ import { PurchaseOrder } from "../../../../types/purchaseTypes";
 import ViewTableEntry from "../../TableEntries/ViewTableEntry";
 import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
 import EditRowEntry from "../../TableEntries/EditRowEntry";
+import {useSession} from "next-auth/react";
 
 interface OrderTableRowProp{
     OrderInfo: {
@@ -25,6 +26,8 @@ interface OrderTableRowProp{
 
 
 export default function OrderTableRow(props:OrderTableRowProp) {
+    const {data, status} = useSession()
+    const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
     let price: any = props.OrderInfo.cost ? props.OrderInfo.cost : props.OrderInfo.revenue
     if (price === undefined){
       price = "0.00"
@@ -48,9 +51,9 @@ export default function OrderTableRow(props:OrderTableRowProp) {
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
         <TableEntry>${price}</TableEntry>
-        <TableEntry>{props.OrderInfo.userName}</TableEntry>
-        {props.type === "Sale" ? <>{null}<DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry> </>
-         : <><EditRowEntry onEdit={handleEdit}></EditRowEntry><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>}
+        {props.type != "Sale" && <TableEntry>{props.OrderInfo.userName}</TableEntry>}
+        {isAdmin && (props.type === "Sale" ? <><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>
+         : <><EditRowEntry onEdit={handleEdit}></EditRowEntry><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>)}
         
       </tr>
   )

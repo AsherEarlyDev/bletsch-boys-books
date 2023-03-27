@@ -213,6 +213,8 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
+                log.info(unconvertedISBN)
+                log.info(inventory)
                 inventoryCounts.set(unconvertedISBN, inventory)
               }
 
@@ -226,9 +228,7 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. 
-        The list of books not added can be found in booksNotFound. If the inventory value returned is negative, 
-        please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. If the inventory value returned is negative, please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({

@@ -170,6 +170,9 @@ export const bookHookRouter = createTRPCRouter({
                 }
 
                 inventory = book.inventory - sale.qty
+                log.info(`Unconverted ISBN: ${unconvertedISBN}`)
+                log.info(`Inventory: ${inventory}`)
+                inventoryCounts.set(unconvertedISBN, inventory)
 
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
@@ -213,9 +216,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
-                log.info(unconvertedISBN)
-                log.info(inventory)
-                inventoryCounts.set(unconvertedISBN, inventory)
+                
               }
 
 

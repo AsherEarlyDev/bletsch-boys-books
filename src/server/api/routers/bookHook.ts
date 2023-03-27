@@ -61,12 +61,12 @@ export const bookHookRouter = createTRPCRouter({
         log.info(parsedXml)
         log.info(`SaleRecord: `)
         log.info(saleRecord.safeParse(parsedXml))
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
-          });
-        }
+        // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+        //   throw new TRPCError({
+        //     code: 'BAD_REQUEST',
+        //     message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
+        //   });
+        // }
 
         let inputDate
         if (Date.parse(parsedXml.sale["@_date"])){

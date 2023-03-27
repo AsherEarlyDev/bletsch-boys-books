@@ -10,14 +10,14 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        item: z.array(z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)}))
+        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      item: z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)})
+      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)})
   })
 })
 
@@ -59,12 +59,14 @@ export const bookHookRouter = createTRPCRouter({
         const parsedXml = parser.parse(xml);
         log.info(`ParsedXml: `)
         log.info(parsedXml)
-        // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-        //   throw new TRPCError({
-        //     code: 'BAD_REQUEST',
-        //     message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
-        //   });
-        // }
+        log.info(`SaleRecord: `)
+        log.info(saleRecord.safeParse(parsedXml))
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
+          });
+        }
 
         let inputDate
         if (Date.parse(parsedXml.sale["@_date"])){

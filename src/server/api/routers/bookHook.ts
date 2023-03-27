@@ -169,6 +169,7 @@ export const bookHookRouter = createTRPCRouter({
 
                 inventory = book.inventory - sale.qty
                 if (inventory < 0){
+                  log.info(book.title)
                   inventoryCounts.push(book.title)
                 }
 

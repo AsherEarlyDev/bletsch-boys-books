@@ -10,14 +10,14 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
+        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)})
+      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0)})
   })
 })
 
@@ -61,12 +61,12 @@ export const bookHookRouter = createTRPCRouter({
         log.info(parsedXml)
         log.info(`SaleRecord: `)
         log.info(saleRecord.safeParse(parsedXml))
-        // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
-        //   throw new TRPCError({
-        //     code: 'BAD_REQUEST',
-        //     message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
-        //   });
-        // }
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
+          });
+        }
 
         let inputDate
         if (Date.parse(parsedXml.sale["@_date"])){
@@ -142,6 +142,7 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
+                log.info("Updating books and creating sale")
                 await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
@@ -160,6 +161,7 @@ export const bookHookRouter = createTRPCRouter({
                     shelfSpace: inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
                 }
                 })
+                log.info("Updating sale record")
                 await ctx.prisma.saleReconciliation.update({
                 where: {
                     id: newSaleRecord.id
@@ -176,7 +178,9 @@ export const bookHookRouter = createTRPCRouter({
                     }
                 }
                 })
+                log.info("creating inventory corrections")
                 if (inventory < 0){
+                  log.info("creating correction")
                   await ctx.prisma.inventoryCorrection.create({
                     data:{
                       userName: ctx.session.user?.name,
@@ -185,6 +189,7 @@ export const bookHookRouter = createTRPCRouter({
                       bookId: isbn
                     }
                   })
+                  log.info("updating book inventory and shelf space")
                   await ctx.prisma.book.update({
                     where: {
                         isbn: book.isbn
@@ -196,6 +201,9 @@ export const bookHookRouter = createTRPCRouter({
                       shelfSpace: 0
                     }
                     })
+                }
+                else{
+                  log.info("No correction needed")
                 }
               }
               else{

@@ -221,32 +221,32 @@ export const bookHookRouter = createTRPCRouter({
                   }
                 })
                 log.info(`creating inventory corrections: ${inventory}`)
-                if (inventory < 0){
-                  log.info("creating correction")
-                  await ctx.prisma.inventoryCorrection.create({
-                    data:{
-                      userName: ctx.session.user?.name,
-                      date: new Date(inputDate),
-                      adjustment: -inventory,
-                      bookId: isbn
-                    }
-                  })
-                  log.info("updating book inventory and shelf space")
-                  await ctx.prisma.book.update({
-                    where: {
-                        isbn: book.isbn
-                    },
-                    data:{
-                      inventory:{
-                        increment: -inventory,
-                      },
-                      shelfSpace: 0
-                    }
-                    })
-                }
-                else{
-                  log.info("No correction needed")
-                }
+                // if (inventory < 0){
+                //   log.info("creating correction")
+                //   await ctx.prisma.inventoryCorrection.create({
+                //     data:{
+                //       userName: ctx.session.user?.name,
+                //       date: new Date(inputDate),
+                //       adjustment: -inventory,
+                //       bookId: isbn
+                //     }
+                //   })
+                //   log.info("updating book inventory and shelf space")
+                //   await ctx.prisma.book.update({
+                //     where: {
+                //         isbn: book.isbn
+                //     },
+                //     data:{
+                //       inventory:{
+                //         increment: -inventory,
+                //       },
+                //       shelfSpace: 0
+                //     }
+                //     })
+                // }
+                // else{
+                //   log.info("No correction needed")
+                // }
               }
               else{
                 booksNotFound.push(sale.isbn)

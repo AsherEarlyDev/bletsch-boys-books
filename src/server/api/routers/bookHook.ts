@@ -35,7 +35,7 @@ export const bookHookRouter = createTRPCRouter({
     contentTypes: ["application/xml"],
     protect: true} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string())}))
+    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCounts: z.map(z.string(), z.number())}))
     .mutation( async ({ input, ctx }) => {
     try{
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
@@ -44,6 +44,7 @@ export const bookHookRouter = createTRPCRouter({
             message: `This site is not authorized!`,
           });
         }
+        const inventoryCounts = new Map<string, number>();
         const booksNotFound = []
         const booksFound = []
         const options = {
@@ -59,12 +60,6 @@ export const bookHookRouter = createTRPCRouter({
         const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
-        log.info(`ParsedXml: `)
-        log.info(parsedXml)
-        log.info(`SaleRecord1: `)
-        log.info(saleRecord.safeParse(parsedXml))
-        log.info(`SaleRecord2: `)
-        log.info(saleRecordOneSale.safeParse(parsedXml))
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -173,6 +168,7 @@ export const bookHookRouter = createTRPCRouter({
                 }
 
                 inventory = book.inventory - sale.qty
+
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
                     saleReconciliationId: newSaleRecord.id,
@@ -199,44 +195,6 @@ export const bookHookRouter = createTRPCRouter({
                     shelfSpace: inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
                 }
                 })
-                log.info("Updating sale record")
-                log.info(`ID: ${newSaleRecord.id}`)
-                log.info(`Quantity: ${sale.qty}`)
-                log.info(`Price: ${price}`)
-                log.info(`Unique: ${unique}`)
-                log.info(`creating inventory corrections: ${inventory}`)
-                log.info("creating correction")
-                log.info("Updating sale record")
-                log.info(`Username: ${ctx.session.user?.name}`)
-                log.info(`Date: ${inputDate}`)
-                log.info(`Adjustment: ${-inventory}`)
-                log.info(`bookId: ${isbn}`)
-                // if (inventory < 0){
-                  
-                //   await ctx.prisma.inventoryCorrection.create({
-                //     data:{
-                //       userName: ctx.session.user?.name,
-                //       date: new Date(inputDate),
-                //       adjustment: -inventory,
-                //       bookId: isbn
-                //     }
-                //   })
-                //   log.info("updating book inventory and shelf space")
-                //   await ctx.prisma.book.update({
-                //     where: {
-                //         isbn: isbn
-                //     },
-                //     data:{
-                //       inventory:{
-                //         increment: -inventory,
-                //       },
-                //       shelfSpace: 0
-                //     }
-                //     })
-                // }
-                // else{
-                //   log.info("No correction needed")
-                // }
                 await ctx.prisma.saleReconciliation.update({
                   where: {
                       id: newSaleRecord.id
@@ -253,6 +211,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
+                inventoryCounts.set(sale.isbn, inventory)
               }
 
 
@@ -265,7 +224,9 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound.`, booksNotFound: booksNotFound }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. 
+        The list of books not added can be found in booksNotFound. If the inventory value returned is negative, 
+        please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({

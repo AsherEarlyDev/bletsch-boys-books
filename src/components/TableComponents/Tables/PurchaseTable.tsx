@@ -11,6 +11,7 @@ import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableMo
 import {useSession} from "next-auth/react";
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 import { useRouter } from 'next/router'
 import { boolean } from 'zod';
 
@@ -18,10 +19,12 @@ import { boolean } from 'zod';
 export default function PurchaseTable() {
   const {query} = useRouter()
   const router = useRouter()
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
 
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
   const [currentOrder, setCurrentOrder] = useState({
@@ -54,7 +57,6 @@ export default function PurchaseTable() {
   const deletePurchase = api.purchaseOrder.deletePurchaseOrder
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
-  const {data, status} = useSession();
 
   async function handlePurchaseOrderSubmission(date: string, vendorId: string) {
     if (createPurchaseOrder) {
@@ -68,7 +70,7 @@ export default function PurchaseTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openPurchaseView}
+        <OrderTableRow type="Purchase" onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
                                OrderInfo={order}></OrderTableRow>
     )) : null)
@@ -148,7 +150,7 @@ export default function PurchaseTable() {
               <CreateEntries closeStateFunction={setDisplayDeletePurchaseView}
                              submitText='Delete Purchase Order'>
                 <DeleteOrderModal closeOut={closeDeletePurchaseView}
-                                          id={currentOrder.id} type="Purchase" deleteMutation={deletePurchase}></DeleteOrderModal>
+                                          id={currentOrder.id} type="Purchase Order" deleteMutation={deletePurchase}></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -169,10 +171,10 @@ export default function PurchaseTable() {
           {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={viewCurrentPurchases}
-                                        purchaseOrderId={viewCurrentOrder.id}
-                                        purchaseDate={viewCurrentOrder.date}
-                                        purchaseVendorName={viewCurrentOrder.vendor.name}></ViewPurchaseTableModal>
+                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={purchases}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )
@@ -186,10 +188,7 @@ export default function PurchaseTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission}
-                                 buttonText="Create Purchase Order"
-                                 submitText="Create Purchase Order"
-                                 vendorList={vendors}></AddOrderModal>
+          {isAdmin && <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order" submitText="Create Purchase Order" vendorList={vendors}></AddOrderModal>}
         </TableDetails>
         <Table
             setPage={setPageNumber}

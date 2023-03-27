@@ -10,13 +10,16 @@ import ViewVendorModal from "../Modals/VendorModals/ViewVendorModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Table from "./Table";
+import {useSession} from "next-auth/react";
 
 
 export default function VendorTable() {
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
   const VENDORS_PER_PAGE = 5
   const FIRST_HEADER = ["Vendor Name", "name"]
   const SORTABLE_HEADERS = []
-  const STATIC_HEADERS = ["Buyback Rate","Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Buyback Rate","Edit", "Delete"] : ["Buyback Rate"]
   const [sortField, setSortField] = useState("name")
   const [sortOrder, setSortOrder] = useState("asc")
   const [pageNumber, setPageNumber] = useState(0)
@@ -146,7 +149,7 @@ export default function VendorTable() {
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Vendors" tableDescription="A list of all the Vendors.">
-          <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>
+          {isAdmin && <AddVendorModal showVendorEdit={handleNewVendorSubmission} buttonText="Add New Vendor" submitText="Add Vendor"></AddVendorModal>}
         </TableDetails>
         <Table sorting={{
           setOrder: setSortOrder,

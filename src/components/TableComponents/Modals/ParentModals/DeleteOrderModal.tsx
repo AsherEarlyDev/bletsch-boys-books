@@ -24,7 +24,7 @@ export default function DeleteOrderModal(props:DeleteOrderModalProp) {
     }})
   const [open, setOpen] = useState(true)
   
-  const message = (`Are you sure you want to delete this ${props.type} Order from the database? This action cannot be undone. All associated ${props.type.toLowerCase()}s will be deleted.`)
+  const message = (`Are you sure you want to delete this ${props.type} from the database? This action cannot be undone. All associated ${props.type.toLowerCase()}s will be deleted.`)
 
   function closeModal(){
     setOpen(false)
@@ -46,10 +46,10 @@ export default function DeleteOrderModal(props:DeleteOrderModalProp) {
   return (
       ((open && props.id) ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-        <CardTitle heading={"Delete "+props.type+" Order..."} subheading={message}></CardTitle>
+        <CardTitle heading={"Delete "+props.type+"..."} subheading={message}></CardTitle>
         <div className="gap-5 flex flex-row justify-around px-4 py-4 sm:px-6">
           <SecondaryButton onClick={props.closeOut} buttonText="Cancel"></SecondaryButton>
-          <PrimaryButton onClick={handleDeleteOrder} buttonText={"Delete "+props.type+" Order..."}></PrimaryButton>
+          <PrimaryButton onClick={handleDeleteOrder} buttonText={"Delete "+props.type+"..."}></PrimaryButton>
         </div>
       </div>
       : null)

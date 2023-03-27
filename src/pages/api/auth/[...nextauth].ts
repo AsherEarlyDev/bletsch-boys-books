@@ -5,7 +5,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db";
-import Trpc from "../trpc/[trpc].js";
+import Trpc from "../trpc/[...trpc].js";
 import { ClassRegistry } from "superjson/dist/class-registry.js";
 import bcrypt from 'bcryptjs'
 

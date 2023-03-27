@@ -12,6 +12,7 @@ import {Author, Book, Genre, Prisma, PrismaClient} from "@prisma/client";
 import {Session} from "next-auth/core/types";
 import {TRPCError} from "@trpc/server";
 import cloudinary from "cloudinary"
+import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 
 type context = {
   session: Session | null;
@@ -52,10 +53,9 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
   const googleImageUrl = input.imageLinks.thumbnail
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
-    console.log(result)
     if (result) {
       const bookInfo: editableBook = {
-        isbn: isbn,
+        isbn: convertISBN10ToISBN13(isbn),
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -490,7 +490,6 @@ export const booksRouter = createTRPCRouter({
           books.push(book)
         }
       }
-      console.log(books)
       return books
     } catch (error) {
       throw new TRPCError({

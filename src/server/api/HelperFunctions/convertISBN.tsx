@@ -4,7 +4,7 @@ export default function convertISBN10ToISBN13(isbn: string){
     }
     
     if (isbn.length != 10){
-        throw new Error(`ISBN must be of length 10 but is of length ${isbn.length}`)
+        throw new Error(`ISBN must be of length 10 or 13 but is of length ${isbn.length}`)
     }
 
 

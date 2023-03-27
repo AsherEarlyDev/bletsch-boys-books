@@ -57,7 +57,8 @@ export const bookHookRouter = createTRPCRouter({
         const parser = new XMLParser(options);
         const xml = Object.values(input).join("");
         const parsedXml = parser.parse(xml);
-        log.info(`ParsedXml: ${parsedXml}`)
+        log.info(`ParsedXml: `)
+        log.info(parsedXml)
         // if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
         //   throw new TRPCError({
         //     code: 'BAD_REQUEST',

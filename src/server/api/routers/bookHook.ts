@@ -168,6 +168,9 @@ export const bookHookRouter = createTRPCRouter({
                 }
 
                 inventory = book.inventory - sale.qty
+                log.info(`Inventory: ${inventory}`)
+                log.info(`Title: ${book.title}`)
+                inventoryCounts.set(book.title, inventory)
 
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
@@ -211,7 +214,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
-                inventoryCounts.set(book.title, inventory)
+                
               }
 
 
@@ -224,9 +227,7 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. 
-        The list of books not added can be found in booksNotFound. If the inventory value returned is negative, 
-        please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. If the inventory value returned is negative, please make an inventory correction on the books page!`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({

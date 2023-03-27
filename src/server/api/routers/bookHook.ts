@@ -10,15 +10,29 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
+        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.number().gt(0)})
+      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0)})
   })
+})
+
+const saleRecordISBNNumber = z.object({
+  sale: z.object({
+      "@_date": z.string(), 
+      "item": z.array(z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0)}))
+  })
+})
+
+const saleRecordOneSaleISBNNumber = z.object({
+sale: z.object({
+    "@_date": z.string(), 
+    "item": z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0)})
+})
 })
 
 
@@ -61,7 +75,8 @@ export const bookHookRouter = createTRPCRouter({
         log.info(parsedXml)
         log.info(`SaleRecord: `)
         log.info(saleRecord.safeParse(parsedXml))
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success 
+        && saleRecordISBNNumber.safeParse(parsedXml).success && !saleRecordOneSaleISBNNumber.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: `Data in improper format! ParsedXml: ${Object.keys(parsedXml)}, SaleItem: ${parsedXml.sale.item.isbn}`,
@@ -94,8 +109,14 @@ export const bookHookRouter = createTRPCRouter({
               });
             }
             for (const element of inputSales){
-                let isbn: string = element.isbn
-                isbn = isbn.replace(/\D/g,'')
+                let isbn: string = typeof(element.isbn) === "string" ? element.isbn : parseInt(element.isbn).toString()
+                isbn = isbn.replace("-",'')
+                if (!(/^\d+$/.test(isbn))){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "ISBN must be a 10 or 13 digit number that may only contain a dash in between numbers. EX: 978-**********",
+                  });
+                }
                 isbn = convertISBN10ToISBN13(isbn)
                 const bookValidation = await ctx.prisma.book.findUnique({
                   where:{

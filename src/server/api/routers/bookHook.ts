@@ -10,15 +10,29 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.string() || z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
+        "item": z.array(z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.string() || z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
+      "item": z.object({"isbn": z.string(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
   })
+})
+
+const saleRecordISBNNumber = z.object({
+  sale: z.object({
+      "@_date": z.string(), 
+      "item": z.array(z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()}))
+  })
+})
+
+const saleRecordOneSaleISBNNumber = z.object({
+sale: z.object({
+    "@_date": z.string(), 
+    "item": z.object({"isbn": z.number(), "qty": z.number().gt(0), "price": z.number().gt(0) || z.string()})
+})
 })
 
 
@@ -62,7 +76,8 @@ export const bookHookRouter = createTRPCRouter({
         log.info(parsedXml)
         log.info(`SaleRecord: `)
         log.info(saleRecord.safeParse(parsedXml))
-        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
+        if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success &&
+        !saleRecordISBNNumber.safeParse(parsedXml).success && !saleRecordOneSaleISBNNumber.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: `Data in improper format!`,
@@ -137,7 +152,7 @@ export const bookHookRouter = createTRPCRouter({
               else{
                 throw new TRPCError({
                   code: 'BAD_REQUEST',
-                  message: "Price must be a float with at most a $ sign at the front! EX: $X.XX or X.XX",
+                  message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
                 });
               }
 

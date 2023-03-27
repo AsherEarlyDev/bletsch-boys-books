@@ -205,37 +205,38 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`Price: ${price}`)
                 log.info(`Unique: ${unique}`)
                 log.info(`creating inventory corrections: ${inventory}`)
-                if (inventory < 0){
-                  log.info("creating correction")
-                  log.info("Updating sale record")
-                  log.info(`Username: ${ctx.session.user?.name}`)
-                  log.info(`Date: ${new Date(inputDate)}`)
-                  log.info(`Adjustment: ${-inventory}`)
-                  log.info(`bookId: ${isbn}`)
-                  await ctx.prisma.inventoryCorrection.create({
-                    data:{
-                      userName: ctx.session.user?.name,
-                      date: new Date(inputDate),
-                      adjustment: -inventory,
-                      bookId: isbn
-                    }
-                  })
-                  log.info("updating book inventory and shelf space")
-                  await ctx.prisma.book.update({
-                    where: {
-                        isbn: isbn
-                    },
-                    data:{
-                      inventory:{
-                        increment: -inventory,
-                      },
-                      shelfSpace: 0
-                    }
-                    })
-                }
-                else{
-                  log.info("No correction needed")
-                }
+                log.info("creating correction")
+                log.info("Updating sale record")
+                log.info(`Username: ${ctx.session.user?.name}`)
+                log.info(`Date: ${new Date(inputDate)}`)
+                log.info(`Adjustment: ${-inventory}`)
+                log.info(`bookId: ${isbn}`)
+                // if (inventory < 0){
+                  
+                //   await ctx.prisma.inventoryCorrection.create({
+                //     data:{
+                //       userName: ctx.session.user?.name,
+                //       date: new Date(inputDate),
+                //       adjustment: -inventory,
+                //       bookId: isbn
+                //     }
+                //   })
+                //   log.info("updating book inventory and shelf space")
+                //   await ctx.prisma.book.update({
+                //     where: {
+                //         isbn: isbn
+                //     },
+                //     data:{
+                //       inventory:{
+                //         increment: -inventory,
+                //       },
+                //       shelfSpace: 0
+                //     }
+                //     })
+                // }
+                // else{
+                //   log.info("No correction needed")
+                // }
                 await ctx.prisma.saleReconciliation.update({
                   where: {
                       id: newSaleRecord.id

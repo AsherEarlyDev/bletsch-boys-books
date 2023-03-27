@@ -74,8 +74,14 @@ export const bookHookRouter = createTRPCRouter({
         const parsedXml = parser.parse(xml);
         log.info(`ParsedXml: `)
         log.info(parsedXml)
-        log.info(`SaleRecord: `)
+        log.info(`SaleRecord1: `)
         log.info(saleRecord.safeParse(parsedXml))
+        log.info(`SaleRecord2: `)
+        log.info(saleRecordOneSale.safeParse(parsedXml))
+        log.info(`SaleRecord3: `)
+        log.info(saleRecordISBNNumber.safeParse(parsedXml))
+        log.info(`SaleRecord4: `)
+        log.info(saleRecordOneSaleISBNNumber.safeParse(parsedXml))
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success &&
         !saleRecordISBNNumber.safeParse(parsedXml).success && !saleRecordOneSaleISBNNumber.safeParse(parsedXml).success){
           throw new TRPCError({

@@ -12,13 +12,16 @@ import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 import { useRouter } from 'next/router';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 
 export default function BuybackTable() {
   const {query} = useRouter()
   const router = useRouter()
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
   const ENTRIES_PER_PAGE = 5
   const [buybacks, setBuybacks] = useState<any[]>([])
   const [currentOrder, setCurrentOrder] = useState({
@@ -49,7 +52,6 @@ export default function BuybackTable() {
     vendorId: '',
     id: ''
   })
-  const {data, status} = useSession();
   
   const createBuybackOrder = api.buybackOrder.createBuybackOrder.useMutation({
     onSuccess: ()=>{
@@ -77,9 +79,7 @@ export default function BuybackTable() {
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <OrderTableRow onView={openBuybackView}
-                               onDelete={openDeleteBuybackView} onEdit={openEditBuybackView}
-                               OrderInfo={order}></OrderTableRow>
+        <OrderTableRow type="Buyback" onView={openBuybackView} onDelete={openDeleteBuybackView} onEdit={openEditBuybackView} OrderInfo={order}></OrderTableRow>
     )) : null)
   }
 
@@ -174,11 +174,11 @@ export default function BuybackTable() {
           {displayBuybackView ? (viewCurrentBuybacks ? (
               <CreateEntries closeStateFunction={setDisplayBuybackView}
                              submitText="Show Buyback Details">
-                <ViewBuybackTableModal closeOut={closeBuybackView}
-                                        buybacks={viewCurrentBuybacks}
-                                        buybackOrderId={viewCurrentOrder.id}
-                                        buybackDate={viewCurrentOrder.date}
-                                        buybackVendor={viewCurrentOrder.vendor}></ViewBuybackTableModal>
+                <ViewTableModal type="Buyback" closeOut={closeBuybackView}
+                                        items={buybacks}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )
@@ -193,10 +193,7 @@ export default function BuybackTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Book Buybacks"
                       tableDescription="A list of all the Book Buybacks and their details.">
-          <AddOrderModal showOrderEdit={handleBuybackSubmission}
-                                 buttonText="Create Buyback"
-                                 submitText="Create Buyback"
-                                 vendorList={vendors}></AddOrderModal>
+          {isAdmin && <AddOrderModal showOrderEdit={handleBuybackSubmission} buttonText="Create Buyback" submitText="Create Buyback" vendorList={vendors}></AddOrderModal>}
         </TableDetails>
         <Table
             setPage={setPageNumber}

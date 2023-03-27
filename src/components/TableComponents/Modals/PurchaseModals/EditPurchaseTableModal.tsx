@@ -116,6 +116,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function openAddPurchaseRow(){
     setAddPurchaseRowView(true)
+    console.log(addPurchaseRowView)
   }
   function renderAddPurchaseRow(){
     const dummyPurchase = {

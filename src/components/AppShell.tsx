@@ -21,7 +21,7 @@ export default function AppShell(props: any) {
     }
     const navigation = ((data?.user?.role != "USER") ? [
       {name: 'Dashboard', href: '/dashboard'},
-      {name: 'Records', href: '/records'},
+      {name: 'Books', href: '/books'},
       {name: 'Genres', href: '/genres'},
       {name: 'Vendors', href: '/vendors'},
       {name: 'Sales', href: '/sales'},
@@ -29,15 +29,17 @@ export default function AppShell(props: any) {
       {name: 'Buybacks', href: '/buybacks'},
       {name: 'Organizer', href: '/store-organizer'},
       {name: 'User Management', href: '/user-management'},
+      {name: 'BookHook', href: '/bookhooktest'}
     ] : [
       {name: 'Dashboard', href: '/dashboard'},
-      {name: 'Records', href: '/records'},
+      {name: 'Books', href: '/books'},
       {name: 'Genres', href: '/genres'},
       {name: 'Vendors', href: '/vendors'},
       {name: 'Sales', href: '/sales'},
       {name: 'Purchases', href: '/purchases'},
       {name: 'Buybacks', href: '/buybacks'},
       {name: 'Organizer', href: '/store-organizer'},
+      {name: 'BookHook', href: '/bookhook'}
     ])
 
     const userNavigation = [

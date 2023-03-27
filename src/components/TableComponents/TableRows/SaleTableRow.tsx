@@ -89,7 +89,7 @@ export default function SaleTableRow(props: SaleTableRowProp) {
 
   return (
       <>
-        {visible && book &&
+        {visible &&
         (props.isView ?
                 <tr>
                   <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>

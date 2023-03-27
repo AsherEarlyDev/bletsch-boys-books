@@ -5,6 +5,7 @@ import { CldImage, CldUploadButton, CldUploadWidget } from 'next-cloudinary'
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
+import {useSession} from "next-auth/react";
 
 interface BookTableRowProp{
   bookInfo: any
@@ -15,6 +16,8 @@ interface BookTableRowProp{
 
 
 export default function BookTableRow(props:BookTableRowProp) {
+  const {data, status} = useSession()
+  const isAdmin = (data.user?.role == "ADMIN" || data.user?.role == "SUPERADMIN")
   const isInStock: boolean = (props.bookInfo.inventory != 0)
   function handleEdit(){
     props.onEdit(props.bookInfo.isbn)
@@ -41,8 +44,8 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry width={12}>{(props.bookInfo.daysOfSupply == Infinity ? "Inf." : props.bookInfo.daysOfSupply?.toFixed(2) )}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.bestBuybackPrice==0 ? "-" : "$" + props.bookInfo.bestBuybackPrice.toFixed(2)}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.numberRelatedBooks}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        {isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
+        {(isAdmin && <EditRowEntry onEdit={handleEdit}></EditRowEntry>)}
+        {isAdmin && (isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>)}
       </tr>
   )
 }

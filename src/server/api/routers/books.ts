@@ -53,7 +53,6 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
   const googleImageUrl = input.imageLinks.thumbnail
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
-    console.log(result)
     if (result) {
       const bookInfo: editableBook = {
         isbn: convertISBN10ToISBN13(isbn),
@@ -446,7 +445,8 @@ export const booksRouter = createTRPCRouter({
       const sales = await getSales(ctx, input)
       const purchases = await getPurchases(ctx, input)
       const buybacks = await getBookBuyback(ctx, input)
-      return unifyTransactions(sales, purchases, buybacks)
+      const corrections = await getCorrections(ctx, input)
+      return unifyTransactions(sales, purchases, buybacks, corrections)
     }
     catch(error){
       throw("Cannot get book transaction details")
@@ -490,7 +490,6 @@ export const booksRouter = createTRPCRouter({
           books.push(book)
         }
       }
-      console.log(books)
       return books
     } catch (error) {
       throw new TRPCError({
@@ -692,6 +691,7 @@ async function getPurchases(ctx: context, isbn: string) {
         select:{
           date:true,
           vendor:true,
+          userName:true,
           id:true
         }
       }
@@ -701,6 +701,7 @@ async function getPurchases(ctx: context, isbn: string) {
     ...purchase,
     type:"Purchase",
     inventory:0,
+    userName: purchase.purchaseOrder.userName,
     date:(purchase.purchaseOrder.date.getMonth()+1)+"-"+(purchase.purchaseOrder.date.getDate())+"-"+purchase.purchaseOrder.date.getFullYear(),
   }))
 }
@@ -726,8 +727,29 @@ async function getSales(ctx: context, isbn: string) {
     ...sale,
     type:"Sale",
     inventory:0,
+    quantity: (sale.quantity * -1),
     date:(sale.saleReconciliation.date.getMonth()+1)+"-"+(sale.saleReconciliation.date.getDate())+"-"+sale.saleReconciliation.date.getFullYear(),
   }))
+}
+
+async function getCorrections(ctx: context, isbn: string) {
+  const corrections = await ctx.prisma.inventoryCorrection.findMany({
+    where: {
+      bookId: isbn
+    },
+    select: {
+      id: true,
+      date: true,
+      adjustment: true,
+      userName: true,
+    }
+  })
+  return corrections.map((correction) => ({
+    ...correction,
+    quantity: correction.adjustment,
+    date:(correction.date.getMonth()+1)+"-"+(correction.date.getDate())+"-"+correction.date.getFullYear(),
+    type:"Correction",
+    }))
 }
 
 async function getBookBuyback(ctx: context, isbn: string) {
@@ -743,6 +765,7 @@ async function getBookBuyback(ctx: context, isbn: string) {
         select:{
           date:true,
           vendor:true,
+          userName:true,
           id:true
         }
       }
@@ -751,24 +774,21 @@ async function getBookBuyback(ctx: context, isbn: string) {
   return bookBuybacks.map((buyback) => ({
     ...buyback,
     type:"Buyback",
+    quantity: (buyback.quantity * -1),
+    userName: buyback.BookBuybackOrder.userName,
     inventory:0,
     date:(buyback.BookBuybackOrder.date.getMonth()+1)+"-"+(buyback.BookBuybackOrder.date.getDate())+"-"+buyback.BookBuybackOrder.date.getFullYear(),
   }))
 }
 
-function unifyTransactions(sales, purchases, buybacks){
-  const rawList = [].concat(sales, purchases, buybacks)
+function unifyTransactions(sales, purchases, buybacks, corrections){
+  const rawList = [].concat(sales, purchases, buybacks, corrections)
   const sortedList = rawList.sort((a, b) => {
-    return a.date < b.date ? 1 : -1
+    return (new Date(a.date)< new Date(b.date)) ? 1 : -1
  })
  var runningTotal = 0;
  for (let i = sortedList.length-1; i >=0; i--){
-  if(sortedList[i].type==="Purchase"){
-    runningTotal+=sortedList[i].quantity
-  }
-  else{
-    runningTotal-=sortedList[i].quantity
-  }
+  runningTotal+=sortedList[i].quantity
   sortedList[i].inventory=runningTotal
  }
  return sortedList

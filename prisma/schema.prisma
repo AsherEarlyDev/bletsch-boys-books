@@ -29,7 +29,6 @@ model Book {
   sales               Sale[]
   ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
-}
 
 model Genre {
   id    String @id @default(cuid())
@@ -122,15 +121,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
+  id                  String                @id @default(cuid())
+  name                String?
+  email               String?               @unique
+  emailVerified       DateTime?
+  image               String?
+  password            String
+  role                Role                  @default(USER)
+  accounts            Account[]
+  sessions            Session[]
 }
 
 model VerificationToken {
@@ -166,12 +165,13 @@ model Buyback {
 }
 
 model InventoryCorrection {
-  id         String   @id
+
+  id         String   @id @default(cuid())
   date       DateTime
   bookId     String
+  book       Book     @relation(fields: [bookId], references: [isbn])
   adjustment Int
   userName   String
-  Book       Book     @relation(fields: [bookId], references: [isbn])
 }
 
 model BookCaseContainer {
@@ -192,6 +192,7 @@ model ShelfBook {
   Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
   BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete:Cascade)
   bookCaseContainerName String?
+
 }
 
 enum Role {

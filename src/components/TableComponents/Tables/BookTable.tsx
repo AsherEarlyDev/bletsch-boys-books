@@ -15,8 +15,11 @@ import { useRouter } from 'next/router'
 import { CSVLink } from "react-csv";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useSession} from "next-auth/react";
 
 export default function BookTable() {
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
   const {query} = useRouter()
   const BOOKS_PER_PAGE = 10
   const FIRST_HEADER =  ["Title", "title"]
@@ -24,7 +27,7 @@ export default function BookTable() {
   const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inv.", "inventory"], ["30 Day Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best BB Price", "bestBuybackPrice"], ["Related Books", "numberRelatedBooks"]]
   const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}]
 
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
   const [displayNewBookEntriesView, setDisplayNewBookEntriesView] = useState(false)
   const [displayEditBookView, setDisplayEditBookView] = useState(false)
@@ -129,14 +132,14 @@ export default function BookTable() {
 
   function setDisplayBookView(view:boolean, id?: string) {
     view ? router.push({
-      pathname:'/records',
+      pathname:'/books',
       query:{
         openView:"true",
         viewId: id
       }
     }, undefined, { shallow: true }) : 
     router.push({
-      pathname:'/records',
+      pathname:'/books',
       
     }, undefined, { shallow: true })
   }
@@ -167,11 +170,11 @@ export default function BookTable() {
           <TableDetails tableName="Inventory" tableDescription="A list of all the books in inventory.">
           <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
             <button type="button"
-                onClick={() => router.push({pathname: '/records',})}
+                onClick={() => router.push({pathname: '/books',})}
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
             >Clear Filters</button></div>
             <FilterModal resetPageNumber={setPageNumber} filterBooks={setFilters} buttonText="Advanced Filter" submitText="Add Filters"></FilterModal>
-            <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>
+            {isAdmin && <AddBookModal showBookEdit={openNewBookSubmissionsView} buttonText="Add Book(s)" submitText="Add Book(s)"></AddBookModal>}
             <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
             <CSVLink filename={"BletschBoysBookList.csv"}  data={csvBooks} headers={CSV_HEADERS} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
             Download Book List</CSVLink></div>

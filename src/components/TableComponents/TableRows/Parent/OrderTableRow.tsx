@@ -4,19 +4,21 @@ import { PurchaseOrder } from "../../../../types/purchaseTypes";
 import ViewTableEntry from "../../TableEntries/ViewTableEntry";
 import DeleteRowEntry from "../../TableEntries/DeleteRowEntry";
 import EditRowEntry from "../../TableEntries/EditRowEntry";
+import {useSession} from "next-auth/react";
 
 interface OrderTableRowProp{
     OrderInfo: {
         id: string,
         date: string,
-        vendor: {id: string, name: string, bookBuybackPercentage: number}
         items: any[],
         totalBooks: number,
         uniqueBooks: number,
-        cost?: number
-        revenue?: number
+        vendor?: {id: string, name: string, bookBuybackPercentage: number},
+        cost?: number,
+        revenue?: number,
         userName: string
     },
+    type: string,
     onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
     onView: (id: string) =>void,
@@ -24,6 +26,8 @@ interface OrderTableRowProp{
 
 
 export default function OrderTableRow(props:OrderTableRowProp) {
+    const {data, status} = useSession()
+    const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
     let price: any = props.OrderInfo.cost ? props.OrderInfo.cost : props.OrderInfo.revenue
     if (price === undefined){
       price = "0.00"
@@ -43,13 +47,14 @@ export default function OrderTableRow(props:OrderTableRowProp) {
   return (
       <tr>
         <ViewTableEntry onView={handleView}>{props.OrderInfo.date}</ViewTableEntry>
-        <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>
+        {props.type === "Sale" ? null : <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>}
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
         <TableEntry>${price}</TableEntry>
-        <TableEntry>{props.OrderInfo.userName}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
+        {props.type != "Sale" && <TableEntry>{props.OrderInfo.userName}</TableEntry>}
+        {isAdmin && (props.type === "Sale" ? <><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>
+         : <><EditRowEntry onEdit={handleEdit}></EditRowEntry><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>)}
+        
       </tr>
   )
 }

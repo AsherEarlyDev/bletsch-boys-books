@@ -2,14 +2,15 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { BookBuybackOrder } from "@prisma/client";
-import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackOrderRouter = createTRPCRouter({
     createBuybackOrder: publicProcedure
     .input(
         z.object({
           vendorId: z.string(),
-          date: z.string()
+          date: z.string(),
+          userName: z.string()
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -32,7 +33,8 @@ export const buybackOrderRouter = createTRPCRouter({
                     data: {
                         date: new Date(date),
                         vendorId: input.vendorId,
-                        vendorName: vendor.name
+                        vendorName: vendor.name,
+                        userName: input.userName
                     },
                 });
                 return {id: newBuyback.id, date: date, vendor: vendor}
@@ -44,6 +46,21 @@ export const buybackOrderRouter = createTRPCRouter({
           });
         }
       }),
+
+      getUniqueBuybackOrders: publicProcedure
+      .input(z.string())
+      .query(async ({ctx, input}) => {
+        const rawData = await ctx.prisma.bookBuybackOrder.findUnique({
+          where:{
+          id:input
+          },
+          include:{
+            vendor: true,
+            buybacks: true,
+          }         
+        })
+        return transformData([rawData])[0]
+     }),
 
       getBuybackOrders: publicProcedure
       .input(z.object({
@@ -244,22 +261,24 @@ export const buybackOrderRouter = createTRPCRouter({
     deleteBuybackOrder: publicProcedure
     .input(
         z.object({
-          buybackOrderId: z.string(),
+          id: z.string(),
         })
     )
     .mutation(async ({ ctx, input }) => {
       try {
         const buybacks = await ctx.prisma.buyback.findMany({
           where: {
-            buybackOrderId: input.buybackOrderId
+            buybackOrderId: input.id
           }
         })
-        const book = await ctx.prisma.book.findUnique({
-          where:{
-            isbn: isbn
-          }
-        })
+        
         for (const buyback of buybacks){
+          const book = await ctx.prisma.book.findUnique({
+            where:{
+              isbn: buyback.bookId
+            }
+          })
+
           await ctx.prisma.book.update({
             where:{
               isbn: buyback.bookId
@@ -281,7 +300,7 @@ export const buybackOrderRouter = createTRPCRouter({
         }
         await ctx.prisma.bookBuybackOrder.delete({
           where: {
-            id: input.buybackOrderId
+            id: input.id
           }
         })
       } catch (error) {
@@ -293,7 +312,7 @@ export const buybackOrderRouter = createTRPCRouter({
     })
   });
 
-  const transformData = (buybackOrder: BookBuybackOrder[]) => {
+  const transformData = (buybackOrder) => {
     return buybackOrder.map((rec) => {
       return({
         ...rec,

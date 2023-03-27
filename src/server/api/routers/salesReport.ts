@@ -41,18 +41,18 @@ export const salesReportRouter = createTRPCRouter({
               const dateMapObj = dateMap.get(saleRec.date)
               if (dateMapObj){
                 dateMap.set(saleRec.date, {
-                  revenue: dateMapObj.revenue + revenue,
+                  revenue: parseFloat((dateMapObj.revenue + revenue).toFixed(2)),
                   sales: [...dateMapObj.sales, ...sales]
                 })
               }
               else{
                 dateMap.set(saleRec.date, {
-                  revenue: revenue,
+                  revenue: parseFloat(revenue.toFixed(2)),
                   sales: [...sales]
                 })
               }
               
-              totalRevenue += revenue
+              totalRevenue += parseFloat(revenue.toFixed(2))
             }
           }
           
@@ -105,20 +105,18 @@ export const salesReportRouter = createTRPCRouter({
               const dateMapObj = dateMap.get(buyback.date)
               if (dateMapObj){
                 dateMap.set(buyback.date, {
-                  revenue: dateMapObj.revenue + revenue,
+                  revenue: parseFloat((dateMapObj.revenue + revenue).toFixed(2)),
                   buybacks: [...dateMapObj.buybacks, ...buy]
                 })
               }
               else{
                 dateMap.set(buyback.date, {
-                  revenue: revenue,
+                  revenue: parseFloat(revenue.toFixed(2)),
                   buybacks: [...buy]
                 })
               }
-              console.log("Rev: "+revenue)
-              totalRevenue += revenue
+              totalRevenue += parseFloat(revenue.toFixed(2))
             }
-            console.log("Total Rev: "+totalRevenue)
           }
           
           return {
@@ -169,17 +167,17 @@ export const salesReportRouter = createTRPCRouter({
               const dateMapObj = dateMap.get(purchaseOrder.date)
               if (dateMapObj){
                 dateMap.set(purchaseOrder.date, {
-                  cost: dateMapObj.cost + cost,
+                  cost: parseFloat((dateMapObj.cost + cost).toFixed(2)),
                   purchases: [...dateMapObj.purchases, ...purchases]
                 })
               }
               else{
                 dateMap.set(purchaseOrder.date, {
-                  cost: cost,
+                  cost: parseFloat(cost.toFixed(2)),
                   purchases: [...purchases]
                 })
               }
-              totalCost += cost
+              totalCost += parseFloat(cost.toFixed(2))
             }
           }
           return {
@@ -262,10 +260,6 @@ export const salesReportRouter = createTRPCRouter({
               
                 let booksObj = books.get(purchase.bookId)
                 if (booksObj){
-                  console.log("ID: "+purchase.bookId)
-                  console.log("Revenue: "+booksObj.revenue)
-                  console.log("Price: "+purchase.price)
-                  console.log("NumBooks: "+booksObj.numBooks)
                   books.set(purchase.bookId, {numBooks: booksObj.numBooks, revenue: booksObj.revenue, 
                     recentCost: purchase.price * booksObj.numBooks, title: booksObj.title})
                 }
@@ -279,9 +273,9 @@ export const salesReportRouter = createTRPCRouter({
             isbn: key,
             title: value.title,
             numBooks: value.numBooks,
-            recentCost: value.recentCost,
-            revenue: value.revenue,
-            profit: value.revenue - value.recentCost
+            recentCost: value.recentCost.toFixed(2),
+            revenue: value.revenue.toFixed(2),
+            profit: (value.revenue - value.recentCost).toFixed(2)
           }
           results.push(res)
         })

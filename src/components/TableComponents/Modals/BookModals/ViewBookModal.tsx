@@ -8,6 +8,7 @@ import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import ImmutableDimensionsCardProp from "../../../CardComponents/ImmutableDimensionsCardProp";
 import {CldImage} from "next-cloudinary";
 import BookCardTabs from "../../../CardComponents/BookCardTabs";
+import RelatedBooksDropdown from '../../../CardComponents/RelatedBooksDropdown';
 
 interface BookModalProp {
   bookInfo: Book & {
@@ -16,6 +17,8 @@ interface BookModalProp {
     lastMonthSales: number;
     daysOfSupply:number;
     bestBuybackPrice: number;
+    shelfSpace: number;
+    numberRelatedBooks: number;
   },
   closeOut: () => void
   openEdit: (isbn: string) => void
@@ -69,6 +72,8 @@ export default function ViewBookModal(props: BookModalProp) {
                                    data={props.bookInfo.pageCount}></ImmutableCardProp>
                 <ImmutableCardProp heading="Last Month Sales"
                                    data={props.bookInfo.lastMonthSales}></ImmutableCardProp>
+                <ImmutableCardProp heading="Number of Related Books"
+                                   data={props.bookInfo.numberRelatedBooks}></ImmutableCardProp>
                 <ImmutableCardProp heading="Shelf Space"
                                    data={props.bookInfo.dimensions[1] || props.bookInfo.shelfSpace==0  ? props.bookInfo.shelfSpace : props.bookInfo.shelfSpace+" (est)"}></ImmutableCardProp>
                 <ImmutableCardProp heading="Days of Supply"
@@ -79,7 +84,7 @@ export default function ViewBookModal(props: BookModalProp) {
                 <ImmutableDimensionsCardProp length={props.bookInfo.dimensions[2] ?? 0} width={props.bookInfo.dimensions[0]} height={props.bookInfo.dimensions[1] ?? 0}></ImmutableDimensionsCardProp>
               </CardGrid>
             </div>
-            <BookCardTabs isbn={props.bookInfo.isbn}></BookCardTabs>
+            <BookCardTabs title={props.bookInfo.title} isbn={props.bookInfo.isbn}></BookCardTabs>
           </div>
           <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
             <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>

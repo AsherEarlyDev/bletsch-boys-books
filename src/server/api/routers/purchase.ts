@@ -2,11 +2,11 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./Books";
+import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const purchaseRouter = createTRPCRouter({
 
-    createPurchase: publicProcedure
+    createPurchase: protectedProcedure
     .input(
         z.object({
           purchaseOrderId: z.string(),
@@ -89,7 +89,7 @@ export const purchaseRouter = createTRPCRouter({
         }
       }),
       
-      modifyPurchase: publicProcedure
+      modifyPurchase: protectedProcedure
       .input(
         z.object({
             id: z.string(),
@@ -182,7 +182,7 @@ export const purchaseRouter = createTRPCRouter({
         }
       }),
 
-      deletePurchase: publicProcedure
+      deletePurchase: protectedProcedure
       .input(
         z.object({
           id: z.string(),

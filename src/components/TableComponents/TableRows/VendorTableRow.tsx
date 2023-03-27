@@ -3,6 +3,7 @@ import React from "react";
 import EditRowEntry from "../TableEntries/EditRowEntry";
 import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import ViewTableEntry from "../TableEntries/ViewTableEntry";
+import {useSession} from "next-auth/react";
 
 
 interface VendorRowProps{
@@ -18,6 +19,8 @@ interface VendorRowProps{
 
 
 export function VendorTableRow(props: VendorRowProps){
+    const { data: session} = useSession()
+    const isAdmin = (session?.user.role == "ADMIN" || session?.user.role == "SUPERADMIN")
     function handleEdit(){
       props.onEdit(props.vendorInfo.id)
     }
@@ -32,8 +35,8 @@ export function VendorTableRow(props: VendorRowProps){
         <ViewTableEntry onView={handleView}>{props.vendorInfo.name}</ViewTableEntry>
         <TableEntry>{(props.vendorInfo.buybackRate === null) || (props.vendorInfo.buybackRate === 0)? "" : 
         (props.vendorInfo.buybackRate * 100)+"%"}</TableEntry>
-        <EditRowEntry onEdit={handleEdit}></EditRowEntry>
-        <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
+        {isAdmin && <EditRowEntry onEdit={handleEdit}></EditRowEntry>}
+        {isAdmin && <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>}
       </tr>
       
   )

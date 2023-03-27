@@ -2,19 +2,18 @@ import { Dispatch, Fragment, SetStateAction, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { api } from '../../utils/api'
+import { Vendor } from '../../types/vendorTypes'
 
 
-
-export default function VendorSelect(props:{saveFunction: any, defaultValue:string}) {
+export default function VendorSelect(props:{saveFunction: any, defaultValue:string, vendors: Vendor[]}) {
   const [selected, setSelected] = useState('')
   const [query, setQuery] = useState('')
-  const vendors = api.vendor.getAllVendors.useQuery().data
   props.saveFunction(selected)
   
   const filteredPeople =
-      vendors ? (query === ''
-          ?  vendors
-          : vendors.filter((vendor) =>
+      props.vendors ? (query === ''
+          ?  props.vendors
+          : props.vendors.filter((vendor) =>
               vendor.name
               .toLowerCase()
               .replace(/\s+/g, '')

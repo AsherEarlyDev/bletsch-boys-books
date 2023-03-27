@@ -2,24 +2,31 @@ import {useState} from 'react';
 import {api} from "../../../utils/api";
 import TableDetails from "../TableDetails";
 import CreateEntries from '../../CreateEntries';
-import PurchaseOrderTableRow from '../TableRows/PurchaseOrderTableRow';
-import AddPurchaseOrderModal from '../Modals/PurchaseModals/AddPurchaseOrderModal';
-import ViewPurchaseModal from '../Modals/PurchaseModals/ViewPurchaseModal';
-import DeletePurchaseOrderModal from "../Modals/PurchaseModals/DeletePurchaseOrderModal";
+import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import Table from './Table';
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ViewPurchaseTableModal from '../Modals/PurchaseModals/ViewPurchaseTableModal';
+import ViewPurchaseTableModal from '../Modals/PurchaseModals/Unused/ViewPurchaseTableModal';
 import EditPurchaseTableModal from "../Modals/PurchaseModals/EditPurchaseTableModal";
+import {useSession} from "next-auth/react";
+import OrderTableRow from '../TableRows/Parent/OrderTableRow';
+import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
+import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
+import { useRouter } from 'next/router'
+import { boolean } from 'zod';
 
 
 export default function PurchaseTable() {
+  const {query} = useRouter()
+  const router = useRouter()
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
+
   const FIRST_HEADER = ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"]]
-  const STATIC_HEADERS = ["Edit", "Delete"]
+  const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
+  const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
   const ENTRIES_PER_PAGE = 5
   const [purchases, setPurchases] = useState<any[]>([])
-  const [purchaseOrderId, setId] = useState('')
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
     date: '',
@@ -28,10 +35,7 @@ export default function PurchaseTable() {
   const [onlyEdit, setOnlyEdit] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("date")
-//   const [displayEntries, setDisplayEntries] = useState(false)
   const [sortOrder, setSortOrder] = useState("asc")
-  //const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrderDetails
-  //.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data;
   const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrders.useQuery({
     pageNumber: pageNumber,
     entriesPerPage: ENTRIES_PER_PAGE,
@@ -41,13 +45,16 @@ export default function PurchaseTable() {
   const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
-  const [displayPurchaseView, setDisplayPurchaseView] = useState(false)
-  const [displayAddPurchaseView, setDisplayAddPurchaseView] = useState(false)
+  const displayPurchaseView = query.openView ? (query.openView==="true" ? true : false) : false
+  const currentViewId = query.viewId ? query.viewId.toString() : ""
+  const viewCurrentOrder = api.purchaseOrder.getUniquePurchaseOrders.useQuery(currentViewId).data
+  const viewCurrentPurchases = viewCurrentOrder ? viewCurrentOrder.purchases : undefined
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
     onSuccess: ()=>{
       setDisplayEditPurchaseView(true)
     }
   })
+  const deletePurchase = api.purchaseOrder.deletePurchaseOrder
   const vendors = api.vendor.getAllVendors.useQuery().data
   const numberOfEntries = api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data
 
@@ -55,23 +62,23 @@ export default function PurchaseTable() {
     if (createPurchaseOrder) {
       createPurchaseOrder.mutate({
         date: date,
-        vendorId: vendorId
+        vendorId: vendorId,
+        userName: data?.user?.name
       })
     }
   }
 
   function renderOrderRow(items: any[]) {
     return (items ? items.map((order) => (
-        <PurchaseOrderTableRow onAdd={handleAdd} onView={openPurchaseView}
+        <OrderTableRow type="Purchase" onView={openPurchaseView}
                                onDelete={openDeletePurchaseView} onEdit={openEditPurchaseView}
-                               purchaseOrderInfo={order}></PurchaseOrderTableRow>
+                               OrderInfo={order}></OrderTableRow>
     )) : null)
   }
 
   async function openEditPurchaseView(id: string) {
     if (purchaseOrder2) {
       for (const order of purchaseOrder2) {
-        console.log(order)
         if (order.id === id) {
           setCurrentOrder({
             id: order.id,
@@ -102,7 +109,19 @@ export default function PurchaseTable() {
     )
   }
   
-  
+  function setDisplayPurchaseView(view:boolean, id?: string) {
+    view ? router.push({
+      pathname:'/purchases',
+      query:{
+        openView:"true",
+        viewId: id
+      }
+    }, undefined, { shallow: true }) : 
+    router.push({
+      pathname:'/purchases',
+      
+    }, undefined, { shallow: true })
+  }
   
   function closeEditPurchaseView() {
     setDisplayEditPurchaseView(false)
@@ -130,8 +149,8 @@ export default function PurchaseTable() {
           {(displayDeletePurchaseView && currentOrder) ?
               <CreateEntries closeStateFunction={setDisplayDeletePurchaseView}
                              submitText='Delete Purchase Order'>
-                <DeletePurchaseOrderModal closeOut={closeDeletePurchaseView}
-                                          purchaseId={currentOrder.id}></DeletePurchaseOrderModal>
+                <DeleteOrderModal closeOut={closeDeletePurchaseView}
+                                          id={currentOrder.id} type="Purchase Order" deleteMutation={deletePurchase}></DeleteOrderModal>
               </CreateEntries> : null}
         </>
     )
@@ -142,31 +161,20 @@ export default function PurchaseTable() {
   }
 
   async function openPurchaseView(id: string) {
-    if (purchaseOrder2) {
-      for (const order of purchaseOrder2) {
-        if (order.id === id && order.purchases) {
-          setCurrentOrder({
-            id: order.id,
-            date: order.date,
-            vendor: order.vendor
-          })
-          setPurchases(order.purchases)
-        }
-      }
-      setDisplayPurchaseView(true)
-    }
+    setDisplayPurchaseView(true, id)
+    
   }
 
   function renderPurchaseView() {
     return (
         <>
-          {displayPurchaseView ? (purchases ? (
+          {displayPurchaseView ? (viewCurrentPurchases ? (
               <CreateEntries closeStateFunction={setDisplayPurchaseView}
                              submitText="Show Purchase Details">
-                <ViewPurchaseTableModal closeOut={closePurchaseView} purchases={purchases}
-                                        purchaseOrderId={currentOrder.id}
-                                        purchaseDate={currentOrder.date}
-                                        purchaseVendorName={currentOrder.vendor.name}></ViewPurchaseTableModal>
+                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={purchases}
+                                        id={currentOrder.id}
+                                        date={currentOrder.date}
+                                        vendor={currentOrder.vendor}></ViewTableModal>
               </CreateEntries>) : null) : null}
         </>
     )
@@ -176,45 +184,11 @@ export default function PurchaseTable() {
     setDisplayPurchaseView(false)
   }
 
-  const handleAdd = async (id: string) => {
-    if (purchaseOrder2) {
-      for (const order of purchaseOrder2) {
-        if (order.id === id) {
-          setId(order.id)
-        }
-      }
-      setDisplayAddPurchaseView(true)
-    }
-  }
-
-  function renderAdd() {
-    const dummyPurchase = {
-      id: '',
-      purchaseOrderId: purchaseOrderId,
-      price: 0,
-      quantity: 0,
-      bookId: '',
-      subtotal: 0
-    }
-    return <>
-      {(displayAddPurchaseView && purchaseOrderId) ?
-          <CreateEntries closeStateFunction={setDisplayAddPurchaseView} submitText="Add Sale">
-            <ViewPurchaseModal cardType={'entry'} purchase={dummyPurchase}
-                               closeOut={function (): void {
-                                 throw new Error('Function not implemented.');
-                               }}></ViewPurchaseModal></CreateEntries> : null}
-    </>;
-  }
-
-
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          <AddPurchaseOrderModal showPurchaseOrderEdit={handlePurchaseOrderSubmission}
-                                 buttonText="Create Purchase Order"
-                                 submitText="Create Purchase Order"
-                                 vendorList={vendors}></AddPurchaseOrderModal>
+          {isAdmin && <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order" submitText="Create Purchase Order" vendorList={vendors}></AddOrderModal>}
         </TableDetails>
         <Table
             setPage={setPageNumber}
@@ -237,7 +211,6 @@ export default function PurchaseTable() {
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}
           {renderPurchaseView()}
-          {renderAdd()}
           <ToastContainer/>
         </div>
       </div>

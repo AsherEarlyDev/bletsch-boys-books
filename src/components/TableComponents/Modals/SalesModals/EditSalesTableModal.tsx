@@ -9,7 +9,7 @@ import {api} from "../../../../utils/api";
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
 import {Sale} from "../../../../types/salesTypes";
-import ViewSalesRecModal from "./ViewSalesRecModal";
+import ViewSalesRecModal from "./ViewSaleModal";
 import SaleTableRow from "../../TableRows/SaleTableRow";
 import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
@@ -46,9 +46,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       toast.success("Successfully added sale!")
     }
   })
-  //Replace below once this is working...
-  const sales: Sale[] =api.sales.getSalesByRecId.useQuery({saleRecId: props.salesRecId}).data
-  //const sales = props.sales
+  const sales: Sale[] = api.sales.getSalesByRecId.useQuery({saleRecId: props.salesRecId}).data
 
 
   function openConfirmationView(){
@@ -79,7 +77,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     }
   }
 
-  async function handleCSV(e: React.FormEvent<HTMLInputElement>){
+  async function handleCSV(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const csvVal = (formData.get("saleCSV"))
@@ -93,9 +91,9 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
 
   function transformCSV(csv){
     const quant = parseInt(csv.quantity)
-    const price = parseFloat(csv.unit_retail_price)
+    const price = parseFloat(csv.unit_retail_price.replaceAll('$', ''))
     return ({
-      bookId:csv.isbn,
+      bookId:(csv.isbn).replaceAll('-', ''),
       quantity:quant,
       price: price,
       subtotal: quant* price,
@@ -129,7 +127,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
     setAddSaleRowView(false)
   }
   function handleAddSale(isbn: string, quantity: number, price: number){
-    if(isbn && quantity && price){
+    if(isbn && quantity){
       addSale.mutate({
         saleReconciliationId: props.salesRecId,
         isbn: isbn,
@@ -139,7 +137,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       closeAddSaleRow()
     }
     else{
-      toast.error("Cannot add sale.")
+      toast.error("Cannot add sale. IDK WHY")
     }
   }
 

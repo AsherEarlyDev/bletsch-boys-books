@@ -11,7 +11,8 @@ import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
 import {Purchase} from "../../../types/purchaseTypes";
 import BookCardProp from "../../CardComponents/BookCardProp";
-import DeletePurchaseModal from "../Modals/PurchaseModals/DeletePurchaseModal";
+import DeletePurchaseModal from "../Modals/PurchaseModals/Unused/DeletePurchaseModal";
+import LinkedBookTitle from "../../BasicComponents/DynamicRouting/LinkedBookTitle";
 
 interface PurchaseTableRowProp {
   purchase: Purchase
@@ -40,6 +41,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
     }
   })
   const [visible, setVisible] = useState(true)
+  
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -81,16 +83,15 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
   }
 
   function saveNewPurchase() {
-    toast.success("ready: " + isbn)
     props.saveAdd(isbn, quantityPurchased, purchasePrice)
   }
 
   return (
       <>
-        {visible && 
+        {visible && book && 
         (props.isView ?
                 <tr>
-                  <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
+                  {<LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>}
                   <TableEntry>${Number(purchasePrice).toFixed(2)}</TableEntry>
                   <TableEntry>{quantityPurchased}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>

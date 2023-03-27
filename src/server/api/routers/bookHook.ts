@@ -113,6 +113,7 @@ export const bookHookRouter = createTRPCRouter({
                     message: "ISBN must be a 10 or 13-digit number that may only contain a dash in between numbers. EX: 978-**********",
                   });
                 }
+                const unconvertedISBN = isbn
                 isbn = convertISBN10ToISBN13(isbn)
                 const bookValidation = await ctx.prisma.book.findUnique({
                   where:{
@@ -120,10 +121,10 @@ export const bookHookRouter = createTRPCRouter({
                   }
                 })
                 if (bookValidation){
-                  booksFound.push(element.isbn)
+                  booksFound.push(unconvertedISBN)
                 }
                 else{
-                  booksNotFound.push(element.isbn)
+                  booksNotFound.push(unconvertedISBN)
                 }
             }
   
@@ -138,6 +139,7 @@ export const bookHookRouter = createTRPCRouter({
             for (const sale of inputSales){
               let isbn: string = typeof(sale.isbn) === "string" ? sale.isbn : parseInt(sale.isbn).toString()
               isbn = isbn.replaceAll("-",'')
+              const unconvertedISBN = isbn
               isbn = convertISBN10ToISBN13(isbn)
               let price: number
               let priceString: string = sale.price.toString()
@@ -211,7 +213,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
-                inventoryCounts.set(sale.isbn, inventory)
+                inventoryCounts.set(unconvertedISBN, inventory)
               }
 
 
@@ -238,21 +240,21 @@ export const bookHookRouter = createTRPCRouter({
     }),
   });
 
-  const validateBooks = async (isbns: string[], ctx)=>{
-    const found: string[] = []
-    const not_found: string[] = []
-      for (const isbn of isbns){
-          const book = await ctx.prisma.book.findUnique({
-              where: {
-                isbn: isbn
-              }
-          })
-          if (book){
-            found.push(isbn)
-          }
-          else{
-            not_found.push(isbn)
-          }
-      }
-      return {foundBooks: found, booksNotFound: not_found}
-  }
+  // const validateBooks = async (isbns: string[], ctx)=>{
+  //   const found: string[] = []
+  //   const not_found: string[] = []
+  //     for (const isbn of isbns){
+  //         const book = await ctx.prisma.book.findUnique({
+  //             where: {
+  //               isbn: isbn
+  //             }
+  //         })
+  //         if (book){
+  //           found.push(isbn)
+  //         }
+  //         else{
+  //           not_found.push(isbn)
+  //         }
+  //     }
+  //     return {foundBooks: found, booksNotFound: not_found}
+  // }

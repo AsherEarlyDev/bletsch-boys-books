@@ -84,8 +84,11 @@ export default function StoreOrganizer() {
         <>
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-        <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+        
         <TableDetails tableName="Load BookCase" tableDescription="Load a existing bookcase to view or edit">
+            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+            </div>
         </TableDetails>
         <Table  sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}
                 setPage= {setPageNumber}

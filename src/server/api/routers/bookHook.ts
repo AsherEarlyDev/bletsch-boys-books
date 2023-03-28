@@ -10,14 +10,14 @@ const { log } = require('@logtail/next');
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        "item": z.array(z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.any()}))
+        "item": z.array(z.object({"isbn": z.any(), "qty": z.number(), "price": z.any()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      "item": z.object({"isbn": z.any(), "qty": z.number().gt(0), "price": z.any()})
+      "item": z.object({"isbn": z.any(), "qty": z.number(), "price": z.any()})
   })
 })
 
@@ -151,6 +151,8 @@ export const bookHookRouter = createTRPCRouter({
                 });
               }
 
+              
+
               if (booksFound.includes(sale.isbn)){
                 const book = await ctx.prisma.book.findFirst({
                   where:{
@@ -167,9 +169,15 @@ export const bookHookRouter = createTRPCRouter({
                   });
                 }
 
+                if (sale.qty < 0){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Quantity must be above 0!",
+                  });
+                }
+
                 inventory = book.inventory - sale.qty
                 if (inventory < 0){
-                  log.info(book.title)
                   inventoryCounts.push(book.title)
                 }
 

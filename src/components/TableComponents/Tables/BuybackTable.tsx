@@ -153,6 +153,17 @@ export default function BuybackTable() {
 
   async function openBuybackView(id: string) {
     setDisplayBuybackView(true, id)
+    if (buybackOrder) {
+      for (const order of buybackOrder) {
+        if (order.id === id) {
+          setCurrentOrder({
+            id: order.id,
+            date: order.date,
+            vendor: order.vendor,
+          })
+        }
+      }
+    }
   }
   function setDisplayBuybackView(view:boolean, id?: string) {
     view ? router.push({
@@ -175,7 +186,7 @@ export default function BuybackTable() {
               <CreateEntries closeStateFunction={setDisplayBuybackView}
                              submitText="Show Buyback Details">
                 <ViewTableModal type="Buyback" closeOut={closeBuybackView}
-                                        items={buybacks}
+                                        items={viewCurrentBuybacks}
                                         id={currentOrder.id}
                                         date={currentOrder.date}
                                         vendor={currentOrder.vendor}></ViewTableModal>

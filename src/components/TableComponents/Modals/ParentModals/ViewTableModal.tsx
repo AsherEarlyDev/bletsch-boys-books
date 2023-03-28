@@ -19,6 +19,7 @@ interface ViewTableModalProps{
 export default function ViewTableModal(props: ViewTableModalProps) {
   const header = `${props.date} ${props.type}`
   const hasItem = (props.items.length != 0)
+  console.log(props.vendor)
 
   const tableDescription = props.vendor ? `Vendor: ${props.vendor.name}, Order ID: ${props.id}`: `Sales Record ID: ${props.id}`
 

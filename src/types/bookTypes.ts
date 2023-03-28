@@ -42,6 +42,7 @@ export type googleImages = {
 
 export type editableBook = {
     isbn: string,
+    isbn10?:string,
     title:string,
     publisher: string,
     author: Array<string>,
@@ -63,6 +64,7 @@ export type editableBook = {
 
 export type completeBook = {
     isbn: string,
+    isbn10:string,
     title:string,
     publisher: string,
     author: Array<string>,
@@ -71,10 +73,14 @@ export type completeBook = {
     pageCount?: number,
     genre: string,
     retailPrice: number
+    inventory: number,
+    shelfSpace: number,
+    imageLink?: string
 }
 
 export type databaseBook = {
     isbn: string,
+    isbn10?: string,
     title:string,
     publisher: string,
     author: Array<string>,
@@ -82,7 +88,6 @@ export type databaseBook = {
     dimensions: Array<number>,
     pageCount?: number,
     genreID: string,
-
     retailPrice: number,
     inventory: number,
     shelfSpace: number,

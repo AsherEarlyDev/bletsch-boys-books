@@ -39,6 +39,7 @@ export default function BookCard(props:BookCardProp) {
     if(props.bookInfo && genre){
       action.mutate({
         isbn: props.bookInfo.isbn,
+        isbn10: props.bookInfo.isbn ?? undefined,
         title: props.bookInfo.title ?? "",
         publisher: props.bookInfo.publisher ?? "",
         publicationYear: props.bookInfo.publicationYear ?? -1,

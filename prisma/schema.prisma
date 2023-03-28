@@ -11,6 +11,7 @@ datasource db {
 
 model Book {
   isbn                String                @id
+  isbn10              String?
   title               String
   publisher           String
   publicationYear     Int
@@ -179,6 +180,8 @@ model BookCaseContainer {
   name       String      @id @unique
   width      Float
   numShelves Float
+  userName   String
+  date       DateTime
   ShelfBook  ShelfBook[]
 }
 

@@ -22,7 +22,7 @@ export default function FilterModal(props: FilterProp) {
   function clearFilters(){
     closeModal()
     props.resetPageNumber(0)
-    router.push({pathname: '/records',})
+    router.push({pathname: '/books',})
   }
 
   function openModal() {
@@ -34,7 +34,7 @@ export default function FilterModal(props: FilterProp) {
     const formData = new FormData(e.target as HTMLFormElement)
     console.log(genre)
     router.push({
-      pathname: '/records',
+      pathname: '/books',
       query: Object.assign({}, 
         formData.get("isbn") as string === "" ? null : {isbn: formData.get("isbn") as string},
         formData.get("title") as string === "" ? null : {title: formData.get("title") as string},

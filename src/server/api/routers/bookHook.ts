@@ -176,7 +176,7 @@ export const bookHookRouter = createTRPCRouter({
                     message: "Quantity must be above 0!",
                   });
                 }
-                else if (Number.isInteger(sale.qty)){
+                else if (!Number.isInteger(sale.qty)){
                   throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: "Quantity must be an integer!",

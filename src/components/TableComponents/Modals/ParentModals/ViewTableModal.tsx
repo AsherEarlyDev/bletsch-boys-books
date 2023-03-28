@@ -18,7 +18,10 @@ interface ViewTableModalProps{
 
 export default function ViewTableModal(props: ViewTableModalProps) {
   const header = `${props.date} ${props.type}`
+  console.log(props.items)
   const hasItem = (props.items.length != 0)
+  console.log(props.vendor)
+  console.log(props.id)
 
   const tableDescription = props.vendor ? `Vendor: ${props.vendor.name}, Order ID: ${props.id}`: `Sales Record ID: ${props.id}`
 
@@ -45,7 +48,7 @@ export default function ViewTableModal(props: ViewTableModalProps) {
                       <ColumnHeading label="Subtotal"></ColumnHeading>
                     </TableHeader>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {props.items.map((item) => (<TableRow type={props.type} vendorId={props.vendor.id} isView={true} isAdding={false} item={item}></TableRow>))}
+                    {props.items.map((item) => (<TableRow type={props.type} vendorId={props.vendor ? props.vendor.id: null} isView={true} isAdding={false} item={item}></TableRow>))}
                     </tbody>
                   </table>
                 </div>

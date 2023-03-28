@@ -8,6 +8,8 @@ export const bookCaseRouter = createTRPCRouter({
     .input(z.object({
         name: z.string(),
         width:z.number(),
+        userName:z.string(),
+        dateTime:z.date(),
         numShelves:z.number(),
         case:z.array(z.object({
             takenSpace:z.number(),
@@ -47,12 +49,13 @@ export const bookCaseRouter = createTRPCRouter({
                 bookIsbn:book.bookIsbn,}
             })
         })))
-        console.log(data)
         try{ await ctx.prisma.bookCaseContainer.create({
             data:{
                 name:input.name,
                 width:input.width,
                 numShelves:input.numShelves,
+                userName:input.userName,
+                date:input.dateTime,
                 ShelfBook:{
                     createMany:{
                         data:data
@@ -119,6 +122,8 @@ export const bookCaseRouter = createTRPCRouter({
                 name:bookCase.name,
                 width:bookCase.width,
                 numShelves:bookCase.numShelves,
+                date:bookCase.date,
+                userName:bookCase.userName,
                 case:fullCase
             }
         })

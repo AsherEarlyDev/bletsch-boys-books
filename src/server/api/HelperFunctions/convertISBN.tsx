@@ -1,10 +1,15 @@
+import { TRPCError } from "@trpc/server";
+
 export default function convertISBN10ToISBN13(isbn: string){
     if (isbn.length === 13){
         return isbn
     }
     
     if (isbn.length != 10){
-        throw new Error(`ISBN must be of length 10 or 13 but is of length ${isbn.length}`)
+        throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `ISBN must be of length 10 or 13 but is of length ${isbn.length}`,
+          });
     }
 
 

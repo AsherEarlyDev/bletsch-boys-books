@@ -284,7 +284,7 @@ export const salesRecRouter = createTRPCRouter({
   })
 });
 
-const transformData = (salesRec: saleReconciliation[]) => {
+const transformData = (salesRec) => {
   return salesRec.map((rec) => {
     return({
       ...rec,

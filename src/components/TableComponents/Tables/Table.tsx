@@ -61,7 +61,7 @@ return(
                                     placeholder="Filter by name..."
                                     onChange={(value) => {
                                         router.push({
-                                            pathname: '/records',
+                                            pathname: '/books',
                                             query: Object.assign({},
                                                 query,
                                                 {[props.firstHeader[1]]:value.target.value}
@@ -79,7 +79,7 @@ return(
                                     placeholder={label[1]=="authorNames" ? "By author..." : ("By " +  label[1] + "...")}
                                     onChange={(value) => {
                                         router.push({
-                                            pathname: '/records',
+                                            pathname: '/books',
                                             query: Object.assign({},
                                                 query,
                                                 {[label[1]]:value.target.value}

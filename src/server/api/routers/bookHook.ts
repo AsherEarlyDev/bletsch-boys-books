@@ -63,7 +63,7 @@ export const bookHookRouter = createTRPCRouter({
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: `Data in improper format!`,
+            message: `Data in improper format! Date must be in proper date format (YYYY-MM-DD). ISBN may be a string or number (string of digits). Quantity must be an integer. Price must be a float with at most a $!`,
           });
         }
 
@@ -113,6 +113,7 @@ export const bookHookRouter = createTRPCRouter({
                     message: "ISBN must be a 10 or 13-digit number that may only contain a dash in between numbers. EX: 978-**********",
                   });
                 }
+                log.info(`ISBN: ${isbn}`)
                 isbn = convertISBN10ToISBN13(isbn)
                 const bookValidation = await ctx.prisma.book.findUnique({
                   where:{
@@ -173,6 +174,12 @@ export const bookHookRouter = createTRPCRouter({
                   throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: "Quantity must be above 0!",
+                  });
+                }
+                else if (Number.isInteger(sale.qty)){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Quantity must be an integer!",
                   });
                 }
 

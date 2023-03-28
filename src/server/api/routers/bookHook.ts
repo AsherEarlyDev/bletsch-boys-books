@@ -205,6 +205,7 @@ export const bookHookRouter = createTRPCRouter({
                       subtotal: price * sale.qty
                     },
                   });
+                log.info(`What's Broken: ${inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)}`)
                 await ctx.prisma.book.update({
                 where: {
                     isbn: isbn

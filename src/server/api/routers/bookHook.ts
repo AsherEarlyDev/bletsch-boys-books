@@ -35,7 +35,7 @@ export const bookHookRouter = createTRPCRouter({
     contentTypes: ["application/xml"],
     protect: true} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCounts: z.array(z.string())}))
+    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCorrections: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
@@ -228,12 +228,12 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. The list under inventoryCounts demonstrates the books that need inventory corrections! Please got to the books page to make these corrections.`, booksNotFound: booksNotFound, inventoryCounts: inventoryCounts }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. The list under inventoryCorrections demonstrates the books that need inventory corrections! Please got to the books page to make these corrections.`, booksNotFound: booksNotFound, inventoryCorrections: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({
             code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
-            message: "Something is going wrong!",
+            message: error.message,
           });
     }
       

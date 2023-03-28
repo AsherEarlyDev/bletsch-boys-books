@@ -24,7 +24,7 @@ export default function StoreOrganizer() {
     const totalNumberOfEntries = api.bookCase.getNumberOfCases.useQuery().data
     const numberOfPages = Math.ceil(totalNumberOfEntries / CASES_PER_PAGE)
     const [newWidth, setNewWidth] = useState(DEFAULT_WIDTH)
-    const [newName, setNewName] = useState("")
+    const [newName, setNewName] = useState("Enter Case Title")
     const [newNumShelves, setNewNumShelves] = useState(DEFAULT_SHELF_NUMBER)
     const [viewCase, setViewCase] = useState(false)
     const [displayDeleteView, setDisplayDeleteView] = useState(false)
@@ -35,7 +35,7 @@ export default function StoreOrganizer() {
     const [sortOrder, setSortOrder] = useState("asc")
     const FIRST_HEADER =  ["Name", "name"]
     const STATIC_HEADERS = ["Edit/View","Delete"]
-    const SORTABLE_HEADERS = [["Width", "width"], ["Number Of Shelves", "numShelves"]]
+    const SORTABLE_HEADERS = [["Width", "width"], ["Number Of Shelves", "numShelves"], ["User", "userName"], ["Date Last Edited", "date"]]
     const cases = api.bookCase.getAllBookCases.useQuery({pageNumber:pageNumber, casesPerPage:CASES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
     
 
@@ -84,8 +84,11 @@ export default function StoreOrganizer() {
         <>
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-        <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+        
         <TableDetails tableName="Load BookCase" tableDescription="Load a existing bookcase to view or edit">
+            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+            </div>
         </TableDetails>
         <Table  sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}
                 setPage= {setPageNumber}

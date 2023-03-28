@@ -32,7 +32,11 @@ export default function BookSelect(props:{saveFunction: any, defaultValue?:any, 
               book.isbn
               .toLowerCase()
               .replace(/\s+/g, '')
-              .includes(query.toLowerCase().replace(/\s+/g, '')) 
+              .includes(query.toLowerCase().replace(/\s+/g, '')) ||
+              book.isbn10 && book.isbn10
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .includes(query.toLowerCase().replace(/\s+/g, ''))
           )) : []
 
   return (

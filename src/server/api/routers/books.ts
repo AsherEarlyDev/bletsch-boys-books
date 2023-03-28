@@ -24,6 +24,7 @@ export const DEFAULT_THICKNESS_IN_CENTIMETERS = .8
 
 const zBook = z.object({
   isbn: z.string(),
+  isbn10:z.optional(z.string()),
   title: z.string(),
   publisher: z.string(),
   author: z.array(z.string()),
@@ -56,6 +57,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
     if (result) {
       const bookInfo: editableBook = {
         isbn: convertISBN10ToISBN13(isbn),
+        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -78,6 +80,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
     } else {
       const bookInfo: editableBook = {
         isbn: isbn,
+        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -107,6 +110,7 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
   const relatedBooks = (await findRelatedBooks(book.title, book.isbn, ctx))
   const bookInfo: editableBook = {
     isbn: book.isbn,
+    isbn10: book.isbn10 ?? undefined,
     title: book.title,
     publisher: book.publisher,
     author: book.author.map((author) => author.name),
@@ -201,7 +205,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks" || input.sortBy === "shelfSpace") {
         return externalSort(input, ctx, true)
       }
       const books = await ctx.prisma.book.findMany({
@@ -274,7 +278,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks" || input.sortBy === "shelfSpace") {
         return externalSort(input, ctx, false)
       }
       const books = await ctx.prisma.book.findMany({
@@ -379,6 +383,7 @@ export const booksRouter = createTRPCRouter({
         await ctx.prisma.book.create({
           data: {
             isbn: data.isbn,
+            isbn10: data.isbn10 ?? undefined,
             title: data.title ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
             publisher: data.publisher ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
             publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,
@@ -670,6 +675,7 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
       {
         ...book,
         lastMonthSales: lastMonthSales,
+        shelfSpace:book.inventory*(book.dimensions[1]? book.dimensions[1] : .8),
         daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
         bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
         numberRelatedBooks: relatedBooks.length,

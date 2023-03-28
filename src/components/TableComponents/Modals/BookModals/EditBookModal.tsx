@@ -60,6 +60,7 @@ export default function EditBookModal(props:BookCardProp) {
       if(updatedInventory == props.bookInfo.inventory){
         action.mutate({
           isbn: props.bookInfo.isbn,
+          isbn10: props.bookInfo.isbn10 ?? undefined,
           title: props.bookInfo.title ?? "",
           publisher: props.bookInfo.publisher ?? "",
           publicationYear: props.bookInfo.publicationYear ?? -1,

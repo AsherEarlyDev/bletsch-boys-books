@@ -35,7 +35,7 @@ export default function StoreOrganizer() {
     const [sortOrder, setSortOrder] = useState("asc")
     const FIRST_HEADER =  ["Name", "name"]
     const STATIC_HEADERS = ["Edit/View","Delete"]
-    const SORTABLE_HEADERS = [["Width", "width"], ["Number Of Shelves", "numShelves"]]
+    const SORTABLE_HEADERS = [["Width", "width"], ["Number Of Shelves", "numShelves"], ["User", "userName"], ["Date Last Edited", "date"]]
     const cases = api.bookCase.getAllBookCases.useQuery({pageNumber:pageNumber, casesPerPage:CASES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
     
 

@@ -24,6 +24,7 @@ export const DEFAULT_THICKNESS_IN_CENTIMETERS = .8
 
 const zBook = z.object({
   isbn: z.string(),
+  isbn10:z.optional(z.string()),
   title: z.string(),
   publisher: z.string(),
   author: z.array(z.string()),
@@ -56,6 +57,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
     if (result) {
       const bookInfo: editableBook = {
         isbn: convertISBN10ToISBN13(isbn),
+        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -78,6 +80,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
     } else {
       const bookInfo: editableBook = {
         isbn: isbn,
+        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -107,6 +110,7 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
   const relatedBooks = (await findRelatedBooks(book.title, book.isbn, ctx))
   const bookInfo: editableBook = {
     isbn: book.isbn,
+    isbn10: book.isbn10 ?? undefined,
     title: book.title,
     publisher: book.publisher,
     author: book.author.map((author) => author.name),
@@ -379,6 +383,7 @@ export const booksRouter = createTRPCRouter({
         await ctx.prisma.book.create({
           data: {
             isbn: data.isbn,
+            isbn10: data.isbn10 ?? undefined,
             title: data.title ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
             publisher: data.publisher ?? DEFAULT_EMPTY_STRING_FIELD_VALUE,
             publicationYear: data.publicationYear ?? DEFAULT_EMPTY_NUMBER_FIELD_VALUE,

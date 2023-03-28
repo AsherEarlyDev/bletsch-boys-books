@@ -11,6 +11,7 @@ datasource db {
 
 model Book {
   isbn                String                @id
+  isbn10              String?
   title               String
   publisher           String
   publicationYear     Int
@@ -29,7 +30,7 @@ model Book {
   sales               Sale[]
   ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
-  }
+}
 
 model Genre {
   id    String @id @default(cuid())
@@ -122,15 +123,15 @@ model Session {
 }
 
 model User {
-  id                  String                @id @default(cuid())
-  name                String?
-  email               String?               @unique
-  emailVerified       DateTime?
-  image               String?
-  password            String
-  role                Role                  @default(USER)
-  accounts            Account[]
-  sessions            Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
@@ -170,15 +171,17 @@ model InventoryCorrection {
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
-  book       Book     @relation(fields: [bookId], references: [isbn])
   adjustment Int
   userName   String
+  book       Book     @relation(fields: [bookId], references: [isbn])
 }
 
 model BookCaseContainer {
   name       String      @id @unique
   width      Float
   numShelves Float
+  userName   String
+  date       DateTime
   ShelfBook  ShelfBook[]
 }
 

@@ -12,7 +12,7 @@ export default function LinkedBookTitle(props: TableEntryInterface) {
   if (props.firstEntry == true) {
     return (
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-          <div><Link href={{pathname:'/records', query:{openView:"true",viewId: props.book?.isbn}}}>
+          <div><Link href={{pathname:'/books', query:{openView:"true",viewId: props.book?.isbn}}}>
             <button  className = "text-indigo-600 hover:text-indigo-900 inline-flex group w-80">
               <div className="text-left overflow-hidden truncate w-60">
                 {props.book?.title}

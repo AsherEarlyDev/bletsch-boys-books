@@ -21,15 +21,16 @@ model Book {
   inventory           Int                   @default(0)
   authorNames         String
   imageLink           String?
-  shelfSpace          Float?                @default(0)
+  isbn10              String?
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
   purchases           Purchase[]
+  shelfSpace          Float                 @default(0)
   sales               Sale[]
   ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
-  }
+}
 
 model Genre {
   id    String @id @default(cuid())
@@ -89,9 +90,9 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
-  revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
+  revenue     Float    @default(0)
   sales       Sale[]
 }
 
@@ -122,15 +123,15 @@ model Session {
 }
 
 model User {
-  id                  String                @id @default(cuid())
-  name                String?
-  email               String?               @unique
-  emailVerified       DateTime?
-  image               String?
-  password            String
-  role                Role                  @default(USER)
-  accounts            Account[]
-  sessions            Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
@@ -166,34 +167,34 @@ model Buyback {
 }
 
 model InventoryCorrection {
-
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
-  book       Book     @relation(fields: [bookId], references: [isbn])
   adjustment Int
   userName   String
+  book       Book     @relation(fields: [bookId], references: [isbn])
 }
 
 model BookCaseContainer {
   name       String      @id @unique
   width      Float
   numShelves Float
+  date       DateTime
+  userName   String
   ShelfBook  ShelfBook[]
 }
 
 model ShelfBook {
   id                    String             @id @default(cuid())
-  shelfNumber           Int
-  index                 Int
   mode                  String
   edit                  Boolean
   displayCount          Int
   bookIsbn              String
-  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
-  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete:Cascade)
   bookCaseContainerName String?
-
+  index                 Int
+  shelfNumber           Int
+  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete: Cascade)
+  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
 }
 
 enum Role {

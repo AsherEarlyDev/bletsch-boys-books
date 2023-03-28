@@ -207,7 +207,7 @@ export const bookHookRouter = createTRPCRouter({
                   });
                 await ctx.prisma.book.update({
                 where: {
-                    isbn: book.isbn
+                    isbn: isbn
                 },
                 data:{
                     inventory: inventory,

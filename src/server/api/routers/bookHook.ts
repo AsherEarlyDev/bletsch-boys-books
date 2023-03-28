@@ -171,8 +171,8 @@ export const bookHookRouter = createTRPCRouter({
                         isbn: book.isbn
                     },
                     data:{
-                      increment:{
-                        inventory: -inventory,
+                      inventory:{
+                        increment: -inventory,
                       },
                       shelfSpace: 0
                     }

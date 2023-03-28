@@ -144,13 +144,24 @@ export default function SalesTable() {
 
   async function openSalesRecView(id: string){
     setDisplaySalesRecView(true, id)
+    if (salesRecs){
+      for (const rec of salesRecs){
+        if (rec.id === id){
+          setCurrentSalesRec({
+            id: rec.id,
+            date: rec.date,
+          })
+        }
+      }
+    }
   }
   function renderSalesRecView() {
+    console.log(viewCurrentSales)
     return(
         <>
           {(displaySalesRecView && viewCurrentSales) ?
               (<CreateSaleEntries closeStateFunction={setDisplaySalesRecView} submitText="Show Sales Details">
-                <ViewTableModal type="Sales Record" closeOut={closeSalesRecView} items={ currentSales}
+                <ViewTableModal type="Sales Record" closeOut={closeSalesRecView} items={ viewCurrentSales }
                                         id={currentSalesRec.id}
                                         date={currentSalesRec.date}
                                         vendor={null}></ViewTableModal>

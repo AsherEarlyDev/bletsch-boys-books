@@ -139,7 +139,7 @@ export default function EditShelfCalculatorModal(props: ShelfCalculatorModalProp
                               <span><button
                                   onClick={() => {
                                     if(currentBook.title){
-                                      setBookList([...bookList, { Book:currentBook, bookIsbn: currentBook.isbn, name:currentBook.title, inventory: currentBook.inventory, displayCount:0, edit:true, mode:{value:"spine", display:"Spine Out"}, thickness:Number(currentBook.dimensions[1] ? currentBook.dimensions[1] : 0.8), width:Number(currentBook.dimensions[1] ? currentBook.dimensions[0] : 5)}])
+                                      setBookList([...bookList, { Book:currentBook, bookIsbn: currentBook.isbn, name:currentBook.title, dimensions:currentBook.dimensions, inventory: currentBook.inventory, displayCount:0, edit:true, mode:{value:"spine", display:"Spine Out"}, thickness:Number(currentBook.dimensions[1] ? currentBook.dimensions[1] : 0.8), width:Number(currentBook.dimensions[1] ? currentBook.dimensions[0] : 5)}])
                                     }
 
                                 }}
@@ -243,7 +243,7 @@ export default function EditShelfCalculatorModal(props: ShelfCalculatorModalProp
                                                  :<TableEntry>{item.displayCount}</TableEntry>
                                               }
                                               {/* Dimensions are width thickness then height */}
-                                              <TableEntry>{item.mode.value==="cover" ? item.width : Number((item.displayCount * item.thickness).toFixed(2))}"</TableEntry>
+                                              <TableEntry>{item.mode.value==="cover" ? item.width : Number((item.displayCount * item.thickness).toFixed(2))}" {((item.mode.value==="cover" && !item.dimensions[0]) || (item.mode.value==="spine" && !item.dimensions[1])) && " (est.)"}</TableEntry>
                                               {item.edit ? <SaveRowEntry onSave={() => reverseItemEditStatus(idx, item)}></SaveRowEntry> 
                                               : <EditRowEntry onEdit={() => reverseItemEditStatus(idx, item)}></EditRowEntry>}
                                               <DeleteRowEntry onDelete={() => {

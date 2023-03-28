@@ -205,7 +205,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks" || input.sortBy === "shelfSpace") {
         return externalSort(input, ctx, true)
       }
       const books = await ctx.prisma.book.findMany({
@@ -278,7 +278,7 @@ export const booksRouter = createTRPCRouter({
   })))
   .query(async ({ctx, input}) => {
     if(input){
-      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks") {
+      if(input.sortBy === "lastMonthSales" || input.sortBy === "daysOfSupply" || input.sortBy === "bestBuybackPrice" || input.sortBy === "numberRelatedBooks" || input.sortBy === "shelfSpace") {
         return externalSort(input, ctx, false)
       }
       const books = await ctx.prisma.book.findMany({
@@ -675,6 +675,7 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
       {
         ...book,
         lastMonthSales: lastMonthSales,
+        shelfSpace:book.inventory*(book.dimensions[1]? book.dimensions[1] : .8),
         daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
         bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
         numberRelatedBooks: relatedBooks.length,

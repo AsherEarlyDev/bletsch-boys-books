@@ -5,21 +5,23 @@ import { XMLParser } from "fast-xml-parser";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 const { Logtail } = require("@logtail/node");
-const logtail = new Logtail("PxJvYh15v3DCzCNouHKSg874");
+const { log } = require('@logtail/next');
 
 const saleRecord = z.object({
     sale: z.object({
         "@_date": z.string(), 
-        item: z.array(z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)}))
+        "item": z.array(z.object({"isbn": z.any(), "qty": z.number(), "price": z.any()}))
     })
 })
 
 const saleRecordOneSale = z.object({
   sale: z.object({
       "@_date": z.string(), 
-      item: z.object({isbn: z.string(), qty: z.number().gt(0), price: z.number().gt(0)})
+      "item": z.object({"isbn": z.any(), "qty": z.number(), "price": z.any()})
   })
 })
+
+
 
 
 
@@ -33,7 +35,7 @@ export const bookHookRouter = createTRPCRouter({
     contentTypes: ["application/xml"],
     protect: true} })
     .input(z.object({ info: z.string().optional() }).catchall(z.any()))
-    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string())}))
+    .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCorrections: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
@@ -42,6 +44,7 @@ export const bookHookRouter = createTRPCRouter({
             message: `This site is not authorized!`,
           });
         }
+        const inventoryCounts = [];
         const booksNotFound = []
         const booksFound = []
         const options = {
@@ -60,11 +63,20 @@ export const bookHookRouter = createTRPCRouter({
         if (!saleRecord.safeParse(parsedXml).success && !saleRecordOneSale.safeParse(parsedXml).success){
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: "Data in improper format!",
+            message: `Data in improper format! Date must be in proper date format (YYYY-MM-DD). ISBN may be a string or number (string of digits). Quantity must be an integer. Price must be a float with at most a $!`,
           });
         }
 
-        const inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
+        let inputDate
+        if (Date.parse(parsedXml.sale["@_date"])){
+          inputDate = parsedXml.sale["@_date"].replace(/-/g, '\/')
+        }
+        else{
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: "Date is in improper format! Must be of form YYYY-MM-DD.",
+          });
+        }
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
           data: {
             date: new Date(inputDate),
@@ -74,9 +86,34 @@ export const bookHookRouter = createTRPCRouter({
         if (newSaleRecord.id){
             
             const inputSales: {isbn: string, qty: number, price: number}[] = Array.isArray(parsedXml.sale.item) ?  parsedXml.sale.item : [parsedXml.sale.item]
+            if (inputSales.length === 0){
+              throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: "No sales information was given!",
+              });
+            }
             for (const element of inputSales){
-                let isbn: string = element.isbn
-                isbn = isbn.replace(/\D/g,'')
+                let isbn: string
+                if (typeof(element.isbn) === "string"){
+                  isbn = element.isbn
+                }
+                else if (typeof(element.isbn) === "number"){
+                  isbn = parseInt(element.isbn).toString()
+                }
+                else{
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "ISBN must be a string or number!",
+                  });
+                }
+                isbn = isbn.replaceAll("-",'')
+                if (!(/^\d+$/.test(isbn))){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "ISBN must be a 10 or 13-digit number that may only contain a dash in between numbers. EX: 978-**********",
+                  });
+                }
+                log.info(`ISBN: ${isbn}`)
                 isbn = convertISBN10ToISBN13(isbn)
                 const bookValidation = await ctx.prisma.book.findUnique({
                   where:{
@@ -100,10 +137,22 @@ export const bookHookRouter = createTRPCRouter({
             }
 
             for (const sale of inputSales){
-              let isbn: string = sale.isbn
-              isbn = isbn.replace(/\D/g,'')
+              let isbn: string = typeof(sale.isbn) === "string" ? sale.isbn : parseInt(sale.isbn).toString()
+              isbn = isbn.replaceAll("-",'')
               isbn = convertISBN10ToISBN13(isbn)
-              let price: number = sale.price
+              let price: number
+              let priceString: string = sale.price.toString()
+              if (parseFloat(priceString.replaceAll("$", ""))){
+                price = parseFloat(priceString.replaceAll("$", ""))
+              }
+              else{
+                throw new TRPCError({
+                  code: 'BAD_REQUEST',
+                  message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
+                });
+              }
+
+              
 
               if (booksFound.includes(sale.isbn)){
                 const book = await ctx.prisma.book.findFirst({
@@ -114,8 +163,31 @@ export const bookHookRouter = createTRPCRouter({
                 if (price === 0){
                   price = book.retailPrice
                 }
+                else if(price < 0){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Price must be greater than 0!",
+                  });
+                }
+
+                if (sale.qty < 0){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Quantity must be above 0!",
+                  });
+                }
+                else if (!Number.isInteger(sale.qty)){
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Quantity must be an integer!",
+                  });
+                }
 
                 inventory = book.inventory - sale.qty
+                if (inventory < 0){
+                  inventoryCounts.push(book.title)
+                }
+
                 const uniqueBooks = await ctx.prisma.sale.findMany({
                 where: {
                     saleReconciliationId: newSaleRecord.id,
@@ -123,6 +195,7 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
+                log.info("Updating books and creating sale")
                 await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
@@ -142,46 +215,24 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 })
                 await ctx.prisma.saleReconciliation.update({
-                where: {
-                    id: newSaleRecord.id
-                },
-                data:{
-                    totalBooks: {
-                    increment: sale.qty
-                    },
-                    revenue: {
-                    increment: sale.qty*price
-                    },
-                    uniqueBooks: {
-                    increment: unique
-                    }
-                }
-                })
-                if (inventory < 0){
-                  await ctx.prisma.inventoryCorrection.create({
-                    data:{
-                      userName: ctx.session.user?.name,
-                      date: new Date(inputDate),
-                      adjustment: -inventory,
-                      bookId: isbn
-                    }
-                  })
-                  await ctx.prisma.book.update({
-                    where: {
-                        isbn: book.isbn
-                    },
-                    data:{
-                      increment:{
-                        inventory: -inventory,
+                  where: {
+                      id: newSaleRecord.id
+                  },
+                  data:{
+                      totalBooks: {
+                        increment: sale.qty
                       },
-                      shelfSpace: 0
-                    }
-                    })
-                }
+                      revenue: {
+                        increment: sale.qty*price
+                      },
+                      uniqueBooks: {
+                        increment: unique
+                      }
+                  }
+                })
+                
               }
-              else{
-                booksNotFound.push(sale.isbn)
-              }
+
 
             }
         }
@@ -192,7 +243,7 @@ export const bookHookRouter = createTRPCRouter({
               });
         }
         
-        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound.`, booksNotFound: booksNotFound }
+        return {message: `The sale was successfully recorded under the following ID: ${newSaleRecord.id}. The list of books not added can be found in booksNotFound. The list under inventoryCorrections demonstrates the books that need inventory corrections! Please got to the books page to make these corrections.`, booksNotFound: booksNotFound, inventoryCorrections: inventoryCounts }
     }
     catch(error){
         throw new TRPCError({
@@ -204,21 +255,21 @@ export const bookHookRouter = createTRPCRouter({
     }),
   });
 
-  const validateBooks = async (isbns: string[], ctx)=>{
-    const found: string[] = []
-    const not_found: string[] = []
-      for (const isbn of isbns){
-          const book = await ctx.prisma.book.findUnique({
-              where: {
-                isbn: isbn
-              }
-          })
-          if (book){
-            found.push(isbn)
-          }
-          else{
-            not_found.push(isbn)
-          }
-      }
-      return {foundBooks: found, booksNotFound: not_found}
-  }
+  // const validateBooks = async (isbns: string[], ctx)=>{
+  //   const found: string[] = []
+  //   const not_found: string[] = []
+  //     for (const isbn of isbns){
+  //         const book = await ctx.prisma.book.findUnique({
+  //             where: {
+  //               isbn: isbn
+  //             }
+  //         })
+  //         if (book){
+  //           found.push(isbn)
+  //         }
+  //         else{
+  //           not_found.push(isbn)
+  //         }
+  //     }
+  //     return {foundBooks: found, booksNotFound: not_found}
+  // }

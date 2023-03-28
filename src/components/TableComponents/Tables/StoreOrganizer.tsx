@@ -24,7 +24,7 @@ export default function StoreOrganizer() {
     const totalNumberOfEntries = api.bookCase.getNumberOfCases.useQuery().data
     const numberOfPages = Math.ceil(totalNumberOfEntries / CASES_PER_PAGE)
     const [newWidth, setNewWidth] = useState(DEFAULT_WIDTH)
-    const [newName, setNewName] = useState("")
+    const [newName, setNewName] = useState("Enter Case Title")
     const [newNumShelves, setNewNumShelves] = useState(DEFAULT_SHELF_NUMBER)
     const [viewCase, setViewCase] = useState(false)
     const [displayDeleteView, setDisplayDeleteView] = useState(false)

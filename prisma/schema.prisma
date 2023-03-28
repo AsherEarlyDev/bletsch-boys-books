@@ -24,11 +24,12 @@ model Book {
   shelfSpace          Float?                @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
+  InventoryCorrection InventoryCorrection[]
   purchases           Purchase[]
   sales               Sale[]
+  ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
-  InventoryCorrection InventoryCorrection[]
-}
+  }
 
 model Genre {
   id    String @id @default(cuid())
@@ -165,12 +166,34 @@ model Buyback {
 }
 
 model InventoryCorrection {
+
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
   book       Book     @relation(fields: [bookId], references: [isbn])
   adjustment Int
   userName   String
+}
+
+model BookCaseContainer {
+  name       String      @id @unique
+  width      Float
+  numShelves Float
+  ShelfBook  ShelfBook[]
+}
+
+model ShelfBook {
+  id                    String             @id @default(cuid())
+  shelfNumber           Int
+  index                 Int
+  mode                  String
+  edit                  Boolean
+  displayCount          Int
+  bookIsbn              String
+  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
+  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete:Cascade)
+  bookCaseContainerName String?
+
 }
 
 enum Role {

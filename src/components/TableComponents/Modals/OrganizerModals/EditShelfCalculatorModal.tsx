@@ -9,6 +9,7 @@ import TableDetails from '../../TableDetails';
 import TableHeader from '../../TableHeader';
 import ColumnHeading from "../../TableColumnHeadings/ColumnHeading"
 ;
+import {PencilSquareIcon} from "@heroicons/react/20/solid";
 import TableEntry from '../../TableEntries/TableEntry';
 import MutableTableEntry from '../../TableEntries/MutableTableEntry';
 import ImmutableCardProp from '../../../CardComponents/ImmutableCardProp';
@@ -24,17 +25,22 @@ interface ShelfCalculatorModalProp{
   buttonText: string;
   submitText: string;
   isStandAlone?:boolean;
+  width:number;
+  saveCase?;
+  index?;
+  bookList;
+  case;
+  
 }
 interface ShelfBook{
   book;
   displayCount: number;
 }
 
-export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
-  const DEFAULT_WIDTH = 60
+export default function EditShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   const [isOpen, setIsOpen] = useState(false)
-  const [width, setWidth] = useState(DEFAULT_WIDTH)
-  const [bookList, setBookList] = useState([])
+  const width = props.case.width
+  const [bookList, setBookList] = useState(props.bookList)
   const [currentBookISBN, setCurrentBook] = useState("")
   const currentBookObj = api.books.findBooks.useQuery([currentBookISBN]).data
   const currentBook = currentBookObj?.internalBooks[0] ?? {}
@@ -47,11 +53,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   }
 
   function openModal() {
-    if(props.isStandAlone) {
-      setBookList([])
-      setWidth(DEFAULT_WIDTH)
-      setCurrentBook("")
-    }
+    setBookList(props.bookList)
     setIsOpen(true)
   }
 
@@ -86,7 +88,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
   }
   function reverseItemEditStatus(idx:number, item){
     const temp = [...bookList]
-    temp[idx] = {...item, edit:!(temp[idx].edit), displayCount: item.mode.value=== "cover" ? min(item.displayCount, Number((SHELF_THICKNESS/item.thickness).toFixed(0))) : item.displayCount}
+    temp[idx] = {...item, edit:!(temp[idx].edit), displayCount: item.mode.value=== "cover" ? Number(min(item.displayCount, Number((SHELF_THICKNESS/item.thickness).toFixed(0)))) : Number(item.displayCount)}
     console.log(temp[idx])
 
     setBookList(temp)
@@ -95,15 +97,11 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
 
   return (
       <>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none jutify-right" >
-          <button
-              type="button"
-              onClick={openModal}
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-          >
-            {props.buttonText}
+        <td className="relative whitespace-nowrap py-2 px-1 text-left text-sm font-medium sm:pr-6">
+          <button onClick={openModal} className="text-indigo-600 hover:text-indigo-900">
+            <PencilSquareIcon className="h-4 w-4"/>
           </button>
-        </div>
+        </td>
         <Transition.Root show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10"  onClose={closeModal}>
             <Transition.Child
@@ -136,13 +134,12 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                             <TableDetails tableName={"Shelf Calculator"} tableDescription={"Calculate available shelf space"}>
                             </TableDetails>
                             <div className="mt-5">
-                              <MutableCardProp saveValue={setWidth} heading="Width" dataType="number" defaultValue={DEFAULT_WIDTH}></MutableCardProp>
                               <p mt-2 text-sm text-gray-700>Add a book below</p>
                               <BookCardProp saveFunction={setCurrentBook} ></BookCardProp>
                               <span><button
                                   onClick={() => {
                                     if(currentBook.title){
-                                      setBookList([...bookList, { name:currentBook.title, inventory: currentBook.inventory, displayCount:0, dimensions: currentBook.dimensions, edit:false, mode:{value:"spine", display:"Spine Out"}, thickness:Number(currentBook.dimensions[1] ? currentBook.dimensions[1] : 0.8), width:Number(currentBook.dimensions[1] ? currentBook.dimensions[0] : 5)}])
+                                      setBookList([...bookList, { Book:currentBook, bookIsbn: currentBook.isbn, name:currentBook.title, inventory: currentBook.inventory, displayCount:0, edit:true, mode:{value:"spine", display:"Spine Out"}, thickness:Number(currentBook.dimensions[1] ? currentBook.dimensions[1] : 0.8), width:Number(currentBook.dimensions[1] ? currentBook.dimensions[0] : 5)}])
                                     }
 
                                 }}
@@ -238,7 +235,7 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                               {item.edit ? 
                                                 <MutableTableEntry saveValue={(displayCount) =>{
                                                 const temp = [...bookList]
-                                                temp[idx] = {...item, displayCount: item.mode.value=== "cover" ? min(displayCount, Number((SHELF_THICKNESS/item.thickness).toFixed(0))) : displayCount}
+                                                temp[idx] = {...item, displayCount: item.mode.value=== "cover" ? Number(min(displayCount, Number((SHELF_THICKNESS/item.thickness).toFixed(0)))) : Number(displayCount)}
                                                 setBookList(temp)
                                               } } heading="Display Count"
                                                  required="True" dataType="number"
@@ -246,12 +243,13 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                                                  :<TableEntry>{item.displayCount}</TableEntry>
                                               }
                                               {/* Dimensions are width thickness then height */}
-                                              <TableEntry>{item.mode.value==="cover" ? item.width : (item.displayCount * item.thickness).toFixed(2)}"</TableEntry>
+                                              <TableEntry>{item.mode.value==="cover" ? item.width : Number((item.displayCount * item.thickness).toFixed(2))}"</TableEntry>
                                               {item.edit ? <SaveRowEntry onSave={() => reverseItemEditStatus(idx, item)}></SaveRowEntry> 
                                               : <EditRowEntry onEdit={() => reverseItemEditStatus(idx, item)}></EditRowEntry>}
                                               <DeleteRowEntry onDelete={() => {
                                                 const temp = [...bookList]
                                                 temp.splice(idx, 1)
+
                                                 setBookList(temp)
                                               }}></DeleteRowEntry>
                                             </tr>
@@ -268,8 +266,19 @@ export default function ShelfCalculatorModal(props: ShelfCalculatorModalProp) {
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                         <button
                             type="submit"
+                            onClick={()=>{
+                              const temp = {...props.case}
+                              temp.case[props.index]={
+                                takenSpace:takenSpace,
+                                bookList:bookList,
+                              }
+                              console.log(props.case)
+                              props.saveCase(temp)
+                              console.log(props.case)
+                              closeModal()
+                            }}
                             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                        >
+                        >   
                           {props.submitText}
                         </button>
                         <button

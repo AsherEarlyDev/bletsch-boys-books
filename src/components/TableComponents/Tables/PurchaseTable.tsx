@@ -162,16 +162,26 @@ export default function PurchaseTable() {
 
   async function openPurchaseView(id: string) {
     setDisplayPurchaseView(true, id)
-    
+    if (purchaseOrder2) {
+      for (const order of purchaseOrder2) {
+        if (order.id === id) {
+          setCurrentOrder({
+            id: order.id,
+            date: order.date,
+            vendor: order.vendor
+          })
+        }
+      }
+    }
+
   }
 
   function renderPurchaseView() {
     return (
         <>
           {displayPurchaseView ? (viewCurrentPurchases ? (
-              <CreateEntries closeStateFunction={setDisplayPurchaseView}
-                             submitText="Show Purchase Details">
-                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={purchases}
+              <CreateEntries closeStateFunction={setDisplayPurchaseView} submitText="Show Purchase Details">
+                <ViewTableModal type="Purchase Order" closeOut={closePurchaseView} items={viewCurrentPurchases}
                                         id={currentOrder.id}
                                         date={currentOrder.date}
                                         vendor={currentOrder.vendor}></ViewTableModal>

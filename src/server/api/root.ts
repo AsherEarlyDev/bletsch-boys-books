@@ -11,6 +11,7 @@ import { purchaseRouter } from "./routers/purchase";
 import { salesReportRouter } from "./routers/salesReport";
 import { buybackRouter } from "./routers/buyback";
 import { buybackOrderRouter } from "./routers/bookBuybackOrder";
+import { bookCaseRouter } from "./routers/bookCase";
 import {inventoryCorrectionRouter} from "./routers/inventoryCorrection";
 import { bookHookRouter } from "./routers/bookHook";
 
@@ -22,6 +23,7 @@ import { bookHookRouter } from "./routers/bookHook";
  */
 export const appRouter = createTRPCRouter({
   books: booksRouter,
+  bookCase: bookCaseRouter,
   user: userRouter,
   genre: GenreRouter,
   vendor: vendorRouter,

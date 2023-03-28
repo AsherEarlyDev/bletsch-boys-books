@@ -7,6 +7,7 @@ export default function PasswordChange() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [alert, toggleAlert] = useState(false);
   const adminPass = api.user.changePassword.useMutation();
+
   function handlePasswordSubmit(pass: string, confirmPass: string){
     if (pass === confirmPass){
       adminPass.mutate({

@@ -11,7 +11,6 @@ datasource db {
 
 model Book {
   isbn                String                @id
-  isbn10              String?
   title               String
   publisher           String
   publicationYear     Int
@@ -22,6 +21,8 @@ model Book {
   inventory           Int                   @default(0)
   authorNames         String
   imageLink           String?
+  isbn10              String?
+  shelfSpace          Float                 @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
@@ -166,7 +167,6 @@ model Buyback {
 }
 
 model InventoryCorrection {
-
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
@@ -192,10 +192,9 @@ model ShelfBook {
   edit                  Boolean
   displayCount          Int
   bookIsbn              String
-  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
-  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete:Cascade)
   bookCaseContainerName String?
-
+  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete: Cascade)
+  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
 }
 
 enum Role {

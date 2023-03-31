@@ -3,8 +3,8 @@ import {Fragment, useRef, useState} from 'react'
 import { Vendor } from '../../../../types/vendorTypes';
 
 interface OrderModalProp{
-  showOrderEdit(date: string, vendorId: string): Promise<void>,
-  vendorList: Vendor[],
+  showOrderEdit(date: string, vendorId?: string): Promise<void>,
+  vendorList?: Vendor[],
   buttonText: string;
   submitText: string;
 }
@@ -31,7 +31,13 @@ export default function AddOrderModal(props: OrderModalProp) {
     const formData = new FormData(e.target as HTMLFormElement)
     const date = formData.get("date") as string
     closeModal()
-    props.showOrderEdit(date, vendorId)
+    if (props.vendorList){
+      props.showOrderEdit(date, vendorId)
+    }
+    else{
+      props.showOrderEdit(date)
+    }
+    
   }
 
   return (
@@ -87,19 +93,19 @@ export default function AddOrderModal(props: OrderModalProp) {
                             defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
                         />
                         </div>
-                        <div className="text-center">
+                        {props.vendorList ? <div className="text-center">
                           <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                             Select Vendor
                           </Dialog.Title>
-                        </div>
-                        <div className="mt-5">
+                        </div> : null}
+                        {props.vendorList ? <div className="mt-5">
                         <select name="vendorId" id="vendorId" onChange={handleChange}>
                             <option >Please Select a Vendor!</option>
                             {props.vendorList?.map((vendor)=>
                                 <option value={vendor.id}>{vendor.name}</option>
                             )}
                         </select>
-                        </div>
+                        </div>: null}
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                         <button

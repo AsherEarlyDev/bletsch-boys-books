@@ -6,10 +6,11 @@ import { saleReconciliation } from "@prisma/client";
 
 export const salesRecRouter = createTRPCRouter({
 
-  createSaleRec: publicProcedure
+  createSaleRec: protectedProcedure
   .input(
       z.object({
-        date: z.string()
+        date: z.string(),
+        userName: z.string()
       })
   )
   .mutation(async ({ ctx, input }) => {
@@ -24,6 +25,8 @@ export const salesRecRouter = createTRPCRouter({
       const newSaleRec = await ctx.prisma.saleReconciliation.create({
         data: {
           date: new Date(date),
+          editable: true,
+          userName: input.userName
         },
       });
       return {id: newSaleRec.id, date: date}

@@ -18,6 +18,7 @@ import { useRouter } from 'next/router'
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';
 import {useSession} from "next-auth/react";
+import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 
 export default function SalesTable() {
   const {query} = useRouter()
@@ -28,8 +29,8 @@ export default function SalesTable() {
   const date = new Date()
   const ENTRIES_PER_PAGE = 5
   const FIRST_HEADER =  ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"]]
-  const STATIC_HEADERS = isAdmin ? ["Delete"] : []
+  const SORTABLE_HEADERS = [["Sale Type", "saleType"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
+  const STATIC_HEADERS = isAdmin ? ["Edit","Delete"] : []
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')
   const [startDate, setStartDate] = useState(date.toDateString())
@@ -64,55 +65,56 @@ export default function SalesTable() {
   const numberOfEntries = api.salesRec.getNumberOfSalesRecs.useQuery().data
   const deleteSalesRec = api.salesRec.deleteSaleRec
 
-  // const handleSaleRecSubmission = async (date: string) => {
-  //   if (createSalesRec){
-  //    const id = await createSalesRec.mutate({
-  //       date: date
-  //     })
-  //   }
+  const handleSaleRecSubmission = async (date: string) => {
+    if (createSalesRec){
+     const id = await createSalesRec.mutate({
+        date: date,
+        userName: data?.user?.name
+      })
+    }
 
-  // }
+  }
 
 
   function renderSalesRow(items:any[]){
-    return(salesRecs ? salesRecs.map((rec) => (
-      <OrderTableRow type="Sale" onEdit={null} onView={openSalesRecView} onDelete={openDeleteSalesRecView} OrderInfo={rec}></OrderTableRow>
-  )) : null)
+    return(salesRecs ? salesRecs.map((rec) => ( rec.editable ?
+      <OrderTableRow type="Sale" onEdit={openEditSalesRecView} onView={openSalesRecView} onDelete={openDeleteSalesRecView} OrderInfo={rec} saleType="Sale Reconciliation"></OrderTableRow>
+  : <OrderTableRow type="Sale" onEdit={null} onView={openSalesRecView} onDelete={openDeleteSalesRecView} OrderInfo={rec} saleType="Sale Record"></OrderTableRow>)) : null)
   }
 
-  // async function openEditSalesRecView(id: string){
+  async function openEditSalesRecView(id: string){
     
-  //   if (salesRecs){
-  //     for (const rec of salesRecs){
-  //       if (rec.id === id){
-  //         setCurrentSalesRec({
-  //           id: rec.id,
-  //           date: rec.date,
-  //         })
-  //         setCurrentSales(rec.sales)
-  //       }
-  //     }
-  //     setOnlyEdit(true)
-  //     setDisplayEditSalesRecView(true)
-  //   }
-  // }
-  // function renderEditSalesRecView() {
-  //   const value = onlyEdit ? currentSalesRec : createSalesRec.data
-  //   return(
-  //       <>
-  //         {(displayEditSalesRecView && value) ?
-  //             (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
-  //               <EditSalesTableModal salesRecId={value.id} salesRecDate={value.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
-  //             </CreateSaleEntries>)
-  //             : ()=>{
-  //               toast.warning("LOADING...")
-  //             }}
-  //       </>
-  //   )
-  // }
-  // function closeEditSalesRecView(){
-  //   setDisplayEditSalesRecView(false)
-  // }
+    if (salesRecs){
+      for (const rec of salesRecs){
+        if (rec.id === id){
+          setCurrentSalesRec({
+            id: rec.id,
+            date: rec.date,
+          })
+          setCurrentSales(rec.sales)
+        }
+      }
+      setOnlyEdit(true)
+      setDisplayEditSalesRecView(true)
+    }
+  }
+  function renderEditSalesRecView() {
+    const value = onlyEdit ? currentSalesRec : createSalesRec.data
+    return(
+        <>
+          {(displayEditSalesRecView && value) ?
+              (<CreateSaleEntries closeStateFunction={setDisplayEditSalesRecView} submitText="Edit Sales Reconciliation">
+                <EditSalesTableModal salesRecId={value.id} salesRecDate={value.date} closeOut={closeEditSalesRecView}></EditSalesTableModal>
+              </CreateSaleEntries>)
+              : ()=>{
+                toast.warning("LOADING...")
+              }}
+        </>
+    )
+  }
+  function closeEditSalesRecView(){
+    setDisplayEditSalesRecView(false)
+  }
 
   async function openDeleteSalesRecView(id: string){
     if (salesRecs){
@@ -206,10 +208,9 @@ export default function SalesTable() {
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <TableDetails tableName="Sales Records"
-                      tableDescription="A list of all the Sales Records.">
-          {/* <AddSaleRecModal showSaleRecEdit={handleSaleRecSubmission} buttonText="Create Sale Reconciliation"
-                           submitText="Create Sale Reconciliation"></AddSaleRecModal> */}
+        <TableDetails tableName="Sales"
+                      tableDescription="A list of all the Sales Records and Sales Reconciliations.">
+          {isAdmin && <AddOrderModal showOrderEdit={handleSaleRecSubmission} buttonText="Create Sale Reconciliation" submitText="Create Sale Reconciliation"></AddOrderModal>}
           <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>
         </TableDetails>
@@ -226,7 +227,7 @@ export default function SalesTable() {
         sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
         entriesPerPage={ENTRIES_PER_PAGE}></Table>
         <div>
-          {/* {renderEditSalesRecView()} */}
+          {renderEditSalesRecView()}
           {renderDeleteSalesRecView()}
           {renderSalesRecView()}
           <ToastContainer/>

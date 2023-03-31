@@ -80,6 +80,7 @@ export const bookHookRouter = createTRPCRouter({
         const newSaleRecord = await ctx.prisma.saleReconciliation.create({
           data: {
             date: new Date(inputDate),
+            editable: false
           },
         });
         let inventory: number
@@ -207,7 +208,7 @@ export const bookHookRouter = createTRPCRouter({
                   });
                 await ctx.prisma.book.update({
                 where: {
-                    isbn: book.isbn
+                    isbn: isbn
                 },
                 data:{
                     inventory: inventory,

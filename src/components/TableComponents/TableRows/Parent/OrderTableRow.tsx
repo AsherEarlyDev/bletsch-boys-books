@@ -19,6 +19,7 @@ interface OrderTableRowProp{
         userName: string
     },
     type: string,
+    saleType?: string,
     onEdit: (id:string) => void,
     onDelete: (id: string) =>void,
     onView: (id: string) =>void,
@@ -48,11 +49,12 @@ export default function OrderTableRow(props:OrderTableRowProp) {
       <tr>
         <ViewTableEntry onView={handleView}>{props.OrderInfo.date}</ViewTableEntry>
         {props.type === "Sale" ? null : <TableEntry>{props.OrderInfo.vendor.name}</TableEntry>}
+        {props.type === "Sale" ? <TableEntry>{props.saleType}</TableEntry> : null}
         <TableEntry>{props.OrderInfo.uniqueBooks}</TableEntry>
         <TableEntry>{props.OrderInfo.totalBooks}</TableEntry>
         <TableEntry>${price}</TableEntry>
-        {props.type != "Sale" && <TableEntry>{props.OrderInfo.userName}</TableEntry>}
-        {isAdmin && (props.type === "Sale" ? <><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>
+        {<TableEntry>{props.OrderInfo.userName}</TableEntry>}
+        {isAdmin && (!props.onEdit ? <><div></div><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>
          : <><EditRowEntry onEdit={handleEdit}></EditRowEntry><DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry></>)}
         
       </tr>

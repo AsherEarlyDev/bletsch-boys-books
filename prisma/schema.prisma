@@ -24,6 +24,7 @@ model Book {
   isbn10              String?
   shelfSpace          Float                 @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
+  shelfSpace          Float                @default(0)
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
   purchases           Purchase[]

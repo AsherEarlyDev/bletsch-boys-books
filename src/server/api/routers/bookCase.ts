@@ -130,6 +130,39 @@ export const bookCaseRouter = createTRPCRouter({
         return cases
     }),
 
+    getCaseByName: publicProcedure
+    .input(z.object({
+        name: z.string(),}
+    ))
+    .query(async ({ctx, input}) => {
+        const numBooks = new Map<number, number>();
+        const books = []
+        const bookCase = await ctx.prisma.bookCaseContainer.findUnique({
+            where: {
+                name: input.name
+            },
+            include: {
+                ShelfBook: true
+            }
+        })
+        for (let i = 0; i <= bookCase.numShelves; i++){
+            numBooks.set(i, 0)
+        }
+
+        for (const shelfBook of bookCase.ShelfBook){
+            numBooks.set(shelfBook.shelfNumber, numBooks.get(shelfBook.shelfNumber) + shelfBook.displayCount)
+            books.push(await ctx.prisma.book.findUnique({
+                where:{
+                        isbn: shelfBook.bookIsbn
+                }
+            }))
+        }
+
+        return {bookCase: bookCase, books: books, numBooks: numBooks}
+        
+    }),
+
+
     getNumberOfCases: publicProcedure
     .query(async ({ctx, input}) => {
         return await ctx.prisma.bookCaseContainer.count()

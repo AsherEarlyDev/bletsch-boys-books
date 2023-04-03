@@ -9,10 +9,7 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
     const booksNeededColumnLabels = ["ISBN", "TITLE", "QUANTITY", "COVER"]
     const booksQuantityMap = new Map<string, {title: string, quantity: number}>()
     const planogram = new jsPDF();
-    console.log(bookCase)
     for (const book of books){
-        console.log(book)
-        console.log(booksQuantityMap)
         if (!booksQuantityMap.get(book.isbn)){
             booksQuantityMap.set(book.isbn, {title: book.title, quantity: 0})
         }
@@ -24,8 +21,8 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
         booksInfo.push([bookIsbn, booksQuantityMap.get(bookIsbn).title, booksQuantityMap.get(bookIsbn).quantity, ""])
     }
 
-    let xstart
-    let xend
+    let xstart: number
+    let xend: number
     autoTable(planogram, {
         head: [booksNeededColumnLabels],
         body: booksInfo,
@@ -45,13 +42,15 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
     let y = endOfTable + 20
     const ystart = y
     let pageLength = planogram.internal.pageSize
-    const caseSize = pageLength.getHeight() - endOfTable
+    const caseSize = pageLength.getHeight() - y
     const rowSize = caseSize / bookCase.numShelves > 50 ? 50 : caseSize / bookCase.numShelves
     const bookHeight = 0.75*(rowSize)
     const bookWidth = (xend - xstart) / Math.max(...shelfNums.values()) > 25 ? 25 : (xend - xstart) / Math.max(...shelfNums.values())
     for (let i = 0; i < bookCase.numShelves; i++){
         planogram.line(xstart, y, xend, y)
-        planogram.text(`Shelf ${i + 1}`, xstart - 5, y + rowSize/2 + 5, {angle: 90})
+        planogram.setFontSize(rowSize/3)
+        console.log(rowSize)
+        planogram.text(`Shelf ${i + 1}`, xstart - 5, y + rowSize/2 + rowSize/6, {angle: 90})
         y += rowSize
     }
     let bookIndex = 0
@@ -64,7 +63,8 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
         }
         for (let j = 0; j < shelfBook.displayCount; j++){
             planogram.addImage(books[bookIndex].imageLink, xstart + rowIndex *(bookWidth), ystart + (shelfBook.shelfNumber) * (rowSize) + ((rowSize - bookHeight)/2), bookWidth, bookHeight);
-            planogram.text(shelfBook.mode, xstart + rowIndex * (bookWidth) + (bookWidth/4), (shelfBook.shelfNumber) * (rowSize) + ystart + rowSize - ((rowSize - bookHeight)/8));
+            planogram.setFontSize(2.5 * (rowSize - bookHeight)/2)
+            planogram.text(shelfBook.mode, xstart + rowIndex * (bookWidth) + (bookWidth/2), (shelfBook.shelfNumber) * (rowSize) + ystart + rowSize - ((rowSize - bookHeight)/8), {align: "center"});
             rowIndex += 1
         }
         bookIndex += 1

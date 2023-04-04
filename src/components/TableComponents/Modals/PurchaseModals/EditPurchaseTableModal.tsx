@@ -96,7 +96,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function transformCSV(csv){
     const quant = parseInt(csv.quantity)
-    const price = parseFloat(csv.unit_wholesale_price.replaceAll('$', ''))
+    const price = parseFloat(csv.unit_price.replaceAll('$', ''))
     return ({
       bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,

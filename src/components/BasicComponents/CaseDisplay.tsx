@@ -13,11 +13,13 @@ import CardGrid from "../CardComponents/CardGrid"
 import CardTitle from "../CardComponents/CardTitle"
 import MutableCardProp from "../CardComponents/MutableCardProp"
 import { ReactSortable } from "react-sortablejs"
+import {useSession} from "next-auth/react";
 
 export default function CaseDisplay(props:any){
     const [viewCalc, setViewCalc] = useState(false)
-    const [tempName, setTempName] = useState ("")
-    const [tempWidth, setTempWidth] = useState (0)
+    const {data, status} = useSession();
+    const [tempName, setTempName] = useState (props.case.name)
+    const [tempWidth, setTempWidth] = useState (props.case.width)
     const saveBook = api.bookCase.saveBookCase.useMutation({
         onSuccess: ()=>{
           window.location.reload()
@@ -44,7 +46,7 @@ export default function CaseDisplay(props:any){
                     <TableDetails tableName={props.case.name} tableDescription={"View and edit case below. \n Shelves can be dragged to rearrange order"}>
                     
                         <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-2">
-                            <MutableCardProp saveValue={setTempName} heading="Update BookCase Name" dataType="string" defaultValue="Enter Book Case New Title"></MutableCardProp>
+                            <MutableCardProp saveValue={setTempName} heading="Update BookCase Name" dataType="string" defaultValue={props.case.name}></MutableCardProp>
                             <MutableCardProp saveValue={setTempWidth} heading="Update BookCase Width" dataType="number" defaultValue={props.case.width}></MutableCardProp>
                             <button 
                             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
@@ -130,7 +132,11 @@ export default function CaseDisplay(props:any){
                                             <button 
                                             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                                             onClick = {() => {
-                                                saveBook.mutate(props.case)
+                                                saveBook.mutate({
+                                                    ...props.case,
+                                                    userName:data?.user?.name,
+                                                    dateTime:new Date()
+                                                })
                                             }}>
                                                 Save Case
                                             </button>

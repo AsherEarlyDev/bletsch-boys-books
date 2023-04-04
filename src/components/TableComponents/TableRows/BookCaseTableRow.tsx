@@ -27,6 +27,9 @@ export default function BookCaseTableRow(props:BookCaseTableRowProp) {
         <TableEntry firstEntry={true}>{props.bookCaseInfo.name}</TableEntry>
         <TableEntry >{props.bookCaseInfo.width}</TableEntry>
         <TableEntry >{props.bookCaseInfo.numShelves}</TableEntry>
+        <TableEntry >{props.bookCaseInfo.userName}</TableEntry>
+        <TableEntry width={35} >{(props.bookCaseInfo.date).toLocaleString()}</TableEntry>
+
         <EditRowEntry onEdit={handleView}></EditRowEntry>
         <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>
       </tr>

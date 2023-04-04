@@ -51,8 +51,10 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
 
   function addBook(){
     if(genre && props.bookInfo){
+      console.log(props.bookInfo)
       action.mutate({
         isbn: props.bookInfo.isbn,
+        isbn10:props.bookInfo.isbn10 ?? undefined,
         title: props.bookInfo.title ?? "",
         publisher: props.bookInfo.publisher ?? "",
         publicationYear: props.bookInfo.publicationYear ?? -1,

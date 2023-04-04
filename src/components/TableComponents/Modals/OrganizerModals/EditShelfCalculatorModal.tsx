@@ -243,7 +243,7 @@ export default function EditShelfCalculatorModal(props: ShelfCalculatorModalProp
                                                  :<TableEntry>{item.displayCount}</TableEntry>
                                               }
                                               {/* Dimensions are width thickness then height */}
-                                              <TableEntry>{item.mode.value==="cover" ? item.width : Number((item.displayCount * item.thickness).toFixed(2))}" {((item.mode.value==="cover" && !item.dimensions[0]) || (item.mode.value==="spine" && !item.dimensions[1])) && " (est.)"}</TableEntry>
+                                              <TableEntry>{item.mode.value==="cover" ? item.width : Number((item.displayCount * item.thickness).toFixed(2))}" {((item.dimensions && !item.dimensions[1])) && " (est.)"}</TableEntry>
                                               {item.edit ? <SaveRowEntry onSave={() => reverseItemEditStatus(idx, item)}></SaveRowEntry> 
                                               : <EditRowEntry onEdit={() => reverseItemEditStatus(idx, item)}></EditRowEntry>}
                                               <DeleteRowEntry onDelete={() => {

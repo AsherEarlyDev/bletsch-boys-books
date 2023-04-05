@@ -142,7 +142,7 @@ export const bookHookRouter = createTRPCRouter({
               isbn = isbn.replaceAll("-",'')
               isbn = convertISBN10ToISBN13(isbn)
               let price: number
-              console.log(`Price: ${sale.price}`)
+              log.info(`Price: ${sale.price}`)
               let priceString: string = sale.price.toString()
               if (parseFloat(priceString.replaceAll("$", ""))){
                 price = parseFloat(priceString.replaceAll("$", ""))

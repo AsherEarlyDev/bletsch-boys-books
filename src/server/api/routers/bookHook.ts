@@ -143,24 +143,7 @@ export const bookHookRouter = createTRPCRouter({
               isbn = isbn.replaceAll("-",'')
               isbn = convertISBN10ToISBN13(isbn)
               let price: number
-
               let priceString: string 
-              if (!sale.price){
-                priceString = "0"
-              }
-              else{
-                priceString = sale.price.toString()
-              }
-              
-              if (parseFloat(priceString.replaceAll("$", ""))){
-                price = parseFloat(priceString.replaceAll("$", ""))
-              }
-              else{
-                throw new TRPCError({
-                  code: 'BAD_REQUEST',
-                  message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
-                });
-              }
 
               
 
@@ -170,10 +153,26 @@ export const bookHookRouter = createTRPCRouter({
                     isbn: isbn
                   }
                 })
-                if (price === 0){
-                  price = book.retailPrice
+
+                if (!sale.price){
+                  log.info("HERE")
+                  priceString = book.retailPrice.toString()
                 }
-                else if(price < 0){
+                else{
+                  priceString = sale.price.toString()
+                }
+                
+                if (parseFloat(priceString.replaceAll("$", ""))){
+                  price = parseFloat(priceString.replaceAll("$", ""))
+                }
+                else{
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
+                  });
+                }
+
+               if(price < 0){
                   throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: "Price must be greater than 0!",

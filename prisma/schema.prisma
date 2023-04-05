@@ -22,6 +22,7 @@ model Book {
   authorNames         String
   imageLink           String?
   isbn10              String?
+  shelfSpace          Float                 @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
@@ -92,6 +93,8 @@ model saleReconciliation {
   revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
+  editable    Boolean  @default(false)
+  userName    String   @default("")
   sales       Sale[]
 }
 

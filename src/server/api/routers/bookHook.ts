@@ -153,7 +153,7 @@ export const bookHookRouter = createTRPCRouter({
                     isbn: isbn
                   }
                 })
-
+                log.info(sale)
                 if (!sale.price){
                   log.info("HERE")
                   priceString = book.retailPrice.toString()

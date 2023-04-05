@@ -150,7 +150,7 @@ export const bookCaseRouter = createTRPCRouter({
         }
 
         for (const shelfBook of bookCase.ShelfBook){
-            numBooks.set(shelfBook.shelfNumber, numBooks.get(shelfBook.shelfNumber) + shelfBook.displayCount)
+            numBooks.set(shelfBook.shelfNumber, numBooks.get(shelfBook.shelfNumber) + 1)
             books.push(await ctx.prisma.book.findUnique({
                 where:{
                         isbn: shelfBook.bookIsbn

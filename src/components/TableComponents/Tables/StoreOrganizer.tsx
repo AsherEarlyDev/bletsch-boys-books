@@ -42,6 +42,7 @@ export default function StoreOrganizer() {
     const cases = api.bookCase.getAllBookCases.useQuery({pageNumber:pageNumber, casesPerPage:CASES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
     const diagramCase = api.bookCase.getCaseByName.useQuery({name:diagramCaseName}).data
     
+    
 
     function openDeleteView(bookCase){
         setCurrentCase(bookCase)
@@ -83,7 +84,8 @@ export default function StoreOrganizer() {
       }
 
       function generateDiagram(){
-        drawPlanogram(diagramCase.bookCase, diagramCase.books, diagramCase.numBooks)
+        console.log(diagramCase)
+        drawPlanogram(diagramCase.bookCase, diagramCase.books, diagramCase.numBooks);
       }
       
 
@@ -98,7 +100,7 @@ export default function StoreOrganizer() {
                 <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
             </div>
             <div>
-            <PlanogramModal bookCases={cases} selectedCase={setDiagramCaseName} generateDiagram={generateDiagram} buttonText={'Download Book Case'} submitText={'Create Planogram'}></PlanogramModal>
+                <PlanogramModal case={diagramCase} bookCases={cases} selectedCase={setDiagramCaseName} generateDiagram={generateDiagram} buttonText={'Download Book Case'} submitText={'Create Planogram'}></PlanogramModal>
             </div>
         </TableDetails>
         <Table  sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}

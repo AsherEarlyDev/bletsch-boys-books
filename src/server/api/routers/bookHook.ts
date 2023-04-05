@@ -38,6 +38,7 @@ export const bookHookRouter = createTRPCRouter({
     .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCorrections: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
+        log.info(input)
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
           throw new TRPCError({
             code: "UNAUTHORIZED",
@@ -207,7 +208,7 @@ export const bookHookRouter = createTRPCRouter({
                       subtotal: price * sale.qty
                     },
                   });
-                console.log(saleLog)
+                log.info(saleLog)
                 await ctx.prisma.book.update({
                 where: {
                     isbn: isbn

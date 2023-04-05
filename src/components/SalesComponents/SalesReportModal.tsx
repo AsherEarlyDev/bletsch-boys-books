@@ -1,4 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { STATIC_PROPS_ID } from 'next/dist/shared/lib/constants';
 import {Fragment, useRef, useState} from 'react'
 
 interface SaleReportModalProp{

@@ -48,8 +48,6 @@ export default function SalesTable() {
   const currentSalesRecId = query.viewId ? query.viewId.toString() : ""
   const viewCurrentOrder = api.salesRec.getUniqueSalesRecs.useQuery(currentSalesRecId).data
   const viewCurrentSales = viewCurrentOrder ? viewCurrentOrder.sales : undefined
-  const [displayAddSaleView, setDisplayAddSaleView] = useState(false)
-  const [displaySalesReport, setSalesReport] = useState(false)
   const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation({
     onSuccess: ()=>{
@@ -201,6 +199,8 @@ export default function SalesTable() {
   // }
 
   function generateReport (){
+    console.log(`Start Date: ${startDate}`)
+    console.log(`End Date: ${endDate}`)
     const reportObj = createSalesReportArray(revenueReport, buybackReport, costReport, startDate, endDate)
     generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)
   }

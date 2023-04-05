@@ -197,7 +197,7 @@ export const bookHookRouter = createTRPCRouter({
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 log.info("Updating books and creating sale")
-                await ctx.prisma.sale.create({
+                const saleLog = await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
                       bookId: isbn,
@@ -206,6 +206,7 @@ export const bookHookRouter = createTRPCRouter({
                       subtotal: price * sale.qty
                     },
                   });
+                console.log(saleLog)
                 await ctx.prisma.book.update({
                 where: {
                     isbn: isbn

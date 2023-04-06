@@ -37,9 +37,9 @@ export const subsidaryRouter = createTRPCRouter({
       contentTypes: ["application/xml"],
       protect: true} })
   .input(z.object({ isbns: z.string().length(13).array()}))
-  .output(z.array(z.record(z.string().length(13).array(), remoteBookSchema)))
+  .output(z.record(z.string().length(13).array(), remoteBookSchema))
   .query( async ({ input }) => {
-    const existingRemoteBooks = [];
+    const existingRemoteBooks:Record<string, remoteBook> = {};
     for (const isbn of input.isbns) {
       const book = await prisma.book.findFirst({
         where: { isbn: isbn },
@@ -48,10 +48,9 @@ export const subsidaryRouter = createTRPCRouter({
         },
       });
       if (book) {
-        existingRemoteBooks.push({
-          [isbn]: {
+        existingRemoteBooks[isbn] = {
             title: book.title,
-            author: book.author.map((author) => author.name),
+            authors: book.author.map((author) => author.name),
             isbn13: book.isbn,
             isbn10: book.isbn10 ?? undefined,
             publisher: book.publisher,
@@ -62,14 +61,13 @@ export const subsidaryRouter = createTRPCRouter({
             thickness: book.dimensions[2],
             retailPrice: book.retailPrice,
             inventoryCount: book.inventory,
-          },
-        });
+          }
       } else {
         console.log("Book not found: " + isbn);
-        existingRemoteBooks.push({ [isbn]: null });
+        existingRemoteBooks[isbn] = null;
       }
     }
-    if (existingRemoteBooks.length === 0) {
+    if (Object.keys(existingRemoteBooks).length === 0) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "No books found",

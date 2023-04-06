@@ -9,7 +9,7 @@ import DeleteRowEntry from "../TableEntries/DeleteRowEntry";
 import SaveRowEntry from "../TableEntries/SaveRowEntry";
 import {toast} from "react-toastify";
 import CreateSaleEntries from "../../CreateEntries";
-import DeleteSaleModal from "../Modals/SalesModals/DeleteSaleModal";
+import DeleteSaleModal from "../Modals/SalesModals/Unused/DeleteSaleModal";
 import BookCardProp from "../../CardComponents/BookCardProp";
 import LinkedBookTitle from "../../BasicComponents/DynamicRouting/LinkedBookTitle";
 
@@ -50,7 +50,7 @@ export default function SaleTableRow(props: SaleTableRowProp) {
     if (props.sale) {
       modSale.mutate({
         id: props.sale.id,
-        saleReconciliationId: props.sale.saleReconciliationId,
+        orderId: props.sale.saleReconciliationId,
         isbn: isbn,
         quantity: quantitySold.toString(),
         price: salePrice.toString(),

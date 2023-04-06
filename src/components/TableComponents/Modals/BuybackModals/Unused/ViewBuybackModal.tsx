@@ -38,7 +38,7 @@ export default function ViewBuybackModal(props:ViewBuybackModalProp) {
       if (props.cardType === 'edit'){
         modBuyback.mutate({
           id: props.buyback.id,
-          buybackOrderId: props.buyback.buybackOrderId,
+          orderId: props.buyback.buybackOrderId,
           isbn: isbn,
           quantity: quantity.toString(),
           price: price.toString()
@@ -46,7 +46,7 @@ export default function ViewBuybackModal(props:ViewBuybackModalProp) {
       }
       else{
         addBuyback.mutate({
-          buybackOrderId: props.buyback.buybackOrderId,
+          id: props.buyback.buybackOrderId,
           isbn: isbn,
           quantity: quantity.toString(),
           price: price.toString()

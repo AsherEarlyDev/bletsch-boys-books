@@ -24,6 +24,7 @@
     "@trpc/react-query": "^10.8.1",
     "@trpc/server": "^10.8.1",
     "@types/jsdom": "^21.1.0",
+    "axios": "^1.3.5",
     "babel-preset-es2015": "^6.24.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.34.0",

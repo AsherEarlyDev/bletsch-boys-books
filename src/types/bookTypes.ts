@@ -78,6 +78,25 @@ export type completeBook = {
     imageLink?: string
 }
 
+export type subsidiaryResponse = {
+    [isbn13: string]: completeBook
+}
+
+export type subsidiaryBook = {
+    title: string, 
+    authors: Array<string>, 
+    isbn13: string, 
+    isbn10: string, 
+    publisher: string, 
+    publicationYear: number, 
+    pageCount: number, 
+    retailPrice: number, 
+    height: number, 
+    thickness: number, 
+    width: number, 
+    inventoryCount: number
+}
+
 export type databaseBook = {
     isbn: string,
     isbn10?: string,

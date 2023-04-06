@@ -5,7 +5,7 @@ import { BookBuybackOrder } from "@prisma/client";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 
 export const buybackOrderRouter = createTRPCRouter({
-    createBuybackOrder: publicProcedure
+    createBuybackOrder: protectedProcedure
     .input(
         z.object({
           vendorId: z.string(),
@@ -223,7 +223,7 @@ export const buybackOrderRouter = createTRPCRouter({
   //      }
   //    }),
 
-    modifyBuybackOrder: publicProcedure
+    modifyBuybackOrder: protectedProcedure
     .input(
       z.object({
         buybackOrderId: z.string(),
@@ -258,7 +258,7 @@ export const buybackOrderRouter = createTRPCRouter({
       }
     }),
 
-    deleteBuybackOrder: publicProcedure
+    deleteBuybackOrder: protectedProcedure
     .input(
         z.object({
           id: z.string(),

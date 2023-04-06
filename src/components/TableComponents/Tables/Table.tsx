@@ -54,9 +54,9 @@ return(
                             {
                                 props.headersNotFiltered.includes(props.firstHeader[1]) ? <td></td> :
                                 (<td className="mt-5 items-center">
-                                    <textarea
-                                    rows={1}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    <input
+                                    type={"text"}
+                                    className={"mt-1 p-1 block text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm w-full"}
                                     defaultValue={query[props.firstHeader[1]] || ""}
                                     placeholder="Filter by name..."
                                     onChange={(value) => {
@@ -72,9 +72,9 @@ return(
                             }
                          {props.sortableHeaders.map((label) => {
                                 return props.headersNotFiltered.includes(label[1]) ? <td></td> : (<td className="mt-5">
-                                <textarea
-                                    rows={1}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                <input
+                                    type={"text"}
+                                    className={"mt-1 p-1 block text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm w-full"}
                                     defaultValue={query[label[1]] || ""}
                                     placeholder={label[1]=="authorNames" ? "By author..." : ("By " +  label[1] + "...")}
                                     onChange={(value) => {

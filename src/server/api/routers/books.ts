@@ -177,24 +177,23 @@ export const booksRouter = createTRPCRouter({
     const absentBooks: string[] = []
     const internalBooks: any[] | PromiseLike<any[]> = []
     const externalBooks: editableBook[] = []
-    // for (const isbn of input) {
-    //   try {
-    //     var book = await getBookIfExists(ctx, isbn)
-    //     if(book) internalBooks.push(await transformDatabaseBook(book, ctx))
-    //     else{
-    //       const externalBook = await fetchBookFromExternal(isbn, ctx)
-    //       if(externalBook) externalBooks.push(externalBook)
-    //     }
-    //   } catch {
-    //     absentBooks.push(isbn)
-    //   }
-    // }
-    // return ({
-    //   internalBooks: internalBooks,
-    //   externalBooks: externalBooks,
-    //   absentBooks: absentBooks
-    // })
-    return await fetchSubsidiaryBooks(input)
+    for (const isbn of input) {
+      try {
+        var book = await getBookIfExists(ctx, isbn)
+        if(book) internalBooks.push(await transformDatabaseBook(book, ctx))
+        else{
+          const externalBook = await fetchBookFromExternal(isbn, ctx)
+          if(externalBook) externalBooks.push(externalBook)
+        }
+      } catch {
+        absentBooks.push(isbn)
+      }
+    }
+    return ({
+      internalBooks: internalBooks,
+      externalBooks: externalBooks,
+      absentBooks: absentBooks
+    })
   }),
 
   findInternalBook: publicProcedure
@@ -272,6 +271,7 @@ export const booksRouter = createTRPCRouter({
         }
 
       })
+      
       const editedBooks = await addExtraBookFields(books, ctx)
 
       return editedBooks
@@ -689,6 +689,7 @@ async function getBestBuybackRate(isbn: string, ctx: context) {
   return highestBuyBack
 }
 async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
+  const subBooks = await fetchSubsidiaryBooks(books.map((book)=>book.isbn))
   return await Promise.all(books.map(async (book) => {
     const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
     const relatedBooks = await findRelatedBooks(book.title, book.isbn, ctx)
@@ -700,7 +701,8 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
         daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
         bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidaryBook: subBooks[book.isbn]
       });
   })
   );

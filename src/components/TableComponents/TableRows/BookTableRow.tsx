@@ -44,6 +44,8 @@ export default function BookTableRow(props:BookTableRowProp) {
         <TableEntry width={12}>{(props.bookInfo.daysOfSupply == Infinity ? "Inf." : props.bookInfo.daysOfSupply?.toFixed(2) )}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.bestBuybackPrice==0 ? "-" : "$" + props.bookInfo.bestBuybackPrice.toFixed(2)}</TableEntry>
         <TableEntry width={12}>{props.bookInfo.numberRelatedBooks}</TableEntry>
+        <TableEntry width={20}>{props.bookInfo.subsidaryBook ? props.bookInfo.subsidaryBook.inventoryCount : "-"}</TableEntry>
+        <TableEntry width={20}>{props.bookInfo.subsidaryBook ? props.bookInfo.subsidaryBook.retailPrice : "-"}</TableEntry>
         {(isAdmin && <EditRowEntry onEdit={handleEdit}></EditRowEntry>)}
         {isAdmin && (isInStock ? null : <DeleteRowEntry onDelete={handleDelete}></DeleteRowEntry>)}
       </tr>

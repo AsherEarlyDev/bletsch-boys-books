@@ -39,11 +39,11 @@ export default function ViewBookModal(props: BookModalProp) {
 
   return (
       (open ?
-        <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
+        <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg justify-center items-center">
           <CardTitle heading="Book Description"
-                     subheading="Confirm and validate book information below..."></CardTitle>
-          <div className="flex flex-col justify-center gap-5">
-            <div className="flex flex-row gap-10 items-center border-t border-gray-200">
+                     subheading="Intrinsic differences from subsidiary will be shown in red"></CardTitle>
+          <div className="flex flex-col justify-center gap-5 ">
+            <div className="flex flex-row gap-10 items-center border-t border-gray-200 justify-center">
               {props.bookInfo?.imageLink &&
               <CldImage
                   className="rounded-lg mx-10"
@@ -55,14 +55,14 @@ export default function ViewBookModal(props: BookModalProp) {
               </CldImage>
               }
               <CardGrid>
-                <ImmutableCardProp heading="Book Title" data={props.bookInfo.title}></ImmutableCardProp>
+                <ImmutableCardProp heading="Book Title" data={props.bookInfo.title} subData={props.bookInfo.subsidiaryBook ? props.bookInfo.subsidiaryBook.title : null}></ImmutableCardProp>
                 <ImmutableCardProp heading="Book ISBN" data={props.bookInfo.isbn}></ImmutableCardProp>
                 <ImmutableCardProp heading="Author(s)"
-                                   data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""}></ImmutableCardProp>
+                                   data={props.bookInfo.author ? props.bookInfo.author.join(", ") : ""} subData={props.bookInfo.subsidiaryBook ? (props.bookInfo.subsidiaryBook.authors).join(", ") : null}></ImmutableCardProp>
                 <ImmutableCardProp heading="Publication Year"
-                                   data={props.bookInfo.publicationYear}></ImmutableCardProp>
+                                   data={props.bookInfo.publicationYear} subData={props.bookInfo.subsidiaryBook ? props.bookInfo.subsidiaryBook.publicationYear : null}></ImmutableCardProp>
                 <ImmutableCardProp heading="Publisher"
-                                   data={props.bookInfo.publisher}></ImmutableCardProp>
+                                   data={props.bookInfo.publisher} subData={props.bookInfo.subsidiaryBook ? props.bookInfo.subsidiaryBook.publisher : null}></ImmutableCardProp>
                 <ImmutableCardProp heading="Inventory"
                                    data={props.bookInfo.inventory}></ImmutableCardProp>
                 <ImmutableCardProp heading="Genre" data={props.bookInfo.genre}></ImmutableCardProp>
@@ -79,8 +79,11 @@ export default function ViewBookModal(props: BookModalProp) {
                 <ImmutableCardProp heading="Days of Supply"
                                    data={props.bookInfo.daysOfSupply}></ImmutableCardProp>
                 <ImmutableCardProp heading="Best Buyback Price"
-                                   data={props.bookInfo.bestBuybackPrice==0 ? "-" : props.bookInfo.bestBuybackPrice}></ImmutableCardProp>
-
+                                   data={props.bookInfo.bestBuybackPrice==0 ? "-" : "$"+(props.bookInfo.bestBuybackPrice).toFixed(2)}></ImmutableCardProp>
+                <ImmutableCardProp heading="Subsidiary Inventory"
+                                   data={props.bookInfo.subsidiaryBook ? props.bookInfo.subsidiaryBook.inventoryCount : "-" }></ImmutableCardProp>
+                <ImmutableCardProp heading="Subsidiary Price"
+                                   data={props.bookInfo.subsidiaryBook ? "$"+(props.bookInfo.subsidiaryBook.retailPrice).toFixed(2) : "-" }></ImmutableCardProp>
                 <ImmutableDimensionsCardProp length={props.bookInfo.dimensions[2] ?? 0} width={props.bookInfo.dimensions[0]} height={props.bookInfo.dimensions[1] ?? 0}></ImmutableDimensionsCardProp>
               </CardGrid>
             </div>

@@ -60,6 +60,7 @@ export type editableBook = {
     bestBuybackPrice:number,
     numberRelatedBooks: number,
     relatedBooks: Array<object>
+    subsidiaryBook:subsidiaryBook
 }
 
 export type completeBook = {

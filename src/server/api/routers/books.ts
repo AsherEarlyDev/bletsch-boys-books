@@ -73,6 +73,7 @@ const fetchSubsidiaryBooks = async (isbns: Array<string>) => {
 const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) =>{
   const googleImageUrl = input.imageLinks.thumbnail
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
+  const subsidiaryBook = (await fetchSubsidiaryBooks([isbn]))[isbn]
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
     if (result) {
       const bookInfo: editableBook = {
@@ -94,7 +95,8 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
         daysOfSupply:Infinity,
         bestBuybackPrice:0,
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidiaryBook: subsidiaryBook
       }
       return bookInfo
     } else {
@@ -117,7 +119,8 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
         daysOfSupply:Infinity,
         bestBuybackPrice:0,
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidiaryBook: subsidiaryBook
       }
       return bookInfo
     }
@@ -128,6 +131,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
 const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Genre; }, ctx: context) => {
   const lastMonthSales = await getLastMonthSales(book.isbn, ctx)
   const relatedBooks = (await findRelatedBooks(book.title, book.isbn, ctx))
+  const subsidiaryBook = (await fetchSubsidiaryBooks([book.isbn]))[book.isbn]
   const bookInfo: editableBook = {
     isbn: book.isbn,
     isbn10: book.isbn10 ?? undefined,
@@ -147,8 +151,8 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
     bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
     imageLink: book.imageLink,
     numberRelatedBooks: relatedBooks.length,
-    relatedBooks: relatedBooks
-
+    relatedBooks: relatedBooks,
+    subsidiaryBook: subsidiaryBook
   }
   return bookInfo
 }

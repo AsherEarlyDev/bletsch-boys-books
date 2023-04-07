@@ -15,14 +15,14 @@ const remoteBookSchema = z.object({
   isbn10: z.string().length(10).nullable(),
   publisher: z.string(),
   publicationYear: z.number(),
-  pageCount: z.number().optional(),
+  pageCount: z.number().nullable(),
   height: z.number().gte(0).nullable(),
   width: z.number().gte(0).nullable(),
   thickness: z.number().gte(0).nullable(),
-  imageLink: z.string().nullable(),
+  imageLink: z.string().url().nullable(),
   retailPrice: z.number().gte(0),
   inventoryCount: z.number().gte(0),
-}).nullable();
+});
 type remoteBook = z.infer<typeof remoteBookSchema>;
 
 
@@ -34,12 +34,12 @@ export const subsidaryRouter = createTRPCRouter({
       path: "/subsidary",
       tags: ["subsidary"],
       summary: "Read remote inventory and book information from Bletsch Book Boys",
-      contentTypes: ["application/xml"],
+      contentTypes: ["application/json"],
       protect: true} })
   .input(z.object({ isbns: z.string().length(13).array()}))
-  .output(z.record(z.string().length(13).array(), remoteBookSchema))
+  .output(z.record(z.string(), remoteBookSchema.nullable()))
   .query( async ({ input }) => {
-    const existingRemoteBooks:Record<string, remoteBook> = {};
+    const existingRemoteBooks: {[isbn:string]: remoteBook | null} = {};
     for (const isbn of input.isbns) {
       const book = await prisma.book.findFirst({
         where: { isbn: isbn },
@@ -49,19 +49,20 @@ export const subsidaryRouter = createTRPCRouter({
       });
       if (book) {
         existingRemoteBooks[isbn] = {
-            title: book.title,
-            authors: book.author.map((author) => author.name),
-            isbn13: book.isbn,
-            isbn10: book.isbn10 ?? undefined,
-            publisher: book.publisher,
-            publicationYear: book.publicationYear,
-            pageCount: book.pageCount,
-            height: book.dimensions[0],
-            width: book.dimensions[1],
-            thickness: book.dimensions[2],
-            retailPrice: book.retailPrice,
-            inventoryCount: book.inventory,
-          }
+          title: book.title,
+          authors: book.author.map((author) => author.name),
+          isbn13: book.isbn,
+          isbn10: book.isbn10,
+          publisher: book.publisher,
+          publicationYear: book.publicationYear,
+          pageCount: book.pageCount ?? null,
+          height: book.dimensions[0] ?? null,
+          width: book.dimensions[1] ?? null,
+          thickness: book.dimensions[2] ?? null,
+          imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
+          retailPrice: book.retailPrice,
+          inventoryCount: book.inventory,
+        } as remoteBook;
       } else {
         console.log("Book not found: " + isbn);
         existingRemoteBooks[isbn] = null;
@@ -73,6 +74,7 @@ export const subsidaryRouter = createTRPCRouter({
         message: "No books found",
       });
     }
+    console.log(existingRemoteBooks)
     return existingRemoteBooks;
   }),
 });

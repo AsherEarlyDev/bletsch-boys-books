@@ -8,7 +8,7 @@ export const buybackRouter = createTRPCRouter({
     createBuyback: protectedProcedure
     .input(
         z.object({
-          buybackOrderId: z.string(),
+          id: z.string(),
           isbn: z.string(),
           quantity: z.string(),
           price: z.string()
@@ -22,7 +22,7 @@ export const buybackRouter = createTRPCRouter({
               const buybackOrder = await ctx.prisma.bookBuybackOrder.findFirst({
                 where:
                 {
-                  id: input.buybackOrderId
+                  id: input.id
                 },
               })
               const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
@@ -81,14 +81,14 @@ export const buybackRouter = createTRPCRouter({
               if(inventory >= 0){
                 const uniqueBooks = await ctx.prisma.buyback.findMany({
                   where: {
-                    buybackOrderId: input.buybackOrderId,
+                    buybackOrderId: input.id,
                     bookId: isbn
                   }
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 await ctx.prisma.buyback.create({
                     data: {
-                      buybackOrderId: input.buybackOrderId,
+                      buybackOrderId: input.id,
                       bookId: input.isbn,
                       quantity: parseInt(input.quantity),
                       buybackPrice: price,
@@ -106,7 +106,7 @@ export const buybackRouter = createTRPCRouter({
                 })
                 await ctx.prisma.bookBuybackOrder.update({
                   where: {
-                    id: input.buybackOrderId
+                    id: input.id
                   },
                   data:{
                     totalBooks: {
@@ -149,7 +149,7 @@ export const buybackRouter = createTRPCRouter({
     .input(
       z.object({
           id: z.string(),
-          buybackOrderId: z.string(),
+          orderId: z.string(),
           isbn: z.string(),
           quantity: z.string(),
           price: z.string()
@@ -179,7 +179,7 @@ export const buybackRouter = createTRPCRouter({
           if(book.inventory + change >= 0) {
             const uniqueBooks = await ctx.prisma.buyback.findMany({
               where: {
-                buybackOrderId: input.buybackOrderId,
+                buybackOrderId: input.orderId,
                 bookId: isbn
               }
             });
@@ -200,7 +200,7 @@ export const buybackRouter = createTRPCRouter({
               id: input.id
           },
             data: {
-              buybackOrderId: input.buybackOrderId,
+              buybackOrderId: input.orderId,
               bookId: input.isbn,
               quantity: parseInt(input.quantity),
               buybackPrice: parseFloat(input.price),
@@ -209,7 +209,7 @@ export const buybackRouter = createTRPCRouter({
             });
             await ctx.prisma.bookBuybackOrder.update({
               where: {
-                id: input.buybackOrderId
+                id: input.orderId
               },
               data:{
                 totalBooks: {

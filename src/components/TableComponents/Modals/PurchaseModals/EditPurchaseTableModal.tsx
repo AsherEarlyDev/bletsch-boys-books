@@ -42,6 +42,14 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
       toast.success("Successfully added purchase!")
     }
   })
+  const modPurchase = api.purchase.modifyPurchase.useMutation({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Successfully modified purchase!")
+    }
+  })
   const purchases: Purchase[] = api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: props.purchaseOrderId}).data
   const vendors: Vendor[] = api.vendor.getAllVendors.useQuery().data
 
@@ -116,7 +124,6 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
 
   function openAddPurchaseRow(){
     setAddPurchaseRowView(true)
-    console.log(addPurchaseRowView)
   }
   function renderAddPurchaseRow(){
     const dummyPurchase = {
@@ -135,7 +142,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   function handleAddPurchase(isbn: string, quantity: number, price: number){
     if(isbn && quantity && price){
       addPurchase.mutate({
-        purchaseOrderId: props.purchaseOrderId,
+        id: props.purchaseOrderId,
         isbn: isbn,
         quantity: quantity.toString(),
         price: price.toString()
@@ -166,6 +173,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     renderCSV={renderCSVRows}
     renderAdd={renderAddPurchaseRow}
     vendors={vendors}
+    edit={modPurchase}
     ></EditModal>
   )
 }

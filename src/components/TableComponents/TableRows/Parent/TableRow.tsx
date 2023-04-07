@@ -20,6 +20,7 @@ interface TableRowProp {
     bookId: string,
     buybackOrderId?: string,
     purchaseOrderId?: string,
+    saleReconciliationId?: string,
     quantity: number,
     price?: number,
     buybackPrice?: number
@@ -31,13 +32,24 @@ interface TableRowProp {
   isCSV?: boolean
   closeAdd?: any
   saveAdd?: (isbn: string, quantity: number, price: number) => void
-  edit?: ()=>void
+  mod?: any
 }
 
 export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
   const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
+  let id: string
+  if (props.type === "Buyback"){
+    id = props.item?.purchaseOrderId
+  }
+  else if (props.type === "Purchase"){
+    id = props.item?.buybackOrderId
+  }
+  else{
+    id = props.item?.saleReconciliationId
+  }
+   (props.item?.purchaseOrderId ? props.item?.purchaseOrderId : props.item?.buybackOrderId)
   const [deleteView, setDeleteView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [price, setPrice] = useState<number>(defaultPrice)
@@ -51,7 +63,6 @@ export default function TableRow(props: TableRowProp) {
 
   function handleBookSelect(bookId: string){
     setIsbn(bookId)
-    console.log(book)
     setPrice(book?.retailPrice)
   }
 
@@ -92,6 +103,23 @@ export default function TableRow(props: TableRowProp) {
     props.saveAdd(isbn, quantity, price)
   }
 
+  function edit() {
+    console.log(props.item)
+    if (props.item) {
+      props.mod.mutate({
+        id: props.item.id,
+        orderId: id,
+        isbn: isbn,
+        quantity: quantity.toString(),
+        price: price.toString(),
+      })
+    } else {
+      toast.error("Cannot edit buyback.")
+    }
+    setSubtotal(price * quantity)
+    setIsEditing(false)
+  }
+
   return (
       <>
         {visible && 
@@ -129,7 +157,7 @@ export default function TableRow(props: TableRowProp) {
                                                  required="True" dataType="number"
                                                  defaultValue={quantity}></MutableTableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
-                              <SaveRowEntry onSave={props.edit}></SaveRowEntry>
+                              <SaveRowEntry onSave={edit}></SaveRowEntry>
                               <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>
                             </tr>
                             :

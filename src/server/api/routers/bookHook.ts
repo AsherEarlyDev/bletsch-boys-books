@@ -38,6 +38,7 @@ export const bookHookRouter = createTRPCRouter({
     .output(z.object({ message: z.string(), booksNotFound: z.array(z.string()), inventoryCorrections: z.array(z.string())}))
     .mutation( async ({ input, ctx }) => {
     try{
+        log.info(input)
         if(ctx.req.headers["x-real-ip"] != "152.3.54.108"){
           throw new TRPCError({
             code: "UNAUTHORIZED",
@@ -142,16 +143,7 @@ export const bookHookRouter = createTRPCRouter({
               isbn = isbn.replaceAll("-",'')
               isbn = convertISBN10ToISBN13(isbn)
               let price: number
-              let priceString: string = sale.price.toString()
-              if (parseFloat(priceString.replaceAll("$", ""))){
-                price = parseFloat(priceString.replaceAll("$", ""))
-              }
-              else{
-                throw new TRPCError({
-                  code: 'BAD_REQUEST',
-                  message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
-                });
-              }
+              let priceString: string 
 
               
 
@@ -161,10 +153,26 @@ export const bookHookRouter = createTRPCRouter({
                     isbn: isbn
                   }
                 })
-                if (price === 0){
-                  price = book.retailPrice
+                log.info(sale)
+                if (!sale.price){
+                  log.info("HERE")
+                  priceString = book.retailPrice.toString()
                 }
-                else if(price < 0){
+                else{
+                  priceString = sale.price.toString()
+                }
+                
+                if (parseFloat(priceString.replaceAll("$", ""))){
+                  price = parseFloat(priceString.replaceAll("$", ""))
+                }
+                else{
+                  throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: "Price must be a float with at most a $ sign at the front! EX: X.XX or $X.XX",
+                  });
+                }
+
+               if(price < 0){
                   throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: "Price must be greater than 0!",
@@ -197,7 +205,7 @@ export const bookHookRouter = createTRPCRouter({
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 log.info("Updating books and creating sale")
-                await ctx.prisma.sale.create({
+                const saleLog = await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
                       bookId: isbn,
@@ -206,6 +214,7 @@ export const bookHookRouter = createTRPCRouter({
                       subtotal: price * sale.qty
                     },
                   });
+                log.info(saleLog)
                 await ctx.prisma.book.update({
                 where: {
                     isbn: isbn

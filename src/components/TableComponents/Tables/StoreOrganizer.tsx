@@ -16,6 +16,8 @@ import BookCaseTableRow from '../TableRows/BookCaseTableRow';
 import CreateEntries from '../../CreateEntries';
 import DeleteBookModal from '../Modals/BookModals/DeleteBookModal';
 import DeleteCaseModal from '../Modals/OrganizerModals/DeleteCaseModal';
+import PlanogramModal from '../Modals/PlanogramModal';
+import { drawPlanogram } from '../../StoreOrganizerComponents/Planogram';
 
 export default function StoreOrganizer() {
     const DEFAULT_WIDTH = 60
@@ -27,6 +29,7 @@ export default function StoreOrganizer() {
     const [newName, setNewName] = useState("Enter Case Title")
     const [newNumShelves, setNewNumShelves] = useState(DEFAULT_SHELF_NUMBER)
     const [viewCase, setViewCase] = useState(false)
+    const [diagramCaseName, setDiagramCaseName] = useState("")
     const [displayDeleteView, setDisplayDeleteView] = useState(false)
     const [caseList, setCaseList] = useState([]) 
     const [currentCase, setCurrentCase] = useState({})
@@ -37,6 +40,8 @@ export default function StoreOrganizer() {
     const STATIC_HEADERS = ["Edit/View","Delete"]
     const SORTABLE_HEADERS = [["Width", "width"], ["Number Of Shelves", "numShelves"], ["User", "userName"], ["Date Last Edited", "date"]]
     const cases = api.bookCase.getAllBookCases.useQuery({pageNumber:pageNumber, casesPerPage:CASES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
+    const diagramCase = api.bookCase.getCaseByName.useQuery({name:diagramCaseName}).data
+    
     
 
     function openDeleteView(bookCase){
@@ -77,6 +82,11 @@ export default function StoreOrganizer() {
           <BookCaseTableRow  onDelete={openDeleteView} onView={(currentBookCase)=>openCase(currentBookCase)} bookCaseInfo={bookCase}></BookCaseTableRow>
       )) : null)
       }
+
+      function generateDiagram(){
+        console.log(diagramCase)
+        drawPlanogram(diagramCase.bookCase, diagramCase.books, diagramCase.numBooks);
+      }
       
 
 
@@ -88,6 +98,9 @@ export default function StoreOrganizer() {
         <TableDetails tableName="Load BookCase" tableDescription="Load a existing bookcase to view or edit">
             <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                 <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
+            </div>
+            <div>
+                <PlanogramModal case={diagramCase} bookCases={cases} selectedCase={setDiagramCaseName} generateDiagram={generateDiagram} buttonText={'Download Book Case'} submitText={'Create Planogram'}></PlanogramModal>
             </div>
         </TableDetails>
         <Table  sorting = {{setOrder:setSortOrder, setField:setSortField, currentOrder:sortOrder, currentField:sortField}}

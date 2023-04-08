@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { api } from "../../../utils/api";
 import TableDetails from "../TableDetails";
-import EditSalesRecModal from "../Modals/SalesModals/Unused/EditSalesRecModal";
 import CreateSaleEntries from '../../CreateEntries';
-import ViewSalesRecModal from '../Modals/SalesModals/ViewSaleModal';
-import AddSaleRecModal from "../Modals/SalesModals/AddSaleRecModal";
 import GenSalesReportModal from '../../SalesComponents/SalesReportModal';
 import { createSalesReportArray, generateSalesReportPDF } from '../../SalesComponents/SalesReport';
-import DeleteSalesRecModal from "../Modals/SalesModals/DeleteSalesRecModal";
 import Table from './Table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ViewSalesTableModal from "../Modals/SalesModals/ViewSalesTableModal";
 import EditSalesTableModal from "../Modals/SalesModals/EditSalesTableModal";
 import ViewTableModal from '../Modals/ParentModals/ViewTableModal';
 import { useRouter } from 'next/router'
@@ -158,7 +153,6 @@ export default function SalesTable() {
     }
   }
   function renderSalesRecView() {
-    console.log(viewCurrentSales)
     return(
         <>
           {(displaySalesRecView && viewCurrentSales) ?

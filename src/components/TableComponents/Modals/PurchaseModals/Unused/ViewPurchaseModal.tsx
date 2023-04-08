@@ -11,7 +11,6 @@ import { Purchase } from "../../../../../types/purchaseTypes";
 import DeletePurchaseOrderModal from "./DeletePurchaseOrderModal";
 import ConfirmCard from "../../../../CardComponents/ConfirmationCard";
 import CreateEntries from "../../../../CreateEntries";
-import DeleteSaleModal from "../../SalesModals/DeleteSaleModal";
 import BookCardProp from "../../../../CardComponents/BookCardProp";
 
 
@@ -48,7 +47,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
       if (props.cardType === 'edit'){
         modPurchase.mutate({
           id: props.purchase.id,
-          purchaseOrderId: props.purchase.purchaseOrderId,
+          orderId: props.purchase.purchaseOrderId,
           isbn: isbn,
           quantity: quantity.toString(),
           price: price.toString()
@@ -56,7 +55,7 @@ export default function ViewPurchaseModal(props:ViewPurchaseModalProp) {
       }
       else{
         addPurchase.mutate({
-          purchaseOrderId: props.purchase.purchaseOrderId,
+          id: props.purchase.purchaseOrderId,
           isbn: isbn,
           quantity: quantity.toString(),
           price: price.toString()

@@ -34,7 +34,7 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
     if (props.buyback) {
       modBuyback.mutate({
         id: props.buyback.id,
-        buybackOrderId: props.buyback.buybackOrderId,
+        orderId: props.buyback.buybackOrderId,
         isbn: isbn,
         quantity: quantityBuyback.toString(),
         price: buybackPrice.toString(),
@@ -58,7 +58,7 @@ export default function BuybackTableRow(props: BuybackTableRowProp) {
       isCSV={props.isCSV ? props.isCSV : null}
       closeAdd={props.closeAdd ? props.closeAdd : null}
       saveAdd={props.saveAdd ? props.saveAdd : null}
-      edit={editBuyback}
+      mod={editBuyback}
       ></TableRow>
   )
 }

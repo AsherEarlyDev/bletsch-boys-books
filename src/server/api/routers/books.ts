@@ -6,13 +6,16 @@ import {
   editableBook as editableBook,
   completeBook,
   id,
-  databaseBook
+  databaseBook,
+  subsidiaryResponse
 } from "../../../types/bookTypes";
 import {Author, Book, Genre, Prisma, PrismaClient} from "@prisma/client";
 import {Session} from "next-auth/core/types";
 import {TRPCError} from "@trpc/server";
 import cloudinary from "cloudinary"
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
+import { useEffect } from "react";
+import axios from "axios";
 
 type context = {
   session: Session | null;
@@ -50,9 +53,27 @@ const fetchBookFromExternal = async (isbn: string, ctx:context) => {
     } 
 }
 
+const fetchSubsidiaryBooks = async (isbns: Array<string>) => {
+
+  var formdata = new FormData();
+  for(const isbn of isbns){
+    formdata.append("isbns", isbn)
+  }
+  const res = await  fetch("https://books-test.colab.duke.edu/api/v1/books/remote/lookup", {
+                method: "POST",
+                //make sure to serialize your JSON body
+                body: formdata,
+                redirect: 'follow'
+              })
+  const data = res.json()
+  return data
+
+}
+
 const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) =>{
   const googleImageUrl = input.imageLinks.thumbnail
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
+  const subsidiaryBook = (await fetchSubsidiaryBooks([isbn]))[isbn]
   const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
     if (result) {
       const bookInfo: editableBook = {
@@ -74,7 +95,8 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
         daysOfSupply:Infinity,
         bestBuybackPrice:0,
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidiaryBook: subsidiaryBook
       }
       return bookInfo
     } else {
@@ -97,7 +119,8 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
         daysOfSupply:Infinity,
         bestBuybackPrice:0,
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidiaryBook: subsidiaryBook
       }
       return bookInfo
     }
@@ -108,6 +131,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
 const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Genre; }, ctx: context) => {
   const lastMonthSales = await getLastMonthSales(book.isbn, ctx)
   const relatedBooks = (await findRelatedBooks(book.title, book.isbn, ctx))
+  const subsidiaryBook = (await fetchSubsidiaryBooks([book.isbn]))[book.isbn]
   const bookInfo: editableBook = {
     isbn: book.isbn,
     isbn10: book.isbn10 ?? undefined,
@@ -127,8 +151,8 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
     bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
     imageLink: book.imageLink,
     numberRelatedBooks: relatedBooks.length,
-    relatedBooks: relatedBooks
-
+    relatedBooks: relatedBooks,
+    subsidiaryBook: subsidiaryBook
   }
   return bookInfo
 }
@@ -251,6 +275,7 @@ export const booksRouter = createTRPCRouter({
         }
 
       })
+      
       const editedBooks = await addExtraBookFields(books, ctx)
 
       return editedBooks
@@ -668,6 +693,7 @@ async function getBestBuybackRate(isbn: string, ctx: context) {
   return highestBuyBack
 }
 async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation>; }) {
+  const subBooks = await fetchSubsidiaryBooks(books.map((book)=>book.isbn))
   return await Promise.all(books.map(async (book) => {
     const lastMonthSales = await getLastMonthSales(book.isbn, ctx);
     const relatedBooks = await findRelatedBooks(book.title, book.isbn, ctx)
@@ -679,7 +705,8 @@ async function addExtraBookFields(books: Book[], ctx: { session: Session; prisma
         daysOfSupply: lastMonthSales == 0 ? Infinity : book.inventory / (await getLastMonthSales(book.isbn, ctx)) * 30,
         bestBuybackPrice: await getBestBuybackRate(book.isbn, ctx),
         numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks
+        relatedBooks: relatedBooks,
+        subsidaryBook: subBooks[book.isbn]
       });
   })
   );

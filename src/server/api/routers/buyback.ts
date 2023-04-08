@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
 export const buybackRouter = createTRPCRouter({
     createBuyback: protectedProcedure
@@ -143,6 +144,52 @@ export const buybackRouter = createTRPCRouter({
         }
             
         
+      }),
+
+      getCostMostRecent: publicProcedure
+      .input(
+        z.object({
+          isbn: z.string(),
+          vendorId: z.string()
+        })
+      ).output(z.number())
+      .query(async ({ ctx, input }) => {
+        try {
+          let costMostRecent = 0
+          const isbn = convertISBN10ToISBN13(input.isbn)
+          const vendor = await ctx.prisma.vendor.findUnique({
+            where:{
+              id: input.vendorId
+            }
+          })
+          const purchaseOrder = await ctx.prisma.purchaseOrder.findMany({
+            where:{
+              vendorId: input.vendorId
+            },
+            orderBy:{
+              date: 'desc'
+            },
+            include:{
+              purchases: {
+                where: {
+                  bookId: isbn
+                }
+              }
+            }
+          })
+          for (const order of purchaseOrder){
+            if (order.purchases.length != 0 && costMostRecent === 0){
+                costMostRecent = order.purchases[0].price
+            }
+          }
+          return costMostRecent * vendor.bookBuybackPercentage
+          
+        } catch (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message,
+          });
+        }
       }),
 
     modifyBuyback: protectedProcedure

@@ -37,19 +37,19 @@ interface TableRowProp {
 
 export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
+  const buybackCost = api.buyback.getCostMostRecent.useQuery({isbn: isbn, vendorId: props.vendorId}).data
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
+  const defaultPrice = props.type === "Buyback" ? buybackCost : book?.retailPrice
   let id: string
   if (props.type === "Buyback"){
-    id = props.item?.purchaseOrderId
+    id = props.item?.buybackOrderId
   }
   else if (props.type === "Purchase"){
-    id = props.item?.buybackOrderId
+    id = props.item?.purchaseOrderId
   }
   else{
     id = props.item?.saleReconciliationId
   }
-   (props.item?.purchaseOrderId ? props.item?.purchaseOrderId : props.item?.buybackOrderId)
   const [deleteView, setDeleteView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [price, setPrice] = useState<number>(defaultPrice)
@@ -63,7 +63,11 @@ export default function TableRow(props: TableRowProp) {
 
   function handleBookSelect(bookId: string){
     setIsbn(bookId)
-    setPrice(book?.retailPrice)
+    let displayPrice
+    if (book){
+      displayPrice = book?.retailPrice
+    }
+    setPrice(displayPrice)
   }
 
   function renderDeleteView() {
@@ -84,7 +88,7 @@ export default function TableRow(props: TableRowProp) {
     return <>
       {deleteView ?
           <CreateSaleEntries closeStateFunction={setDeleteView} submitText={"Delete "+props.type}>
-            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={price} quantity={quantity}
+            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={props.item?.price ? props.item?.price : props.item?.buybackPrice} quantity={quantity}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
                             closeOut={closeDeleteView} id={props.item.id}></DeleteModal>
           </CreateSaleEntries> : null}
@@ -104,7 +108,6 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function edit() {
-    console.log(props.item)
     if (props.item) {
       props.mod.mutate({
         id: props.item.id,
@@ -126,7 +129,7 @@ export default function TableRow(props: TableRowProp) {
         (props.isView ?
                 <tr>
                   <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>
-                  <TableEntry>${Number(price).toFixed(2)}</TableEntry>
+                  <TableEntry>${Number(props.item?.price ? props.item?.price : props.item?.buybackPrice).toFixed(2)}</TableEntry>
                   <TableEntry>{quantity}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
@@ -136,10 +139,10 @@ export default function TableRow(props: TableRowProp) {
                           <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
-                                                     defaultValue={props.isCSV ? price : ""}></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? "" : defaultPrice}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantity} heading="Quantity Bought"
                                              required="True" dataType="number"
-                                             defaultValue={props.isCSV ? quantity : ""}></MutableTableEntry>
+                                             defaultValue={!props.isCSV ? quantity : ""}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNew}></SaveRowEntry>
                           <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.item.bookId : undefined}></DeleteRowEntry>
@@ -152,7 +155,7 @@ export default function TableRow(props: TableRowProp) {
                               <MutableCurrencyTableEntry saveValue={setPrice}
                                                          heading={props.type+" Price"} required="True"
                                                          dataType="number"
-                                                         defaultValue={price}></MutableCurrencyTableEntry>
+                                                         defaultValue={props.item?.price ? props.item?.price : props.item?.buybackPrice}></MutableCurrencyTableEntry>
                               <MutableTableEntry saveValue={setQuantity} heading="Quantity"
                                                  required="True" dataType="number"
                                                  defaultValue={quantity}></MutableTableEntry>
@@ -163,7 +166,7 @@ export default function TableRow(props: TableRowProp) {
                             :
                             <tr>
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
-                              <TableEntry>${Number(price).toFixed(2)}</TableEntry>
+                              <TableEntry>${Number(props.item?.price ? props.item?.price : props.item?.buybackPrice).toFixed(2)}</TableEntry>
                               <TableEntry>{quantity}</TableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                               <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>

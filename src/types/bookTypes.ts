@@ -1,3 +1,4 @@
+import { Book } from "@prisma/client"
 import { List } from "postcss/lib/list"
 import { arrayOutputType } from "zod"
 export type googleBookContainer = {
@@ -59,7 +60,7 @@ export type editableBook = {
     daysOfSupply:number,
     bestBuybackPrice:number,
     numberRelatedBooks: number,
-    relatedBooks: Array<object>
+    relatedBooks: Array<Book>
     subsidiaryBook:subsidiaryBook
 }
 

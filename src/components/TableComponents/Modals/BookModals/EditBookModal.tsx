@@ -28,7 +28,7 @@ export default function EditBookModal(props:BookCardProp) {
   const {data, status} = useSession();
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
-  const secureUrl = api.books.getNewImageUrl.useQuery(props.bookInfo.subsidiaryBook.imageUrl).data
+  const secureUrl = api.books.getNewImageUrl.useQuery(props.bookInfo.subsidiaryBook ? props.bookInfo.subsidiaryBook.imageUrl: "").data
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
@@ -159,9 +159,14 @@ export default function EditBookModal(props:BookCardProp) {
             </div>
             <GenreCardProp saveFunction={setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
             <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
-            <MutableStateCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount} stateValue={pageCount} subsidiaryValue={props.bookInfo.subsidiaryBook.pageCount}></MutableStateCardProp>
-            <MutableStateDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight} length={height} width={width} height={thickness} subLength={props.bookInfo.subsidiaryBook.height} subWidth={props.bookInfo.subsidiaryBook.width} subHeight={props.bookInfo.subsidiaryBook.thickness}></MutableStateDimensionsCardProp>
-            <MutableStateImageCardProp heading="Subsidiary Image" imageUrl={props.bookInfo.subsidiaryBook.imageUrl} subsidiaryImage={secureUrl} saveValue={setImage}></MutableStateImageCardProp>
+            {props.bookInfo.subsidiaryBook!= null ? <>
+              <MutableStateCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount} stateValue={pageCount} subsidiaryValue={props.bookInfo.subsidiaryBook.pageCount}></MutableStateCardProp>
+              <MutableStateDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight} length={height} width={width} height={thickness} subLength={props.bookInfo.subsidiaryBook.height} subWidth={props.bookInfo.subsidiaryBook.width} subHeight={props.bookInfo.subsidiaryBook.thickness}></MutableStateDimensionsCardProp>
+              <MutableStateImageCardProp heading="Subsidiary Image" imageUrl={props.bookInfo.subsidiaryBook.imageUrl} subsidiaryImage={secureUrl} saveValue={setImage}></MutableStateImageCardProp></>:
+              <><MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
+              <MutableDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsCardProp></>
+            }
+            
           </CardGrid>
         </div>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>

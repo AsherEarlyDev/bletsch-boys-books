@@ -89,7 +89,7 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
           dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
           pageCount: input.pageCount,
           genre: input.mainCategory,
-          retailPrice: input.saleInfo?.retailPrice?.amount ?? 0,
+          retailPrice: input.saleInfo?.retailPrice ? input.saleInfo?.retailPrice.amount : 0,
           inventory: 0,
           authorNames: input.authors.join(", "),
           imageLink: result.secure_url,
@@ -99,10 +99,10 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
           bestBuybackPrice:0,
           numberRelatedBooks: relatedBooks.length,
           relatedBooks: relatedBooks,
-          subsidiaryBook: {
+          subsidiaryBook: subsidiaryBook ?  {
             ...subsidiaryBook,
-            imageUrl:(await cloudinary.v2.uploader.unsigned_upload(subsidiaryBook.imageUrl, "book-image-preset")).secure_url
-          }
+            imageUrl:subsidiaryBook.imageUrl ? (await cloudinary.v2.uploader.unsigned_upload(subsidiaryBook.imageUrl, "book-image-preset")).secure_url : null
+          } : null
         }
         return bookInfo
       }
@@ -201,6 +201,7 @@ export const booksRouter = createTRPCRouter({
           if(externalBook) externalBooks.push(externalBook)
         }
       } catch(error) {
+        throw(error)
         absentBooks.push(isbn)
       }
     }

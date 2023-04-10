@@ -137,7 +137,7 @@ export default function BookTable() {
         openView:"true",
         viewId: id
       }
-    }, undefined, { shallow: true }) : 
+    }, undefined) : 
     router.push({
       pathname:'/books',
       

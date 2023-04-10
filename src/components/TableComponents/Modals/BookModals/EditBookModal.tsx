@@ -13,6 +13,8 @@ import {CldImage, CldUploadButton} from "next-cloudinary";
 import { toast } from "react-toastify";
 import {z} from "zod";
 import {useSession} from "next-auth/react";
+import MutableStateCardProp from "../../../CardComponents/MutableStateCardProp";
+import MutableStateDimensionsCardProp from "../../../CardComponents/MutableStateDimensionsCardProp";
 
 
 interface BookCardProp{
@@ -106,7 +108,7 @@ export default function EditBookModal(props:BookCardProp) {
   return (
       (open ? (props.bookInfo ?
       <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
-        <CardTitle heading="Book Description" subheading="Confirm and validate book information below..."></CardTitle>
+        <CardTitle heading="Book Description" subheading="Confirm and validate book information below..." secondSubheading="Intrinsic subsidiary fields are shown in blue and can be imported with the green check."></CardTitle>
         <div className="flex flex-row gap-5 items-center border-t border-gray-200">
           <div className="flex flex-col ml-5 mr-4">
             {image ?
@@ -155,8 +157,8 @@ export default function EditBookModal(props:BookCardProp) {
             </div>
             <GenreCardProp saveFunction={setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
             <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
-            <MutableCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount}></MutableCardProp>
-            <MutableDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight}></MutableDimensionsCardProp>
+            <MutableStateCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount} stateValue={pageCount} subsidiaryValue={props.bookInfo.subsidiaryBook.pageCount}></MutableStateCardProp>
+            <MutableStateDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight} length={length} width={width} height={height} subLength={props.bookInfo.subsidiaryBook.height} subWidth={props.bookInfo.subsidiaryBook.width} subHeight={props.bookInfo.subsidiaryBook.thickness}></MutableDimensionsCardProp>
           </CardGrid>
         </div>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>

@@ -147,9 +147,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         </td>
       </tr>
       {displaySubsidiaryBook && 
-        <><tr>
-          <td className="whitespace-nowrap px-2 py-4 text-sm" align="center" colSpan={15}>Subsidiary intrinsic book information: Click green check to import field</td>
-        </tr>
+        <>
         <tr>
         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6" align="left">{(props.bookInfo.subsidiaryBook.imageUrl)!=null ? <>
           <div className="inline-flex group w-[18rem]">
@@ -166,14 +164,9 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
           </button></div>
           </>: null}
         </td>
-        <td className="whitespace-nowrap px-2 py-4 text-sm" align="left" colSpan={7}></td>
-        
-        <td className="whitespace-nowrap px-2 pl-4 pr-3 py-4 text-sm" align="left"><>
-          ${(props.bookInfo.subsidiaryBook.retailPrice).toFixed(2)}
-          <button onClick={()=>setRetailPrice(props.bookInfo.subsidiaryBook.retailPrice)} className="text-green-600 hover:text-green-900">
-            <CheckIcon className="h-5 w-5"/>
-          </button>
-          </></td>
+        <td colSpan={3}></td>
+        <td className="whitespace-nowrap px-2 py-4 text-sm" align="center" colSpan={5}>Subsidiary intrinsic book information: Click green check to import field</td>
+
         
         <td className="whitespace-nowrap px-2 pl-4 pr-3 py-4 text-sm" align="left">
           {props.bookInfo.subsidiaryBook.pageCount}

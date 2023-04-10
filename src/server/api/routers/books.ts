@@ -16,6 +16,7 @@ import cloudinary from "cloudinary"
 import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
 import { useEffect } from "react";
 import axios from "axios";
+import { error } from "console";
 
 type context = {
   session: Session | null;
@@ -71,14 +72,45 @@ const fetchSubsidiaryBooks = async (isbns: Array<string>) => {
 }
 
 const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) =>{
-  const googleImageUrl = input.imageLinks.thumbnail
+  const googleImageUrl = input.imageLinks? input.imageLinks.thumbnail : null
   const relatedBooks = await findRelatedBooks(input.title, isbn, ctx)
   const subsidiaryBook = (await fetchSubsidiaryBooks([isbn]))[isbn]
-  const bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(result=> {
-    if (result) {
-      const bookInfo: editableBook = {
+  var bookInfo
+  if(googleImageUrl){
+    bookInfo = (cloudinary.v2.uploader.unsigned_upload(googleImageUrl, "book-image-preset").then(async (result)=> {
+      if (result) {
+        const bookInfo: editableBook = {
+          isbn: convertISBN10ToISBN13(isbn),
+          isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10")).length > 0 ? ((input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0]).identifier : null,
+          title: input.title,
+          publisher: input.publisher,
+          author: input.authors,
+          publicationYear: (new Date(input.publishedDate)).getFullYear(),
+          dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
+          pageCount: input.pageCount,
+          genre: input.mainCategory,
+          retailPrice: input.saleInfo?.retailPrice?.amount ?? 0,
+          inventory: 0,
+          authorNames: input.authors.join(", "),
+          imageLink: result.secure_url,
+          lastMonthSales:0,
+          shelfSpace:0,
+          daysOfSupply:Infinity,
+          bestBuybackPrice:0,
+          numberRelatedBooks: relatedBooks.length,
+          relatedBooks: relatedBooks,
+          subsidiaryBook: {
+            ...subsidiaryBook,
+            imageUrl:(await cloudinary.v2.uploader.unsigned_upload(subsidiaryBook.imageUrl, "book-image-preset")).secure_url
+          }
+        }
+        return bookInfo
+      }
+    }))}
+    else {
+     bookInfo = {
         isbn: convertISBN10ToISBN13(isbn),
-        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
+        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10")).length > 0 ? ((input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0]).identifier : null,
         title: input.title,
         publisher: input.publisher,
         author: input.authors,
@@ -89,42 +121,21 @@ const transformRawBook = async (input:googleBookInfo, isbn:string, ctx:context) 
         retailPrice: input.saleInfo?.retailPrice.amount,
         inventory: 0,
         authorNames: input.authors.join(", "),
-        imageLink: result.secure_url,
+        imageLink: "https://res.cloudinary.com/dyyevpzdz/image/upload/v1680988038/book-covers/cantFindBook_ilglqc.jpg",
         lastMonthSales:0,
         shelfSpace:0,
         daysOfSupply:Infinity,
         bestBuybackPrice:0,
         numberRelatedBooks: relatedBooks.length,
         relatedBooks: relatedBooks,
-        subsidiaryBook: subsidiaryBook
+        subsidiaryBook: {
+          ...subsidiaryBook,
+          imageUrl:(await cloudinary.v2.uploader.unsigned_upload(subsidiaryBook.imageUrl, "book-image-preset")).secure_url
+        }
       }
-      return bookInfo
-    } else {
-      const bookInfo: editableBook = {
-        isbn: isbn,
-        isbn10:(input.industryIdentifiers.filter((data) =>data.type==="ISBN_10"))[0].identifier ?? null,
-        title: input.title,
-        publisher: input.publisher,
-        author: input.authors,
-        publicationYear: (new Date(input.publishedDate)).getFullYear(),
-        dimensions: input.dimensions ? [Number(input.dimensions?.width), Number(input.dimensions?.thickness), Number(input.dimensions?.height)] : [],
-        pageCount: input.pageCount,
-        genre: input.mainCategory,
-        retailPrice: input.saleInfo?.retailPrice.amount,
-        inventory: 0,
-        authorNames: input.authors.join(", "),
-        imageLink: "",
-        lastMonthSales:0,
-        shelfSpace:0,
-        daysOfSupply:Infinity,
-        bestBuybackPrice:0,
-        numberRelatedBooks: relatedBooks.length,
-        relatedBooks: relatedBooks,
-        subsidiaryBook: subsidiaryBook
-      }
-      return bookInfo
-    }
-  }))
+      
+  }
+  
   return bookInfo
 }
 
@@ -189,7 +200,7 @@ export const booksRouter = createTRPCRouter({
           const externalBook = await fetchBookFromExternal(isbn, ctx)
           if(externalBook) externalBooks.push(externalBook)
         }
-      } catch {
+      } catch(error) {
         absentBooks.push(isbn)
       }
     }
@@ -198,6 +209,11 @@ export const booksRouter = createTRPCRouter({
       externalBooks: externalBooks,
       absentBooks: absentBooks
     })
+  }),
+  getNewImageUrl:publicProcedure
+  .input(z.string())
+  .query(async ({ctx, input}) => {
+    return (await cloudinary.v2.uploader.unsigned_upload(input, "book-image-preset")).secure_url
   }),
 
   findInternalBook: publicProcedure

@@ -32,7 +32,7 @@ export default function TableEntryWithTag(props: TableEntryWithTagsInterface) {
               >
                 <CldImage
                     className="rounded-lg"
-                    crop="thumb"
+                    crop="lfill"
                     width="50"
                     height="50"
                     src={props.imageUrl}

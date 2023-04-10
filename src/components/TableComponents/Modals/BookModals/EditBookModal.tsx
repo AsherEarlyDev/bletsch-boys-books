@@ -15,6 +15,7 @@ import {z} from "zod";
 import {useSession} from "next-auth/react";
 import MutableStateCardProp from "../../../CardComponents/MutableStateCardProp";
 import MutableStateDimensionsCardProp from "../../../CardComponents/MutableStateDimensionsCardProp";
+import MutableStateImageCardProp from "../../../CardComponents/MutableStateImageCardProp";
 
 
 interface BookCardProp{
@@ -27,6 +28,7 @@ export default function EditBookModal(props:BookCardProp) {
   const {data, status} = useSession();
   const defaultPrice = props.bookInfo?.retailPrice ?? 25
   const defaultPageCount = props.bookInfo?.pageCount ?? 0
+  const secureUrl = api.books.getNewImageUrl.useQuery(props.bookInfo.subsidiaryBook.imageUrl).data
   const defaultDimenions = props.bookInfo?.dimensions ?  (props.bookInfo?.dimensions.length == 3 ? props.bookInfo?.dimensions : [0,0,0]) : [0,0,0]
   const [genre, setGenre] = useState<{name:string}>()
   const [open, setOpen] = useState(true)
@@ -125,7 +127,7 @@ export default function EditBookModal(props:BookCardProp) {
             }
             <div className="flex flex-row gap-3 my-2 justify-center">
               {image &&
-              <button onClick={() => {setImage("")}} className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm">
+              <button onClick={() => {setImage("https://res.cloudinary.com/dyyevpzdz/image/upload/v1680988038/book-covers/cantFindBook_ilglqc.jpg")}} className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm">
                 Delete
               </button>}
               <CldUploadButton
@@ -158,7 +160,8 @@ export default function EditBookModal(props:BookCardProp) {
             <GenreCardProp saveFunction={setGenre} defaultValue={props.bookInfo.genre}></GenreCardProp>
             <MutableCardProp saveValue={setRetailPrice} heading="Retail Price" required="True" dataType="number" defaultValue={defaultPrice}></MutableCardProp>
             <MutableStateCardProp saveValue={setPageCount} heading="Page Count" dataType="number" defaultValue={defaultPageCount} stateValue={pageCount} subsidiaryValue={props.bookInfo.subsidiaryBook.pageCount}></MutableStateCardProp>
-            <MutableStateDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight} length={length} width={width} height={height} subLength={props.bookInfo.subsidiaryBook.height} subWidth={props.bookInfo.subsidiaryBook.width} subHeight={props.bookInfo.subsidiaryBook.thickness}></MutableDimensionsCardProp>
+            <MutableStateDimensionsCardProp defaultLength={defaultDimenions[2]} defaultWidth={defaultDimenions[0]} defaultHeight={defaultDimenions[1]} saveLength={setLength} saveWidth={setWidth} saveHeight={setHeight} length={height} width={width} height={thickness} subLength={props.bookInfo.subsidiaryBook.height} subWidth={props.bookInfo.subsidiaryBook.width} subHeight={props.bookInfo.subsidiaryBook.thickness}></MutableStateDimensionsCardProp>
+            <MutableStateImageCardProp heading="Subsidiary Image" imageUrl={props.bookInfo.subsidiaryBook.imageUrl} subsidiaryImage={secureUrl} saveValue={setImage}></MutableStateImageCardProp>
           </CardGrid>
         </div>
         <SaveCardChanges closeModal={closeModal} saveModal={saveBook}></SaveCardChanges>

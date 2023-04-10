@@ -1,3 +1,4 @@
+import { CheckIcon } from "@heroicons/react/20/solid"
 
 interface MutableDimensionsCardPropProps{
   defaultLength: number
@@ -40,6 +41,7 @@ export default function MutableStateDimensionsCardProp(props: MutableDimensionsC
               required={false}
               onChange={handleChangeLength}
               min="0"
+              value={props.length}
               className="mt-1 p-1 block w-14 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
           <div className="pt-2 text-sm font-small text-gray-500">
@@ -53,6 +55,7 @@ export default function MutableStateDimensionsCardProp(props: MutableDimensionsC
               required={false}
               onChange={handleChangeWidth}
               min="0"
+              value={props.width}
               className="mt-1 p-1 block w-14 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
           <div className="pt-2 text-sm font-small text-gray-500">
@@ -66,8 +69,19 @@ export default function MutableStateDimensionsCardProp(props: MutableDimensionsC
               required={false}
               onChange={handleChangeHeight}
               min="0"
+              value={props.height}
               className="mt-1 p-1 block w-14 text-sm text-gray-900 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
+        </dd>
+        <dd className="whitespace-nowrap text-red-900 px-2 py-4 pl-4 pr-3 text-sm justify-left">
+          Subsidiary: {props.subLength}" X {props.subWidth}" X {props.subHeight}"
+          <button onClick={()=>{
+            props.saveLength(props.subLength)
+            props.saveHeight(props.subHeight)
+            props.saveWidth(props.subWidth)
+            }} className="text-green-600 hover:text-green-900">
+            <CheckIcon className="h-5 w-5"/>
+          </button>
         </dd>
       </div>
   )

@@ -16,6 +16,8 @@ import MutableStateDimensionsTableEntry from "../TableEntries/MutableStateDimens
 import GenreCardProp from "../../CardComponents/GenreCardProp";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
+import cloudinary from "cloudinary"
+import { CldImage } from "next-cloudinary";
 
 interface NewBookTableRowProp{
   bookInfo: editableBook | undefined
@@ -33,7 +35,6 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
   const [displaySubsidiaryBook, setDisplaySubsidiaryBook] = useState(false)
   const [genre, setGenre] = useState<{name:string}>()
   const [image, setImage] = useState(props.bookInfo?.imageLink)
-  console.log(image)
   const [retailPrice, setRetailPrice] = useState<number>(defaultPrice)
   const [pageCount, setPageCount] = useState<number>(defaultPageCount)
   const [width, setWidth] = useState<number>(defaultDimensions[0])
@@ -109,7 +110,9 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         {props.bookInfo.subsidiaryBook ? <td className="whitespace-nowrap px-2 py-4 text-sm text-gray-500">
           <button
             type="button"
-            onClick={()=>setDisplaySubsidiaryBook(!displaySubsidiaryBook)}
+            onClick={()=>{
+              setDisplaySubsidiaryBook(!displaySubsidiaryBook)
+            }}
             className="inline-flex items-center rounded-full border border-transparent bg-blue-600 p-1 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
             <ChevronDoubleDownIcon className="h-5 w-5" aria-hidden="true" />
@@ -143,23 +146,43 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
           </button>
         </td>
       </tr>
-      {displaySubsidiaryBook && <tr>
-        <td className="whitespace-nowrap px-2 py-4 text-sm" align="left" colSpan={8}>Subsidiary intrinsic book information: Click green check to import field</td>
-        <td className="whitespace-nowrap px-2 py-4 text-sm"><>
+      {displaySubsidiaryBook && 
+        <><tr>
+          <td className="whitespace-nowrap px-2 py-4 text-sm" align="center" colSpan={15}>Subsidiary intrinsic book information: Click green check to import field</td>
+        </tr>
+        <tr>
+        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6" align="left">{(props.bookInfo.subsidiaryBook.imageUrl)!=null ? <>
+          <div className="inline-flex group w-[18rem]">
+          <CldImage
+              className="rounded-lg"
+              crop="lfill"
+              width="50"
+              height="50"
+              src={props.bookInfo.subsidiaryBook.imageUrl}
+              alt={"Image"}>
+          </CldImage>
+          <button onClick={()=>setImage(props.bookInfo.subsidiaryBook.imageUrl)} className="text-green-600 hover:text-green-900">
+            <CheckIcon className="h-5 w-5"/>
+          </button></div>
+          </>: null}
+        </td>
+        <td className="whitespace-nowrap px-2 py-4 text-sm" align="left" colSpan={7}></td>
+        
+        <td className="whitespace-nowrap px-2 pl-4 pr-3 py-4 text-sm" align="left"><>
           ${(props.bookInfo.subsidiaryBook.retailPrice).toFixed(2)}
           <button onClick={()=>setRetailPrice(props.bookInfo.subsidiaryBook.retailPrice)} className="text-green-600 hover:text-green-900">
             <CheckIcon className="h-5 w-5"/>
           </button>
           </></td>
-        <td className="whitespace-nowrap px-2 py-4 text-sm">
+        
+        <td className="whitespace-nowrap px-2 pl-4 pr-3 py-4 text-sm" align="left">
           {props.bookInfo.subsidiaryBook.pageCount}
           <button onClick={()=>setPageCount(props.bookInfo.subsidiaryBook.pageCount)} className="text-green-600 hover:text-green-900">
             <CheckIcon className="h-5 w-5"/>
           </button>
-
-        
         </td>
-        <td className="whitespace-nowrap px-2 py-4 text-sm">
+        
+        <td className="whitespace-nowrap px-2 py-4 pl-4 pr-3 text-sm" align="left">
           {props.bookInfo.subsidiaryBook.height}" X {props.bookInfo.subsidiaryBook.width}" X {props.bookInfo.subsidiaryBook.thickness}"
           <button onClick={()=>{
             setLength(props.bookInfo.subsidiaryBook.height)
@@ -169,7 +192,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
             <CheckIcon className="h-5 w-5"/>
           </button>
         </td>
-      </tr>}
+      </tr></>}
       {displayRelatedBooks && 
       <tr>
         <td className="whitespace-nowrap px-2 py-4 text-sm" align="center" colSpan={15}>

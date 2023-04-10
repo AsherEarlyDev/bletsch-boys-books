@@ -92,6 +92,7 @@ export type subsidiaryBook = {
     publisher: string, 
     publicationYear: number, 
     pageCount: number, 
+    imageUrl: string,
     retailPrice: number, 
     height: number, 
     thickness: number, 

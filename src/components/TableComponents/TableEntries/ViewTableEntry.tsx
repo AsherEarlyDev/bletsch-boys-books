@@ -22,7 +22,7 @@ export default function ViewTableEntry(props: ViewModalProp) {
             {(props.hasThumbnail && props.imageUrl) ?
                 <CldImage
                     className="rounded-lg mr-4"
-                    crop="thumb"
+                    crop="lfill"
                     width="50"
                     height="50"
                     src={props.imageUrl}

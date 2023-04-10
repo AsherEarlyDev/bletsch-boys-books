@@ -112,7 +112,7 @@ export default function EditBookModal(props:BookCardProp) {
             {image ?
             <CldImage
                 className="rounded-lg"
-                crop="fill"
+                crop="lfill"
                 height="280"
                 width="220"
                 src={image}

@@ -1,18 +1,18 @@
-import ImmutableCardProp from "../../../CardComponents/ImmutableCardProp";
-import MutableCardProp from "../../../CardComponents/MutableCardProp";
-import CardTitle from "../../../CardComponents/CardTitle";
-import CardGrid from "../../../CardComponents/CardGrid";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
+import ImmutableCardProp from "../../../../CardComponents/ImmutableCardProp";
+import MutableCardProp from "../../../../CardComponents/MutableCardProp";
+import CardTitle from "../../../../CardComponents/CardTitle";
+import CardGrid from "../../../../CardComponents/CardGrid";
+import SaveCardChanges from "../../../../CardComponents/SaveCardChanges";
 import { useState } from 'react';
-import { api } from '../../../../utils/api';
-import { Sale} from "../../../../types/salesTypes";
+import { api } from '../../../../../utils/api';
+import { Sale} from "../../../../../types/salesTypes";
 import DeleteSaleModal from "./DeleteSaleModal";
-import CreateSaleEntries from '../../../CreateEntries';
-import PrimaryButton from '../../../BasicComponents/PrimaryButton';
-import ConfirmCard from "../../../CardComponents/ConfirmationCard";
+import CreateSaleEntries from '../../../../CreateEntries';
+import PrimaryButton from '../../../../BasicComponents/PrimaryButton';
+import ConfirmCard from "../../../../CardComponents/ConfirmationCard";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BookCardProp from "../../../CardComponents/BookCardProp";
+import BookCardProp from "../../../../CardComponents/BookCardProp";
 import DeleteSalesRecModal from "./DeleteSalesRecModal";
 
 
@@ -62,7 +62,7 @@ export default function ViewSalesRecModal(props:SalesProp) {
       if (props.cardType === 'edit'){
         modSale.mutate({
           id: props.sale.id,
-          saleReconciliationId: props.sale.saleReconciliationId,
+          orderId: props.sale.saleReconciliationId,
           isbn: isbn,
           quantity: quantity.toString(),
           price: price.toString(),

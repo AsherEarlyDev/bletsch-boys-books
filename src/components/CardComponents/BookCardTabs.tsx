@@ -90,7 +90,7 @@ export default function BookCardTabs(props: BookCardTabsProps) {
               <ul>
                 {relatedBooks.map((book) => (
 
-                    <Link href={{pathname:'/records', query:{openView:"true",viewId: book.isbn}}}><li
+                    <Link href={{pathname:'/books', query:{openView:"true",viewId: book.isbn}}}><li
                         className="relative rounded-md p-3 hover:bg-indigo-100 flex flex-row justify-between text-left"
                     >
                       <h3 className="text-sm font-medium leading-5 w-32">{book.title}</h3>

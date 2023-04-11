@@ -51,7 +51,7 @@ export default function PurchaseTableRow(props: PurchaseTableRowProp) {
     if (props.purchase) {
       modPurchase.mutate({
         id: props.purchase.id,
-        purchaseOrderId: props.purchase.purchaseOrderId,
+        orderId: props.purchase.purchaseOrderId,
         isbn: isbn,
         quantity: quantityPurchased.toString(),
         price: purchasePrice.toString(),

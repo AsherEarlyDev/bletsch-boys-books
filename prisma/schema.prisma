@@ -90,11 +90,9 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
-  revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
-  editable    Boolean  @default(false)
-  userName    String   @default("")
+  revenue     Float    @default(0)
   sales       Sale[]
 }
 
@@ -181,20 +179,20 @@ model BookCaseContainer {
   name       String      @id @unique
   width      Float
   numShelves Float
-  userName   String
   date       DateTime
+  userName   String
   ShelfBook  ShelfBook[]
 }
 
 model ShelfBook {
   id                    String             @id @default(cuid())
-  shelfNumber           Int
-  index                 Int
   mode                  String
   edit                  Boolean
   displayCount          Int
   bookIsbn              String
   bookCaseContainerName String?
+  index                 Int
+  shelfNumber           Int
   BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete: Cascade)
   Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
 }

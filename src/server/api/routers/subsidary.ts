@@ -11,7 +11,6 @@ const { log } = require('@logtail/next');
 const remoteBookSchema = z.object({
   title: z.string(),
   authors: z.string().array(),
-  genre: z.string(),
   isbn13: z.string().length(13),
   isbn10: z.string().length(10).nullable(),
   publisher: z.string(),
@@ -46,14 +45,12 @@ export const subsidaryRouter = createTRPCRouter({
         where: { isbn: isbn },
         include: {
           author: true,
-          genre: true,
         },
       });
       if (book) {
         existingRemoteBooks[isbn] = {
           title: book.title,
           authors: book.author.map((author) => author.name),
-          genre: book.genre.name,
           isbn13: book.isbn,
           isbn10: book.isbn10,
           publisher: book.publisher,

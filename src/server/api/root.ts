@@ -14,6 +14,7 @@ import { buybackOrderRouter } from "./routers/bookBuybackOrder";
 import { bookCaseRouter } from "./routers/bookCase";
 import {inventoryCorrectionRouter} from "./routers/inventoryCorrection";
 import { bookHookRouter } from "./routers/bookHook";
+import {subsidaryRouter} from "./routers/subsidary";
 
 
 /**
@@ -35,7 +36,8 @@ export const appRouter = createTRPCRouter({
   buyback: buybackRouter,
   buybackOrder: buybackOrderRouter,
   bookHook: bookHookRouter,
-  inventoryCorrection: inventoryCorrectionRouter
+  inventoryCorrection: inventoryCorrectionRouter,
+  remoteBookAccess: subsidaryRouter
 });
 
 // export type definition of API

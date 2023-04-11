@@ -27,7 +27,6 @@ model Book {
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
   purchases           Purchase[]
-  shelfSpace          Float                 @default(0)
   sales               Sale[]
   ShelfBook           ShelfBook[]
   author              Author[]              @relation("AuthorToBook")
@@ -94,11 +93,6 @@ model saleReconciliation {
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
   revenue     Float    @default(0)
-<<<<<<< HEAD
-  editable    Boolean  @default(false)
-  userName    String   @default("")
-=======
->>>>>>> eb46e07717ea06b480a127b01071f1cd70130a0f
   sales       Sale[]
 }
 
@@ -144,6 +138,7 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
 }
 

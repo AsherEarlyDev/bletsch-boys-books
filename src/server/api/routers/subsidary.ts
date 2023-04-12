@@ -49,27 +49,26 @@ export const subsidaryRouter = createTRPCRouter({
             author: true,
           },
         });
-        log.info(book)
-        if (book) {
-          existingRemoteBooks[isbn] = {
-            title: book.title,
-            authors: book.author.map((author) => author.name),
-            isbn13: book.isbn,
-            isbn10: book.isbn10,
-            publisher: book.publisher,
-            publicationYear: book.publicationYear,
-            pageCount: book.pageCount ?? null,
-            height: book.dimensions[0] ?? null,
-            width: book.dimensions[1] ?? null,
-            thickness: book.dimensions[2] ?? null,
-            imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
-            retailPrice: book.retailPrice,
-            inventoryCount: book.inventory,
-          } as remoteBook;
-        } else {
-          console.log("Book not found: " + isbn);
-          existingRemoteBooks[isbn] = null;
-        }
+        // if (book) {
+        //   existingRemoteBooks[isbn] = {
+        //     title: book.title,
+        //     authors: book.author.map((author) => author.name),
+        //     isbn13: book.isbn,
+        //     isbn10: book.isbn10,
+        //     publisher: book.publisher,
+        //     publicationYear: book.publicationYear,
+        //     pageCount: book.pageCount ?? null,
+        //     height: book.dimensions[0] ?? null,
+        //     width: book.dimensions[1] ?? null,
+        //     thickness: book.dimensions[2] ?? null,
+        //     imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
+        //     retailPrice: book.retailPrice,
+        //     inventoryCount: book.inventory,
+        //   } as remoteBook;
+        // } else {
+        //   console.log("Book not found: " + isbn);
+        //   existingRemoteBooks[isbn] = null;
+        // }
       }
       if (Object.keys(existingRemoteBooks).length === 0) {
         throw new TRPCError({
@@ -77,7 +76,6 @@ export const subsidaryRouter = createTRPCRouter({
           message: "No books found",
         });
       }
-      console.log(existingRemoteBooks)
       return existingRemoteBooks;
     }
     catch(error){

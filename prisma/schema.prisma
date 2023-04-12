@@ -11,6 +11,7 @@ datasource db {
 
 model Book {
   isbn                String                @id
+  isbn10              String?
   title               String
   publisher           String
   publicationYear     Int

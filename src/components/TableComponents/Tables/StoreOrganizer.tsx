@@ -95,7 +95,7 @@ export default function StoreOrganizer() {
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
         
-        <TableDetails tableName="Load BookCase" tableDescription="Load a existing bookcase to view or edit">
+        <TableDetails tableName="Load BookCase" tableDescription="Load a existing bookcase to view or edit. Bookcase loads at the bottom of the page.">
             <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                 <ShelfCalculatorModal isStandAlone={true} buttonText="Shelf Calulator" submitText="Close"></ShelfCalculatorModal>
             </div>

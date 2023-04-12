@@ -39,42 +39,54 @@ export const subsidaryRouter = createTRPCRouter({
   .input(z.object({ isbns: z.string().length(13).array()}))
   .output(z.record(z.string(), remoteBookSchema.nullable()))
   .query( async ({ input }) => {
-    const existingRemoteBooks: {[isbn:string]: remoteBook | null} = {};
-    for (const isbn of input.isbns) {
-      const book = await prisma.book.findFirst({
-        where: { isbn: isbn },
-        include: {
-          author: true,
-        },
-      });
-      if (book) {
-        existingRemoteBooks[isbn] = {
-          title: book.title,
-          authors: book.author.map((author) => author.name),
-          isbn13: book.isbn,
-          isbn10: book.isbn10,
-          publisher: book.publisher,
-          publicationYear: book.publicationYear,
-          pageCount: book.pageCount ?? null,
-          height: book.dimensions[0] ?? null,
-          width: book.dimensions[1] ?? null,
-          thickness: book.dimensions[2] ?? null,
-          imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
-          retailPrice: book.retailPrice,
-          inventoryCount: book.inventory,
-        } as remoteBook;
-      } else {
-        console.log("Book not found: " + isbn);
-        existingRemoteBooks[isbn] = null;
+    try{
+      log.info(input)
+      const existingRemoteBooks: {[isbn:string]: remoteBook | null} = {};
+      for (const isbn of input.isbns) {
+        const book = await prisma.book.findFirst({
+          where: { isbn: isbn },
+          include: {
+            author: true,
+          },
+        });
+        log.info(book)
+        if (book) {
+          existingRemoteBooks[isbn] = {
+            title: book.title,
+            authors: book.author.map((author) => author.name),
+            isbn13: book.isbn,
+            isbn10: book.isbn10,
+            publisher: book.publisher,
+            publicationYear: book.publicationYear,
+            pageCount: book.pageCount ?? null,
+            height: book.dimensions[0] ?? null,
+            width: book.dimensions[1] ?? null,
+            thickness: book.dimensions[2] ?? null,
+            imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
+            retailPrice: book.retailPrice,
+            inventoryCount: book.inventory,
+          } as remoteBook;
+        } else {
+          console.log("Book not found: " + isbn);
+          existingRemoteBooks[isbn] = null;
+        }
       }
+      if (Object.keys(existingRemoteBooks).length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No books found",
+        });
+      }
+      console.log(existingRemoteBooks)
+      return existingRemoteBooks;
     }
-    if (Object.keys(existingRemoteBooks).length === 0) {
+    catch(error){
+      log.info(error)
+      console.log(error)
       throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "No books found",
+        code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
+        message: error.message,
       });
     }
-    console.log(existingRemoteBooks)
-    return existingRemoteBooks;
   }),
 });

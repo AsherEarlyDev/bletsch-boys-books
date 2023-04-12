@@ -22,7 +22,6 @@ model Book {
   inventory           Int                   @default(0)
   authorNames         String
   imageLink           String?
-  isbn10              String?
   shelfSpace          Float                 @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]

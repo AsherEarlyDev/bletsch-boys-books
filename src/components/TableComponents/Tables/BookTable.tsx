@@ -17,6 +17,7 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useSession} from "next-auth/react";
 
+
 export default function BookTable() {
   const {data, status} = useSession()
   const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
@@ -35,6 +36,7 @@ export default function BookTable() {
   const viewCurrentISBN =  query.viewId ? query.viewId.toString() : ""
   const viewCurrentBook = api.books.findBooks.useQuery([viewCurrentISBN]).data
   const [displayDeleteBookView, setDisplayDeleteBookView] = useState(false)
+  const [displayBookScanView, setDisplayBookScanView] = useState(false)
   const [pageNumber, setPageNumber] = useState(0)
   const [sortField, setSortField] = useState("title")
   const [sortOrder, setSortOrder] = useState("asc")
@@ -126,6 +128,9 @@ export default function BookTable() {
     setDisplayDeleteBookView(false)
   }
 
+  
+
+
   async function openBookView(isbn: string){
     setDisplayBookView(true, isbn)
   }
@@ -137,7 +142,7 @@ export default function BookTable() {
         openView:"true",
         viewId: id
       }
-    }, undefined) : 
+    }, undefined, { shallow: true }) : 
     router.push({
       pathname:'/books',
       
@@ -196,6 +201,7 @@ export default function BookTable() {
             {renderEditBookView()}
             {renderDeleteBookView()}
             {renderBookView()}
+            
             <ToastContainer/>
           </div>
         </div>

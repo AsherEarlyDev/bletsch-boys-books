@@ -106,7 +106,7 @@ export const salesRouter = createTRPCRouter({
     .input(
       z.object({
           id: z.string(),
-          saleReconciliationId: z.string(),
+          orderId: z.string(),
           isbn: z.string(),
           quantity: z.string(),
           price: z.string()
@@ -136,7 +136,7 @@ export const salesRouter = createTRPCRouter({
           if(book.inventory + change >= 0) {
             const uniqueBooks = await ctx.prisma.sale.findMany({
               where: {
-                saleReconciliationId: input.saleReconciliationId,
+                saleReconciliationId: input.orderId,
                 bookId: isbn
               }
             });
@@ -157,7 +157,7 @@ export const salesRouter = createTRPCRouter({
               id: input.id
           },
             data: {
-              saleReconciliationId: input.saleReconciliationId,
+              saleReconciliationId: input.orderId,
               bookId: book.isbn,
               quantity: parseInt(input.quantity),
               price: parseFloat(input.price),
@@ -166,7 +166,7 @@ export const salesRouter = createTRPCRouter({
             });
             await ctx.prisma.saleReconciliation.update({
               where: {
-                id: input.saleReconciliationId
+                id: input.orderId
               },
               data:{
                 totalBooks: {

@@ -28,11 +28,13 @@ interface EditModalProps{
     confirmationView: any
     renderCSV: any
     renderAdd: any
-
+    edit?: any
 }
 
 
 export default function EditModal(props: EditModalProps){
+
+
 
 
     return (
@@ -57,7 +59,7 @@ export default function EditModal(props: EditModalProps){
                       </TableHeader>
                       <tbody className="divide-y divide-gray-200 bg-white">
   
-                      {props.items?.map((item) => (<TableRow type={props.type} vendorId={props.vendor?.id} isView={false} isAdding={false} item={item}></TableRow>))}
+                      {props.items?.map((item) => (<TableRow type={props.type} vendorId={props.vendor?.id} isView={false} isAdding={false} item={item} mod={props.edit}></TableRow>))}
                       {props.renderCSV()}
                       {props.renderAdd()}
                       </tbody>
@@ -78,7 +80,7 @@ export default function EditModal(props: EditModalProps){
           <form method="post" onSubmit={props.handleCSV}>
             <div>
               <label>Import with a CSV: </label>
-              <input type="file" id="buybackCSV" name="buybackCSV" accept=".csv"></input>
+              <input type="file" id={`${props.type.toLowerCase().slice(0, props.type.length - 1)}CSV`} name={`${props.type.toLowerCase().slice(0, props.type.length - 1)}CSV`} accept=".csv"></input>
               <div>
                 <button
                 type="submit"

@@ -1,18 +1,20 @@
 import { Dialog, Transition } from '@headlessui/react'
 import {Fragment, useRef, useState} from 'react'
-import { Vendor } from '../../../../types/vendorTypes';
+import { BookCase } from '../../../types/bookCaseTypes';
 
-interface OrderModalProp{
-  showOrderEdit(date: string, vendorId?: string): Promise<void>,
-  vendorList?: Vendor[],
+interface PlanogramModalProp{
+  case: any;
+  bookCases: BookCase[];
+  selectedCase(bookCase: string): void;
+  generateDiagram(): void;
   buttonText: string;
   submitText: string;
 }
 
-export default function AddOrderModal(props: OrderModalProp) {
-  const [vendorId, setId] = useState('')
+
+export default function PlanogramModal(props: PlanogramModalProp){
+  console.log(props.case)
   const [isOpen, setIsOpen] = useState(false)
-  const currDate = new Date()
 
   function closeModal() {
     setIsOpen(false)
@@ -22,23 +24,13 @@ export default function AddOrderModal(props: OrderModalProp) {
     setIsOpen(true)
   }
 
-  function handleChange(e: any){
-        setId(e.target.value)
+  function handleSubmit(e: React.FormEvent<HTMLInputElement>){
+    e.preventDefault()
+    props.generateDiagram()
+    closeModal()
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const date = formData.get("date") as string
-    closeModal()
-    if (props.vendorList){
-      props.showOrderEdit(date, vendorId)
-    }
-    else{
-      props.showOrderEdit(date)
-    }
-    
-  }
+
 
   return (
       <>
@@ -79,41 +71,25 @@ export default function AddOrderModal(props: OrderModalProp) {
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                     <form method="post" onSubmit={handleSubmit}>
                       <div>
-                        <div className="text-center">
-                          <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Enter Date (mm/dd/yyyy)
-                          </Dialog.Title>
-                        </div>
-                        <div className="mt-5">
-                        <input
-                            name="date"
-                            id="date"
-                            type="date"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            defaultValue={(currDate.getMonth()+1)+"/"+(currDate.getDate())+"/"+currDate.getFullYear()}
-                        />
-                        </div>
-                        {props.vendorList ? <div className="text-center">
-                          <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                            Select Vendor
-                          </Dialog.Title>
-                        </div> : null}
-                        {props.vendorList ? <div className="mt-5">
-                        <select name="vendorId" id="vendorId" onChange={handleChange}>
-                            <option >Please Select a Vendor!</option>
-                            {props.vendorList?.map((vendor)=>
-                                <option value={vendor.id}>{vendor.name}</option>
+                        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                Select Book Case
+                        </Dialog.Title>
+                      </div>
+                      <div className="mt-5">
+                        <select name="bookcase" id="bookcase" onChange={(e)=>props.selectedCase(e.currentTarget.value)}>
+                            <option >Please Select a Book Case!</option>
+                            {props.bookCases?.map((bookcase)=>
+                                <option value={bookcase.name}>{bookcase.name}</option>
                             )}
                         </select>
-                        </div>: null}
                       </div>
                       <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                        <button
+                        {props.case ? <button
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                         >
                           {props.submitText}
-                        </button>
+                        </button>: null}
                         <button
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"

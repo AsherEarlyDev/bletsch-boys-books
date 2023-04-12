@@ -22,7 +22,7 @@ model Book {
   inventory           Int                   @default(0)
   authorNames         String
   imageLink           String?
-  shelfSpace          Float?                @default(0)
+  shelfSpace          Float                 @default(0)
   genre               Genre                 @relation(fields: [genreID], references: [id])
   Buyback             Buyback[]
   InventoryCorrection InventoryCorrection[]
@@ -90,9 +90,9 @@ model Sale {
 model saleReconciliation {
   id          String   @id @default(cuid())
   date        DateTime
-  revenue     Float    @default(0)
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
+  revenue     Float    @default(0)
   sales       Sale[]
 }
 
@@ -167,7 +167,6 @@ model Buyback {
 }
 
 model InventoryCorrection {
-
   id         String   @id @default(cuid())
   date       DateTime
   bookId     String
@@ -180,23 +179,22 @@ model BookCaseContainer {
   name       String      @id @unique
   width      Float
   numShelves Float
-  userName   String
   date       DateTime
+  userName   String
   ShelfBook  ShelfBook[]
 }
 
 model ShelfBook {
   id                    String             @id @default(cuid())
-  shelfNumber           Int
-  index                 Int
   mode                  String
   edit                  Boolean
   displayCount          Int
   bookIsbn              String
-  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
-  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete:Cascade)
   bookCaseContainerName String?
-
+  index                 Int
+  shelfNumber           Int
+  BookCaseContainer     BookCaseContainer? @relation(fields: [bookCaseContainerName], references: [name], onDelete: Cascade)
+  Book                  Book               @relation(fields: [bookIsbn], references: [isbn])
 }
 
 enum Role {

@@ -27,7 +27,7 @@ export default function DeleteModal(props:DeleteProp) {
     props.closeOut()
   }
 
-  function handleDeleteBuyback(){
+  function handleDelete(){
     if(props.id && props.deleteMutation){
       props.deleteMutation.mutate({
         id: props.id
@@ -48,7 +48,7 @@ export default function DeleteModal(props:DeleteProp) {
               <CardTitle heading={"Delete "+props.type+"..."} subheading={message}></CardTitle>
               <div className="gap-5 flex flex-row justify-around px-4 py-4 sm:px-6">
                 <SecondaryButton onClick={props.closeOut} buttonText="Cancel"></SecondaryButton>
-                <PrimaryButton onClick={handleDeleteBuyback} buttonText={"Delete "+props.type}></PrimaryButton>
+                <PrimaryButton onClick={handleDelete} buttonText={"Delete "+props.type}></PrimaryButton>
               </div>
             </div>) : null}
       </>

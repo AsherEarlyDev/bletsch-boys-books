@@ -45,6 +45,15 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       toast.success("Successfully added buyback!")
     }
   })
+  const modBuyback = api.buyback.modifyBuyback.useMutation({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Successfully modified buyback!")
+    }
+  })
+  
   const buybacks: Buyback[] = api.buyback.getBuybacksByOrderId.useQuery({buybackOrderId: props.data.id}).data
   const vendors: Vendor[] = api.vendor.getVendorsWithBuyback.useQuery().data
 
@@ -151,7 +160,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
         buybackPrice = price
       }
       addBuyback.mutate({
-        buybackOrderId: props.data.id,
+        id: props.data.id,
         isbn: isbn,
         quantity: quantity.toString(),
         price: buybackPrice.toString()
@@ -182,6 +191,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     renderCSV={renderCSVRows}
     renderAdd={renderAddBuybackRow}
     vendors={vendors}
+    edit={modBuyback}
     ></EditModal>
   )
 }

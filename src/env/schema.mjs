@@ -34,7 +34,6 @@ export const serverEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-
   SECRET_KEY_GOOGLE_API: process.env.SECRET_KEY_GOOGLE_API,
 
 };
@@ -45,8 +44,7 @@ export const serverEnv = {
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string(),
-  
+  // NEXT_PUBLIC_CLIENTVAR: z.string(),  
 });
 
 /**
@@ -57,5 +55,4 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
-  
 };

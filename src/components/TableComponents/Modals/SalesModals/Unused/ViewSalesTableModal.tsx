@@ -1,16 +1,15 @@
-import TableDetails from "../../TableDetails";
-import { editableBook } from '../../../../types/bookTypes';
-import NewBookEntryTableRow from "../../TableRows/NewBookEntryTableRow";
-import TableHeader from "../../TableHeader";
-import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
+import TableDetails from "../../../TableDetails";
+import { editableBook } from '../../../../../types/bookTypes';
+import NewBookEntryTableRow from "../../../TableRows/NewBookEntryTableRow";
+import TableHeader from "../../../TableHeader";
+import ColumnHeading from "../../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
-import {api} from "../../../../utils/api";
-import SecondaryButton from "../../../BasicComponents/SecondaryButton";
-import PrimaryButton from "../../../BasicComponents/PrimaryButton";
-import {Sale} from "../../../../types/salesTypes";
-import ViewSalesRecModal from "./ViewSaleModal";
-import SaleTableRow from "../../TableRows/SaleTableRow";
+import SaveCardChanges from "../../../../CardComponents/SaveCardChanges";
+import {api} from "../../../../../utils/api";
+import SecondaryButton from "../../../../BasicComponents/SecondaryButton";
+import PrimaryButton from "../../../../BasicComponents/PrimaryButton";
+import {Sale} from "../../../../../types/salesTypes";
+import SaleTableRow from "../../../TableRows/SaleTableRow";
 
 interface ViewSalesTableModalProps{
   salesRecId: string

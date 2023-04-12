@@ -7,7 +7,6 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditBuybackTableModal from '../Modals/BuybackModals/EditBuybackTableModal';
 import {useSession} from "next-auth/react";
-import ViewBuybackTableModal from '../Modals/BuybackModals/Unused/ViewBuybackTableModal';
 import AddOrderModal from '../Modals/ParentModals/AddOrderModal';
 import OrderTableRow from '../TableRows/Parent/OrderTableRow';
 import DeleteOrderModal from '../Modals/ParentModals/DeleteOrderModal';

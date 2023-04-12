@@ -1,9 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { prisma } from "../../db";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { XMLParser } from "fast-xml-parser";
-import convertISBN10ToISBN13 from "../HelperFunctions/convertISBN";
-import { DEFAULT_THICKNESS_IN_CENTIMETERS } from "./books";
 const { Logtail } = require("@logtail/node");
 const { log } = require('@logtail/next');
 
@@ -40,6 +38,7 @@ export const subsidaryRouter = createTRPCRouter({
   .output(z.record(z.string(), remoteBookSchema.nullable()))
   .query( async ({ input }) => {
     try{
+      log.info(input)
       const existingRemoteBooks: {[isbn:string]: remoteBook | null} = {};
       for (const isbn of input.isbns) {
         try{

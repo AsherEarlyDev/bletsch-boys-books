@@ -20,7 +20,7 @@ const remoteBookSchema = z.object({
   height: z.number().gte(0).nullable(),
   width: z.number().gte(0).nullable(),
   thickness: z.number().gte(0).nullable(),
-  imageLink: z.string().url().nullable(),
+  imageUrl: z.string().url().nullable(),
   retailPrice: z.number().gte(0),
   inventoryCount: z.number().gte(0),
 });
@@ -62,7 +62,7 @@ export const subsidaryRouter = createTRPCRouter({
           height: book.dimensions[0] ?? null,
           width: book.dimensions[1] ?? null,
           thickness: book.dimensions[2] ?? null,
-          imageLink: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
+          imageUrl: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
           retailPrice: book.retailPrice,
           inventoryCount: book.inventory,
         } as remoteBook;

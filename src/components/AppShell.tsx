@@ -28,6 +28,7 @@ export default function AppShell(props: any) {
       {name: 'Purchases', href: '/purchases'},
       {name: 'Buybacks', href: '/buybacks'},
       {name: 'Organizer', href: '/store-organizer'},
+      {name: 'Book Scan', href: '/mobile-scan'},
       {name: 'User Management', href: '/user-management'},
     ] : [
       {name: 'Dashboard', href: '/dashboard'},
@@ -38,6 +39,7 @@ export default function AppShell(props: any) {
       {name: 'Purchases', href: '/purchases'},
       {name: 'Buybacks', href: '/buybacks'},
       {name: 'Organizer', href: '/store-organizer'},
+      {name: 'Book Scan', href: '/mobile-scan'},
     ])
 
     const userNavigation = [

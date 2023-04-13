@@ -94,7 +94,20 @@ return(
                         {props.renderRow(props.items)}
                         </tbody>
                     </table>
-                    <PaginationBar pageNumber={props.pageNumber} numberOfPages={props.numberOfPages} entriesPerPage={props.entriesPerPage} numberOfItems={numberOfItems} setPage={props.setPage} totalNumberOfEntries={props.numberOfEntries}></PaginationBar>
+                    {props.items == undefined ? 
+                    <nav
+                        className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6"
+                        aria-label="Pagination"
+                    >
+                        <div className="hidden sm:block">
+                        <p className="text-sm text-gray-700">
+                            Loading...
+                        </p>
+                        </div>
+                    </nav>
+                    :
+                    
+                    <PaginationBar pageNumber={props.pageNumber} numberOfPages={props.numberOfPages} entriesPerPage={props.entriesPerPage} numberOfItems={numberOfItems} setPage={props.setPage} totalNumberOfEntries={props.numberOfEntries}></PaginationBar>}
                 </div>
             </div>
         </div>

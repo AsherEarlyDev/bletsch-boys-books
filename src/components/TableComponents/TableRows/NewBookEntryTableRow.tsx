@@ -63,7 +63,7 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
 
 
   function addBook(){
-    if(genre && props.bookInfo){
+    if(genre.name && retailPrice!=0 && props.bookInfo){
       console.log(props.bookInfo)
       action.mutate({
         isbn: props.bookInfo.isbn,
@@ -81,11 +81,13 @@ export default function NewBookEntryTableRow(props:NewBookTableRowProp) {
         imageLink: image,
 
       })
-      toast.success(((props.isExisting) ? "Edited book: " : "Added book: ") + props.bookInfo.title)
       closeModal()
     }
     else{
-      alert("Handle toast alert to notify add genre for book: " + props.bookInfo.title)
+      var message
+      if(!genre.name && retailPrice>0)   toast.error("Please select a genre");
+      if(genre.name && retailPrice==0) toast.error("Please enter a non-zero retail price");
+      if(!genre.name && retailPrice==0) toast.error("Please enter a non-zero retail price and select a genre");
     }
 
   }

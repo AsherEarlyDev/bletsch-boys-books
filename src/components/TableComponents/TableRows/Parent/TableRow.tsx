@@ -41,10 +41,10 @@ export default function TableRow(props: TableRowProp) {
   const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
   let id: string
   if (props.type === "Buyback"){
-    id = props.item?.purchaseOrderId
+    id = props.item?.buybackOrderId
   }
   else if (props.type === "Purchase"){
-    id = props.item?.buybackOrderId
+    id = props.item?.purchaseOrderId
   }
   else{
     id = props.item?.saleReconciliationId

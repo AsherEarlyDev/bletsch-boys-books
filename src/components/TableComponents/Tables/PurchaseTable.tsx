@@ -25,7 +25,7 @@ export default function PurchaseTable() {
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Cost", "cost"], , ["Creator", "userName"]]
   const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
-  const ENTRIES_PER_PAGE = 5
+  const [entriesPerPage, setEntries] = useState(10)
   const [purchases, setPurchases] = useState<any[]>([])
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
@@ -38,11 +38,11 @@ export default function PurchaseTable() {
   const [sortOrder, setSortOrder] = useState("asc")
   const purchaseOrder2: any[] = api.purchaseOrder.getPurchaseOrders.useQuery({
     pageNumber: pageNumber,
-    entriesPerPage: ENTRIES_PER_PAGE,
+    entriesPerPage: entriesPerPage,
     sortBy: sortField,
     descOrAsc: sortOrder
   }).data
-  const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / ENTRIES_PER_PAGE)
+  const numberOfPages = Math.ceil(api.purchaseOrder.getNumberOfPurchaseOrders.useQuery().data / entriesPerPage)
   const [displayEditPurchaseView, setDisplayEditPurchaseView] = useState(false)
   const [displayDeletePurchaseView, setDisplayDeletePurchaseView] = useState(false)
   const displayPurchaseView = query.openView ? (query.openView==="true" ? true : false) : false
@@ -198,7 +198,14 @@ export default function PurchaseTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Purchase Orders"
                       tableDescription="A list of all the Purchase Orders and Purchases.">
-          {isAdmin && <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order" submitText="Create Purchase Order" vendorList={vendors}></AddOrderModal>}
+        <p>Entries Per page:</p>
+        <div><select name="entriesPerPage" id="entriesPerPage" defaultValue={entriesPerPage} onChange={(e)=>setEntries(parseInt(e.currentTarget.value))}>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          </select></div>
+        <div>{isAdmin && <AddOrderModal showOrderEdit={handlePurchaseOrderSubmission} buttonText="Create Purchase Order" submitText="Create Purchase Order" vendorList={vendors}></AddOrderModal>}</div>
         </TableDetails>
         <Table
             setPage={setPageNumber}
@@ -216,7 +223,7 @@ export default function PurchaseTable() {
               currentOrder: sortOrder,
               currentField: sortField
             }}
-            entriesPerPage={ENTRIES_PER_PAGE}></Table>
+            entriesPerPage={entriesPerPage}></Table>
         <div>
           {renderEditPurchaseView()}
           {renderDeletePurchaseView()}

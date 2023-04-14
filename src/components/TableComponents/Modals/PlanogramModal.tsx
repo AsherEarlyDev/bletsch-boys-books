@@ -13,7 +13,6 @@ interface PlanogramModalProp{
 
 
 export default function PlanogramModal(props: PlanogramModalProp){
-  console.log(props.case)
   const [isOpen, setIsOpen] = useState(false)
 
   function closeModal() {

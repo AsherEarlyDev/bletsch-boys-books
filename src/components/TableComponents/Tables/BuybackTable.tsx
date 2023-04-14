@@ -21,7 +21,7 @@ export default function BuybackTable() {
   const FIRST_HEADER = ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Vendor Name", "vendorName"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
   const STATIC_HEADERS = isAdmin ? ["Edit", "Delete"] : []
-  const ENTRIES_PER_PAGE = 5
+  const [entriesPerPage, setEntries] = useState(10)
   const [buybacks, setBuybacks] = useState<any[]>([])
   const [currentOrder, setCurrentOrder] = useState({
     id: '',
@@ -33,12 +33,12 @@ export default function BuybackTable() {
   const [sortOrder, setSortOrder] = useState("asc")
   const buybackOrder: any[] = api.buybackOrder.getBuybackOrders.useQuery({
     pageNumber: pageNumber,
-    entriesPerPage: ENTRIES_PER_PAGE,
+    entriesPerPage: entriesPerPage,
     sortBy: sortField,
     descOrAsc: sortOrder
   }).data
   const numberOfEntries = api.buybackOrder.getNumBuybackOrder.useQuery().data
-  const numberOfPages = Math.ceil(numberOfEntries / ENTRIES_PER_PAGE)
+  const numberOfPages = Math.ceil(numberOfEntries / entriesPerPage)
   const [displayEditBuybackView, setDisplayEditBuybackView] = useState(false)
   const [displayDeleteBuybackView, setDisplayDeleteBuybackView] = useState(false)
   const displayBuybackView = query.openView ? (query.openView==="true" ? true : false) : false
@@ -203,6 +203,13 @@ export default function BuybackTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Book Buybacks"
                       tableDescription="A list of all the Book Buybacks and their details.">
+          <p>Entries Per page:</p>
+        <div><select name="entriesPerPage" id="entriesPerPage" defaultValue={entriesPerPage} onChange={(e)=>setEntries(parseInt(e.currentTarget.value))}>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          </select></div>
           {isAdmin && <AddOrderModal showOrderEdit={handleBuybackSubmission} buttonText="Create Buyback" submitText="Create Buyback" vendorList={vendors}></AddOrderModal>}
         </TableDetails>
         <Table
@@ -221,7 +228,7 @@ export default function BuybackTable() {
               currentOrder: sortOrder,
               currentField: sortField
             }}
-            entriesPerPage={ENTRIES_PER_PAGE}></Table>
+            entriesPerPage={entriesPerPage}></Table>
         <div>
           {renderDeleteBuybackView()}
           {renderBuybackView()}

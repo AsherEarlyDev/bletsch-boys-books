@@ -136,12 +136,10 @@ export default function BookTable() {
   }
 
   function setDisplayBookView(view:boolean, id?: string) {
+    const query = {...router.query, openView: "true", viewId: id}
     view ? router.push({
       pathname:'/books',
-      query:{
-        openView:"true",
-        viewId: id
-      }
+      query: query
     }, undefined, { shallow: true }) : 
     router.push({
       pathname:'/books',

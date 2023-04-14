@@ -92,7 +92,8 @@ model saleReconciliation {
   date        DateTime
   totalBooks  Int      @default(0)
   uniqueBooks Int      @default(0)
-  revenue     Float    @default(0)
+  editable    Boolean  @default(false)
+  userName    String   @default("")
   sales       Sale[]
 }
 

@@ -60,7 +60,7 @@ const fetchSubsidiaryBooks = async (isbns: Array<string>) => {
   for(const isbn of isbns){
     formdata.append("isbns", isbn)
   }
-  const res = await  fetch("https://books-test.colab.duke.edu/api/v1/books/remote/lookup", {
+  const res = await  fetch("https://books.colab.duke.edu/api/v1/books/remote/lookup", {
                 method: "POST",
                 //make sure to serialize your JSON body
                 body: formdata,

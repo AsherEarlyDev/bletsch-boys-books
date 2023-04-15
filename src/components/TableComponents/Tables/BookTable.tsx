@@ -136,13 +136,14 @@ export default function BookTable() {
   }
 
   function setDisplayBookView(view:boolean, id?: string) {
-    const query = {...router.query, openView: "true", viewId: id}
+    const query = {...router.query, openView: view, viewId: id}
     view ? router.push({
       pathname:'/books',
       query: query
     }, undefined, { shallow: true }) : 
     router.push({
       pathname:'/books',
+      query: query
       
     }, undefined, { shallow: true })
   }
@@ -158,7 +159,7 @@ export default function BookTable() {
     )
   }
   function closeBookView(){
-    setDisplayBookView(false)
+    setDisplayBookView(false, null)
   }
 
   function renderBookRow(items:any[]){

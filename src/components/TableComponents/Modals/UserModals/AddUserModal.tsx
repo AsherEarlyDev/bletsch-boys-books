@@ -16,10 +16,10 @@ export default function AddUserModal(props: UserModalProp) {
   const [isAdmin, setIsAdmin] = useState(false)
   const createUser = api.user.createNewUser.useMutation({
     onError: (error) => {
-      console.log(error)
+      toast.error(error.message)
     },
-    onSuccess: (data) => {
-      console.log(data)
+    onSuccess: () => {
+      window.location.reload()
     }
   });
   function handleCreateNewUser(pass: string, confirmPass: string, username: string, isAdmin: boolean){

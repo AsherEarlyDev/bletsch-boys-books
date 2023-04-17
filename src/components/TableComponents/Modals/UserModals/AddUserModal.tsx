@@ -23,8 +23,7 @@ export default function AddUserModal(props: UserModalProp) {
       window.location.reload()
     }
   });
-  function handleCreateNewUser(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault()
+  function handleCreateNewUser(){
     if (password === confirmPassword){
       const create = createUser.mutate({
         password: password,

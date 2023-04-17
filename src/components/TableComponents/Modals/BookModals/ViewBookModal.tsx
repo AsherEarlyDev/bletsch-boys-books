@@ -9,6 +9,7 @@ import ImmutableDimensionsCardProp from "../../../CardComponents/ImmutableDimens
 import {CldImage} from "next-cloudinary";
 import BookCardTabs from "../../../CardComponents/BookCardTabs";
 import RelatedBooksDropdown from '../../../CardComponents/RelatedBooksDropdown';
+import {useSession} from "next-auth/react";
 
 interface BookModalProp {
   bookInfo: Book & {
@@ -26,6 +27,8 @@ interface BookModalProp {
 
 export default function ViewBookModal(props: BookModalProp) {
   const [open, setOpen] = useState(true);
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
 
   function closeModal() {
     setOpen(false)
@@ -91,7 +94,7 @@ export default function ViewBookModal(props: BookModalProp) {
           </div>
           <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
             <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>
-            <PrimaryButton onClick={openEdit} buttonText="Edit Book"></PrimaryButton>
+            {isAdmin && <PrimaryButton onClick={openEdit} buttonText="Edit Book"></PrimaryButton>}
           </div>
         </div>
               : null)

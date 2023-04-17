@@ -1,33 +1,36 @@
 import { useState } from "react";
 import { api } from "../../utils/api";
-import SuccessAlert from "../BasicComponents/SuccessAlert";
+import {toast, ToastContainer} from "react-toastify";
 
 export default function PasswordChange() {
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [alert, toggleAlert] = useState(false);
-  const adminPass = api.user.changePassword.useMutation();
+  const [confirmPassword, setConfirmPassword] = useState('');;
+  const adminPass = api.user.changePassword.useMutation({
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success("Successfully changed password!")
+    }
+  });
+
 
   function handlePasswordSubmit(pass: string, confirmPass: string){
     if (pass === confirmPass){
       adminPass.mutate({
         password: pass
       });
-      toggleAlert(true)
+    }
+    else{
+      toast.error("Passwords do not match.")
     }
   }
-
-  function closeAlert(){
-    toggleAlert(false)
-  }
-
 
 
 
   return (
       <>
         <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
-          {alert ? <SuccessAlert message="Password change success." messageDetails="You have successfully changed the administration password." toggleAlert={closeAlert}></SuccessAlert> : null}
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Set a new password.</h2>
           </div>
@@ -74,6 +77,7 @@ export default function PasswordChange() {
                   </button>
                 </div>
               </form>
+              <ToastContainer></ToastContainer>
             </div>
           </div>
         </div>

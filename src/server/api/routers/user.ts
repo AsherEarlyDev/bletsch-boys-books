@@ -74,7 +74,7 @@ export const userRouter = createTRPCRouter({
         throw new TRPCError({code: error.code, message: error.message})
       }
     }),
-  changePassword: protectedProcedure
+  changePassword: publicProcedure
   .input(z.object({
         password: z.string(),
       }))

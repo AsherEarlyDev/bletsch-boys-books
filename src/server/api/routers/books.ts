@@ -188,6 +188,7 @@ export const booksRouter = createTRPCRouter({
   findBooks: publicProcedure
   .input(z.array(z.string()))
   .query(async ({ctx, input}) => {
+    if(input.length==0 || input[0] ==="") return []
     const user = ctx.session.user
     const absentBooks: string[] = []
     const internalBooks: any[] | PromiseLike<any[]> = []

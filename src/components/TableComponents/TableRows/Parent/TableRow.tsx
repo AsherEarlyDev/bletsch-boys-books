@@ -38,6 +38,7 @@ interface TableRowProp {
 export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
+  console.log(book)
   const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
   let id: string
   if (props.type === "Buyback"){
@@ -161,14 +162,14 @@ export default function TableRow(props: TableRowProp) {
                               <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>
                             </tr>
                             :
-                            <tr>
+                            (book ? <tr>
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
                               <TableEntry>${Number(price).toFixed(2)}</TableEntry>
                               <TableEntry>{quantity}</TableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
-                              <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>
-                              <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>
-                            </tr>)
+                              {book ? <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>: null}
+                              {book ? <DeleteRowEntry onDelete={openDeleteView}></DeleteRowEntry>: null}
+                            </tr>:null))
                 )
         )
         }

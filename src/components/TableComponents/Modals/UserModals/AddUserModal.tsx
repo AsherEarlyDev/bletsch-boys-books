@@ -20,16 +20,18 @@ export default function AddUserModal(props: UserModalProp) {
       toast.error(error.message)
     },
     onSuccess: () => {
-      window.location.reload()
+      
     }
   });
-  function handleCreateNewUser(pass: string, confirmPass: string, username: string, isAdmin: boolean){
-    if (pass === confirmPass){
+  function handleCreateNewUser(e: React.FormEvent<HTMLFormElement>){
+    e.preventDefault()
+    if (password === confirmPassword){
       const create = createUser.mutate({
-        password: pass,
+        password: password,
         username: username,
         role: (isAdmin ? "ADMIN" : "USER")
       });
+      console.log(create)
       closeModal()
     }
   }
@@ -81,7 +83,7 @@ export default function AddUserModal(props: UserModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <form className="space-y-6" action="#" method="post">
+                    <form className="space-y-6" action="#" method="post" onSubmit={handleCreateNewUser}>
 
                             <div>
                               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -148,7 +150,6 @@ export default function AddUserModal(props: UserModalProp) {
                               <button
                                   type="submit"
                                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                  onClick={e => handleCreateNewUser(password, confirmPassword, username, isAdmin)}
                               >
                                 Create New User
                               </button>

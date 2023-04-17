@@ -24,12 +24,11 @@ export default function AddUserModal(props: UserModalProp) {
   });
   function handleCreateNewUser(pass: string, confirmPass: string, username: string, isAdmin: boolean){
     if (pass === confirmPass){
-      // const create = createUser.mutate({
-      //   password: pass,
-      //   username: username,
-      //   role: (isAdmin ? "ADMIN" : "USER")
-      // });
-      console.log(pass, username, isAdmin)
+      const create = createUser.mutate({
+        password: pass,
+        username: username,
+        role: (isAdmin ? "ADMIN" : "USER")
+      });
       closeModal()
     }
   }

@@ -2,6 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import React, {Fragment, useRef, useState} from 'react'
 import {api} from "../../../../utils/api";
 import {toast} from "react-toastify";
+import { concat } from 'cypress/types/lodash';
 
 interface UserModalProp{
   buttonText: string;
@@ -15,19 +16,20 @@ export default function AddUserModal(props: UserModalProp) {
   const [isAdmin, setIsAdmin] = useState(false)
   const createUser = api.user.createNewUser.useMutation({
     onError: (error) => {
-      toast.error(error.message)
+      console.log(error)
     },
-    onSuccess: () => {
-      toast.success("Successfully created new user!")
+    onSuccess: (data) => {
+      console.log(data)
     }
   });
   function handleCreateNewUser(pass: string, confirmPass: string, username: string, isAdmin: boolean){
     if (pass === confirmPass){
-      createUser.mutate({
+      const create = createUser.mutate({
         password: pass,
         username: username,
         role: (isAdmin ? "ADMIN" : "USER")
       });
+      console.log(create)
       closeModal()
     }
   }

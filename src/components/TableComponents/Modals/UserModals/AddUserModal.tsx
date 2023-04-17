@@ -3,6 +3,7 @@ import React, {Fragment, useRef, useState} from 'react'
 import {api} from "../../../../utils/api";
 import {toast} from "react-toastify";
 import { concat } from 'cypress/types/lodash';
+import { redirect } from 'next/navigation';
 
 interface UserModalProp{
   buttonText: string;
@@ -80,7 +81,7 @@ export default function AddUserModal(props: UserModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <form className="space-y-6" action="#" method="GET">
+                    <form className="space-y-6" action="#" method="post">
 
                             <div>
                               <label htmlFor="username" className="block text-sm font-medium text-gray-700">

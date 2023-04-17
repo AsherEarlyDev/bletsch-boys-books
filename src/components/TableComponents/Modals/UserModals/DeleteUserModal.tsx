@@ -17,7 +17,7 @@ export default function DeleteUserModal(props: DeleteUserModalProp) {
       toast.error(error.message)
     },
     onSuccess: () => {
-      toast.success("Successfully delete user.")
+      window.location.reload()
     }
   });
 

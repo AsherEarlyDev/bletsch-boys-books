@@ -24,7 +24,7 @@ export default function EditUserModal(props: UserModalProp) {
       window.location.reload()
     }
   });
-  function handleModifyUser(e: React.FormEvent<HTMLFormElement>){
+  function handleModifyUser(){
     if (password === confirmPassword){
       if(password == ""){
         editUser.mutate({
@@ -90,7 +90,6 @@ export default function EditUserModal(props: UserModalProp) {
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <form className="space-y-6" action="#" method="post" onSubmit={handleModifyUser}>
 
                             <div>
                               <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -152,11 +151,11 @@ export default function EditUserModal(props: UserModalProp) {
                               <button
                                   type="submit"
                                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                  onClick={handleModifyUser}
                               >
                                 Confirm Changes
                               </button>
                             </div>
-                          </form>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

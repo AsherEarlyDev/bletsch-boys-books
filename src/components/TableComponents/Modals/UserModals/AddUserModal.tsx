@@ -20,7 +20,7 @@ export default function AddUserModal(props: UserModalProp) {
       toast.error(error.message)
     },
     onSuccess: () => {
-      
+      window.location.reload()
     }
   });
   function handleCreateNewUser(e: React.FormEvent<HTMLFormElement>){
@@ -31,7 +31,6 @@ export default function AddUserModal(props: UserModalProp) {
         username: username,
         role: (isAdmin ? "ADMIN" : "USER")
       });
-      console.log(create)
       closeModal()
     }
   }

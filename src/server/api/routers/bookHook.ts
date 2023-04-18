@@ -203,7 +203,7 @@ export const bookHookRouter = createTRPCRouter({
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 log.info("Updating books and creating sale")
-                log.info(`Sale Rec Id: ${newSaleRecord.id}`)
+                log.info(`Sale Rec Id: ${typeof(newSaleRecord.id)}`)
                 log.info(`ISBN: ${isbn}`)
                 log.info(`Inventory: ${inventory}`)
                 log.info(`Quantity: ${sale.qty}`)

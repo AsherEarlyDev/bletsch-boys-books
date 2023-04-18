@@ -23,7 +23,7 @@ export default function SalesTable() {
   const date = new Date()
   const [entriesPerPage, setEntries] = useState(10)
   const FIRST_HEADER =  ["Date Created", "date"]
-  const SORTABLE_HEADERS = [["Sale Type", "saleType"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
+  const SORTABLE_HEADERS = [["Sale Type", "editable"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
   const STATIC_HEADERS = isAdmin ? ["Edit","Delete"] : []
   const [currentSales, setCurrentSales] = useState<any[]>([])
   const [saleRecId, setId] = useState('')

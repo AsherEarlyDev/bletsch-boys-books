@@ -162,7 +162,7 @@ export default function TableRow(props: TableRowProp) {
                           {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>}
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
-                                                     defaultValue={props.isCSV ? price : defaultPrice}></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? props.item.price : defaultPrice}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantity} heading="Quantity Bought"
                                              required="True" dataType="number"
                                              defaultValue={quantity}></MutableTableEntry>

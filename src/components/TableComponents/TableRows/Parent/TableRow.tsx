@@ -143,6 +143,23 @@ export default function TableRow(props: TableRowProp) {
     setIsEditing(false)
   }
 
+  function edit() {
+    console.log(props.item)
+    if (props.item) {
+      props.mod.mutate({
+        id: props.item.id,
+        orderId: id,
+        isbn: isbn,
+        quantity: quantity.toString(),
+        price: price.toString(),
+      })
+    } else {
+      toast.error("Cannot edit buyback.")
+    }
+    setSubtotal(price * quantity)
+    setIsEditing(false)
+  }
+
   return (
       <>
         {visible && 

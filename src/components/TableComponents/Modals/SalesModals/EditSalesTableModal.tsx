@@ -1,6 +1,11 @@
+import TableDetails from "../../TableDetails";
+import TableHeader from "../../TableHeader";
+import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
 import {api} from "../../../../utils/api";
 import {Sale} from "../../../../types/salesTypes";
+import SaleTableRow from "../../TableRows/SaleTableRow";
+import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import {toast} from "react-toastify";

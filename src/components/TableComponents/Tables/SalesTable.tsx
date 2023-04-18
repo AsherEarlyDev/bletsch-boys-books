@@ -183,17 +183,6 @@ export default function SalesTable() {
     setDisplaySalesRecView(false)
   }
 
-  // const handleAdd = async (id:string) => {
-  //   if (salesRecs){
-  //     for (const rec of salesRecs){
-  //       if (rec.id === id){
-  //         setId(rec.id)
-  //       }
-  //     }
-  //     setDisplayAddSaleView(true)
-  //   }
-  // }
-
   function generateReport (){
     const reportObj = createSalesReportArray(revenueReport, buybackReport, costReport, startDate, endDate)
     generateSalesReportPDF(reportObj.resultsArray, topSellers, reportObj.totalCost, reportObj.totalRev)

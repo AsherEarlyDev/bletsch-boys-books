@@ -39,7 +39,7 @@ export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const buybackCost = api.buyback.getCostMostRecent.useQuery({isbn: isbn, vendorId: props.vendorId}).data
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.type === "Buyback" ? buybackCost : book?.retailPrice
+  const defaultPrice = props.type === "Buyback" ? buybackCost : ((book.isbn===props.item.bookId || book.isbn10===props.item.bookId)? props.item.price : book?.retailPrice)
   let currentItemPrice
   let deleteMutation
   let id: string
@@ -52,7 +52,7 @@ export default function TableRow(props: TableRowProp) {
       onSuccess: ()=>{
         toast.success("Successfully deleted Buyback!")
       }})
-      currentItemPrice = props.item.buybackPrice
+      currentItemPrice = props.item.price
   }
   else if (props.type === "Purchase"){
     id = props.item?.purchaseOrderId
@@ -132,6 +132,7 @@ export default function TableRow(props: TableRowProp) {
 
   function edit() {
     if (props.item) {
+      console.log(price + "1")
       props.mod.mutate({
         id: props.item.id,
         orderId: id,

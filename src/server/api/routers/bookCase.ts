@@ -111,7 +111,7 @@ export const bookCaseRouter = createTRPCRouter({
             const fullCase = newCase.map((shelf) => {
                 var takenSpace = 0
                 for(var i = 0; i<shelf.length; i++){
-                    takenSpace = takenSpace+(shelf[i].thickness)
+                    takenSpace = shelf[i].mode.value === "cover" ? takenSpace+(shelf[i].width) : takenSpace+(shelf[i].thickness * shelf[i].displayCount)
                 }
                 return {
                     takenSpace:takenSpace,

@@ -114,6 +114,7 @@ export default function StoreOrganizer() {
                 entriesPerPage={CASES_PER_PAGE}
                 numberOfEntries={totalNumberOfEntries}
                 renderRow={renderCaseRow}></Table>
+        {renderCase()}
         <div className="overflow-auto m-8 border border-gray-300 bg-white shadow rounded-lg">
             <div className="flex flex-row gap-10 pt-4 justify-left">
             <CardTitle heading="Create A New Book Case" subheading="Create a custum bookcase or load one of the following"></CardTitle>
@@ -137,7 +138,6 @@ export default function StoreOrganizer() {
                 
             </CardGrid></div>
         </div>
-        {renderCase()}
         {renderDeleteBookCaseView()}
         </div>
         </div>

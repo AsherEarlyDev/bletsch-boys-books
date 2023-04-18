@@ -205,6 +205,14 @@ export const bookHookRouter = createTRPCRouter({
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 log.info("Updating books and creating sale")
+                log.info(`Sale Rec Id: ${newSaleRecord.id}`)
+                log.info(`ISBN: ${isbn}`)
+                log.info(`Inventory: ${inventory}`)
+                log.info(`Quantity: ${sale.qty}`)
+                log.info(`Price: ${price}`)
+                log.info(`Shelf Space: ${inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)}`)
+                log.info(`Unique: ${unique}`)
+
                 const saleLog = await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,

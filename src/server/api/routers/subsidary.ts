@@ -60,7 +60,7 @@ export const subsidaryRouter = createTRPCRouter({
               thickness: book.dimensions[2] ?? null,
               imageUrl: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
               retailPrice: book.retailPrice,
-              inventoryCount: book.inventory,
+              inventoryCount: (book.inventory < 0 ? 0 : book.inventory),
             } as remoteBook;
           } else {
             existingRemoteBooks[isbn] = null;
@@ -72,6 +72,7 @@ export const subsidaryRouter = createTRPCRouter({
           message: "No books found",
         });
       }
+      console.log(existingRemoteBooks)
       return existingRemoteBooks;
     }
     catch(error){

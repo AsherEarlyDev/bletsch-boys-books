@@ -39,7 +39,7 @@ export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const buybackCost = api.buyback.getCostMostRecent.useQuery({isbn: isbn, vendorId: props.vendorId}).data
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.type === "Buyback" ? buybackCost : ((book.isbn===props.item.bookId || book.isbn10===props.item.bookId)? props.item.price : book?.retailPrice)
+  const defaultPrice = props.type === "Buyback" ? buybackCost : ((book?.isbn===props.item.bookId || book?.isbn10===props.item.bookId)? props.item.price : book?.retailPrice)
   let currentItemPrice
   let deleteMutation
   let id: string

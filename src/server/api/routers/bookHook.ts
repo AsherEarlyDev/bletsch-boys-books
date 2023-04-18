@@ -210,7 +210,7 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`Price: ${price}`)
                 log.info(`Shelf Space: ${inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)}`)
                 log.info(`Unique: ${unique}`)
-
+                log.info(`Creating sale`)
                 await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,

@@ -47,7 +47,6 @@ export default function SalesTable() {
   const [sortOrder, setSortOrder] = useState('asc')
   const createSalesRec = api.salesRec.createSaleRec.useMutation({
     onSuccess: ()=>{
-      setOnlyEdit(false)
       setDisplayEditSalesRecView(true)
     }
   })
@@ -182,17 +181,6 @@ export default function SalesTable() {
   function closeSalesRecView(){
     setDisplaySalesRecView(false)
   }
-
-  // const handleAdd = async (id:string) => {
-  //   if (salesRecs){
-  //     for (const rec of salesRecs){
-  //       if (rec.id === id){
-  //         setId(rec.id)
-  //       }
-  //     }
-  //     setDisplayAddSaleView(true)
-  //   }
-  // }
 
   function generateReport (){
     const reportObj = createSalesReportArray(revenueReport, buybackReport, costReport, startDate, endDate)

@@ -51,6 +51,7 @@ export default function PurchaseTable() {
   const viewCurrentPurchases = viewCurrentOrder ? viewCurrentOrder.purchases : undefined
   const createPurchaseOrder = api.purchaseOrder.createPurchaseOrder.useMutation({
     onSuccess: ()=>{
+      setOnlyEdit(false)
       setDisplayEditPurchaseView(true)
     }
   })

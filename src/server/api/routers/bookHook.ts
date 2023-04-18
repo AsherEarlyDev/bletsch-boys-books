@@ -231,22 +231,22 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 })
                 log.info("BOOK UPDATED")
-                // await ctx.prisma.saleReconciliation.update({
-                //   where: {
-                //       id: newSaleRecord.id
-                //   },
-                //   data:{
-                //       totalBooks: {
-                //         increment: sale.qty
-                //       },
-                //       revenue: {
-                //         increment: sale.qty*price
-                //       },
-                //       uniqueBooks: {
-                //         increment: unique
-                //       }
-                //   }
-                // })
+                await ctx.prisma.saleReconciliation.update({
+                  where: {
+                      id: newSaleRecord.id
+                  },
+                  data:{
+                      totalBooks: {
+                        increment: sale.qty
+                      },
+                      // revenue: {
+                      //   increment: sale.qty*price
+                      // },
+                      uniqueBooks: {
+                        increment: unique
+                      }
+                  }
+                })
                 log.info("SALE REC UPDATED")
                 
               }

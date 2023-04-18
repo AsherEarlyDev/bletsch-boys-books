@@ -86,7 +86,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   async function handleCSV(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const csvVal = (formData.get("salesCSV"))
+    const csvVal = (formData.get("saleCSV"))
     Papa.parse(csvVal, {
       header:true,
       complete: function(results) {

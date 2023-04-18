@@ -127,6 +127,8 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
 
   function removeCSVRow(isbn:string){
+    console.log(isbn)
+    console.log(purchaseCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
     setPurchaseCSV(purchaseCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
 
   }

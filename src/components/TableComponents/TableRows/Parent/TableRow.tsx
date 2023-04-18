@@ -101,7 +101,7 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function saveNew() {
-    props.saveAdd(isbn, quantity, price, props.isCSV)
+    props.saveAdd(props.item.bookId, quantity, price, props.isCSV)
   }
 
   function edit() {
@@ -133,7 +133,7 @@ export default function TableRow(props: TableRowProp) {
                 :
                 (isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
+                          {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>}
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
                                                      defaultValue={props.isCSV ? price : ""}></MutableCurrencyTableEntry>
@@ -147,8 +147,7 @@ export default function TableRow(props: TableRowProp) {
                         : 
                         (isEditing ?
                             <tr>
-                              {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
-                              <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp>
+                              {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={(book) ? book : {}} ></BookCardProp>}
                               <MutableCurrencyTableEntry saveValue={setPrice}
                                                          heading={props.type+" Price"} required="True"
                                                          dataType="number"

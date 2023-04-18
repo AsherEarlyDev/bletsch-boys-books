@@ -118,8 +118,8 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function saveNew() {
-    if (!price){
-      props.saveAdd(isbn, quantity, 0)
+    if (!price && book && props.type != "Buyback"){
+      props.saveAdd(isbn, quantity, book.retailPrice)
     }
     else{
       props.saveAdd(isbn, quantity, price)
@@ -127,24 +127,8 @@ export default function TableRow(props: TableRowProp) {
     
   }
 
-  function edit() {
-    if (props.item) {
-      props.mod.mutate({
-        id: props.item.id,
-        orderId: id,
-        isbn: isbn,
-        quantity: quantity.toString(),
-        price: price.toString(),
-      })
-    } else {
-      toast.error("Cannot edit buyback.")
-    }
-    setSubtotal(price * quantity)
-    setIsEditing(false)
-  }
 
   function edit() {
-    console.log(props.item)
     if (props.item) {
       props.mod.mutate({
         id: props.item.id,
@@ -154,7 +138,7 @@ export default function TableRow(props: TableRowProp) {
         price: price.toString(),
       })
     } else {
-      toast.error("Cannot edit buyback.")
+      toast.error(`Cannot edit ${props.type}.`)
     }
     setSubtotal(price * quantity)
     setIsEditing(false)

@@ -130,11 +130,11 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   function closeAddSaleRow(){
     setAddSaleRowView(false)
   }
-  function handleAddSale(isbn: string, quantity: number, price: number, isCSV?:boolean){
+  function handleAddSale(isbn: string, quantity: number, price: number, isbn13:string, isCSV?:boolean){
     if(isbn && quantity){
       addSale.mutate({
         saleReconciliationId: props.salesRecId,
-        isbn: isbn,
+        isbn: isbn13,
         quantity: quantity.toString(),
         price: price.toString()
       })

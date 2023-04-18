@@ -150,11 +150,11 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   function closeAddPurchaseRow(){
     setAddPurchaseRowView(false)
   }
-  function handleAddPurchase(isbn: string, quantity: number, price: number, isCSV?:boolean){
+  function handleAddPurchase(isbn: string, quantity: number, price: number, isbn13:string, isCSV?:boolean){
     if(isbn && quantity && price){
       addPurchase.mutate({
         id: props.purchaseOrderId,
-        isbn: isbn,
+        isbn: isbn13,
         quantity: quantity.toString(),
         price: price.toString()
       })

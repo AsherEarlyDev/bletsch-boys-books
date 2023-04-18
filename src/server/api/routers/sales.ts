@@ -70,7 +70,7 @@ export const salesRouter = createTRPCRouter({
                       increment: parseInt(input.quantity)
                     },
                     revenue: {
-                      increment: parseInt(input.quantity)*parseFloat(input.price)
+                      increment: parseInt(input.quantity)*price
                     },
                     uniqueBooks: {
                       increment: unique

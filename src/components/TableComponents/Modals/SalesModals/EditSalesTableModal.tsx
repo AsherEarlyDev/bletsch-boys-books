@@ -1,16 +1,9 @@
-import TableDetails from "../../TableDetails";
-import TableHeader from "../../TableHeader";
-import ColumnHeading from "../../TableColumnHeadings/ColumnHeading";
 import React, {useState} from "react";
-import SaveCardChanges from "../../../CardComponents/SaveCardChanges";
 import {api} from "../../../../utils/api";
 import {Sale} from "../../../../types/salesTypes";
-import SaleTableRow from "../../TableRows/SaleTableRow";
-import MutableCardProp from "../../../CardComponents/MutableCardProp";
 import CreateSaleEntries from "../../../CreateEntries";
 import ConfirmCard from "../../../CardComponents/ConfirmationCard";
 import {toast} from "react-toastify";
-import {PlusIcon} from "@heroicons/react/24/solid";
 import Papa from "papaparse";
 import EditModal from "../ParentModals/EditModal";
 import TableRow from "../../TableRows/Parent/TableRow";
@@ -102,7 +95,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
       bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,
       price: price,
-      subtotal: quant* price,
+      subtotal: quant * price,
     })
   }
 

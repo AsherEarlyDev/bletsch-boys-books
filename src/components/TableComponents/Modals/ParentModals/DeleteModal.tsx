@@ -20,7 +20,7 @@ interface DeleteProp{
 
 export default function DeleteModal(props:DeleteProp) {
   const [open, setOpen] = useState(true)
-  const message = (`Are you sure you want to delete the record associated with buying ${props.quantity} copies of ${props.bookTitle} at $${props.price.toFixed(2)} a copy? This action cannot be undone.`)
+  const message = (`Are you sure you want to delete the record associated with ${props.quantity} copies of ${props.bookTitle} at $${props.price.toFixed(2)} a copy? This action cannot be undone.`)
 
   function closeModal(){
     setOpen(false)

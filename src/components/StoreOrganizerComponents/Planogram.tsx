@@ -41,7 +41,6 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
                 var dim2 = data.cell.width - 2 * data.cell.padding('horizontal');
                 var textPos = data.cell.getTextPos();
                 endOfTable = data.cursor.y
-
                 if (booksImageList[counter]!=""){
                     planogram.addImage(booksImageList[counter], textPos.x,  textPos.y, dim2, dim1);
                 }
@@ -73,7 +72,6 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
         y += rowSize
     }
     let bookIndex = 0
-
     let bookXStart = xstart
     let shelf = 0
     const font: number = planogram.getFontSize()
@@ -98,7 +96,6 @@ export function drawPlanogram(bookCase: BookCase, books: any[], shelfNums: Map<n
         bookXStart += 1
     }
     planogram.line(xstart, y + 2, xend, y + 2)
-
     var file = `BookCase-${bookCase.name}.pdf`
     planogram.save(file)
 

@@ -81,6 +81,7 @@ export default function EditModal(props: EditModalProps){
             <div>
               <label>Import with a CSV: </label>
               <input type="file" id={`${props.type.toLowerCase().slice(0, props.type.length)}CSV`} name={`${props.type.toLowerCase().slice(0, props.type.length)}CSV`} accept=".csv"></input>
+
               <div>
                 <button
                 type="submit"

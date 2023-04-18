@@ -37,26 +37,52 @@ interface TableRowProp {
 
 export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
+  const buybackCost = api.buyback.getCostMostRecent.useQuery({isbn: isbn, vendorId: props.vendorId}).data
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  console.log(book)
-  const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
+  const defaultPrice = props.type === "Buyback" ? buybackCost : book?.retailPrice
+  let currentItemPrice
+  let deleteMutation
   let id: string
   if (props.type === "Buyback"){
     id = props.item?.buybackOrderId
+    deleteMutation = api.buyback.deleteBuyback.useMutation({
+      onError: (error)=>{
+        toast.error(error.message)
+      },
+      onSuccess: ()=>{
+        toast.success("Successfully deleted Buyback!")
+      }})
+      currentItemPrice = props.item.buybackPrice
   }
   else if (props.type === "Purchase"){
     id = props.item?.purchaseOrderId
+    deleteMutation = api.purchase.deletePurchase.useMutation({
+      onError: (error)=>{
+        toast.error(error.message)
+      },
+      onSuccess: ()=>{
+        toast.success("Successfully deleted Purchase!")
+      }})
+      currentItemPrice = props.item.price
   }
   else{
     id = props.item?.saleReconciliationId
+    deleteMutation = api.sales.deleteSale.useMutation({
+      onError: (error)=>{
+        toast.error(error.message)
+      },
+      onSuccess: ()=>{
+        toast.success("Successfully deleted Sale!")
+      }})
+      currentItemPrice = props.item.price
   }
-   (props.item?.purchaseOrderId ? props.item?.purchaseOrderId : props.item?.buybackOrderId)
   const [deleteView, setDeleteView] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [price, setPrice] = useState<number>(defaultPrice)
   const [quantity, setQuantity] = useState(props.item.quantity)
   const [subtotal, setSubtotal] = useState(props.item.subtotal)
   const [visible, setVisible] = useState(true)
+    
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -64,28 +90,19 @@ export default function TableRow(props: TableRowProp) {
 
   function handleBookSelect(bookId: string){
     setIsbn(bookId)
-    setPrice(book?.retailPrice)
+    let displayPrice: number
+    if (book){
+      displayPrice = book?.retailPrice
+    }
+    setPrice(displayPrice)
   }
 
   function renderDeleteView() {
-    const deleteMutation = props.type === "Buyback" ? api.buyback.deleteBuyback.useMutation({
-      onError: (error)=>{
-        toast.error(error.message)
-      },
-      onSuccess: ()=>{
-        toast.success("Successfully deleted Buyback!")
-      }}) :
-      api.purchase.deletePurchase.useMutation({
-        onError: (error)=>{
-          toast.error(error.message)
-        },
-        onSuccess: ()=>{
-          toast.success("Successfully deleted Purchase!")
-        }})
+    
     return <>
       {deleteView ?
           <CreateSaleEntries closeStateFunction={setDeleteView} submitText={"Delete "+props.type}>
-            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={price} quantity={quantity}
+            <DeleteModal type={props.type} deleteMutation={deleteMutation} price={currentItemPrice.toFixed(2)} quantity={quantity}
                             bookTitle={(book) ? book.title : ""} onDelete={setVisible}
                             closeOut={closeDeleteView} id={props.item.id}></DeleteModal>
           </CreateSaleEntries> : null}
@@ -101,7 +118,29 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function saveNew() {
-    props.saveAdd(isbn, quantity, price)
+    if (!price){
+      props.saveAdd(isbn, quantity, 0)
+    }
+    else{
+      props.saveAdd(isbn, quantity, price)
+    }
+    
+  }
+
+  function edit() {
+    if (props.item) {
+      props.mod.mutate({
+        id: props.item.id,
+        orderId: id,
+        isbn: isbn,
+        quantity: quantity.toString(),
+        price: price.toString(),
+      })
+    } else {
+      toast.error("Cannot edit buyback.")
+    }
+    setSubtotal(price * quantity)
+    setIsEditing(false)
   }
 
   function edit() {
@@ -127,7 +166,7 @@ export default function TableRow(props: TableRowProp) {
         (props.isView ?
                 <tr>
                   <LinkedBookTitle firstEntry={true} book={book}></LinkedBookTitle>
-                  <TableEntry>${Number(price).toFixed(2)}</TableEntry>
+                  <TableEntry>${currentItemPrice.toFixed(2)}</TableEntry>
                   <TableEntry>{quantity}</TableEntry>
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
@@ -137,10 +176,10 @@ export default function TableRow(props: TableRowProp) {
                           <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
-                                                     defaultValue={props.isCSV ? price : ""}></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? price : defaultPrice}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantity} heading="Quantity Bought"
                                              required="True" dataType="number"
-                                             defaultValue={props.isCSV ? quantity : ""}></MutableTableEntry>
+                                             defaultValue={quantity}></MutableTableEntry>
                           <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                           <SaveRowEntry onSave={saveNew}></SaveRowEntry>
                           <DeleteRowEntry onDelete={props.closeAdd} isbn={props.isCSV ? props.item.bookId : undefined}></DeleteRowEntry>
@@ -153,7 +192,7 @@ export default function TableRow(props: TableRowProp) {
                               <MutableCurrencyTableEntry saveValue={setPrice}
                                                          heading={props.type+" Price"} required="True"
                                                          dataType="number"
-                                                         defaultValue={price}></MutableCurrencyTableEntry>
+                                                         defaultValue={currentItemPrice.toFixed(2)}></MutableCurrencyTableEntry>
                               <MutableTableEntry saveValue={setQuantity} heading="Quantity"
                                                  required="True" dataType="number"
                                                  defaultValue={quantity}></MutableTableEntry>
@@ -164,7 +203,7 @@ export default function TableRow(props: TableRowProp) {
                             :
                             (book ? <tr>
                               <TableEntry firstEntry={true}>{(book) ? book.title : ""}</TableEntry>
-                              <TableEntry>${Number(price).toFixed(2)}</TableEntry>
+                              <TableEntry>${currentItemPrice.toFixed(2)}</TableEntry>
                               <TableEntry>{quantity}</TableEntry>
                               <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                               {book ? <EditRowEntry onEdit={handleRowEdit}></EditRowEntry>: null}

@@ -219,17 +219,17 @@ export const bookHookRouter = createTRPCRouter({
                       price: price,
                       subtotal: price * sale.qty
                     },
-                  });
+                  })
                 log.info("SALE CREATED")
-                await ctx.prisma.book.update({
-                where: {
-                    isbn: isbn
-                },
-                data:{
-                    inventory: inventory,
-                    shelfSpace: parseFloat((inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2))
-                }
-                })
+                // await ctx.prisma.book.update({
+                // where: {
+                //     isbn: isbn
+                // },
+                // data:{
+                //     inventory: inventory,
+                //     shelfSpace: parseFloat((inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2))
+                // }
+                // })
                 log.info("BOOK UPDATED")
                 await ctx.prisma.saleReconciliation.update({
                   where: {

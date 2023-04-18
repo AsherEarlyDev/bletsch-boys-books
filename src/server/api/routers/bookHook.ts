@@ -203,7 +203,7 @@ export const bookHookRouter = createTRPCRouter({
                 });
                 let unique = uniqueBooks.length === 0 ? 1 : 0
                 log.info("Updating books and creating sale")
-                log.info(`Sale Rec Id: ${typeof(newSaleRecord.id)}`)
+                log.info(`Sale Rec Id: ${newSaleRecord.id}`)
                 log.info(`ISBN: ${isbn}`)
                 log.info(`Inventory: ${inventory}`)
                 log.info(`Quantity: ${sale.qty}`)
@@ -211,15 +211,15 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`Shelf Space: ${inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)}`)
                 log.info(`Unique: ${unique}`)
                 log.info(`Creating sale`)
-                // await ctx.prisma.sale.create({
-                //     data: {
-                //       saleReconciliationId: newSaleRecord.id,
-                //       bookId: isbn,
-                //       quantity: sale.qty,
-                //       price: price,
-                //       subtotal: price * sale.qty
-                //     },
-                //   })
+                await ctx.prisma.sale.create({
+                    data: {
+                      saleReconciliationId: newSaleRecord.id,
+                      bookId: isbn,
+                      quantity: sale.qty,
+                      price: price,
+                      subtotal: price * sale.qty
+                    },
+                  })
                 log.info("SALE CREATED")
                 await ctx.prisma.book.update({
                 where: {
@@ -231,22 +231,22 @@ export const bookHookRouter = createTRPCRouter({
                 }
                 })
                 log.info("BOOK UPDATED")
-                await ctx.prisma.saleReconciliation.update({
-                  where: {
-                      id: newSaleRecord.id
-                  },
-                  data:{
-                      totalBooks: {
-                        increment: sale.qty
-                      },
-                      revenue: {
-                        increment: sale.qty*price
-                      },
-                      uniqueBooks: {
-                        increment: unique
-                      }
-                  }
-                })
+                // await ctx.prisma.saleReconciliation.update({
+                //   where: {
+                //       id: newSaleRecord.id
+                //   },
+                //   data:{
+                //       totalBooks: {
+                //         increment: sale.qty
+                //       },
+                //       revenue: {
+                //         increment: sale.qty*price
+                //       },
+                //       uniqueBooks: {
+                //         increment: unique
+                //       }
+                //   }
+                // })
                 log.info("SALE REC UPDATED")
                 
               }

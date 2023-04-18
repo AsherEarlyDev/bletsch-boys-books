@@ -213,7 +213,7 @@ export const bookHookRouter = createTRPCRouter({
                 log.info(`Shelf Space: ${inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)}`)
                 log.info(`Unique: ${unique}`)
 
-                const saleLog = await ctx.prisma.sale.create({
+                await ctx.prisma.sale.create({
                     data: {
                       saleReconciliationId: newSaleRecord.id,
                       bookId: isbn,
@@ -222,7 +222,7 @@ export const bookHookRouter = createTRPCRouter({
                       subtotal: price * sale.qty
                     },
                   });
-                log.info(saleLog)
+                log.info("SALE CREATED")
                 await ctx.prisma.book.update({
                 where: {
                     isbn: isbn
@@ -232,6 +232,7 @@ export const bookHookRouter = createTRPCRouter({
                     shelfSpace: (inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2)
                 }
                 })
+                log.info("BOOK UPDATED")
                 await ctx.prisma.saleReconciliation.update({
                   where: {
                       id: newSaleRecord.id
@@ -248,6 +249,7 @@ export const bookHookRouter = createTRPCRouter({
                       }
                   }
                 })
+                log.info("SALE REC UPDATED")
                 
               }
 

@@ -31,7 +31,7 @@ interface TableRowProp {
   isView: boolean
   isCSV?: boolean
   closeAdd?: any
-  saveAdd?: (isbn: string, quantity: number, price: number) => void
+  saveAdd?: (isbn: string, quantity: number, price: number, isCSV:boolean) => void
   mod?: any
 }
 
@@ -82,7 +82,7 @@ export default function TableRow(props: TableRowProp) {
   const [quantity, setQuantity] = useState(props.item.quantity)
   const [subtotal, setSubtotal] = useState(props.item.subtotal)
   const [visible, setVisible] = useState(true)
-    
+  const [isAdding, setIsAdding] = useState(props.isAdding)
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -90,11 +90,13 @@ export default function TableRow(props: TableRowProp) {
 
   function handleBookSelect(bookId: string){
     setIsbn(bookId)
-    let displayPrice: number
-    if (book){
-      displayPrice = book?.retailPrice
+    if(bookId !== props.item.bookId){
+      let displayPrice: number
+      if (book){
+        displayPrice = book?.retailPrice
+      }
+      setPrice(displayPrice)
     }
-    setPrice(displayPrice)
   }
 
   function renderDeleteView() {
@@ -119,32 +121,16 @@ export default function TableRow(props: TableRowProp) {
 
   function saveNew() {
     if (!price){
-      props.saveAdd(isbn, quantity, 0)
+      props.saveAdd(props.item.bookId, quantity, 0, props.isCSV)
     }
     else{
-      props.saveAdd(isbn, quantity, price)
+      props.saveAdd(props.item.bookId, quantity, price, props.isCSV)
     }
     
   }
+  
 
   function edit() {
-    if (props.item) {
-      props.mod.mutate({
-        id: props.item.id,
-        orderId: id,
-        isbn: isbn,
-        quantity: quantity.toString(),
-        price: price.toString(),
-      })
-    } else {
-      toast.error("Cannot edit buyback.")
-    }
-    setSubtotal(price * quantity)
-    setIsEditing(false)
-  }
-
-  function edit() {
-    console.log(props.item)
     if (props.item) {
       props.mod.mutate({
         id: props.item.id,
@@ -171,9 +157,9 @@ export default function TableRow(props: TableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ? ((!props.isCSV || book) ?
+                (isAdding ? ((!props.isCSV || book) ?
                         <tr>
-                          <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
+                          {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>}
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
                                                      defaultValue={props.isCSV ? price : defaultPrice}></MutableCurrencyTableEntry>
@@ -187,8 +173,7 @@ export default function TableRow(props: TableRowProp) {
                         : 
                         (isEditing ?
                             <tr>
-                              {/*<MutableTableEntry firstEntry={true} saveValue={} heading="book" datatype="string" defaultValue={(book) ? book.title : "" }></MutableTableEntry>*/}
-                              <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp>
+                              {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={(book) ? book : {}} ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={(book) ? book : {}} ></BookCardProp>}
                               <MutableCurrencyTableEntry saveValue={setPrice}
                                                          heading={props.type+" Price"} required="True"
                                                          dataType="number"

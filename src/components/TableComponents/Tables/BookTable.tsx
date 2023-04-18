@@ -26,7 +26,7 @@ export default function BookTable() {
   const FIRST_HEADER =  ["Title", "title"]
 
   const SORTABLE_HEADERS = [["ISBN", "isbn"], ["Author(s)", "authorNames"], ["Genre", "genre"], ["Price", "retailPrice"], ["Inv.", "inventory"], ["30 Day Sales", "lastMonthSales"], ["Shelf Space", "shelfSpace"], ["Days of Supply", "daysOfSupply"], ["Best BB Price", "bestBuybackPrice"], ["Related Books", "numberRelatedBooks"]]
-  const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}, {label:"num_related_books", key:"numberRelatedBooks"}]
+  const CSV_HEADERS = [{label:"title", key:"title"}, {label:"authors", key:"authorNames"}, {label:"isbn_13", key:"isbn"}, {label:"publisher", key:"publisher"}, {label:"publication_year", key:"publicationYear"}, {label:"page_count", key:"pageCount"}, {label:"height", key:"length"}, {label:"width", key:"width"}, {label:"thickness", key:"height"}, {label:"retail_price", key:"retailPrice"}, {label:"genre", key:"genre"}, {label:"inventory_count", key:"inventory"}, {label:"shelf_space_inches", key:"shelfSpace"}, {label:"last_month_sales", key:"lastMonthSales"}, {label:"days_of_supply", key:"daysOfSupply"}, {label:"best_buyback_price", key:"bestBuybackPrice"}, {label:"num_related_books", key:"numberRelatedBooks"}, {label:"remote_inventory_count", key:"remoteInventoryCount"}, {label:"remote_retail_price", key:"remoteRetailPrice"}]
 
   const STATIC_HEADERS = isAdmin ? ["Susbsidiary Inventory", "Subsidiary Price", "Edit", "Delete"] :["Susbsidiary Inventory", "Subsidiary Price"]
   const [currentIsbns, setCurrentIsbns] = useState<string[]>([])
@@ -52,7 +52,7 @@ export default function BookTable() {
   const entryBookData = api.books.findBooks.useQuery(currentIsbns).data
   const books = api.books.getAllInternalBooks.useQuery({pageNumber:pageNumber, booksPerPage:BOOKS_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
   const allBooks = api.books.getAllInternalBooksNoPagination.useQuery({sortBy:sortField, descOrAsc:sortOrder, filters:filters2}).data
-  const csvBooks = allBooks ? allBooks.map((book)=>({...book, authorNames:book.authorNames.replaceAll(",", " |"), genre:book.genre.name,length:book.dimensions[2], width:book.dimensions[0], height:book.dimensions[1] })) : []
+  const csvBooks = allBooks ? allBooks.map((book)=>({...book, authorNames:book.authorNames.replaceAll(",", " |"), genre:book.genre.name,length:book.dimensions[2], width:book.dimensions[0], height:book.dimensions[1], remoteRetailPrice:book.subsidaryBook?.retailPrice, remoteInventoryCount: book.subsidaryBook?.inventoryCount })) : []
   const router = useRouter()
 
   function forceDataRender (){
@@ -136,15 +136,14 @@ export default function BookTable() {
   }
 
   function setDisplayBookView(view:boolean, id?: string) {
+    const query = {...router.query, openView: view, viewId: id}
     view ? router.push({
       pathname:'/books',
-      query:{
-        openView:"true",
-        viewId: id
-      }
+      query: query
     }, undefined, { shallow: true }) : 
     router.push({
       pathname:'/books',
+      query: query
       
     }, undefined, { shallow: true })
   }
@@ -160,7 +159,7 @@ export default function BookTable() {
     )
   }
   function closeBookView(){
-    setDisplayBookView(false)
+    setDisplayBookView(false, null)
   }
 
   function renderBookRow(items:any[]){

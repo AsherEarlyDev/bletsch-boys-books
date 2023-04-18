@@ -28,7 +28,7 @@ export const userRouter = createTRPCRouter({
           },
       });
     } catch (error){
-      console.log(error)
+      throw new TRPCError({code: error.code, message: error.message})
     }
   }),
   editUser: protectedProcedure.input(z.object({id: z.string(), role: z.enum(["USER", "ADMIN", "SUPERADMIN"]), password: z.string().optional()})).mutation(async({ctx, input}) => {
@@ -59,7 +59,7 @@ export const userRouter = createTRPCRouter({
           });
         }
   } catch(error){
-    console.log(error);
+    throw new TRPCError({code: error.code, message: error.message})
   }
   }),
   getPassword: publicProcedure
@@ -71,10 +71,10 @@ export const userRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({code: error.code, message: error.message})
       }
     }),
-  changePassword: protectedProcedure
+  changePassword: publicProcedure
   .input(z.object({
         password: z.string(),
       }))
@@ -90,7 +90,7 @@ export const userRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        throw new TRPCError({code: error.code, message: error.message})
       }
     }),
   deleteUser: protectedProcedure

@@ -20,9 +20,8 @@ export default function SalesTable() {
   const router = useRouter()
   const {data, status} = useSession()
   const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
-
   const date = new Date()
-  const ENTRIES_PER_PAGE = 5
+  const [entriesPerPage, setEntries] = useState(10)
   const FIRST_HEADER =  ["Date Created", "date"]
   const SORTABLE_HEADERS = [["Sale Type", "saleType"], ["Unique Books", "uniqueBooks"], ["Total Books", "totalBooks"], ["Total Revenue", "revenue"], ["Creator", "userName"]]
   const STATIC_HEADERS = isAdmin ? ["Edit","Delete"] : []
@@ -51,8 +50,8 @@ export default function SalesTable() {
       setDisplayEditSalesRecView(true)
     }
   })
-  const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:ENTRIES_PER_PAGE, sortBy:sortField, descOrAsc:sortOrder}).data
-  const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / ENTRIES_PER_PAGE)
+  const salesRecs: any[] = api.salesRec.getSalesRecs.useQuery({pageNumber:pageNumber, entriesPerPage:entriesPerPage, sortBy:sortField, descOrAsc:sortOrder}).data
+  const numberOfPages = Math.ceil(api.salesRec.getNumSalesRec.useQuery().data / entriesPerPage)
   const revenueReport = api.salesReport.generateRevenueReport.useQuery({startDate: startDate, endDate: endDate}).data
   const costReport = api.salesReport.generateCostReport.useQuery({startDate: startDate, endDate: endDate}).data
   const buybackReport = api.salesReport.generateBuybacksReport.useQuery({startDate: startDate, endDate: endDate}).data
@@ -204,6 +203,13 @@ export default function SalesTable() {
       <div className="px-4 sm:px-6 lg:px-8">
         <TableDetails tableName="Sales"
                       tableDescription="A list of all the Sales Records and Sales Reconciliations.">
+        <p>Entries Per page:</p>
+        <div><select name="entriesPerPage" id="entriesPerPage" defaultValue={entriesPerPage} onChange={(e)=>setEntries(parseInt(e.currentTarget.value))}>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          </select></div>
           {isAdmin && <AddOrderModal showOrderEdit={handleSaleRecSubmission} buttonText="Create Sale Reconciliation" submitText="Create Sale Reconciliation"></AddOrderModal>}
           <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>
@@ -219,7 +225,7 @@ export default function SalesTable() {
         numberOfEntries={numberOfEntries}
         renderRow={renderSalesRow}
         sorting={{ setOrder: setSortOrder, setField: setSortField, currentOrder: sortOrder, currentField: sortField }} 
-        entriesPerPage={ENTRIES_PER_PAGE}></Table>
+        entriesPerPage={entriesPerPage}></Table>
         <div>
           {renderEditSalesRecView()}
           {renderDeleteSalesRecView()}

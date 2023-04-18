@@ -59,7 +59,10 @@ export default function NewBookEntryTable(props: NewBookEntryTableProps) {
           </div>
         </div>
         <div className="px-4 py-8 sm:px-6">
-          <PrimaryButton onClick={props.closeOut} buttonText="Exit"></PrimaryButton>
+          <PrimaryButton onClick={() =>{
+            props.closeOut
+            window.location.reload()
+            }} buttonText="Exit"></PrimaryButton>
         </div>
       </div>
   )

@@ -60,7 +60,7 @@ const fetchSubsidiaryBooks = async (isbns: Array<string>) => {
   for(const isbn of isbns){
     formdata.append("isbns", isbn)
   }
-  const res = await  fetch("https://books-test.colab.duke.edu/api/v1/books/remote/lookup", {
+  const res = await  fetch("https://books.colab.duke.edu/api/v1/books/remote/lookup", {
                 method: "POST",
                 //make sure to serialize your JSON body
                 body: formdata,
@@ -188,6 +188,7 @@ export const booksRouter = createTRPCRouter({
   findBooks: publicProcedure
   .input(z.array(z.string()))
   .query(async ({ctx, input}) => {
+    if(input.length==0 || input[0] ==="") return []
     const user = ctx.session.user
     const absentBooks: string[] = []
     const internalBooks: any[] | PromiseLike<any[]> = []

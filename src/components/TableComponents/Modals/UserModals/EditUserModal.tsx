@@ -89,16 +89,14 @@ export default function EditUserModal(props: UserModalProp) {
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 space-y-6">
 
                             <div>
                               <div className="sm:mx-auto sm:w-full sm:max-w-md">
                                 <h2 className="mt-6 text-center text-xl tracking-tight text-gray-900">Editing user: <span className="font-semibold">{props.username}</span></h2>
                               </div>
                             </div>
-
-                            <div className="flex flex-col gap-5">
-                              <div>
+                            <div className="flex flex-col gap-2">
                                 <label htmlFor="isAdmin" className="block text-sm font-medium text-gray-700">
                                   {isAdmin ? "User is currently an admin." : "User is currently not an admin"}
                                 </label>
@@ -112,9 +110,7 @@ export default function EditUserModal(props: UserModalProp) {
                                       onClick={() => {setIsAdmin(!isAdmin)}}
                                   />
                                 </div>
-                              </div>
                             </div>
-
                             <div className="flex flex-col gap-5">
                               <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -146,7 +142,7 @@ export default function EditUserModal(props: UserModalProp) {
                               </div>
                             </div>
 
-                            <div className="flex flex-row gap-5">
+                            <div className="pt-5 flex flex-row gap-5">
                               <SecondaryButton onClick={closeModal} buttonText="Cancel"></SecondaryButton>
                               <button
                                   type="submit"

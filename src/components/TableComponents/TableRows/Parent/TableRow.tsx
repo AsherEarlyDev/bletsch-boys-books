@@ -31,14 +31,13 @@ interface TableRowProp {
   isView: boolean
   isCSV?: boolean
   closeAdd?: any
-  saveAdd?: (isbn: string, quantity: number, price: number) => void
+  saveAdd?: (isbn: string, quantity: number, price: number, isCSV:boolean) => void
   mod?: any
 }
 
 export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  console.log(book)
   const defaultPrice = (props.item?.price ? props.item?.price : props.item?.buybackPrice)
   let id: string
   if (props.type === "Buyback"){
@@ -57,6 +56,7 @@ export default function TableRow(props: TableRowProp) {
   const [quantity, setQuantity] = useState(props.item.quantity)
   const [subtotal, setSubtotal] = useState(props.item.subtotal)
   const [visible, setVisible] = useState(true)
+  const [isAdding, setIsAdding] = useState(props.isAdding)
 
   function handleRowEdit() {
     setIsEditing(true)
@@ -64,7 +64,7 @@ export default function TableRow(props: TableRowProp) {
 
   function handleBookSelect(bookId: string){
     setIsbn(bookId)
-    setPrice(book?.retailPrice)
+    bookId !== props.item.bookId && setPrice(book?.retailPrice)
   }
 
   function renderDeleteView() {
@@ -101,11 +101,10 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function saveNew() {
-    props.saveAdd(isbn, quantity, price)
+    props.saveAdd(isbn, quantity, price, props.isCSV)
   }
 
   function edit() {
-    console.log(props.item)
     if (props.item) {
       props.mod.mutate({
         id: props.item.id,
@@ -132,7 +131,7 @@ export default function TableRow(props: TableRowProp) {
                   <TableEntry>${subtotal.toFixed(2)}</TableEntry>
                 </tr>
                 :
-                (props.isAdding ? ((!props.isCSV || book) ?
+                (isAdding ? ((!props.isCSV || book) ?
                         <tr>
                           <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}

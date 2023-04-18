@@ -98,12 +98,11 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   }
 
   function renderCSVRows(){
-
-    return buybackCSV ? buybackCSV?.map((buyback) => (<TableRow type="Buyback" saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={buyback} vendorId={props.data.vendor.id}></TableRow>)) : null
+    return buybackCSV ? buybackCSV?.map((buyback) => buyback != null ?(<TableRow type="Buyback" saveAdd={handleAddBuyback} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={buyback} vendorId={props.data.vendor.id}></TableRow>) : null) : null
   }
   
   function removeCSVRow(isbn:string){
-    setBuybackCSV(buybackCSV.filter((value) => value.bookId !== isbn))
+    setBuybackCSV(buybackCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
   }
 
   function saveVendorInfo(vendor: Vendor){
@@ -150,7 +149,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     setAddBuybackRowView(false)
   }
 
-  function handleAddBuyback(isbn: string, quantity: number, price: number){
+  function handleAddBuyback(isbn: string, quantity: number, price: number, isCSV?:boolean){
     if(isbn && quantity && props.data.id){
       let buybackPrice
       if (price === undefined){
@@ -165,7 +164,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
         quantity: quantity.toString(),
         price: buybackPrice.toString()
       })
-      closeAddBuybackRow()
+      isCSV ? removeCSVRow(isbn) : closeAddBuybackRow()
     }
     else{
       toast.error("Cannot add buyback.")

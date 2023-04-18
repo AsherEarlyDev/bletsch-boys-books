@@ -120,8 +120,8 @@ export default function TableRow(props: TableRowProp) {
   }
 
   function saveNew() {
-    if (!price){
-      props.saveAdd(props.item.bookId, quantity, 0, props.isCSV)
+    if (!price && book && props.type != "Buyback"){
+      props.saveAdd(props.item.bookId, quantity, book.retailPrice, props.isCSV)
     }
     else{
       props.saveAdd(props.item.bookId, quantity, price, props.isCSV)

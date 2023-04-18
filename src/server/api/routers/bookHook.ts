@@ -153,9 +153,7 @@ export const bookHookRouter = createTRPCRouter({
                     isbn: isbn
                   }
                 })
-                log.info(sale)
                 if (!sale.price){
-                  log.info("HERE")
                   priceString = book.retailPrice.toString()
                 }
                 else{
@@ -229,7 +227,7 @@ export const bookHookRouter = createTRPCRouter({
                 },
                 data:{
                     inventory: inventory,
-                    shelfSpace: (inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2)
+                    shelfSpace: (inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2).toString()
                 }
                 })
                 log.info("BOOK UPDATED")

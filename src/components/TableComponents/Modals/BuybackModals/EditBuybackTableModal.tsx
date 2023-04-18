@@ -92,7 +92,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     return ({
       bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,
-      price: price,
+      buybackPrice: price,
       subtotal: quant* price,
     })
   }
@@ -149,7 +149,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     setAddBuybackRowView(false)
   }
 
-  function handleAddBuyback(isbn: string, quantity: number, price: number, isCSV?:boolean){
+  function handleAddBuyback(isbn: string, quantity: number, price: number, isbn13:string, isCSV?:boolean){
     if(isbn && quantity && props.data.id){
       let buybackPrice
       if (price === undefined){
@@ -160,7 +160,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
       }
       addBuyback.mutate({
         id: props.data.id,
-        isbn: isbn,
+        isbn: isbn13,
         quantity: quantity.toString(),
         price: buybackPrice.toString()
       })

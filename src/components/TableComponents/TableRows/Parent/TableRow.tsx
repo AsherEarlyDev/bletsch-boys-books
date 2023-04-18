@@ -31,7 +31,7 @@ interface TableRowProp {
   isView: boolean
   isCSV?: boolean
   closeAdd?: any
-  saveAdd?: (isbn: string, quantity: number, price: number, isCSV:boolean) => void
+  saveAdd?: (isbn: string, quantity: number, price: number, isbn13, isCSV:boolean) => void
   mod?: any
 }
 
@@ -39,7 +39,7 @@ export default function TableRow(props: TableRowProp) {
   const [isbn, setIsbn] = useState(props.item.bookId)
   const buybackCost = api.buyback.getCostMostRecent.useQuery({isbn: isbn, vendorId: props.vendorId}).data
   const book = api.books.findInternalBook.useQuery({isbn: isbn}).data
-  const defaultPrice = props.type === "Buyback" ? buybackCost : ((book?.isbn===props.item.bookId || book?.isbn10===props.item.bookId)? props.item.price : book?.retailPrice)
+  const defaultPrice = props.type === "Buyback" ? buybackCost ?? props.item.buybackPrice : ((book && (book?.isbn!==props.item.bookId || book?.isbn10!==props.item.bookId))? book?.retailPrice :  props.item.price ?? props.item.buybackPrice)
   let currentItemPrice
   let deleteMutation
   let id: string
@@ -52,7 +52,7 @@ export default function TableRow(props: TableRowProp) {
       onSuccess: ()=>{
         toast.success("Successfully deleted Buyback!")
       }})
-      currentItemPrice = props.item.price
+      currentItemPrice = props.item.buybackPrice
   }
   else if (props.type === "Purchase"){
     id = props.item?.purchaseOrderId
@@ -121,10 +121,10 @@ export default function TableRow(props: TableRowProp) {
 
   function saveNew() {
     if (!price && book && props.type != "Buyback"){
-      props.saveAdd(props.item.bookId, quantity, book.retailPrice, props.isCSV)
+      props.saveAdd(props.item.bookId, quantity, book.retailPrice, book.isbn, props.isCSV )
     }
     else{
-      props.saveAdd(props.item.bookId, quantity, price, props.isCSV)
+      props.saveAdd(props.item.bookId, quantity, price,book.isbn, props.isCSV)
     }
     
   }
@@ -138,7 +138,7 @@ export default function TableRow(props: TableRowProp) {
         orderId: id,
         isbn: isbn,
         quantity: quantity.toString(),
-        price: price.toString(),
+        price: price.toString() ,
       })
     } else {
       toast.error("Cannot edit buyback.")
@@ -163,7 +163,7 @@ export default function TableRow(props: TableRowProp) {
                           {props.type ==="Buyback" ? <BuybackCardProp vendorId={props.vendorId} saveFunction={setIsbn} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BuybackCardProp> : <BookCardProp type={props.type} vendorId={props.vendorId} saveFunction={handleBookSelect} defaultValue={props.isCSV ? ((book) ? book : {}) : {} } ></BookCardProp>}
                           <MutableCurrencyTableEntry saveValue={setPrice} heading={`${props.type} Price`}
                                                      required="True" dataType="number"
-                                                     defaultValue={props.isCSV ? props.item.price : defaultPrice}></MutableCurrencyTableEntry>
+                                                     defaultValue={props.isCSV ? props.item.price ?? props.item.buybackPrice : defaultPrice}></MutableCurrencyTableEntry>
                           <MutableTableEntry saveValue={setQuantity} heading="Quantity Bought"
                                              required="True" dataType="number"
                                              defaultValue={quantity}></MutableTableEntry>

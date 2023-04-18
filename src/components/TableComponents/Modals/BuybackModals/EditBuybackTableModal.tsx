@@ -92,7 +92,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
     return ({
       bookId:(csv.isbn).replaceAll('-',''),
       quantity:quant,
-      buybackPrice: price,
+      price: price,
       subtotal: quant* price,
     })
   }

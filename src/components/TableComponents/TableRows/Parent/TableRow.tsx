@@ -128,7 +128,7 @@ export default function TableRow(props: TableRowProp) {
     }
     
   }
-  }
+  
 
   function edit() {
     if (props.item) {

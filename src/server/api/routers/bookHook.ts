@@ -229,7 +229,7 @@ export const bookHookRouter = createTRPCRouter({
                 },
                 data:{
                     inventory: inventory,
-                    shelfSpace: inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)
+                    shelfSpace: (inventory*(book.dimensions[1] ?? DEFAULT_THICKNESS_IN_CENTIMETERS)).toFixed(2)
                 }
                 })
                 await ctx.prisma.saleReconciliation.update({

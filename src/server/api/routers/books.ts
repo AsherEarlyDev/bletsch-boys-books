@@ -170,9 +170,12 @@ const transformDatabaseBook = async (book: Book & { author: Author[]; genre: Gen
 
 const getBookIfExists = async (ctx: context, isbn: string) => {
   try {
-    return await ctx.prisma.book.findUnique({
+    return await ctx.prisma.book.findFirst({
       where: {
-        isbn:isbn
+        OR: [
+          { isbn:isbn },
+          { isbn10: isbn },
+        ]
       },
       include: {
         author: true,
@@ -285,10 +288,16 @@ export const booksRouter = createTRPCRouter({
               mode: 'insensitive'
             }
           },
-          isbn: {
-            contains: input.filters.isbn,
-            mode: 'insensitive'
-          }
+          OR: [
+            { isbn: {
+              contains: input.filters.isbn,
+              mode: 'insensitive'
+            }},
+            { isbn10: {
+              contains: input.filters.isbn,
+              mode: 'insensitive'
+            } },
+          ]
         }
 
       })
@@ -357,10 +366,16 @@ export const booksRouter = createTRPCRouter({
               mode: 'insensitive'
             }
           },
-          isbn: {
-            contains: input.filters.isbn,
-            mode: 'insensitive'
-          }
+          OR: [
+            { isbn: {
+              contains: input.filters.isbn,
+              mode: 'insensitive'
+            }},
+            { isbn10: {
+              contains: input.filters.isbn,
+              mode: 'insensitive'
+            } },
+          ]
         }
       })
       const editedBooks = await addExtraBookFields(books, ctx)
@@ -407,10 +422,16 @@ export const booksRouter = createTRPCRouter({
             mode: 'insensitive'
           }
         },
-        isbn: {
-          contains: input.filters.isbn,
-          mode: 'insensitive'
-        }
+        OR: [
+          { isbn: {
+            contains: input.filters.isbn,
+            mode: 'insensitive'
+          }},
+          { isbn10: {
+            contains: input.filters.isbn,
+            mode: 'insensitive'
+          } },
+        ]
 
       }
     })

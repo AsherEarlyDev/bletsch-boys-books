@@ -72,6 +72,7 @@ export const subsidaryRouter = createTRPCRouter({
           message: "No books found",
         });
       }
+      console.log(existingRemoteBooks)
       return existingRemoteBooks;
     }
     catch(error){

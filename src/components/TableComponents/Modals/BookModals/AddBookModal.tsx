@@ -23,7 +23,8 @@ export default function AddBookModal(props: BookModalProp) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const isbnString = formData.get("bookIsbns") as string
-    const tempIsbnArray = parseIsbns(isbnString.trim())
+    const tempIsbnArray = parseIsbns(isbnString.trim().replace(/(\r\n|\n|\r|\t)/gm, " "));
+    alert(tempIsbnArray)
     const isbnArray = tempIsbnArray.filter(isbn => isbn.length === 10 || isbn.length === 13)
     if (tempIsbnArray.length == isbnArray.length){
       closeModal()

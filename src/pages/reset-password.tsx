@@ -7,7 +7,6 @@ export default function DocumentationPage() {
       <>
         <AppShell activePage="Reset Password"></AppShell>
         <PasswordChange></PasswordChange>
-        <ToastContainer></ToastContainer>
       </>
   )
 }

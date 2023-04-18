@@ -38,10 +38,8 @@ export const subsidaryRouter = createTRPCRouter({
   .output(z.record(z.string(), remoteBookSchema.nullable()))
   .query( async ({ input }) => {
     try{
-      log.info(input)
       const existingRemoteBooks: {[isbn:string]: remoteBook | null} = {};
       for (const isbn of input.isbns) {
-        try{
           const book = await prisma.book.findFirst({
             where: { isbn: isbn },
             include: {
@@ -65,17 +63,8 @@ export const subsidaryRouter = createTRPCRouter({
               inventoryCount: (book.inventory < 0 ? 0 : book.inventory),
             } as remoteBook;
           } else {
-            console.log("Book not found: " + isbn);
             existingRemoteBooks[isbn] = null;
           }
-        }
-        catch (error){
-          log.info(error)
-          throw new TRPCError({
-            code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
-            message: error.message,
-          });
-        }
       }
       if (Object.keys(existingRemoteBooks).length === 0) {
         throw new TRPCError({
@@ -87,7 +76,6 @@ export const subsidaryRouter = createTRPCRouter({
     }
     catch(error){
       log.info(error)
-      console.log(error)
       throw new TRPCError({
         code: error.code ? error.code : 'INTERNAL_SERVER_ERROR',
         message: error.message,

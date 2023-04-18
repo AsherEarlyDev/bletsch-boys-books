@@ -84,7 +84,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   async function handleCSV(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const csvVal = (formData.get("salesCSV"))
+    const csvVal = (formData.get("saleCSV"))
     Papa.parse(csvVal, {
       header:true,
       complete: function(results) {
@@ -105,12 +105,12 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   }
 
   function renderCSVRows(){
-    const sales = saleCSV ? saleCSV?.map((sale) => (<TableRow vendorId={null} type="Sale" saveAdd={handleAddSale} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={sale}></TableRow>)) : null
+    const sales = saleCSV ? saleCSV?.map((sale) => sale!=null ? (<TableRow vendorId={null} type="Sale" saveAdd={handleAddSale} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={sale}></TableRow>):null) : null
     return sales
   }
   
   function removeCSVRow(isbn:string){
-    setSaleCSV(saleCSV.filter((value) => value.bookId !== isbn))
+    setSaleCSV(saleCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
   }
 
   function openAddSaleRow(){
@@ -130,7 +130,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
   function closeAddSaleRow(){
     setAddSaleRowView(false)
   }
-  function handleAddSale(isbn: string, quantity: number, price: number){
+  function handleAddSale(isbn: string, quantity: number, price: number, isCSV?:boolean){
     if(isbn && quantity){
       addSale.mutate({
         saleReconciliationId: props.salesRecId,
@@ -139,6 +139,7 @@ export default function EditSalesTableModal(props: EditSalesTableModalProps) {
         price: price.toString()
       })
       closeAddSaleRow()
+      isCSV ? removeCSVRow(isbn) : closeAddSaleRow()
     }
     else{
       toast.error("Cannot add sale.")

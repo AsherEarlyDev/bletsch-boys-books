@@ -201,15 +201,17 @@ export default function SalesTable() {
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <TableDetails tableName="Sales"
-                      tableDescription="A list of all the Sales Records and Sales Reconciliations.">
-        <p>Entries Per page:</p>
-        <div><select name="entriesPerPage" id="entriesPerPage" defaultValue={entriesPerPage} onChange={(e)=>setEntries(parseInt(e.currentTarget.value))}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          </select></div>
+        <TableDetails tableName="Sales" tableDescription="A list of all the Sales Records and Sales Reconciliations.">
+        <div className="flex flex-row gap-3 items-center">
+          <p>Entries Per page:</p>
+          <div><select className="rounded-md border-1 border-indigo-600 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" name="entriesPerPage" id="entriesPerPage" defaultValue={entriesPerPage} onChange={(e)=>setEntries(parseInt(e.currentTarget.value))}>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+          </div>
+        </div>
           {isAdmin && <AddOrderModal showOrderEdit={handleSaleRecSubmission} buttonText="Create Sale Reconciliation" submitText="Create Sale Reconciliation"></AddOrderModal>}
           <GenSalesReportModal generateReport={generateReport} startDate={setStartDate} endDate={setEndDate} buttonText="Generate Sales Report"
                                submitText="Generate Sales Report"></GenSalesReportModal>

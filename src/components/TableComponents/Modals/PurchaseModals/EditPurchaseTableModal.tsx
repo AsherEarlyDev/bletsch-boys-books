@@ -27,6 +27,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   const [date, setDate] = useState(props.purchaseDate)
   const tableHeading = ["Title", "Retail Price", "Quantity Bought", "Subtotal", "Edit/Save", "Delete"]
   const [vendorName, setVendorName] = useState(props.purchaseVendor.name)
+  const [purchaseOrderId, setPurchaseOrderId] = useState(props.purchaseOrderId)
   const [vendorId, setVendorId] = useState(props.purchaseVendor.id)
   const [vendorBuyback, setVendorBuyback] = useState(props.purchaseVendor.bookBuybackPercentage)
   const [addPurchaseRowView, setAddPurchaseRowView] = useState(false)
@@ -57,7 +58,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
       toast.success("Successfully modified purchase!")
     }
   })
-  const purchases: Purchase[] = api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: props.purchaseOrderId}).data
+  const purchases: Purchase[] = api.purchase.getPurchasesByOrderId.useQuery({purchaseOrderId: purchaseOrderId}).data
   const vendors: Vendor[] = api.vendor.getAllVendors.useQuery().data
 
   function saveVendorInfo(vendor: Vendor){
@@ -99,14 +100,11 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
   async function handleCSV(e: React.FormEvent<HTMLInputElement>){
     e.preventDefault()
-    
     const formData = new FormData(e.target as HTMLFormElement)
-    console.log(formData.get("purchaseCSV"))
     const csvVal = (formData.get("purchaseCSV"))
     Papa.parse(csvVal, {
       header:true,
       complete: function(results) {
-        console.log(results.data)
         const csv = results.data.map((result) => transformCSV(result))
         setPurchaseCSV(csv);
       }
@@ -124,12 +122,15 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   }
 
   function renderCSVRows(){
-    const purchases = purchaseCSV ? purchaseCSV?.map((purchase) => (<TableRow vendorId={props.purchaseVendor.id} type="Purchase" saveAdd={handleAddPurchase} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={purchase}></TableRow>)) : null
+    const purchases = purchaseCSV ? purchaseCSV?.map((purchase) => purchase != null ?  (<TableRow vendorId={props.purchaseVendor.id} type="Purchase" saveAdd={handleAddPurchase} closeAdd={removeCSVRow} isView={false} isAdding={true} isCSV={true} item={purchase}></TableRow>): null) : null
     return purchases
   }
 
   function removeCSVRow(isbn:string){
-    setPurchaseCSV(purchaseCSV.filter((value) => value.bookId !== isbn))
+    console.log(isbn)
+    console.log(purchaseCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
+    setPurchaseCSV(purchaseCSV.map((value) =>value==null ? null : (value.bookId !== isbn ? value : null)))
+
   }
 
   function openAddPurchaseRow(){
@@ -149,7 +150,7 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
   function closeAddPurchaseRow(){
     setAddPurchaseRowView(false)
   }
-  function handleAddPurchase(isbn: string, quantity: number, price: number){
+  function handleAddPurchase(isbn: string, quantity: number, price: number, isCSV?:boolean){
     if(isbn && quantity && price){
       addPurchase.mutate({
         id: props.purchaseOrderId,
@@ -157,7 +158,8 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
         quantity: quantity.toString(),
         price: price.toString()
       })
-      closeAddPurchaseRow()
+      isCSV ? removeCSVRow(isbn) : closeAddPurchaseRow()
+      
     }
     else{
       toast.error("Cannot add purchase.")
@@ -185,64 +187,5 @@ export default function EditPurchaseTableModal(props: EditPurchaseTableModalProp
     vendors={vendors}
     edit={modPurchase}
     ></EditModal>
-
-    // <div className="px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg py-8 bg-white">
-    //       <div className="mb-8">
-    //         <TableDetails tableName={header} tableDescription={"Viewing Purchase with ID: " + props.purchaseOrderId}>
-    //         </TableDetails>
-    //         <div className="flex flex-row gap-10 pt-4 justify-center">
-    //           <MutableCardProp saveValue={setDate} heading="Change Date" required="True" dataType="date" defaultValue={props.purchaseDate}></MutableCardProp>
-    //           <div className="mt-1">
-    //             {(props.purchaseVendor && saveVendorInfo)? <VendorSelect vendors={vendors} saveFunction={saveVendorInfo} defaultValue={props.purchaseVendor?.name}></VendorSelect>: null}
-    //           </div>
-    //         </div>
-    //         <div className="mt-8 flex flex-col">
-    //           <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-    //             <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-    //               <div className="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-    //                 <table className="min-w-full divide-y divide-gray-300 table-auto">
-    //                   <TableHeader>
-    //                     <ColumnHeading firstEntry={true} label={tableHeading[0]}></ColumnHeading>
-    //                     {tableHeading.slice(1).map((head)=>(<ColumnHeading label={head}></ColumnHeading>))}
-    //                   </TableHeader>
-    //                   <tbody className="divide-y divide-gray-200 bg-white">
-  
-    //                   {purchases?.map((item) => (<TableRow type={"Purchase"} vendorId={props.purchaseVendor?.id} isView={false} isAdding={false} item={item} mod={modPurchase}></TableRow>))}
-    //                   {renderCSVRows()}
-    //                   {renderAddPurchaseRow()}
-    //                   </tbody>
-    //                 </table>
-    //               </div>
-    //               <div className="flex flex-row mt-5">
-    //                 <button
-    //                     type="button"
-    //                     className=" inline-flex w-1/4 justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-    //                     onClick={openAddPurchaseRow}>
-    //                   {"Add Purchase"} <PlusIcon className="h-5 w-5"></PlusIcon>
-    //                 </button>
-    //               </div>
-    //             </div>
-    //           </div>
-    //         </div>
-    //       </div>
-    //       <form method="post" onSubmit={handleCSV}>
-    //         <div>
-    //           <label>Import with a CSV: </label>
-    //           <input type="file" id={`${props.type.toLowerCase().slice(0, props.type.length - 1)}CSV`} name={`${props.type.toLowerCase().slice(0, props.type.length - 1)}CSV`} accept=".csv"></input>
-    //           <div>
-    //             <button
-    //             type="submit"
-    //             className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
-    //               Upload CSV
-    //             </button>
-    //           </div>
-    //         </div>
-    //       </form>
-    //       <div className="px-4 py-2 sm:px-6">
-    //         <SaveCardChanges saveModal={props.openConfirmation} closeModal={props.closeOut}></SaveCardChanges>
-    //       </div>
-    //       {props.confirmationView()}
-  
-    //     </div>
   )
 }

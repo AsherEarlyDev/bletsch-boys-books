@@ -6,11 +6,8 @@ export default function PasswordChange() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');;
   const adminPass = api.user.changePassword.useMutation({
-    onError: (error) => {
-      toast.error(error.message)
-    },
     onSuccess: () => {
-      toast.success("Successfully changed password!")
+     alert("Successfully changed password!")
     }
   });
 
@@ -22,7 +19,7 @@ export default function PasswordChange() {
       });
     }
     else{
-      toast.error("Passwords do not match.")
+     alert("Passwords do not match.")
     }
   }
 
@@ -76,7 +73,6 @@ export default function PasswordChange() {
                   </button>
                 </div>
               </div>
-              <ToastContainer></ToastContainer>
             </div>
           </div>
         </div>

@@ -37,7 +37,7 @@ export default function PasswordChange() {
 
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-              <form className="space-y-6" action="#" method="POST">
+              <div className="space-y-6">
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     New Password
@@ -66,7 +66,6 @@ export default function PasswordChange() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <button
                       type="submit"
@@ -76,7 +75,7 @@ export default function PasswordChange() {
                     Set New Password
                   </button>
                 </div>
-              </form>
+              </div>
               <ToastContainer></ToastContainer>
             </div>
           </div>

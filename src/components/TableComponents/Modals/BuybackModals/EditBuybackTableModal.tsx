@@ -39,7 +39,7 @@ export default function EditBuybackTableModal(props: EditBuybackTableModalProps)
   })
   const addBuyback = api.buyback.createBuyback.useMutation({
     onError: (error)=>{
-      toast.error("Failed to add buyback!")
+      toast.error(error.message)
     },
     onSuccess: ()=>{
       toast.success("Successfully added buyback!")

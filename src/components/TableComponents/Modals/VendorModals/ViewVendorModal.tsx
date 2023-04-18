@@ -11,6 +11,7 @@ import CreateSaleEntries from '../../../CreateEntries';
 import CreateEntries from "../../../CreateEntries";
 import SecondaryButton from "../../../BasicComponents/SecondaryButton";
 import PrimaryButton from "../../../BasicComponents/PrimaryButton";
+import {useSession} from "next-auth/react";
 
 interface ViewVendorModalProp{
   vendorId:  string
@@ -22,6 +23,8 @@ interface ViewVendorModalProp{
 
 export default function ViewVendorModal(props:ViewVendorModalProp) {
   const [open, setOpen] = useState(true)
+  const {data, status} = useSession()
+  const isAdmin = (data?.user.role == "ADMIN" || data?.user.role == "SUPERADMIN")
 
 
   function closeModal(){
@@ -46,7 +49,7 @@ export default function ViewVendorModal(props:ViewVendorModalProp) {
             </CardGrid>
             <div className="gap-5 flex flex-row justify-around px-4 py-8 sm:px-6">
               <SecondaryButton onClick={closeModal} buttonText="Exit"></SecondaryButton>
-              <PrimaryButton onClick={openEdit} buttonText="Edit Vendor"></PrimaryButton>
+              {isAdmin && <PrimaryButton onClick={openEdit} buttonText="Edit Vendor"></PrimaryButton>}
             </div>
           </div>
           : null)

@@ -62,7 +62,7 @@ export const subsidaryRouter = createTRPCRouter({
               thickness: book.dimensions[2] ?? null,
               imageUrl: (book.imageLink == undefined || book.imageLink=="") ? null : book.imageLink ,
               retailPrice: book.retailPrice,
-              inventoryCount: book.inventory,
+              inventoryCount: (book.inventory < 0 ? 0 : book.inventory),
             } as remoteBook;
           } else {
             console.log("Book not found: " + isbn);

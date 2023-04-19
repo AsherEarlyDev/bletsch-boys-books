@@ -128,6 +128,7 @@ export default function TableRow(props: TableRowProp) {
     else{
       console.log(props.item)
       props.saveAdd(isbn, quantity, price,book.isbn, props.isCSV)
+
     }
     
   }

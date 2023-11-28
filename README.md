@@ -1,5 +1,5 @@
 # HB Bookstore Management Software
-The problem addressed involves creating a comprehensive software system for Hypothetical Books (HB), a large independent bookstore, to manage its inventory, sales, and store arrangement efficiently. Key features of the system include:
+### The problem addressed involves creating a comprehensive software system for Hypothetical Books (HB), a large independent bookstore, to manage its inventory, sales, and store arrangement efficiently. Key features of the system include:
 
 - Book Management: Administrators can add books using ISBNs, with the system fetching basic details. They can also manually fill in additional information. There are optional features for automatic pricing and genre identification.
 

@@ -1,28 +1,28 @@
-# Create T3 App
+# HB Bookstore Management Software
+The problem addressed involves creating a comprehensive software system for Hypothetical Books (HB), a large independent bookstore, to manage its inventory, sales, and store arrangement efficiently. Key features of the system include:
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Book Management: Administrators can add books using ISBNs, with the system fetching basic details. They can also manually fill in additional information. There are optional features for automatic pricing and genre identification.
 
-## What's next? How do I make an app with this?
+Financial Tracking: The system facilitates recording wholesale book purchases and sales reconciliations. It also generates reports on revenue, costs, and profits.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Buyback Tracking: It tracks book buybacks, offering statistics to aid in purchasing and buyback decisions.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Book Metadata: The system includes book cover images and metadata, displaying them as needed.
+Shelf Layout Assistance: With knowledge of book sizes, the system aids in store shelf layout planning.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Data Import/Export: Users can export and import book information via CSV for bulk operations like purchase orders and sales reconciliations.
+Backup and Restoration: IT operations staff can restore system states from backups, with clear documentation on the procedure.
 
-## Learn More
+User Access Levels: Multiple users can access the system, with administrators having "read-write" access and normal users having "read-only" access.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Related Books Identification: The system identifies related books, like different editions or translations.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+Display Planning: Users can design bookcase layouts for prominent displays.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Inventory Logging: Administrators can log inventory changes, including loss or theft.
 
-## How do I deploy this?
+Sales Integration: Book sales data is automatically recorded from Point Of Sale systems, with manual sales reconciliations in special cases.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Planogram Generation: The system can generate planograms for bookcase layouts.
+
+Subsidiary Integration: It can query inventory from HB's acquired subsidiary and provide an API for inventory queries by HB's parent store after its acquisition.
